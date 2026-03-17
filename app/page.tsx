@@ -8,7 +8,7 @@ import HotSelling from "@/components/HotSelling";
 import StatsSection from "@/components/StatsSection";
 
 export default function Home() {
-  
+
   return (
     <div className="mt-2 mb-20">
       <Hero variant="default" />
@@ -21,6 +21,7 @@ export default function Home() {
         testimonialsData={testimonials}
       />
       <FormComponent />
+      
     </div>
   );
 }
