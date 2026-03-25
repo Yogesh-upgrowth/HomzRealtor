@@ -18,7 +18,7 @@ export interface ProjectSectionProps {
   title: string;
   variant: "details" | "pricing";
   detailsItems?: DetailItem[];
-  description?: string[];
+  description?: string;
   subtitle?: string;
   priceList?: PriceRow[];
 }
@@ -79,7 +79,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
         <div className="max-w-7xl mx-auto">
           {/* Details Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-8">
-            {detailsItems?.map((item, index) => (
+            {/* {detailsItems?.map((item, index) => (
               <div
                 key={index}
                 className="border border-yellow-600/50 rounded-sm flex flex-center p-2 gap-1 md:gap-3 flex-shrink-0 text-center bg-[#393939] md:bg-black"
@@ -100,14 +100,12 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
                   </p>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
 
           {/* Description Paragraphs */}
           <div className="space-y-4 text-gray-300 text-center text-[12px] md:text-[18px]">
-            {description?.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
+            {description && <p>{description}</p>}
           </div>
         </div>
       )}
