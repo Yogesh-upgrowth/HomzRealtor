@@ -22,7 +22,7 @@ const Listing = () => {
           title="ZENITH DEVELOPMENTS - A CLOSER LOOK"
           variant="details"
           detailsItems={projectSectionData.detailsData}
-          description={projectSectionData.descriptionText}
+          // description={projectSectionData.descriptionText}
         />
       </div>
 

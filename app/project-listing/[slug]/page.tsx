@@ -11,6 +11,7 @@ import {
   projectSectionData,
 } from "@/context/utils/ProjectDetails";
 import aboutPageData from "@/context/utils/AboutPageData";
+import Content from "@/components/Content";
 
 // ✅ slug helper
 const slugify = (text: string) =>
@@ -86,7 +87,7 @@ const ProjectDetailPage = async ({ params }: PageProps) => {
 
         {/* Overview */}
         <div className="mb-2">
-          <ContentSection
+          <Content
             layout="imageLayout"
             isButton={true}
             image={project.image}
