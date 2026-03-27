@@ -28,15 +28,6 @@ const useIsMobile = (breakpoint = 768) => {
   return isMobile;
 };
 
-const cityApiMap: Record<string, string> = {
-  all: "allProjects",
-  gurgaon: "ggnCommercialProjects",
-  delhi: "delhiCommercialProjects",
-  faridabad: "faridabadCommercialProjects",
-  greaternoida: "gNoida",
-  noida: "noidaProjects",
-};
-
 const ProjectListing = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,78 +41,91 @@ const ProjectListing = () => {
 
   const currentProjects = projects.slice(startIndex, endIndex);
   const totalPages = Math.ceil(projects.length / cardsPerPage);
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  // ✅ Mobile Pagination Logic (only 4 pages)
+  const getVisiblePages = () => {
+    if (!isMobile) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const maxVisible = 4;
+
+    let start = currentPage;
+    let end = currentPage + maxVisible - 1;
+
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(end - maxVisible + 1, 1);
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [totalPages, currentPage]);
 
   // ✅ Fetch API
-useEffect(() => {
-  async function fetchData() {
-    try {
-      let finalData: any[] = [];
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        let finalData: any[] = [];
 
-      // 🔥 Helper to fetch & return results
-      const fetchCityData = async (cityKey: string, limit = 200) => {
-        const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        return data?.results || [];
-      };
-
-      if (selectedCity === "all") {
-        // ✅ ALL → 10 from each API
-        const cities = [
-          "ggn",
-          "delhi",
-          "faridabad",
-          "gNoida",
-          "noida",
-        ];
-
-        const promises = cities.flatMap((city) => [
-          fetchCityData(`${city}CommercialProjects`, 10),
-          fetchCityData(`${city}ResidentialProjects`, 10),
-        ]);
-
-        const results = await Promise.all(promises);
-
-        finalData = results.flat(); // merge all
-      } else {
-        // ✅ Single city → merge commercial + residential
-        const cityKeyMap: any = {
-          gurgaon: "ggn",
-          delhi: "delhi",
-          faridabad: "faridabad",
-          greaternoida: "gNoida",
-          noida: "noida",
+        const fetchCityData = async (cityKey: string, limit = 200) => {
+          const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          return data?.results || [];
         };
 
-        const base = cityKeyMap[selectedCity];
+        if (selectedCity === "all") {
+          const cities = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
 
-        const [commercial, residential] = await Promise.all([
-          fetchCityData(`${base}CommercialProjects`),
-          fetchCityData(`${base}ResidentialProjects`),
-        ]);
+          const promises = cities.flatMap((city) => [
+            fetchCityData(`${city}CommercialProjects`, 10),
+            fetchCityData(`${city}ResidentialProjects`, 10),
+          ]);
 
-        finalData = [...commercial, ...residential];
+          const results = await Promise.all(promises);
+          finalData = results.flat();
+        } else {
+          const cityKeyMap: any = {
+            gurgaon: "ggn",
+            delhi: "delhi",
+            faridabad: "faridabad",
+            greaternoida: "gNoida",
+            noida: "noida",
+          };
+
+          const base = cityKeyMap[selectedCity];
+
+          const [commercial, residential] = await Promise.all([
+            fetchCityData(`${base}CommercialProjects`),
+            fetchCityData(`${base}ResidentialProjects`),
+          ]);
+
+          finalData = [...commercial, ...residential];
+        }
+
+        setProjects(finalData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-
-      setProjects(finalData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
-  }
 
-  fetchData();
-}, [selectedCity]);
+    fetchData();
+  }, [selectedCity]);
 
   // ✅ Transform API → Card Props
   const formatProject = (project: any) => ({
     imgUrl: project.image,
     location: project.location,
-    reranumber: "N/A", // not available in API
+    reranumber: "N/A",
     title: project.name,
     btntag: project.price || "View Details",
     specifications: [
@@ -163,37 +167,33 @@ useEffect(() => {
 
         {/* Dropdown */}
         <div className="relative w-[220px]">
-        <select
-          value={selectedCity}
-          onChange={(e) => {
-            setSelectedCity(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full appearance-none bg-white border border-gray-300 text-black px-4 py-2 pr-10 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-black transition"
-        >
-          <option value="all">All</option>
-          <option value="gurgaon">Gurgaon</option>
-          <option value="delhi">Delhi</option>
-          <option value="faridabad">Faridabad</option>
-          <option value="greaternoida">Greater Noida</option>
-          <option value="noida">Noida</option>
-        </select>
+          <select
+            value={selectedCity}
+            onChange={(e) => {
+              setSelectedCity(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full appearance-none bg-white border border-gray-300 text-black px-4 py-2 pr-10 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-black transition"
+          >
+            <option value="all">All</option>
+            <option value="gurgaon">Gurgaon</option>
+            <option value="delhi">Delhi</option>
+            <option value="faridabad">Faridabad</option>
+            <option value="greaternoida">Greater Noida</option>
+            <option value="noida">Noida</option>
+          </select>
 
-        {/* Custom Arrow */}
-        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-black">
-          ▼
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-black">
+            ▼
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
         {currentProjects.length > 0 ? (
           currentProjects.map((project: any, index: number) => (
-            <Link
-              key={index}
-              href={`/project-listing/${slugify(project.name)}`}
-            >
+            <Link key={index} href={`/project-listing/${slugify(project.name)}`}>
               <HomesCard {...formatProject(project)} />
             </Link>
           ))
@@ -202,34 +202,41 @@ useEffect(() => {
         )}
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center text-2xl items-center space-x-4 mt-8 mb-2">
+      {/* ✅ Pagination */}
+      <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
+        {/* Prev */}
         <button
-          onClick={() => setCurrentPage(currentPage - 1)}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-2 disabled:opacity-20 text-[#CEA44E] cursor-pointer font-bold"
+          className="px-3 py-2 disabled:opacity-30 text-[#CEA44E] font-bold"
         >
-          ˂
+          ‹
         </button>
 
-        {pageNumbers.map((pageNumber) => (
+        {/* Pages */}
+        {getVisiblePages().map((pageNumber) => (
           <button
             key={pageNumber}
-            className={`px-4 py-2 text-white ${
-              currentPage === pageNumber ? "bg-[#CEA44E] cursor-pointer" : "bg-black cursor-pointer"
-            }`}
             onClick={() => setCurrentPage(pageNumber)}
+            className={`px-3 py-2 rounded-md ${
+              currentPage === pageNumber
+                ? "bg-[#CEA44E] text-black"
+                : "bg-black text-white"
+            }`}
           >
             {pageNumber}
           </button>
         ))}
 
+        {/* Next */}
         <button
-          onClick={() => setCurrentPage(currentPage + 1)}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           disabled={currentPage === totalPages}
-          className="px-3 py-2 disabled:opacity-20 text-[#CEA44E] cursor-pointer font-bold"
+          className="px-3 py-2 disabled:opacity-30 text-[#CEA44E] font-bold"
         >
-          ˃
+          ›
         </button>
       </div>
 

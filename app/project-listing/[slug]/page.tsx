@@ -71,7 +71,7 @@ const ProjectDetailPage = async ({ params }: PageProps) => {
     return (
       <>
         {/* Property */}
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto pb-10">
           <PropertyCard data={project} />
         </div>
 
