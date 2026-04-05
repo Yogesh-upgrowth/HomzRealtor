@@ -71,7 +71,7 @@ export default function HotSelling() {
           {projects.map((p) => (
             <div
               key={p.id}
-              className="group overflow-hidden rounded-md border-0 shadow-sm hover:shadow-lg transition"
+              className="group overflow-hidden rounded-xs border-0 shadow-sm hover:shadow-lg transition"
             >
               <div className="relative h-60 w-full">
                 <Image
