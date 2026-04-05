@@ -172,37 +172,41 @@ export default function Hero({
               </p>
 
               {/* Feature cards */}
-              <div className="mx-auto mt-10 grid w-full max-w-[1444px] grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 justify-items-center">
-                {features.map((f) => (
-                  <Link
-                    key={f.label}
-                    href={f.href}
-                    className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 bg-transparent transition hover:bg-white/15 w-full max-w-[238px] h-[80px]"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="grid place-items-center rounded-sm text-amber-300">
-                        <Image
-                          src={f.icon}
-                          alt="image"
-                          width={32}
-                          height={32}
-                        />
-                      </span>
-                      <span className="text-md font-semibold">{f.label}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <div className="flex flex-col">
 
               {/* CTA */}
-              <div className="mt-14">
+              <div className="mt-14 order-1 md:order-2">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-gray-900 shadow-lg transition hover:shadow-xl cursor-pointer "
+                  className="inline-flex items-center rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-gray-900 shadow-lg transition hover:shadow-xl cursor-pointer"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
+
+              {/* Grid */}
+              <div className="mx-auto mt-10 grid w-full max-w-[1444px] grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 justify-items-center order-2 md:order-1">
+                {features.map((f) => (
+                  <Link
+                      key={f.label}
+                      href={f.href}
+                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 bg-transparent transition bg-gray-200/20 backdrop-blur-xs w-full max-w-[238px] h-[60px] md:h-[65px]"
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="grid place-items-center rounded-sm text-amber-300">
+                          <Image
+                            src={f.icon}
+                            alt="image"
+                            width={32}
+                            height={32}
+                          />
+                        </span>
+                        <span className="text-md font-semibold">{f.label}</span>
+                      </div>
+                    </Link>
+                ))}
+              </div>
+            </div>
             </div>
           </section>
 
