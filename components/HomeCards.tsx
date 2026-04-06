@@ -96,8 +96,8 @@ const HomesCard: React.FC<HomeCardProps> = ({
       <div className="flex justify-between items-center p-3">
         
         {/* CTA */}
-        <button className="text-[13px] cursor-pointer md:text-[16px] bg-gradient-to-r from-[#E4C66D] via-[#B67F2C] to-[#E4C66D] text-white font-bold py-1 px-3 rounded-sm">
-          {btntag}
+        <button className="text-[13px] cursor-pointer md:text-[16px] bg-gradient-to-r from-[#E4C66D] via-[#B67F2C] to-[#E4C66D] text-white font-bold py-[9px] px-7 rounded-sm">
+          {btntag} + {"Crore Onwards"}
         </button>
 
         {/* Icons */}
