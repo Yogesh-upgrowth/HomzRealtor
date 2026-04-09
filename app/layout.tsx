@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FormProvider } from "@/context/FormContext";
 import FormComponent from "@/components/FormComponent";
+import { Suspense } from "react";
+import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,9 @@ export default function RootLayout({
           <FormComponent />
           {children}
           <Footer />
+          <Suspense fallback={null}>
+            <GoogleAnalyticsTracker />
+          </Suspense>
         </FormProvider>
       </body>
     </html>
