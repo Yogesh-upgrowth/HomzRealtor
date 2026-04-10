@@ -156,7 +156,7 @@ export default function Hero({
             </div>
 
             {/* Content */}
-            <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-20 md:pb-28 text-center">
+            <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-20 md:pb-28 text-center md:translate-y-40">
               <h1 className="text-2xl sm:text-3xl md:text-6xl font-normal tracking-wide leading-tight md:pt-10">
                 <span className="block font-sans">
                   HOMES YOU CAN TRUST, IN THE
@@ -175,22 +175,22 @@ export default function Hero({
               <div className="flex flex-col">
 
               {/* CTA */}
-              <div className="mt-14 order-1 md:order-2">
+              <div className="md:mt-6 mt-14 order-1 md:order-2">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-gray-900 shadow-lg transition hover:shadow-xl cursor-pointer"
+                  className="inline-flex items-center md:mb-15 rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
 
               {/* Grid */}
-              <div className="mx-auto mt-10 grid w-full max-w-[1444px] grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 justify-items-center order-2 md:order-1">
+              <div className="mx-auto mt-10 grid w-full max-w-[1544px] grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 justify-items-center order-2 md:order-1">
                 {features.map((f) => (
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 bg-transparent transition bg-gray-200/20 backdrop-blur-xs w-full max-w-[238px] h-[60px] md:h-[65px]"
+                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 transition bg-black/30 opacity-100 w-full max-w-[238px] h-[60px] md:h-[65px]"
                     >
                       <div className="flex items-center gap-4">
                         <span className="grid place-items-center rounded-sm text-amber-300">
