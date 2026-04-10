@@ -96,7 +96,6 @@ export default function HotSelling() {
 
           <h1 className="mx-4 text-2xl md:text-4xl font-corbert font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent uppercase tracking-wide">
             Hot Selling Real Estate Projects <br />
-            Delhi NCR
           </h1>
 
           <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-gray-400 to-black" />

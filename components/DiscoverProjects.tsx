@@ -95,7 +95,7 @@ export default function DiscoverProject() {
             <div className="absolute inset-0 bg-black/30"></div>
 
             <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-lg font-semibold text-amber-300">
+              <h2 className="text-lg font-semibold text-[#CEA44E]">
                 {projects[currentIndex].title}
               </h2>
 
@@ -105,7 +105,7 @@ export default function DiscoverProject() {
 
               <Link
                 href="/project-listing"
-                className="inline-block mt-3 px-4 py-2 bg-yellow-500 text-black rounded"
+                className="inline-block mt-3 px-4 py-2 bg-[#CEA44E] text-black rounded"
               >
                 View More
               </Link>
@@ -143,7 +143,7 @@ export default function DiscoverProject() {
             {/* Next Button */}
             <button
               onClick={nextSlide}
-              className="w-10 h-10 flex items-center justify-center rounded-md bg-yellow-500 shadow hover:bg-yellow-600 transition"
+              className="w-10 h-10 flex items-center justify-center rounded-md bg-[#CEA44E] shadow hover:bg-yellow-600 transition"
             >
               <Image
                 src={arrow}
