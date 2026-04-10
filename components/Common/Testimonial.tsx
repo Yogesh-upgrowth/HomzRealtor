@@ -57,7 +57,7 @@ export default function Testimonials({
   }, [emblaApi]);
 
   return (
-    <section className="max-w-7xl mx-auto px-3 sm:px-6">
+    <section className="max-w-[1444px] mx-auto px-3 sm:px-6">
       {/* Title */}
       <div className="flex items-center justify-center gap-4 w-full">
         <div className="flex-1 h-px bg-gradient-to-r from-black/50 to-transparent"></div>

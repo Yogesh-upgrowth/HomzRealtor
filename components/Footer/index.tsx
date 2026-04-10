@@ -45,8 +45,8 @@ export default function Footer() {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-gray-700">
-        <div className="max-w-6xl mx-auto px-6 py-4 text-center text-xs text-gray-500">
+      <div className="border-t border-white max-w-[1397px] mx-auto">
+        <div className="max-w-6xl mx-auto px-6 py-4 text-center text-sm text-gray-500">
           © {new Date().getFullYear()} Homz Realtor. All rights reserved.
         </div>
       </div>

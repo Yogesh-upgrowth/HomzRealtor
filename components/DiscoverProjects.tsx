@@ -60,7 +60,7 @@ export default function DiscoverProject() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1227px] mx-auto gap-10 my-10 px-4">
+    <div className="flex flex-col w-full max-w-[1444px] mx-auto gap-10 my-10 px-4">
       
       {/* Heading */}
       <div className="w-full flex flex-col items-center justify-center text-center">

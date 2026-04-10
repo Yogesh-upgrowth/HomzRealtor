@@ -9,7 +9,7 @@ export default function StatsSection() {
   ];
 
   return (
-    <section className="w-full bg-black py-12 px-4 my-16 font-serif">
+    <section className="w-full bg-black py-16 px-4 my-16 font-serif">
       <div className="max-w-8xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 text-center gap-16 md:gap-0">
         {stats.map((s, idx) => (
           <div

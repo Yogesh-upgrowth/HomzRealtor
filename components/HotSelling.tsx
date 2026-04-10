@@ -89,7 +89,7 @@ export default function HotSelling() {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 text-center mt-8">
+      <div className="max-w-[1444px] mx-auto px-4 md:px-6 text-center mt-8">
         {/* Heading */}
         <div className="flex items-center justify-center w-full">
           <div className="h-[1.5px] flex-1 bg-gradient-to-r from-black via-gray-400 to-transparent" />
