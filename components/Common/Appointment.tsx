@@ -20,7 +20,7 @@ const AppointmentCard: React.FC<AppointmentProps> = ({
     <section
       className="relative bg-center bg-cover py-16 px-4 text-center text-white"
       style={{
-        backgroundImage: `linear-gradient(rgba(236, 215, 185, 0.8), rgba(236, 215, 185, 0.8)), url(${backgroundImageUrl})`,
+        backgroundImage: `linear-gradient(rgba(246, 215, 185, 0.8), #B67E2BE0), url(${backgroundImageUrl})`,
       }}
     >
       <div className="max-w-2xl mx-auto">

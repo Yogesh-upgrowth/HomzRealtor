@@ -17,7 +17,7 @@ const PromoBanner: React.FC<PromoBannerProps> = ({
   imageSrc,
 }) => {
   return (
-    <section className="relative w-full w-full  min-h-[220px] md:aspect-[16/4.5] mt-14 rounded-xl overflow-hidden">
+    <section className="relative w-full w-full  min-h-[220px] md:aspect-[16/4.5] mt-14 rounded-xs md:rounded-xl overflow-hidden">
       
       {/* 1. Background Image (hidden on mobile) */}
       <Image

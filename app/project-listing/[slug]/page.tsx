@@ -71,11 +71,18 @@ const ProjectDetailPage = async ({ params }: PageProps) => {
     return (
       <>
         {/* Property */}
-        <div className="container mx-auto pb-10">
-          <PropertyCard data={project} />
+        <div className="my-16">
+          <Content
+            layout="imageLayout"
+            isButton={true}
+            image={project.image}
+            cardData={project.name + project.location}
+            cardDescription={project.description}
+            price={project.price}
+            units={project.noOfUnits ? `${project.noOfUnits} Units` : "N/A"}
+            area={project.totalArea}
+          />
         </div>
-
-        {/* Zenith development */}
         <div className="bg-black text-white">
           <ProjectSection
             title={project.name}
@@ -85,15 +92,22 @@ const ProjectDetailPage = async ({ params }: PageProps) => {
           />
         </div>
 
-        {/* Overview */}
-        <div className="mb-2">
-          <Content
+        <div className="max-w-[1444px] w-full mx-auto">
+          <ContentSection
             layout="imageLayout"
             isButton={true}
-            image={project.image}
-            cardData={project.description}
+            cardData={project}
           />
         </div>
+
+
+        <div className="container mx-auto pb-10">
+          <PropertyCard data={project} />
+        </div>
+
+        {/* Zenith development */}
+
+        {/* Overview */}
 
         {/* Location */}
         <FeatureSection

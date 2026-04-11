@@ -38,6 +38,10 @@ type ContentSectionProps = {
   txtBold?: boolean;
   isButton?: boolean;
   image: StaticImageData | string;
+  price?: string;
+  units?: string;
+  area?: string;
+  cardDescription?: string;
 };
 
 const Content: React.FC<ContentSectionProps> = ({
@@ -46,6 +50,10 @@ const Content: React.FC<ContentSectionProps> = ({
   theme = "normal",
   isButton = false,
   image,
+  price,
+  units,
+  area,
+  cardDescription,
 }) => {
   const imageOrder =
     layout === "reversed"
@@ -63,57 +71,75 @@ const Content: React.FC<ContentSectionProps> = ({
 
   // IMAGE LAYOUT (ABOUT SECTION)
   if (layout === "imageLayout") {
-    return (
-      <section className="flex flex-col gap-12 md:gap-16">
-        <div className="max-w-7xl mx-auto px-6 pt-8 sm:pt-16 flex flex-col md:flex-row gap-8 items-stretch">
-          
-          {/* Image */}
-          <div
-            className={`flex-shrink-0 w-full md:w-1/2 h-full ${imageOrder}`}
-          >
-            <Image
-              className="w-full h-full rounded-lg object-cover"
-              src={image}
-              alt="About us image"
-              width={550}
-              height={488}
-              priority
-            />
-          </div>
-
-          {/* Text */}
-          <div
-            className={`w-full md:w-1/2 h-full flex flex-col justify-center ${textOrder}`}
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <h1
-                id="about-heading"
-                className="text-xl font-corbert md:text-2xl tracking-wide text-[#212121]"
-              >
-                {cardData}
-              </h1>
-
-              {/* Gradient Line */}
-              <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r md:bg-gradient-to-l from-black/50 to-transparent"></div>
-            </div>
-
-            {/* Button */}
-            {isButton && (
-              <div className="pt-8">
-                <button
-                  aria-label="Contact us now"
-                  className="w-full sm:w-[220px] h-[48px] rounded-md px-6 py-3 font-medium text-black 
-                  bg-gradient-to-b from-[#fdf094] to-[#b77d2b] hover:opacity-90 transition cursor-pointer"
-                >
-                  Contact Now
-                </button>
-              </div>
-            )}
-          </div>
+  return (
+    <section className="flex flex-col gap-12 md:gap-16">
+      <div className="max-w-7xl mx-auto px-6 pt-8 sm:pt-16 flex flex-col md:flex-row gap-8 items-stretch min-h-[300px] md:min-h-[420px]">
+        
+        {/* Image */}
+        <div
+          className={`flex-shrink-0 w-full md:w-1/2 relative ${imageOrder}`}
+        >
+          <Image
+            src={image}
+            alt="About us image"
+            fill
+            className="object-cover rounded-lg"
+            priority
+          />
         </div>
-      </section>
-    );
-  }
+
+        {/* Text */}
+        <div
+          className={`w-full md:w-1/2 flex flex-col justify-center ${textOrder}`}
+        >
+          <div className="flex flex-col items-center md:items-start gap-3 mb-6 text-center md:text-left">
+
+            {/* Title */}
+            <h1
+              id="about-heading"
+              className="text-xl md:text-2xl font-corbert tracking-wide text-[#212121]"
+            >
+              {cardData}
+            </h1>
+
+            <p className="text-base md:text-lg text-[#212121]">
+              {cardDescription}
+            </p>
+
+            {/* Details */}
+            <div className="flex flex-col gap-2">
+              <p className="text-base md:text-2xl font-bold text-[#CEA44E]">
+                {"Price : "} {price}
+              </p>
+
+              <ul className="list-disc pl-5 text-left">
+                <li className="text-base md:text-md text-[#212121]">
+                  {units}
+                </li>
+                <li className="text-base md:text-md text-[#212121]">
+                  {area}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Button */}
+          {isButton && (
+            <div className="pt-6">
+              <button
+                aria-label="Contact us now"
+                className="w-full sm:w-[220px] h-[48px] rounded-md px-6 py-3 font-medium text-black 
+                bg-gradient-to-b from-[#fdf094] to-[#b77d2b] hover:opacity-90 transition cursor-pointer"
+              >
+                Contact Now
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
 
   return null;
 };

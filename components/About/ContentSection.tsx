@@ -27,6 +27,9 @@ type AboutCardData = {
   imageAlt: string;
   highlightedText?: string;
   btnTxt?: string;
+  image?: string | StaticImageData;
+  description?: string;
+
 };
 
 type ContentSectionProps = {
@@ -66,17 +69,20 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           <div className="flex-shrink-0 w-full md:w-1/2 h-[260px] md:h-[420px] relative">
             <Image
               className="object-cover rounded-xs"
-              src={cardData.imageSrc}
-              alt={cardData.imageAlt}
+              src={cardData.imageSrc || cardData.image || "/fallback.jpg"}
+              alt={cardData.imageAlt || "Image"}
               fill
               priority
             />
           </div>
 
           <div className="w-full md:w-1/2">
+            {cardData.description && (
+              <h2 className="md:text-4xl text-black mb-2">Overview</h2>
+            )}
             <div className="flex items-center gap-4 mb-6">
-              <h1 className="text-3xl font-corbert md:text-4xl font-bold tracking-wide text-[#212121]">
-                {cardData.title}
+              <h1 className="text-3xl font-corbert md:text-3xl tracking-wide text-[#212121]">
+                {cardData.title} {cardData.description}
               </h1>
               <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r md:bg-gradient-to-l from-black/50 to-transparent"></div>
             </div>
