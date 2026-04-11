@@ -15,7 +15,7 @@ export default function StatsSection() {
           <div
           key={idx}
           className="flex flex-col items-center justify-center relative px-8"
-        >
+          >
           {/* Vertical line */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-[1px] bg-gradient-to-b from-[#FDF094] to-[#B77D2B]" />
           <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">

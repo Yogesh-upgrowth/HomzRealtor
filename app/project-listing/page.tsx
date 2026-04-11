@@ -8,6 +8,7 @@ import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
 import devImg from "@/public/totalUnit.svg";
 import { slugify } from "@/components/utils/slugify";
+import customer from "@/assets/images/customer.png";
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -159,7 +160,7 @@ const ProjectListing = () => {
       <div className="flex flex-col items-center gap-4 mb-6 mt-32">
         <div className="flex items-center gap-4 w-full justify-center">
           <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-black/50 to-transparent" />
-          <h1 className="text-2xl md:text-3xl text-black font-corbert tracking-widest">
+          <h1 className="text-2xl md:text-3xl text-black font-bold tracking-widest">
             Explore Homes
           </h1>
           <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-black/50 to-transparent" />
@@ -243,10 +244,10 @@ const ProjectListing = () => {
       {/* Banner */}
       <PromoBanner
         heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
-        text="Step into homes that resonate with your aspirations..."
+        text="\Step into homes that resonate with your aspirations. From timeless architecture to thoughtfully designed interiors, discover properties that elevate everyday living. Your perfect match is just a call away."
         buttonText="CONTACT NOW"
         buttonLink="/contact"
-        imageSrc="/appointmentBG.jpg"
+        imageSrc={customer}
       />
     </div>
   );
