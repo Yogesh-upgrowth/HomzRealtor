@@ -40,6 +40,7 @@ const SpecificationsSection: React.FC<SpecificationsSectionProps> = ({
         {specs.map((item, i) => (
           <SpecificationItem key={i} {...item} />
         ))}
+        
       </div>
     </div>
   );
