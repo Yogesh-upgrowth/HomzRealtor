@@ -26,7 +26,7 @@ const features: Feature[] = [
   { label: "Buy Property", href: "/", icon: propertyIcon },
   { label: "Rent Property", href: "/", icon: rentIcon },
   { label: "Plots & Land", href: "/", icon: plotLandIcon },
-  { label: "Projects", href: "/", icon: projectsIcon },
+  { label: "Projects", href: "/project-listing", icon: projectsIcon },
   { label: "Commercial", href: "/", icon: commercialIcon },
 ];
 
