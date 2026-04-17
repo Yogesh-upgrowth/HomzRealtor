@@ -131,7 +131,7 @@ const Listing = () => {
   return (
     <>
       {/* ✅ HERO CAROUSEL */}
-      <div className="max-w-7xl mx-auto mt-36">
+      <div className="max-w-7xl mx-auto mt-36 px-2">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 items-stretch">
           {/* Carousel - 75% */}
           <div className="lg:col-span-3 h-full">
@@ -147,7 +147,7 @@ const Listing = () => {
           </div>
         </div>
 
-        <div className="my-20">
+        <div className="my-20 px-2">
           <AboutProject title={project.projectTitle} description={project.aboutProject} />
         </div>
 
@@ -170,7 +170,7 @@ const Listing = () => {
       /> */}
 
       {/* Pricing */}
-      <div>
+      <div className="px-2">
         <ProjectSection
           title={`${project?.projectTitle || "Project"} PRICING`}
           variant="pricing"
@@ -181,19 +181,19 @@ const Listing = () => {
         />
       </div>
 
-      <div>
+      <div className="px-2">
         <RecentUpdates title={project.projectTitle} updates={project.recentUpdates || []} />
       </div>
 
-      <div>
+      <div className="px-2">
         <MasterPlan title={project.projectTitle} image={project.masterPlan.image || ""} description={project.masterPlan.content || "No master plan description available."} />
       </div>
 
-      <div className="max-w-7xl mx-auto my-10">
+      <div className="max-w-7xl px-2 mx-auto my-10">
         <Amenities data={project.amenities || []} />
       </div>
 
-      <div className="max-w-7xl mx-auto my-10">
+      <div className="max-w-7xl px-2 mx-auto my-10">
         <LandmarksTable title={project.projectTitle} data={project.landmarks} />
       </div>
 
