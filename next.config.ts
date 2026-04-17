@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    domains: ['loangateway.urbanmoney.com'],
     remotePatterns: [
       {
         protocol: "https",

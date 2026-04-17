@@ -20,10 +20,7 @@ const useIsMobile = (breakpoint = 768) => {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [breakpoint]);
 
   return isMobile;
@@ -43,14 +40,30 @@ const ProjectListing = () => {
   const currentProjects = projects.slice(startIndex, endIndex);
   const totalPages = Math.ceil(projects.length / cardsPerPage);
 
-  // ✅ Mobile Pagination Logic (only 4 pages)
+  // ✅ Helpers
+  const getValidImage = (images: string[] = []) => {
+    return images.find(
+      (url) =>
+        typeof url === "string" &&
+        /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
+    );
+  };
+
+  const hasValidImage = (images: string[] = []) => {
+    return images.some(
+      (url) =>
+        typeof url === "string" &&
+        /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
+    );
+  };
+
+  // ✅ Pagination
   const getVisiblePages = () => {
     if (!isMobile) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
     const maxVisible = 4;
-
     let start = currentPage;
     let end = currentPage + maxVisible - 1;
 
@@ -59,12 +72,7 @@ const ProjectListing = () => {
       start = Math.max(end - maxVisible + 1, 1);
     }
 
-    const pages = [];
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   useEffect(() => {
@@ -77,41 +85,69 @@ const ProjectListing = () => {
       try {
         let finalData: any[] = [];
 
-        const fetchCityData = async (cityKey: string, limit = 200) => {
-          const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
-          const res = await fetch(url);
+        const fetchCityData = async (key: string, limit = 20) => {
+          const res = await fetch(
+            `https://homzbackend.vercel.app/api/data?city=${key}&page=1&limit=${limit}`
+          );
           const data = await res.json();
           return data?.results || [];
         };
 
+        const cityKeyMap: any = {
+          gurgaon: "ggn",
+          delhi: "delhi",
+          faridabad: "faridabad",
+          greaternoida: "gNoida",
+          noida: "noida",
+        };
+
+        // 🔥 ALL cities
         if (selectedCity === "all") {
-          const cities = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
+          const bases = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
 
-          const promises = cities.flatMap((city) => [
-            fetchCityData(`${city}CommercialProjects`, 10),
-            fetchCityData(`${city}ResidentialProjects`, 10),
-          ]);
-
-          const results = await Promise.all(promises);
-          finalData = results.flat();
-        } else {
-          const cityKeyMap: any = {
-            gurgaon: "ggn",
-            delhi: "delhi",
-            faridabad: "faridabad",
-            greaternoida: "gNoida",
-            noida: "noida",
-          };
-
-          const base = cityKeyMap[selectedCity];
-
-          const [commercial, residential] = await Promise.all([
+          const promises = bases.flatMap((base) => [
             fetchCityData(`${base}CommercialProjects`),
             fetchCityData(`${base}ResidentialProjects`),
           ]);
 
-          finalData = [...commercial, ...residential];
+          const results = await Promise.all(promises);
+
+          // ✅ attach city properly
+          finalData = results.flatMap((arr, index) => {
+            const baseIndex = Math.floor(index / 2);
+            const city = bases[baseIndex];
+
+            return arr.map((item: any) => ({
+              ...item,
+              city,
+            }));
+          });
+        } else {
+          const base = cityKeyMap[selectedCity];
+
+          if (!base) return;
+
+          const keys = [
+            `${base}CommercialProjects`,
+            `${base}ResidentialProjects`,
+          ];
+
+          const results = await Promise.all(
+            keys.map((key) => fetchCityData(key))
+          );
+
+          finalData = results.flat().map((item: any) => ({
+            ...item,
+            city: base,
+          }));
         }
+
+        // ✅ Sort: images first
+        finalData.sort((a, b) => {
+          const aHas = hasValidImage(a.images);
+          const bHas = hasValidImage(b.images);
+          return Number(bHas) - Number(aHas);
+        });
 
         setProjects(finalData);
       } catch (error) {
@@ -122,45 +158,45 @@ const ProjectListing = () => {
     fetchData();
   }, [selectedCity]);
 
-  // ✅ Transform API → Card Props
+  // ✅ Format for card
   const formatProject = (project: any) => ({
-    imgUrl: project.image,
-    location: project.location,
-    reranumber: "N/A",
-    title: project.name,
+    imgUrl: getValidImage(project.images) || "/fallback.jpg",
+    location: project.location || "N/A",
+    reranumber: project.reraId || "N/A",
+    title: project.projectTitle || "Untitled Project",
     btntag: project.price || "View Details",
     specifications: [
       {
         icon: areaImg,
         label: "Area",
-        value: project.totalArea || "N/A",
+        value: project.size || "N/A",
       },
       {
         icon: unitImg,
-        label: "Units",
-        value: project.noOfUnits || "N/A",
+        label: "Type",
+        value: project.BHKType || "Retail",
       },
       {
         icon: statusImg,
-        label: "Status",
-        value: project.projectStatus || "N/A",
+        label: "RERA",
+        value: project.reraId || "N/A",
       },
       {
         icon: devImg,
         label: "Developer",
-        value: project.developer || "N/A",
+        value: "N/A",
       },
     ],
   });
 
   return (
-    <div className="max-w-2xl md:max-w-7xl px-4 md:px-0 mx-auto mt-10">
+    <div className="max-w-2xl md:max-w-7xl text-black px-4 md:px-0 mx-auto mt-10">
 
       {/* Title + Dropdown */}
       <div className="flex flex-col items-center gap-4 mb-6 mt-32">
         <div className="flex items-center gap-4 w-full justify-center">
           <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-black/50 to-transparent" />
-          <h1 className="text-2xl md:text-3xl text-black font-bold tracking-widest">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-widest">
             Explore Homes
           </h1>
           <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-black/50 to-transparent" />
@@ -174,7 +210,7 @@ const ProjectListing = () => {
               setSelectedCity(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full appearance-none bg-white border border-gray-300 text-black px-4 py-2 pr-10 rounded-lg shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-black transition"
+            className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
           >
             <option value="all">All</option>
             <option value="gurgaon">Gurgaon</option>
@@ -183,10 +219,6 @@ const ProjectListing = () => {
             <option value="greaternoida">Greater Noida</option>
             <option value="noida">Noida</option>
           </select>
-
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-black">
-            ▼
-          </div>
         </div>
       </div>
 
@@ -194,7 +226,12 @@ const ProjectListing = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
         {currentProjects.length > 0 ? (
           currentProjects.map((project: any, index: number) => (
-            <Link key={index} href={`/project-listing/${slugify(project.name)}`}>
+            <Link
+              key={index}
+              href={`/project-listing/${project.city}/${slugify(
+                project?.projectTitle || "project"
+              )}`}
+            >
               <HomesCard {...formatProject(project)} />
             </Link>
           ))
@@ -203,39 +240,36 @@ const ProjectListing = () => {
         )}
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
-        {/* Prev */}
         <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-2 disabled:opacity-30 text-[#CEA44E] font-bold"
+          className="px-3 py-2 text-[#CEA44E] font-bold disabled:opacity-30"
         >
           ‹
         </button>
 
-        {/* Pages */}
-        {getVisiblePages().map((pageNumber) => (
+        {getVisiblePages().map((p) => (
           <button
-            key={pageNumber}
-            onClick={() => setCurrentPage(pageNumber)}
+            key={p}
+            onClick={() => setCurrentPage(p)}
             className={`px-3 py-2 rounded-md ${
-              currentPage === pageNumber
+              currentPage === p
                 ? "bg-[#CEA44E] text-black"
                 : "bg-black text-white"
             }`}
           >
-            {pageNumber}
+            {p}
           </button>
         ))}
 
-        {/* Next */}
         <button
           onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            setCurrentPage((p) => Math.min(p + 1, totalPages))
           }
           disabled={currentPage === totalPages}
-          className="px-3 py-2 disabled:opacity-30 text-[#CEA44E] font-bold"
+          className="px-3 py-2 text-[#CEA44E] font-bold disabled:opacity-30"
         >
           ›
         </button>
@@ -244,7 +278,7 @@ const ProjectListing = () => {
       {/* Banner */}
       <PromoBanner
         heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
-        text="\Step into homes that resonate with your aspirations. From timeless architecture to thoughtfully designed interiors, discover properties that elevate everyday living. Your perfect match is just a call away."
+        text="Step into homes that resonate with your aspirations."
         buttonText="CONTACT NOW"
         buttonLink="/contact"
         imageSrc={customer}
