@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 
 export type DetailItem = {
   icon: StaticImageData | string;
@@ -7,11 +10,11 @@ export type DetailItem = {
   value: string;
 };
 
-// For the 'pricing' variant table rows
 export type PriceRow = {
   id: number | string;
-  configuration: string;
+  bhkType: string;
   size: string;
+  price: string;
 };
 
 export interface ProjectSectionProps {
@@ -21,6 +24,8 @@ export interface ProjectSectionProps {
   description?: string;
   subtitle?: string;
   priceList?: PriceRow[];
+  city?: string;
+  slug?: string;
 }
 
 const ProjectSection: React.FC<ProjectSectionProps> = ({
@@ -30,125 +35,127 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
   description,
   subtitle,
   priceList,
+  city = "",
+  slug = "",
 }) => {
   const isDetailsVariant = variant === "details";
 
-  // Section-level styles
   const sectionClasses = isDetailsVariant ? "bg-black text-white" : "bg-white";
 
-  // Title-specific styles
   const titleClasses = isDetailsVariant
-    ? `
-    bg-gradient-to-b from-[#FDF094] to-[#B77D2B]
-    text-transparent bg-clip-text inline-block
-    md:bg-none md:text-white md:text-opacity-100
-  `
-    : `
-    bg-gradient-to-b from-[#FDF094] to-[#B77D2B]
-    text-transparent bg-clip-text inline-block
-    md:bg-none md:text-black md:text-opacity-100
-  `;
+    ? "md:text-white"
+    : "md:text-black";
 
-  // Decorative line styles
   const lineClasses = isDetailsVariant ? "bg-yellow-600/50" : "bg-gray-300";
 
   return (
     <section className={`py-16 px-4 sm:px-6 ${sectionClasses}`}>
-      {/* --- Title Header */}
+
+      {/* ===== Title ===== */}
       <div className="flex items-center justify-center gap-4 w-full mb-8">
-        {/* <div className={`flex-1 h-px ${lineClasses}`}></div> */}
-        <div
-          className={`hidden md:block md:w-[200px] h-px bg-gradient-to-r from-black/50 to-transparent ${lineClasses}`}
-        />
-        <h2
-          className={`
-      
-      text-lg md:text-2xl font-corbert tracking-widest text-center md:whitespace-nowrap
-      ${titleClasses}
-    `}
-        >
+        <div className={`hidden md:block md:w-[200px] h-px ${lineClasses}`} />
+        
+        <h2 className={`text-lg md:text-2xl font-bold tracking-widest text-center ${titleClasses}`}>
           {title}
         </h2>
-        <div
-          className={`hidden md:block md:w-[200px] h-px bg-gradient-to-l from-black/50 to-transparent ${lineClasses}`}
-        />
+
+        <div className={`hidden md:block md:w-[200px] h-px ${lineClasses}`} />
       </div>
 
-      {/* CONDITIONAL RENDERING: 'details' variant */}
+      {/* ===== DETAILS ===== */}
       {variant === "details" && (
         <div className="max-w-7xl mx-auto">
-          {/* Details Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-8">
-            {/* {detailsItems?.map((item, index) => (
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+            {detailsItems?.map((item, index) => (
               <div
                 key={index}
-                className="border border-yellow-600/50 rounded-sm flex flex-center p-2 gap-1 md:gap-3 flex-shrink-0 text-center bg-[#393939] md:bg-black"
+                className="border border-yellow-600/50 rounded-sm flex items-center p-3 gap-2 bg-[#393939] md:bg-black"
               >
                 <Image
                   src={item.icon}
                   alt={item.label}
                   width={40}
-                  height={50}
-                  className="w-[35px] h-[35px] md:w-[40px] md:h-[50px]"
+                  height={40}
                 />
-                <div className="flex flex-col justify-center">
-                  <p className="text-[12px] md:text-sm text-[#EEEEEE] mt-2 ">
-                    {item.label}
-                  </p>
-                  <p className="text-[11px] md:text-sm  font-semibold mt-1 text-[#CEA44E]">
+
+                <div>
+                  <p className="text-xs text-gray-300">{item.label}</p>
+                  <p className="text-sm font-semibold text-yellow-500">
                     {item.value}
                   </p>
                 </div>
               </div>
-            ))} */}
+            ))}
           </div>
 
-          {/* Description Paragraphs */}
-          <div className="space-y-4 text-gray-300 text-center text-[12px] md:text-[18px]">
-            {description && <p>{description}</p>}
-          </div>
+          {description && (
+            <p className="text-gray-300 text-center text-sm md:text-base">
+              {description}
+            </p>
+          )}
         </div>
       )}
 
-      {/* CONDITIONAL RENDERING: 'pricing' variant */}
+      {/* ===== PRICING ===== */}
       {variant === "pricing" && (
         <div className="max-w-7xl mx-auto">
-          {/* Subtitle */}
+
           {subtitle && (
-            <p className="text-center text-[#212121] mb-8">{subtitle}</p>
+            <p className="text-center text-gray-700 mb-6">{subtitle}</p>
           )}
 
-          {/* Pricing Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-yellow-600/80 text-white tex-[12px] md:text-[20px]">
+          <div className="overflow-x-auto border border-gray-300">
+            <table className="w-full border-collapse">
+
+              {/* Header */}
+              <thead className="bg-yellow-600 text-white">
                 <tr>
-                  <th className="p-3 text-center border-1 border-gray-100 ">
-                    Configuration
+                  <th className="p-3 text-center border border-white/30">
+                    Unit Type
                   </th>
-                  <th className="p-3 text-center border-1 border-gray-100">
-                    Size
+                  <th className="p-3 text-center border border-white/30">
+                    Price
                   </th>
-                  <th className="p-3 text-center">Price</th>
+                  <th className="p-3 text-center">
+                    Enquire
+                  </th>
                 </tr>
               </thead>
-              <tbody className="bg-black">
-                {priceList?.map((row) => (
-                  <tr key={row.id} className="border-2 border-gray-100 px-1">
-                    <td className="md:p-3 text-center border-1 border-gray-100 text-[10px] md:text-[16px]">
-                      {row.configuration}
-                    </td>
-                    <td className="md:p-3 text-center border-1 border-gray-100 text-[10px] md:text-[16px]">
-                      {row.size}
-                    </td>
-                    <td className="p-2 md:p-3 text-center">
-                      <button className="bg-white text-[#754E1A] text-[8.5px] md:text-[16px] px-1 md:px-4 py-1 md:py-2 rounded-sm hover:bg-gray-200 cursor-pointer">
-                        ENQUIRE NOW
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+
+              {/* Body */}
+              <tbody className="bg-black text-white">
+                {priceList?.map((row) => {
+                  const unit = `${row.bhkType} ${row.size}`;
+                  const price = row.price;
+
+                  return (
+                    <tr key={row.id} className="border-t border-gray-600">
+
+                      <td className="p-3 text-center border border-gray-700 text-xs md:text-base">
+                        {unit} sqft
+                      </td>
+
+                      <td className="p-3 text-center border border-gray-700 text-xs md:text-base">
+                        {price}
+                      </td>
+
+                      <td className="p-3 text-center">
+                        <Link
+                          href={`/project-listing/${city}/${slug}/enquire?unit=${encodeURIComponent(
+                            unit
+                          )}&price=${encodeURIComponent(price)}`}
+                          className="inline-block bg-white text-[#754E1A] text-xs md:text-sm px-3 py-1.5 rounded-sm hover:bg-gray-200 transition"
+                        >
+                          ENQUIRE NOW
+                        </Link>
+                      </td>
+
+                    </tr>
+                  );
+                })}
               </tbody>
+
             </table>
           </div>
         </div>

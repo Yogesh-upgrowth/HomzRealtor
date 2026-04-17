@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import getValidImage from "./utils/helper/getValidImage";
 
 // ✅ Mobile hook
 const useIsMobile = (breakpoint = 768) => {
@@ -45,7 +46,9 @@ export default function HotSelling() {
           const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
           const res = await fetch(url);
           const data = await res.json();
-          return data?.results || [];
+          return (data?.results || []).filter(
+            (item:any) => Array.isArray(item.images) && item.images.length > 0
+          );
         };
 
         if (selectedCity === "all") {
@@ -79,6 +82,7 @@ export default function HotSelling() {
 
         // ✅ Only keep top 3 (Hot Selling feel)
         setProjects(finalData.slice(0, 3));
+        console.log("Fetched projects for city:", selectedCity, finalData.slice(0, 3));
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -151,44 +155,41 @@ export default function HotSelling() {
         {/* ✅ Project Cards */}
         <div className="mt-10 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           {projects.length > 0 ? (
-            projects.map((p: any, index: number) => (
-              <div
-                key={index}
-                className="group overflow-hidden rounded-xs border-0 shadow-sm hover:shadow-lg transition"
-              >
-                <div className="relative h-60 w-full">
-                  <Image
-                    src={p.image}
-                    alt={p.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition"
-                  />
+            projects.map((p: any, index: number) => {
+              const image = getValidImage(p.images);
+
+              return (
+                <div
+                  key={index}
+                  className="group overflow-hidden rounded-xs shadow-sm hover:shadow-lg transition"
+                >
+                  <div className="relative h-60 w-full">
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={p.projectTitle}
+                        fill
+                        className="object-cover group-hover:scale-105 transition"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full bg-gray-200">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="py-4 pl-6 text-left">
+                    <h3 className="text-lg font-semibold text-gray-900 py-2">
+                      {p.projectTitle}
+                    </h3>
+
+                    <p className="text-purple-700 font-semibold">
+                      {p.price || "View Details"}
+                    </p>
+                  </div>
                 </div>
-
-                <div className="py-4 pl-6 text-left">
-                  <h3 className="text-lg font-semibold text-gray-900 py-2">
-                    {p.name}
-                  </h3>
-
-                  <p className="text-sm text-gray-600 py-1">
-                    {p.location || "N/A"}
-                  </p>
-
-                  <p className="mt-2 text-purple-700 font-semibold">
-                    {p.price || "View Details"}
-                  </p>
-
-                  <Link
-                    href={`/project-listing/${p.name
-                      ?.toLowerCase()
-                      .replace(/\s+/g, "-")}`}
-                    className="mt-3 inline-flex items-center text-sm text-gray-900 font-medium hover:underline"
-                  >
-                    Read more <span className="ml-1">›</span>
-                  </Link>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="col-span-3 text-center">Loading projects...</p>
           )}
