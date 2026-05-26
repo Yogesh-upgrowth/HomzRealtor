@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ["*.replit.dev", "*.sisko.replit.dev", "*.repl.co"],
   images: {
     remotePatterns: [
       {
