@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useContext } from "react";
+import { toast } from "sonner";
 import { FormContext } from "@/context/FormContext";
 
 type FormState = {
@@ -12,7 +13,6 @@ type FormState = {
 };
 
 export default function FormComponent({
-  onSubmit,
   initial,
 }: {
   onClose?: () => void;
@@ -29,27 +29,65 @@ export default function FormComponent({
     terms: initial?.terms ?? false,
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) onSubmit(form);
-    else console.log("Form submitted:", form);
+
+    if (!form.terms) {
+      toast.error("Please accept the terms");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Form submitted successfully!");
+
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          pan: "",
+          terms: false,
+        });
+
+        closeForm();
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    // 🔥 Fullscreen overlay
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-2 sm:px-4">
-      
-      {/* Container */}
       <div className="bg-[#1c1c1c] text-white rounded-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto flex flex-col md:flex-row gap-6 md:gap-10 p-4 sm:p-6 md:p-18 relative">
 
         {/* Close Button */}
@@ -66,7 +104,6 @@ export default function FormComponent({
             GET A CIBIL LINKED HOME LOAN ESTIMATE
           </h2>
 
-          {/* Hide heavy content on mobile */}
           <div className="hidden md:block space-y-5 text-sm text-gray-300">
             <div>
               <p className="font-semibold text-lg">🏠 EXCLUSIVE LOCATION</p>
@@ -90,12 +127,12 @@ export default function FormComponent({
             </div>
           </div>
 
-          {/* Stats */}
           <div className="hidden md:grid grid-cols-2 gap-6 mt-8 text-yellow-400 text-sm">
             <div>
               <p className="text-xl font-bold">25500+</p>
               <p className="text-gray-300 text-xs">Happy Customers</p>
             </div>
+
             <div>
               <p className="text-xl font-bold">45 Million Sq.Ft.</p>
               <p className="text-gray-300 text-xs">Area Sold</p>
@@ -114,6 +151,7 @@ export default function FormComponent({
             placeholder="Name"
             value={form.name}
             onChange={handleChange}
+            required
             className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
           />
 
@@ -123,6 +161,7 @@ export default function FormComponent({
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            required
             className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
           />
 
@@ -132,6 +171,7 @@ export default function FormComponent({
             placeholder="Phone Number"
             value={form.phone}
             onChange={handleChange}
+            required
             className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
           />
 
@@ -141,6 +181,7 @@ export default function FormComponent({
             placeholder="PAN Number"
             value={form.pan}
             onChange={handleChange}
+            required
             className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
           />
 
@@ -152,16 +193,19 @@ export default function FormComponent({
               onChange={handleChange}
               className="mt-1 accent-yellow-400"
             />
+
             <span>
-              I accept the <span className="text-yellow-400">Terms</span>.
+              I accept the{" "}
+              <span className="text-yellow-400">Terms</span>.
             </span>
           </label>
 
           <button
             type="submit"
-            className="mt-2 p-3 rounded-md bg-white text-black font-semibold"
+            disabled={loading}
+            className="mt-2 p-3 rounded-md bg-white text-black font-semibold disabled:opacity-50"
           >
-            Submit
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </form>
       </div>
