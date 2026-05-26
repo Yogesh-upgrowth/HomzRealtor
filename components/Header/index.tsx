@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8 text-white">
             <Link href="/">Home</Link>
-            <Link href="/about-us">About Us</Link>
+            <Link href="/about-us">About us</Link>
             <Link href="/project-listing">Properties</Link>
           </div>
 
@@ -122,7 +122,7 @@ const Navbar: React.FC = () => {
             Home
           </Link>
           <Link href="/about-us" onClick={() => setIsMobileMenuOpen(false)}>
-            About Us
+            About us
           </Link>
           <Link
             href="/project-listing"
