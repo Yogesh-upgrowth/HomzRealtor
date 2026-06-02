@@ -166,7 +166,7 @@ export default function Hero({
                 </span>
               </h1>
 
-              <p className="mx-auto mt-3 md:mt-5 max-w-3xl text-sm md:text-base text-gray-200/90">
+              <p className="mx-auto mt-3 md:mt-5 max-w-3xl md:text-base text-gray-200/90 text-[18px]">
                 Buy, Rent, or Sell—discover verified listings, expert guidance,
                 and properties that feel like home.
               </p>
@@ -190,7 +190,7 @@ export default function Hero({
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center justify-center md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
+                      className="group relative flex items-center justify-center md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px] ml-[0px] mr-[0px]"
                     >
                       <span className="absolute left-4 md:static grid place-items-center rounded-sm text-amber-300 shrink-0">
                         <Image
