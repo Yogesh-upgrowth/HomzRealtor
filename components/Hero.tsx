@@ -156,7 +156,7 @@ export default function Hero({
             </div>
 
             {/* Content — flex column centred vertically */}
-            <div className="h-full flex flex-col justify-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-20 pb-6 md:pt-0 md:pb-0 text-center">
+            <div className="h-full flex flex-col justify-center items-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-20 pb-6 md:pt-0 md:pb-0 text-center w-full">
               <h1 className="text-[clamp(1.25rem,5vw,3.75rem)] font-normal tracking-wide leading-tight">
                 <span className="block font-sans">
                   HOMES YOU CAN TRUST, IN THE
