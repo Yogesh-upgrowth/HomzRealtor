@@ -178,7 +178,7 @@ export default function Hero({
               <div className="mt-6 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-md md:w-auto"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-lg md:w-[420px]"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
