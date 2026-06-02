@@ -156,7 +156,7 @@ export default function Hero({
             </div>
 
             {/* Content — flex column centred vertically */}
-            <div className="h-full flex flex-col justify-center items-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-20 pb-6 md:pt-0 md:pb-0 text-center w-full">
+            <div className="h-full flex flex-col justify-start md:justify-center items-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-8 md:pt-0 md:pb-0 text-center w-full">
               <h1 className="text-[clamp(1.25rem,5vw,3.75rem)] font-normal tracking-wide leading-tight">
                 <span className="block font-sans">
                   HOMES YOU CAN TRUST, IN THE
@@ -178,7 +178,7 @@ export default function Hero({
               <div className="mt-6 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-sm md:w-auto"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-10 py-5 text-base md:text-lg font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-sm md:w-auto"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
