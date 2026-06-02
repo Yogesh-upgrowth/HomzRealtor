@@ -175,22 +175,22 @@ export default function Hero({
               <div className="flex flex-col items-center">
 
               {/* CTA */}
-              <div className="mt-5 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
+              <div className="mt-6 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center rounded-md bg-white px-8 py-3 md:py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-xs md:w-auto"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-sm md:w-auto"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
 
               {/* Grid */}
-              <div className="mt-4 md:mt-8 w-full px-0 flex flex-col md:grid md:max-w-[1544px] md:grid-cols-5 gap-2 md:gap-4 items-center order-2 md:order-1">
+              <div className="mt-5 md:mt-8 w-full max-w-sm md:max-w-[1544px] flex flex-col md:grid md:grid-cols-5 gap-3 md:gap-4 items-center order-2 md:order-1">
                 {features.map((f) => (
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center gap-3 rounded-sm border border-amber-200 px-4 py-3 transition bg-black/40 hover:bg-black/50 w-full h-[56px] md:h-[65px]"
+                      className="group relative flex items-center gap-4 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
                     >
                       <span className="grid place-items-center rounded-sm text-amber-300 shrink-0">
                         <Image
@@ -200,7 +200,7 @@ export default function Hero({
                           height={28}
                         />
                       </span>
-                      <span className="text-sm md:text-base font-semibold whitespace-nowrap">{f.label}</span>
+                      <span className="text-base font-semibold whitespace-nowrap">{f.label}</span>
                     </Link>
                 ))}
               </div>
