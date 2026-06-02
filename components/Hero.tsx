@@ -190,9 +190,9 @@ export default function Hero({
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center justify-center md:justify-start md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
+                      className="group relative flex items-center justify-center md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
                     >
-                      <span className="absolute left-5 md:static grid place-items-center rounded-sm text-amber-300 shrink-0">
+                      <span className="absolute left-4 md:static grid place-items-center rounded-sm text-amber-300 shrink-0">
                         <Image
                           src={f.icon}
                           alt="image"
