@@ -172,25 +172,25 @@ export default function Hero({
               </p>
 
               {/* Feature cards */}
-              <div className="flex flex-col">
+              <div className="flex flex-col items-center">
 
               {/* CTA */}
-              <div className="md:mt-6 mt-14 order-1 md:order-2">
+              <div className="mt-8 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center md:mb-15 rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer"
+                  className="inline-flex items-center md:mb-15 rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-xs md:w-auto"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
 
               {/* Grid */}
-              <div className="mx-auto mt-10 grid w-full max-w-[1544px] grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 justify-items-center order-2 md:order-1">
+              <div className="mt-6 w-full px-4 md:px-0 flex flex-col md:grid md:max-w-[1544px] md:grid-cols-5 gap-3 md:gap-6 items-center order-2 md:order-1">
                 {features.map((f) => (
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 transition bg-black/30 opacity-100 w-full max-w-[238px] h-[60px] md:h-[65px]"
+                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-5 py-4 transition bg-black/40 hover:bg-black/50 w-full md:max-w-[238px] h-[65px] md:h-[65px]"
                     >
                       <div className="flex items-center gap-4">
                         <span className="grid place-items-center rounded-sm text-amber-300">
