@@ -139,11 +139,11 @@ export default function Hero({
   return (
     <>
       {variant === "default" ? (
-        <main className="min-h-screen bg-black text-white">
+        <main className="bg-black text-white">
           {/* HERO */}
-          <section className="relative isolate overflow-hidden  bg-white">
+          <section className="relative isolate overflow-hidden h-screen bg-white">
             {/* Background image */}
-            <div className="absolute inset-0 -z-10 rounded-b-5xl border-amber-50">
+            <div className="absolute inset-0 -z-10">
               <Image
                 src={herobg}
                 alt="Modern city apartments"
@@ -155,18 +155,18 @@ export default function Hero({
               <div className="absolute inset-0 bg-black/55" />
             </div>
 
-            {/* Content */}
-            <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-20 md:pb-28 text-center md:translate-y-40">
-              <h1 className="text-2xl sm:text-3xl md:text-6xl font-normal tracking-wide leading-tight md:pt-10">
+            {/* Content — flex column centred vertically */}
+            <div className="h-full flex flex-col justify-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-20 pb-6 md:pt-0 md:pb-0 text-center">
+              <h1 className="text-[clamp(1.25rem,5vw,3.75rem)] font-normal tracking-wide leading-tight">
                 <span className="block font-sans">
                   HOMES YOU CAN TRUST, IN THE
                 </span>
-                <span className="mt-2 block  font-sans bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
+                <span className="block font-sans bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
                   CITY YOU LOVE.
                 </span>
               </h1>
 
-              <p className="mx-auto mt-5 max-w-3xl text-gray-200/90">
+              <p className="mx-auto mt-3 md:mt-5 max-w-3xl text-sm md:text-base text-gray-200/90">
                 Buy, Rent, or Sell—discover verified listings, expert guidance,
                 and properties that feel like home.
               </p>
@@ -175,34 +175,32 @@ export default function Hero({
               <div className="flex flex-col items-center">
 
               {/* CTA */}
-              <div className="mt-8 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
+              <div className="mt-5 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center md:mb-15 rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-xs md:w-auto"
+                  className="inline-flex items-center rounded-md bg-white px-8 py-3 md:py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-xs md:w-auto"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
 
               {/* Grid */}
-              <div className="mt-6 w-full px-4 md:px-0 flex flex-col md:grid md:max-w-[1544px] md:grid-cols-5 gap-3 md:gap-6 items-center order-2 md:order-1">
+              <div className="mt-4 md:mt-8 w-full px-0 flex flex-col md:grid md:max-w-[1544px] md:grid-cols-5 gap-2 md:gap-4 items-center order-2 md:order-1">
                 {features.map((f) => (
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-5 py-4 transition bg-black/40 hover:bg-black/50 w-full md:max-w-[238px] h-[65px] md:h-[65px]"
+                      className="group relative flex items-center gap-3 rounded-sm border border-amber-200 px-4 py-3 transition bg-black/40 hover:bg-black/50 w-full h-[56px] md:h-[65px]"
                     >
-                      <div className="flex items-center gap-4">
-                        <span className="grid place-items-center rounded-sm text-amber-300">
-                          <Image
-                            src={f.icon}
-                            alt="image"
-                            width={32}
-                            height={32}
-                          />
-                        </span>
-                        <span className="text-md font-semibold">{f.label}</span>
-                      </div>
+                      <span className="grid place-items-center rounded-sm text-amber-300 shrink-0">
+                        <Image
+                          src={f.icon}
+                          alt="image"
+                          width={28}
+                          height={28}
+                        />
+                      </span>
+                      <span className="text-sm md:text-base font-semibold whitespace-nowrap">{f.label}</span>
                     </Link>
                 ))}
               </div>
