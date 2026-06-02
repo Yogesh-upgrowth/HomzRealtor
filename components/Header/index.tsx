@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className={`w-full transition-all duration-300 ${navBackgroundClass}`}>
+      <div className={`w-full transition-all duration-300 border-b border-white/25 ${navBackgroundClass}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4">
           {/* Logo */}
           <Link href="/">

@@ -141,7 +141,7 @@ export default function Hero({
       {variant === "default" ? (
         <main className="bg-black text-white">
           {/* HERO */}
-          <section className="relative isolate overflow-hidden h-screen bg-white">
+          <section className="relative isolate overflow-hidden h-screen rounded-b-3xl border-x border-b border-white/25 bg-white">
             {/* Background image */}
             <div className="absolute inset-0 -z-10">
               <Image
@@ -178,21 +178,21 @@ export default function Hero({
               <div className="mt-6 md:mt-6 order-1 md:order-2 w-full md:w-auto flex justify-center">
                 <button
                   onClick={openForm}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-10 py-5 text-base md:text-lg font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-sm md:w-auto"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-md md:w-auto"
                 >
                   TALK TO A LOCAL EXPERT
                 </button>
               </div>
 
               {/* Grid */}
-              <div className="mt-5 md:mt-8 w-full max-w-sm md:max-w-[1544px] flex flex-col md:grid md:grid-cols-5 gap-3 md:gap-4 items-center order-2 md:order-1">
+              <div className="mt-5 md:mt-8 w-full max-w-xs md:max-w-[1544px] flex flex-col md:grid md:grid-cols-5 gap-3 md:gap-4 items-center order-2 md:order-1">
                 {features.map((f) => (
                   <Link
                       key={f.label}
                       href={f.href}
-                      className="group relative flex items-center gap-4 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
+                      className="group relative flex items-center justify-center md:justify-start md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px]"
                     >
-                      <span className="grid place-items-center rounded-sm text-amber-300 shrink-0">
+                      <span className="absolute left-5 md:static grid place-items-center rounded-sm text-amber-300 shrink-0">
                         <Image
                           src={f.icon}
                           alt="image"
