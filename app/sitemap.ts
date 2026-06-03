@@ -35,19 +35,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   )
 
+  
   // ✅ Remove duplicates
+  console.log(
+    allProjects.filter(
+      (item) => !item?.projectTitle || typeof item.projectTitle !== 'string'
+    )
+  )
   const uniqueProjects = Array.from(
     new Map(
       allProjects.map((item) => [
-        item.name.toLowerCase().replace(/\s+/g, '-'),
+        item.projectTitle.toLowerCase().replace(/\s+/g, '-'),
         item,
       ])
     ).values()
   )
 
+
   // ✅ Dynamic URLs
   const projectUrls = uniqueProjects.map((item: any) => {
-    const slug = item.name
+    const slug = item.projectTitle
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')

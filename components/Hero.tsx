@@ -175,7 +175,7 @@ export default function Hero({
               <div className="flex flex-col">
 
               {/* CTA */}
-              <div className="md:mt-6 mt-14 order-1 md:order-2">
+              <div className="md:mt-16 mt-14 order-1 md:order-2">
                 <button
                   onClick={openForm}
                   className="inline-flex items-center md:mb-15 rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer"
