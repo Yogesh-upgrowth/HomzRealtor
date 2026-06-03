@@ -10,10 +10,7 @@ import BuilderDescription from "@/components/Project/BuilderDescription";
 import RecentUpdates from "@/components/Project/RecentUpdates";
 import MasterPlan from "@/components/Project/MasterPlan";
 import Amenities from "@/components/Project/Amenities";
-
-// ✅ slugify helper
-const slugify = (text: string) =>
-  text?.toLowerCase().replace(/\s+/g, "-");
+import { slugify } from "@/components/utils/slugify";
 
 // ✅ filter ONLY valid image URLs
 const getValidImages = (images: string[] = []): string[] => {
@@ -153,7 +150,7 @@ const ProjectClient = ({ city, slug }: Props) => {
       </div>
 
       <div className="px-2">
-        <MasterPlan title={project.projectTitle} image={project.masterPlan.image || ""} description={project.masterPlan.content || "No master plan description available."} />
+        <MasterPlan title={project.projectTitle} image={project.masterPlan?.image || ""} description={project.masterPlan?.content || "No master plan description available."} />
       </div>
 
       <div className="max-w-7xl px-2 mx-auto my-10">

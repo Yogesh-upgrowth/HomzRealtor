@@ -188,6 +188,22 @@ async function processOne(raw, cityKey, category, enrich, ai) {
       } catch (e) {
         log(`    geo error for ${norm.project_name}: ${e.message}`);
       }
+    } else if (!NO_GOOGLE && latitude != null) {
+      // Already geocoded on a prior run: rebuild connectivity only if it is
+      // missing (e.g. a partial failure left lat/lng but no connectivity rows).
+      try {
+        const { rows: cc } = await client.query(
+          `SELECT longitude, (SELECT count(*) FROM project_connectivity WHERE project_id=$1) AS n FROM projects WHERE id=$1`,
+          [id],
+        );
+        const lng = cc[0]?.longitude;
+        if (Number(cc[0]?.n || 0) === 0 && lng != null) {
+          connectivityRows = await enrich.buildConnectivity(cityKey, latitude, lng);
+          await replaceConnectivity(client, id, connectivityRows);
+        }
+      } catch (e) {
+        log(`    connectivity rebuild error for ${norm.project_name}: ${e.message}`);
+      }
     }
 
     if (!NO_AI && ai) {
@@ -261,7 +277,7 @@ async function main() {
       if (LIMIT) results = results.slice(0, LIMIT);
       if (results.length === 0) continue;
       log(`City ${cityKey} / ${cat.name}: ${results.length} projects`);
-      await runPool(results, 3, (raw) =>
+      await runPool(results, 6, (raw) =>
         processOne(raw, cityKey, cat.name, enrich, ai),
       );
       grand += results.length;

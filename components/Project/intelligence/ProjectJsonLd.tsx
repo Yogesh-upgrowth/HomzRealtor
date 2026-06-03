@@ -107,13 +107,23 @@ const ProjectJsonLd = ({ project, faq }: Props) => {
 
   const graphs = [listing, breadcrumb, faqLd].filter(Boolean);
 
+  // Escape characters that could break out of the <script> tag or the JSON
+  // string when serializing untrusted (API/AI-sourced) content.
+  const safeJson = (g: unknown) =>
+    JSON.stringify(g)
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026")
+      .replace(/\u2028/g, "\\u2028")
+      .replace(/\u2029/g, "\\u2029");
+
   return (
     <>
       {graphs.map((g, i) => (
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(g) }}
+          dangerouslySetInnerHTML={{ __html: safeJson(g) }}
         />
       ))}
     </>
