@@ -49,10 +49,10 @@ const Navbar: React.FC = () => {
 
   const navBackgroundClass =
     !isTransparentPage || isScrolled || isMobileMenuOpen
-      ? "bg-black border border-white"
+      ? "bg-black"
       : isScrolledPastTop
-      ? "bg-white/10 backdrop-blur-md border border-white"
-      : "bg-transparent border border-white";
+      ? "bg-white/10 backdrop-blur-md"
+      : "bg-transparent";
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50">
@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className={`w-full transition-all duration-300 ${navBackgroundClass}`}>
+      <div className={`w-full transition-all duration-300 border-b border-white/25 ${navBackgroundClass}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4">
           {/* Logo */}
           <Link href="/">
