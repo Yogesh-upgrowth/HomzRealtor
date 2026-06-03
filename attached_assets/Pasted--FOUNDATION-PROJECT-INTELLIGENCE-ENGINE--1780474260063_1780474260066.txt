@@ -1,0 +1,387 @@
+====================================================
+FOUNDATION: PROJECT INTELLIGENCE ENGINE
+=======================================
+
+CRITICAL ARCHITECTURE REQUIREMENT
+
+Before implementing any new content sections, build a centralized Project Intelligence Engine.
+
+This engine will become the single source of truth for every project page, sector page, builder page, comparison page, and future SEO landing page.
+
+NO CONTENT SHOULD BE HARDCODED.
+
+All content must be generated from structured project data.
+
+====================================================
+MASTER PROJECT SCHEMA
+=====================
+
+Create a normalized project schema.
+
+Example:
+
+{
+"project_id": "m3m-route-65",
+"project_name": "M3M Route 65",
+"slug": "m3m-route-65",
+"city": "Gurgaon",
+"micro_market": "Golf Course Extension Road",
+"sector": "Sector 65",
+"state": "Haryana",
+"builder": "M3M",
+"property_category": "Commercial",
+"property_sub_type": "Retail Shop",
+"project_status": "Under Construction",
+"rera_number": "GGM/XXX",
+"launch_date": "2024",
+"possession_date": "2027",
+"starting_price": 15800000,
+"max_price": 25900000,
+"min_size": 328,
+"max_size": 538,
+"land_area": 4,
+"latitude": "",
+"longitude": "",
+"amenities": [],
+"images": [],
+"brochure_url": "",
+"floor_plans": []
+}
+
+====================================================
+DERIVED DATA ENGINE
+===================
+
+Automatically derive:
+
+Builder Information
+
+Sector Information
+
+City Information
+
+Property Type Information
+
+Investment Analysis
+
+Connectivity Analysis
+
+Price Intelligence
+
+Rental Intelligence
+
+Competition Analysis
+
+Nearby Infrastructure
+
+Market Trends
+
+without requiring manual content creation.
+
+====================================================
+DATA FLOW ARCHITECTURE
+======================
+
+Step 1
+
+Project Data
+
+↓
+
+Step 2
+
+Geo Intelligence Layer
+
+Using:
+
+Google Maps API
+Mapbox
+OpenStreetMap
+
+↓
+
+Generate:
+
+Nearby Schools
+
+Nearby Hospitals
+
+Nearby Hotels
+
+Nearby Metro Stations
+
+Nearby Office Hubs
+
+Nearby Shopping Centres
+
+Travel Times
+
+Connectivity Scores
+
+↓
+
+Step 3
+
+Builder Intelligence Layer
+
+Using builder name.
+
+Example:
+
+Builder = M3M
+
+Generate:
+
+Builder Profile
+
+Builder Statistics
+
+Completed Projects
+
+Ongoing Projects
+
+Upcoming Projects
+
+Other Projects By Builder
+
+↓
+
+Step 4
+
+Location Intelligence Layer
+
+Using:
+
+Sector
+Micro Market
+City
+
+Example:
+
+Sector 65
+Golf Course Extension Road
+Gurgaon
+
+Generate:
+
+Sector Overview
+
+Market Overview
+
+Demand Drivers
+
+Infrastructure Projects
+
+Growth Potential
+
+Rental Trends
+
+Price Trends
+
+↓
+
+Step 5
+
+SEO Content Engine
+
+Generate:
+
+Project Overview
+
+Investment Analysis
+
+Area Insights
+
+Market Intelligence
+
+FAQs
+
+Comparison Content
+
+====================================================
+CONTENT GENERATION HIERARCHY
+============================
+
+Project Page Content Must Use:
+
+70% Structured Data
+
+20% Dynamic Market Intelligence
+
+10% AI Generated Narrative
+
+Never generate generic AI content without data.
+
+All content must reference:
+
+Project Name
+
+Builder
+
+Sector
+
+City
+
+Property Type
+
+Market Conditions
+
+====================================================
+INTERNAL LINKING ENGINE
+=======================
+
+Every project must automatically connect to:
+
+Projects in Same Sector
+
+Projects in Same City
+
+Projects by Same Builder
+
+Projects in Same Budget
+
+Projects in Same Property Type
+
+Projects with Similar Possession Dates
+
+Projects with Similar Investment Score
+
+Generate these relationships dynamically.
+
+====================================================
+SECTOR PAGE GENERATION
+======================
+
+When a sector page is created:
+
+/sector/gurgaon/65
+
+Automatically pull:
+
+All projects in sector
+
+Average pricing
+
+Builder presence
+
+Infrastructure data
+
+Schools
+
+Hospitals
+
+Market insights
+
+No manual content entry required.
+
+====================================================
+BUILDER PAGE GENERATION
+=======================
+
+When a builder page is created:
+
+/builder/m3m
+
+Automatically pull:
+
+All M3M projects
+
+Builder profile
+
+Builder statistics
+
+Builder market presence
+
+Project inventory
+
+No manual content entry required.
+
+====================================================
+COMPARISON PAGE GENERATION
+==========================
+
+Automatically create:
+
+/compare/m3m-route-65-vs-elan-imperial
+
+Using structured project data.
+
+Compare:
+
+Price
+
+Location
+
+Builder
+
+Possession
+
+Amenities
+
+Investment Score
+
+Configuration
+
+No manual content entry required.
+
+====================================================
+FUTURE SCALABILITY REQUIREMENT
+==============================
+
+Architecture must support:
+
+500 Projects
+
+1000 Projects
+
+5000 Projects
+
+without requiring code changes.
+
+Adding a new project should automatically populate:
+
+Project Page
+
+Builder Page
+
+Sector Page
+
+City Page
+
+Comparison Pages
+
+Internal Links
+
+SEO Content
+
+Structured Data
+
+without manual intervention.
+
+====================================================
+ADMIN REQUIREMENT
+=================
+
+When a new project is added in admin:
+
+All intelligence layers should generate automatically.
+
+No developer involvement should be required.
+
+Admin only enters:
+
+Project Details
+
+Location
+
+Builder
+
+Pricing
+
+Inventory
+
+Images
+
+Floor Plans
+
+Everything else should be system generated.

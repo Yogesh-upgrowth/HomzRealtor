@@ -1,0 +1,420 @@
+PROJECT: Homz Realtor – Project Page SEO & UX Enhancement (2026)
+
+CONTEXT
+
+We currently have project pages like:
+
+/project-listing/ggn/m3m-route-65
+
+and lead pages like:
+
+/project-listing/ggn/m3m-route-65/enquire
+
+The existing UI, visual design, color scheme, spacing, cards, typography, CTA placement, and layout should remain unchanged.
+
+DO NOT redesign the page.
+
+DO NOT introduce a new visual language.
+
+DO NOT modify navigation, branding, header, footer, hero section, pricing section, floor plans, gallery, brochure download, enquiry forms, or existing CTAs.
+
+Only add new SEO-rich sections below the current project content while following existing design patterns.
+
+GOAL
+
+Transform every project page into an authority page capable of ranking for:
+
+* Project Name
+* Project Name Price
+* Project Name Review
+* Project Name Location
+* Project Name Investment
+* Project Name Amenities
+* Commercial Property in Location
+* Residential Property in Location
+* Builder Name Projects
+* Sector-Based Searches
+
+All new sections must be dynamically generated from project metadata and public datasets.
+
+====================================================
+SECTION 1: LOCATION INTELLIGENCE
+================================
+
+TITLE:
+"Location Intelligence"
+
+DESCRIPTION:
+
+Automatically generate a location analysis section using project coordinates.
+
+Show:
+
+* Locality Overview
+* Connectivity Overview
+* Road Network
+* Business Hubs
+* Lifestyle Infrastructure
+
+Example:
+
+For M3M Route 65:
+
+Sector 65 Gurgaon is one of the most active commercial corridors on Golf Course Extension Road.
+
+It benefits from direct access to Southern Peripheral Road, NH48 connectivity and premium residential catchments.
+
+DATA SOURCES
+
+Google Maps API
+OpenStreetMap
+Mapbox
+Government Infrastructure Sources
+
+====================================================
+SECTION 2: CONNECTIVITY SCORECARD
+=================================
+
+Display cards:
+
+Airport Distance
+
+Metro Distance
+
+Railway Distance
+
+Major Highway Access
+
+Business District Access
+
+Example:
+
+IGI Airport
+25-30 mins
+
+Cyber Hub
+20-25 mins
+
+Golf Course Road
+5 mins
+
+NH48
+10 mins
+
+Calculate dynamically using coordinates.
+
+====================================================
+SECTION 3: NEARBY LANDMARKS
+===========================
+
+Create responsive cards.
+
+Categories:
+
+Schools
+Hospitals
+Shopping Centres
+Hotels
+Corporate Parks
+Metro Stations
+
+Show:
+
+Name
+Distance
+Travel Time
+
+Maximum 6 per category.
+
+Pull dynamically.
+
+====================================================
+SECTION 4: INVESTMENT ANALYSIS
+==============================
+
+Generate a unique article for every project.
+
+Length:
+700-1200 words
+
+Must include:
+
+* Location growth drivers
+* Demand analysis
+* Commercial viability
+* Residential catchment
+* Infrastructure projects
+* Rental outlook
+* Long-term appreciation potential
+
+Example for M3M Route 65:
+
+Discuss Golf Course Extension Road growth.
+
+Discuss premium residential catchment.
+
+Discuss WorldMark ecosystem.
+
+Discuss office growth corridor.
+
+Discuss commercial demand.
+
+====================================================
+SECTION 5: PRICE INTELLIGENCE
+=============================
+
+Create charts.
+
+Display:
+
+Current Project Price
+
+Area Average
+
+Micro Market Average
+
+City Average
+
+Price Trend
+
+YoY Growth
+
+Use:
+
+Chart.js
+
+Responsive design.
+
+====================================================
+SECTION 6: BUILDER PROFILE
+==========================
+
+Dynamic builder section.
+
+Example:
+
+M3M Group
+
+Include:
+
+Company Overview
+
+Years in Business
+
+Delivered Projects
+
+Ongoing Projects
+
+Upcoming Projects
+
+Awards
+
+Developer Reputation
+
+Word Count:
+600-1000 words
+
+====================================================
+SECTION 7: OTHER PROJECTS BY SAME BUILDER
+=========================================
+
+Auto-generate project cards.
+
+Show:
+
+Image
+Price
+Location
+CTA
+
+Minimum:
+6 projects
+
+====================================================
+SECTION 8: COMPARE WITH SIMILAR PROJECTS
+========================================
+
+Generate comparison cards.
+
+Find projects matching:
+
+Same city
+
+Same property type
+
+Same budget
+
+Same builder category
+
+Display:
+
+Price
+
+Location
+
+Possession
+
+Area
+
+Builder
+
+====================================================
+SECTION 9: AREA MARKET INSIGHTS
+===============================
+
+Generate market report.
+
+Length:
+800-1200 words
+
+Include:
+
+Current demand
+
+Supply trends
+
+Infrastructure impact
+
+Future outlook
+
+Rental demand
+
+Commercial activity
+
+For Gurgaon examples:
+
+Golf Course Extension Road
+SPR
+Dwarka Expressway
+
+====================================================
+SECTION 10: FAQ ENGINE
+======================
+
+Generate 20-30 FAQs dynamically.
+
+Examples:
+
+What is the possession date?
+
+What is the nearest metro station?
+
+What is the expected rental yield?
+
+Is this RERA approved?
+
+Who is the developer?
+
+What is the investment potential?
+
+Use FAQ Schema.
+
+====================================================
+SECTION 11: INTERNAL LINKING BLOCK
+==================================
+
+Add:
+
+Similar Projects
+
+Projects in Same Sector
+
+Projects by Same Builder
+
+Projects in Same Budget
+
+Projects in Same City
+
+Maximum:
+20 links
+
+====================================================
+SECTION 12: SCHEMA MARKUP
+=========================
+
+Generate:
+
+RealEstateListing
+
+FAQPage
+
+Breadcrumb
+
+Organization
+
+Product
+
+Offer
+
+Review
+
+JSON-LD
+
+====================================================
+SECTION 13: AI CONTENT RULES
+============================
+
+Every generated article must:
+
+* Be unique
+* Avoid duplication
+* Use project name naturally
+* Use locality naturally
+* Use builder naturally
+* Be SEO optimized
+* Be human readable
+
+Minimum uniqueness score:
+95%
+
+====================================================
+SECTION 14: DATA SOURCES
+========================
+
+Allowed Sources:
+
+Google Places API
+
+Google Maps API
+
+OpenStreetMap
+
+Mapbox
+
+GeoNames
+
+Government Infrastructure Sources
+
+Public Real Estate Datasets
+
+Developer Project Metadata
+
+Never hardcode content.
+
+Always generate dynamically.
+
+====================================================
+SECTION 15: UI RULES
+====================
+
+CRITICAL
+
+Use existing design system.
+
+Use existing cards.
+
+Use existing spacing.
+
+Use existing typography.
+
+Use existing colors.
+
+Use existing responsive behavior.
+
+No redesign.
+
+No visual changes.
+
+Only extend the page.
+
+New sections must feel like they were always part of the original page.
