@@ -7,14 +7,30 @@
 // Idempotent & resumable: geocoding is skipped when coordinates already exist,
 // AI content is skipped when it already exists. Pass FORCE=1 to regenerate.
 //
+// Staleness: each project stores a hash (content_source_hash) of the core
+// source fields the AI content is grounded in. On every run the hash is
+// recomputed; if it changed (price, possession, status, builder, etc.), the AI
+// content is regenerated automatically — no FORCE needed. Projects that already
+// had content before staleness tracking existed get their hash backfilled once
+// (as a baseline) without a costly regeneration.
+//
+// Designed to run unattended on a schedule (e.g. a Replit Scheduled Deployment)
+// so new/changed listings on the source API keep their intelligence sections
+// fresh. Steady-state runs only do new/changed work, so they finish quickly.
+//
 // Env: DATABASE_URL, AI_INTEGRATIONS_OPENAI_API_KEY, AI_INTEGRATIONS_OPENAI_BASE_URL,
 //      GOOGLE_MAPS_API_KEY
 // Flags: FORCE=1, NO_GOOGLE=1, NO_AI=1, LIMIT=<n>, CITY=<base>
 //
-// Usage (background): nohup node scripts/ingest.mjs > /tmp/ingest.log 2>&1 &
+// Usage:        node scripts/ingest.mjs          (or: npm run ingest)
+// Background:   nohup node scripts/ingest.mjs > /tmp/ingest.log 2>&1 &
 
 import pg from "pg";
-import { normalizeProject, normalizeLandmarks } from "./lib/normalize.mjs";
+import {
+  normalizeProject,
+  normalizeLandmarks,
+  contentSignature,
+} from "./lib/normalize.mjs";
 
 const { Pool } = pg;
 
@@ -90,7 +106,7 @@ async function upsertProject(client, p) {
       price_list = EXCLUDED.price_list,
       source_payload = EXCLUDED.source_payload,
       updated_at = now()
-    RETURNING id, latitude`;
+    RETURNING id, latitude, content_source_hash`;
 
   const vals = [
     p.city_key, p.slug, p.project_name, p.builder, p.property_category,
@@ -158,8 +174,11 @@ async function processOne(raw, cityKey, category, enrich, ai) {
     norm.source_payload = raw;
     const landmarks = normalizeLandmarks(raw);
 
-    const { id, latitude } = await upsertProject(client, norm);
+    const { id, latitude, content_source_hash: storedHash } =
+      await upsertProject(client, norm);
     await replaceLandmarks(client, id, landmarks);
+
+    const newHash = contentSignature(norm);
 
     let connectivityRows = [];
     if (!NO_GOOGLE && (FORCE || latitude == null)) {
@@ -207,8 +226,24 @@ async function processOne(raw, cityKey, category, enrich, ai) {
     }
 
     if (!NO_AI && ai) {
-      const needsContent = FORCE || !(await hasContent(client, id));
-      if (needsContent) {
+      const existing = await hasContent(client, id);
+      // Decide whether AI content must be (re)generated:
+      //  - FORCE          -> always regenerate
+      //  - no content yet  -> new project, generate
+      //  - stored hash set & differs from current -> source data changed, stale
+      // Backfill case: a project that already has content but no stored hash
+      // (generated before staleness tracking existed). We adopt the current
+      // signature as the baseline WITHOUT a costly regeneration.
+      const stale = existing && storedHash != null && storedHash !== newHash;
+      const backfillOnly = existing && storedHash == null;
+
+      if (backfillOnly && !FORCE) {
+        await client.query(
+          `UPDATE projects SET content_source_hash=$1 WHERE id=$2`,
+          [newHash, id],
+        );
+      } else if (FORCE || !existing || stale) {
+        if (stale) log(`    source changed -> regenerating AI for ${norm.project_name}`);
         // Gather landmarks + connectivity already stored for grounding.
         const lmGrouped = {};
         for (const lm of landmarks) (lmGrouped[lm.category] ??= []).push(lm);
@@ -224,6 +259,10 @@ async function processOne(raw, cityKey, category, enrich, ai) {
           await upsertContent(client, id, "location_intelligence", { text: content.location_intelligence }, content.model);
           await upsertContent(client, id, "investment_analysis", { text: content.investment_analysis }, content.model);
           await upsertContent(client, id, "faq", content.faq, content.model);
+          await client.query(
+            `UPDATE projects SET content_source_hash=$1 WHERE id=$2`,
+            [newHash, id],
+          );
         } catch (e) {
           log(`    AI error for ${norm.project_name}: ${e.message}`);
         }

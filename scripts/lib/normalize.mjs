@@ -1,6 +1,8 @@
 // Pure normalization helpers for the ingestion pipeline.
 // Derives structured fields from raw homzbackend API records.
 
+import { createHash } from "node:crypto";
+
 export const CITY_META = {
   ggn: { name: "Gurgaon", state: "Haryana" },
   delhi: { name: "Delhi", state: "Delhi" },
@@ -233,6 +235,42 @@ export function normalizeProject(raw, cityKey, category) {
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
     price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
   };
+}
+
+// Stable signature of the AI-relevant source fields of a normalized project.
+// Used to detect when source data changed so AI content can be regenerated.
+// Only includes the core fields the generated content is grounded in — geo /
+// connectivity (which come from Google and can shift independently) are excluded
+// so connectivity drift alone does not trigger expensive AI regeneration.
+export function contentSignature(norm) {
+  const amenitiesCount = Array.isArray(norm.amenities)
+    ? norm.amenities.reduce(
+        (n, c) => n + (Array.isArray(c?.amenities) ? c.amenities.length : 0),
+        0,
+      )
+    : 0;
+  const parts = [
+    norm.project_name,
+    norm.builder,
+    norm.property_category,
+    norm.property_type,
+    norm.project_status,
+    norm.rera_id,
+    norm.sector,
+    norm.micro_market,
+    norm.city_name,
+    norm.state,
+    norm.possession_text,
+    norm.price_text,
+    norm.min_price_inr,
+    norm.max_price_inr,
+    norm.min_size,
+    norm.max_size,
+    norm.land_area,
+    amenitiesCount,
+  ];
+  const blob = parts.map((p) => (p == null ? "" : String(p))).join("|");
+  return createHash("sha1").update(blob).digest("hex");
 }
 
 export function normalizeLandmarks(raw) {
