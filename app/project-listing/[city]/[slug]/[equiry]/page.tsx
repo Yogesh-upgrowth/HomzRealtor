@@ -58,9 +58,12 @@ export default function Page() {
 
         const cityKeyMap: Record<string, string> = {
           ggn: "ggn",
+          gurgaon: "ggn",
           delhi: "delhi",
           faridabad: "faridabad",
           greaternoida: "gNoida",
+          gnoida: "gNoida",
+          gNoida: "gNoida",
           noida: "noida",
         };
 

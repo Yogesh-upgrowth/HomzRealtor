@@ -57,9 +57,12 @@ const ProjectClient = ({ city, slug }: Props) => {
 
         const cityKeyMap: any = {
           ggn: "ggn",
+          gurgaon: "ggn",
           delhi: "delhi",
           faridabad: "faridabad",
           greaternoida: "gNoida",
+          gnoida: "gNoida",
+          gNoida: "gNoida",
           noida: "noida",
         };
 
