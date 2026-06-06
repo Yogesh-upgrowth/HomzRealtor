@@ -1,0 +1,52 @@
+type Props = {
+  builder: string;
+  text: string;
+};
+
+function RichText({ text }: { text: string }) {
+  const blocks = text
+    .split(/\n{2,}/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return (
+    <>
+      {blocks.map((b, i) => (
+        <p key={i} className="mb-3">
+          {b}
+        </p>
+      ))}
+    </>
+  );
+}
+
+const BuilderProfile = ({ builder, text }: Props) => {
+  if (!text) return null;
+
+  return (
+    <section className="w-full max-w-7xl mx-auto px-2 my-12">
+      <div className="bg-black border border-gray-700 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FDF094] to-[#B77D2B] flex items-center justify-center shrink-0">
+            <span className="text-black font-bold text-base">
+              {builder.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-widest">Developer</p>
+            <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent leading-tight">
+              {builder}
+            </h2>
+          </div>
+        </div>
+
+        <div className="border-b border-gray-700 mb-4" />
+
+        <div className="text-gray-300 text-[15px] leading-7">
+          <RichText text={text} />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default BuilderProfile;

@@ -1,4 +1,4 @@
-import type { ProjectRow } from "@/lib/projects/queries";
+import type { NormalizedProject } from "@/lib/intelligence/normalize";
 
 function RichText({ text }: { text: string }) {
   const blocks = text
@@ -26,7 +26,7 @@ function RichText({ text }: { text: string }) {
 }
 
 type Props = {
-  project: ProjectRow;
+  project: NormalizedProject;
   text?: string;
 };
 

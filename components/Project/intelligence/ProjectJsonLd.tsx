@@ -1,8 +1,6 @@
-import type {
-  ProjectRow,
-  FaqItem,
-  Connectivity,
-} from "@/lib/projects/queries";
+import type { NormalizedProject } from "@/lib/intelligence/normalize";
+import type { FaqItem } from "@/lib/intelligence/content";
+import type { ConnectivityItem } from "@/lib/intelligence/geo";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -15,14 +13,17 @@ const cityLabel: Record<string, string> = {
 };
 
 type Props = {
-  project: ProjectRow;
+  project: NormalizedProject;
   faq?: FaqItem[];
-  connectivity?: Connectivity[];
+  connectivity?: ConnectivityItem[];
+  coords?: { lat: number; lng: number } | null;
 };
 
-const ProjectJsonLd = ({ project, faq }: Props) => {
+const ProjectJsonLd = ({ project, faq, coords }: Props) => {
   const url = `${SITE}/project-listing/${project.city_key}/${project.slug}`;
-  const image = (project.images || []).slice(0, 5);
+  const images = project.images
+    .filter((u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u))
+    .slice(0, 5);
 
   const listing: Record<string, any> = {
     "@context": "https://schema.org",
@@ -30,28 +31,22 @@ const ProjectJsonLd = ({ project, faq }: Props) => {
     name: project.project_name,
     url,
     description: project.about?.[0] || undefined,
-    image: image.length ? image : undefined,
+    image: images.length ? images : undefined,
+    provider: { "@type": "Organization", name: project.builder },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: [project.sector, project.micro_market].filter(Boolean).join(", ") || undefined,
+      addressLocality: project.city_name,
+      addressRegion: project.state,
+      addressCountry: "IN",
+    },
   };
 
-  if (project.builder) {
-    listing.provider = { "@type": "Organization", name: project.builder };
-  }
-
-  const address: Record<string, any> = { "@type": "PostalAddress" };
-  if (project.sector || project.micro_market)
-    address.streetAddress = [project.sector, project.micro_market]
-      .filter(Boolean)
-      .join(", ");
-  if (project.city_name) address.addressLocality = project.city_name;
-  if (project.state) address.addressRegion = project.state;
-  address.addressCountry = "IN";
-  listing.address = address;
-
-  if (project.latitude != null && project.longitude != null) {
+  if (coords) {
     listing.geo = {
       "@type": "GeoCoordinates",
-      latitude: project.latitude,
-      longitude: project.longitude,
+      latitude: coords.lat,
+      longitude: coords.lng,
     };
   }
 
@@ -59,10 +54,8 @@ const ProjectJsonLd = ({ project, faq }: Props) => {
     listing.offers = {
       "@type": "AggregateOffer",
       priceCurrency: "INR",
-      lowPrice: Number(project.min_price_inr),
-      highPrice: project.max_price_inr
-        ? Number(project.max_price_inr)
-        : undefined,
+      lowPrice: project.min_price_inr,
+      highPrice: project.max_price_inr ?? undefined,
     };
   }
 
@@ -71,24 +64,14 @@ const ProjectJsonLd = ({ project, faq }: Props) => {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: SITE },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Projects",
-        item: `${SITE}/project-listing`,
-      },
+      { "@type": "ListItem", position: 2, name: "Projects", item: `${SITE}/project-listing` },
       {
         "@type": "ListItem",
         position: 3,
-        name: cityLabel[project.city_key] || project.city_key,
+        name: cityLabel[project.city_key] || project.city_name,
         item: `${SITE}/project-listing`,
       },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: project.project_name,
-        item: url,
-      },
+      { "@type": "ListItem", position: 4, name: project.project_name, item: url },
     ],
   };
 
@@ -107,8 +90,6 @@ const ProjectJsonLd = ({ project, faq }: Props) => {
 
   const graphs = [listing, breadcrumb, faqLd].filter(Boolean);
 
-  // Escape characters that could break out of the <script> tag or the JSON
-  // string when serializing untrusted (API/AI-sourced) content.
   const safeJson = (g: unknown) =>
     JSON.stringify(g)
       .replace(/</g, "\\u003c")

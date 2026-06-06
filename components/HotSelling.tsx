@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import getValidImage from "./utils/helper/getValidImage";
+import { slugify } from "./utils/slugify";
 
 // ✅ Mobile hook
 const useIsMobile = (breakpoint = 768) => {
@@ -35,56 +36,60 @@ export default function HotSelling() {
 
   const [selectedCity, setSelectedCity] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch API (same logic as ProjectListing)
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
-        let finalData: Project[] = [];
-
-        const fetchCityData = async (cityKey: string, limit = 10) => {
+        const fetchCityData = async (cityKey: string, citySlug: string, limit = 3) => {
           const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
           const res = await fetch(url);
           const data = await res.json();
-          return (data?.results || []).filter(
-            (item:any) => Array.isArray(item.images) && item.images.length > 0
-          );
+          return (data?.results || [])
+            .filter((item: any) => Array.isArray(item.images) && item.images.length > 0)
+            .map((item: any) => ({ ...item, citySlug }));
         };
 
+        const cityKeyMap: Record<string, string> = {
+          gurgaon: "ggn",
+          delhi: "delhi",
+          faridabad: "faridabad",
+          greaternoida: "gNoida",
+          noida: "noida",
+        };
+
+        let finalData: any[] = [];
+
         if (selectedCity === "all") {
-          const cities = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
-
-          const promises = cities.flatMap((city) => [
-            fetchCityData(`${city}CommercialProjects`, 3),
-            fetchCityData(`${city}ResidentialProjects`, 3),
-          ]);
-
-          const results = await Promise.all(promises);
+          const cities: [string, string][] = [
+            ["ggn", "ggn"],
+            ["delhi", "delhi"],
+            ["faridabad", "faridabad"],
+            ["gNoida", "greaternoida"],
+            ["noida", "noida"],
+          ];
+          const results = await Promise.all(
+            cities.flatMap(([key, slug]) => [
+              fetchCityData(`${key}CommercialProjects`, slug),
+              fetchCityData(`${key}ResidentialProjects`, slug),
+            ])
+          );
           finalData = results.flat();
         } else {
-          const cityKeyMap: any = {
-            gurgaon: "ggn",
-            delhi: "delhi",
-            faridabad: "faridabad",
-            greaternoida: "gNoida",
-            noida: "noida",
-          };
-
           const base = cityKeyMap[selectedCity];
-
           const [commercial, residential] = await Promise.all([
-            fetchCityData(`${base}CommercialProjects`, 3),
-            fetchCityData(`${base}ResidentialProjects`, 3),
+            fetchCityData(`${base}CommercialProjects`, selectedCity),
+            fetchCityData(`${base}ResidentialProjects`, selectedCity),
           ]);
-
           finalData = [...commercial, ...residential];
         }
 
-        // ✅ Only keep top 3 (Hot Selling feel)
         setProjects(finalData.slice(0, 3));
-        console.log("Fetched projects for city:", selectedCity, finalData.slice(0, 3));
       } catch (error) {
         console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -152,46 +157,57 @@ export default function HotSelling() {
           )}
         </div>
 
-        {/* ✅ Project Cards */}
+        {/* Project Cards */}
         <div className="mt-10 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-          {projects.length > 0 ? (
+          {loading ? (
+            [...Array(3)].map((_, i) => (
+              <div key={i} className="overflow-hidden rounded-lg shadow-sm animate-pulse">
+                <div className="h-60 w-full bg-gray-200" />
+                <div className="py-4 pl-6 space-y-3">
+                  <div className="h-5 w-3/4 bg-gray-200 rounded" />
+                  <div className="h-4 w-1/3 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ))
+          ) : projects.length > 0 ? (
             projects.map((p: any, index: number) => {
               const image = getValidImage(p.images);
+              const href = `/project-listing/${p.citySlug}/${slugify(p.projectTitle || "project")}`;
 
               return (
-                <div
+                <Link
                   key={index}
-                  className="group overflow-hidden rounded-xs shadow-sm hover:shadow-lg transition"
+                  href={href}
+                  className="group overflow-hidden rounded-xs shadow-sm hover:shadow-lg transition block"
                 >
-                  <div className="relative h-60 w-full">
+                  <div className="relative h-60 w-full overflow-hidden">
                     {image ? (
                       <Image
                         src={image}
                         alt={p.projectTitle}
                         fill
-                        className="object-cover group-hover:scale-105 transition"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full bg-gray-200">
+                      <div className="flex items-center justify-center h-full bg-gray-200 text-gray-400">
                         No Image
                       </div>
                     )}
                   </div>
 
                   <div className="py-4 pl-6 text-left">
-                    <h3 className="text-lg font-semibold text-gray-900 py-2">
+                    <h3 className="text-lg font-semibold text-gray-900 py-2 group-hover:text-[#B77D2B] transition">
                       {p.projectTitle}
                     </h3>
-
-                    <p className="text-purple-700 font-semibold">
+                    <p className="text-[#B77D2B] font-semibold">
                       {p.price || "View Details"}
                     </p>
                   </div>
-                </div>
+                </Link>
               );
             })
           ) : (
-            <p className="col-span-3 text-center">Loading projects...</p>
+            <p className="col-span-3 text-center text-gray-500">No projects found</p>
           )}
         </div>
 

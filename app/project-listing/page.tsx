@@ -26,8 +26,29 @@ const useIsMobile = (breakpoint = 768) => {
   return isMobile;
 };
 
+const CardSkeleton = () => (
+  <div className="w-full rounded-sm overflow-hidden shadow-sm bg-white animate-pulse">
+    <div className="w-full h-[230px] md:h-[304px] bg-gray-200" />
+    <div className="flex py-2 pl-2 gap-2">
+      <div className="h-5 w-28 bg-gray-200 rounded" />
+    </div>
+    <div className="p-4 space-y-3">
+      <div className="h-5 w-3/4 bg-gray-200 rounded" />
+      <div className="grid grid-cols-2 gap-3">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-8 bg-gray-200 rounded" />
+        ))}
+      </div>
+    </div>
+    <div className="p-3 border-t">
+      <div className="h-9 bg-gray-200 rounded" />
+    </div>
+  </div>
+);
+
 const ProjectListing = () => {
   const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCity, setSelectedCity] = useState("all");
 
@@ -82,6 +103,7 @@ const ProjectListing = () => {
   // ✅ Fetch API
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
         let finalData: any[] = [];
 
@@ -152,6 +174,8 @@ const ProjectListing = () => {
         setProjects(finalData);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -223,8 +247,10 @@ const ProjectListing = () => {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-        {currentProjects.length > 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+        {loading ? (
+          [...Array(isMobile ? 4 : 8)].map((_, i) => <CardSkeleton key={i} />)
+        ) : currentProjects.length > 0 ? (
           currentProjects.map((project: any, index: number) => (
             <Link
               key={index}
@@ -236,7 +262,7 @@ const ProjectListing = () => {
             </Link>
           ))
         ) : (
-          <p className="text-center col-span-2">No projects found</p>
+          <p className="text-center col-span-2 text-gray-500 py-16">No projects found</p>
         )}
       </div>
 

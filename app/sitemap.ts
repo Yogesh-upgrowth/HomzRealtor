@@ -1,86 +1,63 @@
 import { MetadataRoute } from 'next'
+
 export const dynamic = 'force-dynamic'
+
+// city API key → URL segment used in /project-listing/[city]/[slug]
+const CITY_ENDPOINT_MAP: Record<string, string> = {
+  delhiCommercialProjects:    'delhi',
+  delhiResidentialProjects:   'delhi',
+  faridabadCommercialProjects:'faridabad',
+  faridabadResidentialProjects:'faridabad',
+  ggnCommercialProjects:      'ggn',
+  ggnResidentialProjects:     'ggn',
+  gNoidaCommercialProjects:   'gNoida',
+  gNoidaResidentialProjects:  'gNoida',
+  noidaCommercialProjects:    'noida',
+  noidaResidentialProjects:   'noida',
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.homzrealtor.com'
 
-  const cityKeys = [
-    'delhiCommercialProjects',
-    'delhiResidentialProjects',
-    'faridabadCommercialProjects',
-    'faridabadResidentialProjects',
-    'ggnCommercialProjects',
-    'ggnResidentialProjects',
-    'gNoidaCommercialProjects',
-    'gNoidaResidentialProjects',
-    'noidaCommercialProjects',
-    'noidaResidentialProjects',
-  ]
-
-  let allProjects: any[] = []
+  const entries: { slug: string; city: string; updatedAt: string | null }[] = []
+  const seen = new Set<string>()
 
   await Promise.all(
-    cityKeys.map(async (city) => {
+    Object.entries(CITY_ENDPOINT_MAP).map(async ([cityKey, citySegment]) => {
       try {
         const res = await fetch(
-          `https://homzbackend.vercel.app/api/data?city=${city}&page=1&limit=200`,
+          `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=200`,
+          { next: { revalidate: 3600 } }
         )
-
         const json = await res.json()
-        const projects = json?.results || []
+        const projects: any[] = json?.results || []
 
-        allProjects.push(...projects)
-      } catch (err) {
-        console.error(`Error fetching ${city}`, err)
+        for (const p of projects) {
+          if (!p?.projectTitle || typeof p.projectTitle !== 'string') continue
+          const slug = p.projectTitle
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+          const key = `${citySegment}/${slug}`
+          if (seen.has(key)) continue
+          seen.add(key)
+          entries.push({ slug, city: citySegment, updatedAt: p.updatedAt || null })
+        }
+      } catch {
+        // Skip on fetch error — sitemap degrades gracefully
       }
     })
   )
 
-  
-  // ✅ Remove duplicates
-  console.log(
-    allProjects.filter(
-      (item) => !item?.projectTitle || typeof item.projectTitle !== 'string'
-    )
-  )
-  const uniqueProjects = Array.from(
-    new Map(
-      allProjects.map((item) => [
-        item.projectTitle.toLowerCase().replace(/\s+/g, '-'),
-        item,
-      ])
-    ).values()
-  )
-
-
-  // ✅ Dynamic URLs
-  const projectUrls = uniqueProjects.map((item: any) => {
-    const slug = item.projectTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-
-    return {
-      url: `${baseUrl}/project-listing/${slug}`,
-      lastModified: new Date(item.updatedAt || Date.now()),
-    }
-  })
+  const projectUrls: MetadataRoute.Sitemap = entries.map(({ slug, city, updatedAt }) => ({
+    url: `${baseUrl}/project-listing/${city}/${slug}`,
+    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+  }))
 
   return [
-    // ✅ Static pages
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/about-us`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/project-listing`,
-      lastModified: new Date(),
-    },
-
-    // ✅ Dynamic pages
+    { url: baseUrl,                           lastModified: new Date() },
+    { url: `${baseUrl}/about-us`,             lastModified: new Date() },
+    { url: `${baseUrl}/project-listing`,      lastModified: new Date() },
     ...projectUrls,
   ]
 }

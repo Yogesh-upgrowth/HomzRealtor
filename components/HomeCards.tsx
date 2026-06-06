@@ -25,7 +25,7 @@ const HomesCard: React.FC<HomeCardProps> = ({
   btntag,
 }) => {
   return (
-    <div className="w-full rounded-sm overflow-hidden shadow-sm bg-white text-black hover:shadow-xl transition mt-20">
+    <div className="w-full rounded-sm overflow-hidden shadow-sm bg-white text-black hover:shadow-xl transition">
 
       {/* Image */}
       <div className="relative w-full h-[230px] md:h-[304px]">

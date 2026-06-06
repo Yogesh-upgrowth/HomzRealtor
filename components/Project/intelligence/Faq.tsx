@@ -1,4 +1,4 @@
-import type { FaqItem } from "@/lib/projects/queries";
+import type { FaqItem } from "@/lib/intelligence/content";
 
 type Props = {
   title: string;

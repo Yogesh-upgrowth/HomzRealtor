@@ -125,12 +125,12 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
 
               {/* Body */}
               <tbody className="bg-black text-white">
-                {priceList?.map((row) => {
+                {priceList?.map((row, index) => {
                   const unit = `${row.bhkType} ${row.size}`;
                   const price = row.price;
 
                   return (
-                    <tr key={row.id} className="border-t border-gray-600">
+                    <tr key={row.id ?? index} className="border-t border-gray-600">
 
                       <td className="p-3 text-center border border-gray-700 text-xs md:text-base">
                         {unit} sqft

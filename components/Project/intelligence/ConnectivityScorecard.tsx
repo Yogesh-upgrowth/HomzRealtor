@@ -1,5 +1,5 @@
 import { Plane, TrainFront, Milestone, Building2, MapPin } from "lucide-react";
-import type { Connectivity } from "@/lib/projects/queries";
+import type { ConnectivityItem } from "@/lib/intelligence/geo";
 
 const iconFor = (category: string | null) => {
   switch ((category || "").toLowerCase()) {
@@ -18,7 +18,7 @@ const iconFor = (category: string | null) => {
 
 type Props = {
   title: string;
-  items: Connectivity[];
+  items: ConnectivityItem[];
 };
 
 const ConnectivityScorecard = ({ title, items }: Props) => {
