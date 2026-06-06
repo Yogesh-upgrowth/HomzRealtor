@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { slugify } from "@/components/utils/slugify";
 import Carousel from "@/components/Carousel";
@@ -16,7 +16,7 @@ import {
   Building2,
 } from "lucide-react";
 
-export default function Page() {
+function EnquiryContent() {
   const params = useParams();
   const searchParams = useSearchParams();
 
@@ -217,5 +217,13 @@ export default function Page() {
       )}
 
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="text-center mt-20">Loading...</div>}>
+      <EnquiryContent />
+    </Suspense>
   );
 }
