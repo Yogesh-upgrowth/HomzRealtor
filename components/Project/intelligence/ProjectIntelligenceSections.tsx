@@ -16,6 +16,7 @@ import ProjectJsonLd from "./ProjectJsonLd";
 import LandmarksTable from "@/components/Project/LandmarkTable";
 import SimilarProjects from "./SimilarProjects";
 import PriceInsights from "./PriceInsights";
+import MapEmbed from "./MapEmbed";
 
 type Props = {
   cityParam: string;
@@ -96,6 +97,17 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
 
       {/* Connectivity Scorecard */}
       <ConnectivityScorecard title={project.project_name} items={connectivity} />
+
+      {/* Interactive map — only when geocoding succeeded */}
+      {coords && (
+        <MapEmbed
+          title={project.project_name}
+          address={address}
+          lat={coords.lat}
+          lng={coords.lng}
+          apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
+        />
+      )}
 
       {/* Nearby Landmarks tabbed table */}
       {hasLandmarks && (
