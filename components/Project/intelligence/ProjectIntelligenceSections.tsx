@@ -116,8 +116,14 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         </div>
       )}
 
-      {/* Price Insights comparison bars */}
-      {priceData && <PriceInsights title={project.project_name} data={priceData} />}
+      {/* Price Insights charts */}
+      {priceData && (
+        <PriceInsights
+          title={project.project_name}
+          data={priceData}
+          priceList={project.price_list}
+        />
+      )}
 
       {/* Investment Analysis article */}
       <InvestmentAnalysis title={project.project_name} text={content.investment_analysis} />
