@@ -1,4 +1,5 @@
 import dummy from "../../public/dummy.svg";
+import aboutHomz from "../../assets/images/aboutHomz.jpg";
 import type { TestimonialsType } from "@/components/Common/Testimonial";
 import { PropertyItem } from "@/models/types";
 export const testimonials: TestimonialsType[] = [
@@ -55,10 +56,12 @@ const aboutPageData = {
   // about us Section
   aboutUs: {
     title: "ABOUT US",
-    para2: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. Dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.`,
-    para3: `Every idea starts with a problem. For us, it was the question:`,
-    imageSrc: dummy,
-    imageAlt: "A team collaborating on their mission.",
+    para1: {
+      text1: `At Homz, we believe buying or investing in property should feel clear, confident and rewarding — not overwhelming. We are a trusted real estate advisory platform that brings verified residential and commercial opportunities together with honest guidance, so you always know exactly what you're getting into.`,
+      text2: `From first enquiry to final handover, our team supports you with transparent information, on-ground insight and end-to-end assistance. Whether you're searching for a home to live in or a property to grow your wealth, Homz is built to help you make the right decision with complete peace of mind.`,
+    },
+    imageSrc: aboutHomz,
+    imageAlt: "Modern luxury residential apartment buildings at golden hour",
 
     btnTxt: "Contact Now",
   },

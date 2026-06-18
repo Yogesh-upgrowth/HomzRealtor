@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "Y2QU0UWRSyDdvUDj2AAoI"
+uri = "file://attached_assets/stock_images/about_homz_hero_1.jpg"
+type = "image"
+title = "modern luxury residential apartment buildings exterior in a city, real estate, golden hour"
+
+[[outputs]]
+id = "vdPoxI0g_7YMg3Khk3tD0"
+uri = "file://attached_assets/stock_images/about_homz_hero_2.jpg"
+type = "image"
+title = "modern luxury residential apartment buildings exterior in a city, real estate, golden hour"
+
+[[outputs]]
+id = "uKb5kxu8yRqgVrRFIRCOU"
+uri = "file://attached_assets/stock_images/about_homz_hero_3.jpg"
+type = "image"
+title = "modern luxury residential apartment buildings exterior in a city, real estate, golden hour"
