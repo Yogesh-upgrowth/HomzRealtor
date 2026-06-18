@@ -1,0 +1,202 @@
+Update the existing About Us page of the website without changing the current UI design, layout structure, typography, colors, spacing system, animations, responsiveness, component library, header, footer, navigation, or overall visual identity.
+
+IMPORTANT:
+
+* Preserve the existing design language exactly as it is.
+* Reuse existing components, cards, sections, grids, containers, buttons, icons, and styling patterns already used throughout the website.
+* Do not introduce a new design system.
+* Do not change fonts, font sizes, color palette, border radius, shadows, spacing scale, or CTA styles.
+* Ensure all new sections blend seamlessly with the current website UI.
+
+GOAL:
+Expand the About Us page with premium, trust-building content while maintaining the current visual experience.
+
+---
+
+## SECTION 1: EXISTING HERO
+
+Keep the existing hero section unchanged.
+
+Below the hero section, add the following new content sections.
+
+---
+
+## SECTION 2: WHO WE ARE
+
+Section Title:
+Who We Are
+
+Content:
+
+Homz is a customer-focused real estate advisory and property solutions platform dedicated to helping individuals and businesses navigate the property market with confidence.
+
+With deep market knowledge, strategic partnerships, and a commitment to transparency, we connect our clients with verified residential and commercial opportunities across emerging and established real estate markets.
+
+We understand that every customer has unique aspirations, investment goals, and lifestyle preferences. That's why our approach is built around personalized consultation, data-driven insights, and long-term relationship building.
+
+UI Requirements:
+
+* Use existing content block styling.
+* Maximum content width should match other internal pages.
+* Add subtle entrance animation if already used elsewhere on the website.
+
+---
+
+## SECTION 3: WHAT WE DO
+
+Section Title:
+What We Do
+
+Create a responsive grid using the same card design already used on the website.
+
+Create 6 cards:
+
+1. Residential Properties
+   Helping families and individuals discover apartments, villas, independent homes, and gated community projects that match their lifestyle and budget.
+
+2. Commercial Real Estate
+   Connecting businesses and investors with office spaces, retail outlets, commercial projects, and high-growth investment opportunities.
+
+3. Property Investments
+   Providing expert guidance on investment-worthy properties with strong appreciation potential and long-term value creation.
+
+4. New Project Launches
+   Offering access to premium pre-launch and newly launched projects from reputed developers.
+
+5. Land & Plot Investments
+   Helping investors identify strategic land opportunities in high-growth locations.
+
+6. End-to-End Property Assistance
+   Supporting customers through property discovery, site visits, negotiations, documentation, and transaction completion.
+
+Use icons that already exist in the design system.
+
+---
+
+## SECTION 4: WHY CHOOSE HOMZ
+
+Section Title:
+Why Choose Homz
+
+Create a 5-card feature section using existing feature-card styling.
+
+Card 1:
+Verified Opportunities
+Every property and project is carefully reviewed to ensure authenticity, transparency, and credibility.
+
+Card 2:
+Expert Guidance
+Our experienced advisors provide personalized recommendations tailored to your goals and requirements.
+
+Card 3:
+Market Intelligence
+We leverage real-time market insights, pricing trends, and location analytics to help customers make informed decisions.
+
+Card 4:
+Customer-First Approach
+Our focus is on building trust and long-term relationships rather than simply completing transactions.
+
+Card 5:
+Complete Support
+From your first inquiry to final possession, our team remains by your side throughout the entire property journey.
+
+---
+
+## SECTION 5: VISION & MISSION
+
+Create a two-column layout on desktop and stacked layout on mobile.
+
+Card 1:
+Our Vision
+
+To become India's most trusted real estate platform by combining technology, transparency, and expert advisory services to transform the property buying and investment experience.
+
+Card 2:
+Our Mission
+
+To simplify property buying, selling, renting, and investing through verified opportunities, professional guidance, and exceptional customer experiences that create lasting value.
+
+Use the existing card style from the website.
+
+---
+
+## SECTION 6: OUR VALUES
+
+Section Title:
+Our Values
+
+Create a responsive 5-item grid.
+
+Trust
+Building relationships through honesty, transparency, and integrity.
+
+Excellence
+Delivering exceptional service and expert guidance at every stage.
+
+Customer Success
+Prioritizing our clients' goals and helping them achieve better outcomes.
+
+Innovation
+Leveraging technology and data to create smarter real estate experiences.
+
+Commitment
+Providing dedicated support and long-term partnership beyond transactions.
+
+Use icons consistent with the rest of the site.
+
+---
+
+## SECTION 7: FINAL BRAND STATEMENT
+
+Create a premium closing section using existing typography hierarchy.
+
+Heading:
+Building Relationships Beyond Real Estate
+
+Content:
+
+At Homz, we understand that real estate decisions are among the most important choices people make. Whether you are purchasing your dream home, expanding your investment portfolio, or exploring new opportunities, our team is committed to helping you move forward with confidence.
+
+Our success is measured not only by the properties we help our clients acquire but by the trust we earn and the lasting relationships we build.
+
+Add highlighted tagline:
+
+"Homz — Where Your Property Journey Begins."
+
+---
+
+## SEO REQUIREMENTS
+
+Update page SEO:
+
+Title:
+About Homz | Trusted Real Estate Advisory & Property Solutions
+
+Meta Description:
+Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.
+
+Use semantic HTML:
+
+<section>
+<h2>
+<h3>
+
+Add proper schema-friendly structure.
+
+---
+
+## PERFORMANCE REQUIREMENTS
+
+* No layout shift.
+* Reuse existing components.
+* No new dependencies.
+* No new UI framework.
+* No CSS redesign.
+* No font changes.
+* No color changes.
+* No spacing changes.
+* Maintain full mobile responsiveness.
+* Maintain existing page performance score.
+
+FINAL OUTPUT:
+Implement these additions inside the current About Us page while preserving the current visual identity exactly as it exists today.
