@@ -12,6 +12,16 @@ const cityLabel: Record<string, string> = {
   noida: "Noida",
 };
 
+// Canonical city slug used in the page route (/project-listing/[city]/[slug]).
+// Must match the URL the user actually visits, NOT the internal city_key.
+const citySlug: Record<string, string> = {
+  ggn: "gurgaon",
+  delhi: "delhi",
+  faridabad: "faridabad",
+  gNoida: "greaternoida",
+  noida: "noida",
+};
+
 type Props = {
   project: NormalizedProject;
   faq?: FaqItem[];
@@ -20,7 +30,8 @@ type Props = {
 };
 
 const ProjectJsonLd = ({ project, faq, coords }: Props) => {
-  const url = `${SITE}/project-listing/${project.city_key}/${project.slug}`;
+  const citySeg = citySlug[project.city_key] || project.city_key;
+  const url = `${SITE}/project-listing/${citySeg}/${project.slug}`;
   const images = project.images
     .filter((u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u))
     .slice(0, 5);

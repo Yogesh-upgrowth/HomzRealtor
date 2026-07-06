@@ -1,10 +1,19 @@
-// Server component — fetches all intelligence data and renders all sections.
-// Uses Next.js unstable_cache + fetch caching so every expensive call
-// (Google Maps, OpenAI) is made only ONCE per project then served from cache.
+// Server component — fetches all intelligence data ONCE (cached) and renders the
+// full stack of listing sections in spec order, driven by the Missing Data Engine
+// (resolveProjectView). Every section self-hides when it has nothing real to show.
 
 import { CITY_PARAM_MAP, getProjectBySlug, getSimilarProjects, getBuilderProjects, getPriceInsights } from "@/lib/intelligence/projects";
 import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
+import { resolveProjectView } from "@/lib/intelligence/view-model";
+
+import WhyThisProject from "@/components/Project/listing/WhyThisProject";
+import AiSummary from "@/components/Project/listing/AiSummary";
+import KeyHighlights from "@/components/Project/listing/KeyHighlights";
+import InvestmentScore from "@/components/Project/listing/InvestmentScore";
+import AmenitiesShowcase from "@/components/Project/listing/AmenitiesShowcase";
+import UnitsAndFloorPlans from "@/components/Project/listing/UnitsAndFloorPlans";
+import InternalLinking from "@/components/Project/listing/InternalLinking";
 
 import LocationIntelligence from "./LocationIntelligence";
 import ConnectivityScorecard from "./ConnectivityScorecard";
@@ -26,11 +35,9 @@ type Props = {
 const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
 
-  // 1. Fetch & normalize the project from homzbackend (cached 1h)
   const project = await getProjectBySlug(cityParam, slug);
   if (!project) return null;
 
-  // 2. Geocode the project address (cached 30 days)
   const address = [
     project.project_name,
     project.sector,
@@ -44,7 +51,6 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
 
   const coords = await geocodeProject(address).catch(() => null);
 
-  // 3. Geo intelligence — only if we have coordinates
   const [landmarks, connectivity] = coords
     ? await Promise.all([
         fetchNearbyLandmarks(coords.lat, coords.lng).catch(() => ({})),
@@ -52,10 +58,8 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
       ])
     : [{}, []];
 
-  // 4. Fallback FAQs — always available from project data, no API needed
   const fallbackFaqs = buildFallbackFaqs(project);
 
-  // 5. AI content (cached 30 days per project slug) — enhances the page when available
   const content = await generateProjectContent(project, landmarks, connectivity).catch(() => ({
     location_intelligence: "",
     investment_analysis: "",
@@ -64,41 +68,48 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
     faq: [],
   }));
 
-  // 6. Related projects + price data (cached via city fetch, 1h)
   const [similarProjects, builderProjects, priceData] = await Promise.all([
     getSimilarProjects(project).catch(() => []),
     getBuilderProjects(project).catch(() => []),
     getPriceInsights(project).catch(() => null),
   ]);
 
-  // 7. Build landmarks map for the table component
+  // Build the safe view model from everything we resolved.
+  const view = resolveProjectView(project, {
+    connectivity,
+    landmarks,
+    aiSummary: content.location_intelligence,
+    cityParam,
+  });
+
+  // Landmarks map for the tabbed table.
   const landmarksForTable: Record<string, { name: string; distance: string }[]> = {};
   for (const [category, list] of Object.entries(landmarks)) {
     if (!list.length) continue;
-    landmarksForTable[category] = list.map((l) => ({
-      name: l.name,
-      distance: l.distance_text,
-    }));
+    landmarksForTable[category] = list.map((l) => ({ name: l.name, distance: l.distance_text }));
   }
   const hasLandmarks = Object.keys(landmarksForTable).length > 0;
 
   return (
     <>
-      {/* Structured data injected into <head> as JSON-LD */}
-      <ProjectJsonLd
-        project={project}
-        faq={content.faq}
-        connectivity={connectivity}
-        coords={coords}
-      />
+      <ProjectJsonLd project={project} faq={content.faq} connectivity={connectivity} coords={coords} />
 
-      {/* Location Intelligence */}
+      {/* Why This Project — auto badges */}
+      <WhyThisProject title={view.name} badges={view.whyThisProject} />
+
+      {/* Overview — project's own narrative */}
+      <AiSummary title={view.name} about={view.about} />
+
+      {/* Key Highlights — derived bullets */}
+      <KeyHighlights title={view.name} highlights={view.keyHighlights} />
+
+      {/* Investment Score — visual gauge */}
+      <InvestmentScore title={view.name} data={view.investmentScore} />
+
+      {/* Location Intelligence — AI narrative */}
       <LocationIntelligence project={project} text={content.location_intelligence} />
 
-      {/* Connectivity Scorecard */}
-      <ConnectivityScorecard title={project.project_name} items={connectivity} />
-
-      {/* Interactive map — only when geocoding succeeded */}
+      {/* Interactive map */}
       {coords && (
         <MapEmbed
           title={project.project_name}
@@ -109,26 +120,37 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         />
       )}
 
-      {/* Nearby Landmarks tabbed table */}
+      {/* Nearby landmarks */}
       {hasLandmarks && (
         <div className="px-2">
           <LandmarksTable title={project.project_name} data={landmarksForTable} />
         </div>
       )}
 
-      {/* Price Insights charts */}
+      {/* Connectivity scorecard */}
+      <ConnectivityScorecard title={project.project_name} items={connectivity} />
+
+      {/* Amenities */}
+      <AmenitiesShowcase title={view.name} data={view.amenities} />
+
+      {/* Available units / floor plans (with fallback) */}
+      <UnitsAndFloorPlans
+        title={view.name}
+        citySlug={view.citySlug}
+        slug={view.slug}
+        units={view.units}
+        propertyType={view.propertyType}
+      />
+
+      {/* Price insights */}
       {priceData && (
-        <PriceInsights
-          title={project.project_name}
-          data={priceData}
-          priceList={project.price_list}
-        />
+        <PriceInsights title={project.project_name} data={priceData} priceList={project.price_list} />
       )}
 
-      {/* Investment Analysis article */}
+      {/* Investment analysis article */}
       <InvestmentAnalysis title={project.project_name} text={content.investment_analysis} />
 
-      {/* Area Market Insights */}
+      {/* Locality / area market insights */}
       <AreaMarketInsights
         title={project.project_name}
         microMarket={project.micro_market}
@@ -136,10 +158,10 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         text={content.area_market_insights}
       />
 
-      {/* Builder Profile */}
+      {/* Builder profile */}
       <BuilderProfile builder={project.builder} text={content.builder_profile} />
 
-      {/* Other Projects by Same Builder */}
+      {/* More by same builder */}
       {builderProjects.length > 0 && (
         <SimilarProjects
           title={project.project_name}
@@ -148,7 +170,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         />
       )}
 
-      {/* Similar Projects in Same City */}
+      {/* Similar in city */}
       {similarProjects.length > 0 && (
         <SimilarProjects
           title={project.project_name}
@@ -157,11 +179,11 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         />
       )}
 
-      {/* FAQ accordion — uses AI FAQs when available, fallback from project data otherwise */}
-      <Faq
-        title={project.project_name}
-        items={content.faq.length > 0 ? content.faq : fallbackFaqs}
-      />
+      {/* Internal linking + popular searches */}
+      <InternalLinking similarSearches={view.similarSearches} internalLinks={view.internalLinks} />
+
+      {/* FAQ */}
+      <Faq title={project.project_name} items={content.faq.length > 0 ? content.faq : fallbackFaqs} />
     </>
   );
 };

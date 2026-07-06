@@ -9,7 +9,7 @@ export const CITY_META: Record<string, { name: string; state: string }> = {
   noida: { name: "Noida", state: "Uttar Pradesh" },
 };
 
-const KNOWN_BUILDERS = [
+export const KNOWN_BUILDERS = [
   "Signature Global", "Smart World", "Central Park", "Anant Raj", "Hero Homes",
   "County Group", "Trump Towers", "M3M", "DLF", "Godrej", "Tata", "Sobha",
   "Birla", "Adani", "Emaar", "Bestech", "Ireo", "Vatika", "Conscient", "Puri",
@@ -111,6 +111,9 @@ export type NormalizedProject = {
   about: string[];
   amenities: any[];
   price_list: any[];
+  builder_description: string[];
+  recent_updates: any[];
+  master_plan: { image?: string; content?: string } | null;
 };
 
 export function normalizeProject(raw: any, cityKey: string, category: string): NormalizedProject {
@@ -138,5 +141,15 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     about: Array.isArray(raw.aboutProject) ? raw.aboutProject : [],
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
     price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
+    builder_description: Array.isArray(raw.builderDescription)
+      ? raw.builderDescription
+      : raw.builderDescription
+      ? [String(raw.builderDescription)]
+      : [],
+    recent_updates: Array.isArray(raw.recentUpdates) ? raw.recentUpdates : [],
+    master_plan:
+      raw.masterPlan && (raw.masterPlan.image || raw.masterPlan.content)
+        ? { image: raw.masterPlan.image, content: raw.masterPlan.content }
+        : null,
   };
 }

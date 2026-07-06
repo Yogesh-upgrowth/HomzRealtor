@@ -1,0 +1,775 @@
+You are a Senior Product Designer, Senior Frontend Engineer, Senior SEO Engineer and Senior Real Estate Product Manager.
+
+You are redesigning the entire Project Listing Page for HomzRealtor.
+
+DO NOT simply redesign the UI.
+
+Instead, build a scalable "Dynamic Listing Engine" that works for more than 100,000 real estate projects.
+
+The biggest requirement is:
+
+Every project has different data availability.
+
+Some projects have complete data.
+
+Some have only project name and location.
+
+Some have builder information.
+
+Some don't.
+
+Some have amenities.
+
+Some don't.
+
+Some have RERA.
+
+Some don't.
+
+Some have floor plans.
+
+Some don't.
+
+The page should NEVER look incomplete.
+
+Instead every section should intelligently decide what to display.
+
+----------------------------------------------------
+
+PRIMARY GOAL
+
+The page should always look premium, informative, trustworthy and SEO friendly.
+
+No blank sections.
+
+No "Data Not Available".
+
+No empty cards.
+
+No broken layouts.
+
+Every missing section should gracefully transform into another useful section.
+
+----------------------------------------------------
+
+LAYOUT
+
+Create a modern premium property listing page.
+
+Desktop and Mobile responsive.
+
+Visual hierarchy should resemble the best parts of
+
+MagicBricks
+
+99acres
+
+Housing.com
+
+SquareYards
+
+without copying them.
+
+The experience should feel luxurious and information rich.
+
+----------------------------------------------------
+
+SECTION ORDER
+
+1 Hero
+
+Large Project Image
+
+Project Name
+
+Location
+
+Builder
+
+Price Range
+
+Property Type
+
+Construction Status
+
+Possession
+
+RERA
+
+CTA Buttons
+
+Call
+
+WhatsApp
+
+Book Visit
+
+Enquire
+
+Share
+
+Favorite
+
+Sticky CTA on Mobile.
+
+----------------------------------------------------
+
+2 Quick Snapshot
+
+Small chips
+
+Starting Price
+
+Configurations
+
+Project Area
+
+Units
+
+Floors
+
+Launch
+
+Possession
+
+Property Type
+
+Project Status
+
+Builder
+
+If any field is missing simply hide that chip.
+
+Never leave empty placeholders.
+
+----------------------------------------------------
+
+3 Why This Project
+
+Generate automatically.
+
+Use available data.
+
+Examples
+
+Near Metro
+
+Premium Builder
+
+Luxury Project
+
+Investment Opportunity
+
+Ready to Move
+
+Large Township
+
+Commercial Hub
+
+Mixed Use
+
+Excellent Connectivity
+
+Upcoming Growth Corridor
+
+If data unavailable infer from location if possible.
+
+Show 4-8 cards.
+
+----------------------------------------------------
+
+4 AI Generated Summary
+
+Never require stored content.
+
+Generate dynamically from
+
+Project Name
+
+Builder
+
+Location
+
+Property Type
+
+Price
+
+Status
+
+Nearby Places
+
+Amenities
+
+If only name and location exist then still create a natural summary.
+
+Length
+
+120-180 words.
+
+----------------------------------------------------
+
+5 Key Highlights
+
+Automatically generate bullet points.
+
+Example
+
+Located on Golf Course Extension Road
+
+Retail Shops from ₹1.58 Cr
+
+Premium Commercial Destination
+
+High Footfall Area
+
+Surrounded by Residential Catchment
+
+Near Rapid Metro
+
+RERA Registered
+
+Investment Friendly
+
+Never repeat information.
+
+----------------------------------------------------
+
+6 Investment Score
+
+Generate score
+
+0-100
+
+Based on
+
+Metro Distance
+
+Airport Distance
+
+Hospital Distance
+
+School Distance
+
+Road Connectivity
+
+Builder Reputation
+
+Possession
+
+Amenities
+
+Commercial Activity
+
+Price Segment
+
+If information missing simply omit that factor.
+
+Never fail.
+
+Show visual score.
+
+Also explain WHY.
+
+----------------------------------------------------
+
+7 Location Intelligence
+
+Use Google Maps API.
+
+Already integrated.
+
+Automatically fetch
+
+Metro
+
+Hospitals
+
+Schools
+
+Colleges
+
+Restaurants
+
+Hotels
+
+Malls
+
+Parks
+
+Bus Stops
+
+Railway
+
+Airport
+
+Petrol Pumps
+
+Banks
+
+Temples
+
+Distance
+
+Travel Time
+
+If API returns nothing show locality overview instead.
+
+----------------------------------------------------
+
+8 Interactive Map
+
+Google Map
+
+Nearby markers
+
+Directions
+
+Traffic layer
+
+Street View
+
+----------------------------------------------------
+
+9 Amenities
+
+Grid
+
+Icons
+
+Search
+
+Categories
+
+Lifestyle
+
+Security
+
+Sports
+
+Kids
+
+Convenience
+
+If amenities unavailable hide section.
+
+----------------------------------------------------
+
+10 Floor Plans
+
+If available
+
+Gallery
+
+Area
+
+Price
+
+Configuration
+
+Download PDF
+
+If unavailable replace section with
+
+Available Unit Types
+
+----------------------------------------------------
+
+11 Available Units
+
+Dynamic Cards
+
+Price
+
+Area
+
+Facing
+
+Floor
+
+Availability
+
+CTA
+
+If unavailable show
+
+Contact for Inventory
+
+----------------------------------------------------
+
+12 Builder Profile
+
+Store once per builder.
+
+Reuse everywhere.
+
+Include
+
+Logo
+
+Description
+
+Projects Delivered
+
+Years
+
+Cities
+
+Ratings
+
+If unavailable generate short builder profile.
+
+----------------------------------------------------
+
+13 Locality Intelligence
+
+Never write manually.
+
+Create from
+
+Google Maps
+
+Nearby Places
+
+Area Name
+
+Project Density
+
+Connectivity
+
+Future Infrastructure
+
+Schools
+
+Hospitals
+
+Shopping
+
+Entertainment
+
+Generate
+
+Why invest in this locality
+
+Pros
+
+Things to know
+
+Lifestyle
+
+Family suitability
+
+Commercial potential
+
+----------------------------------------------------
+
+14 Nearby Projects
+
+Automatically recommend
+
+Nearby projects
+
+Same builder
+
+Similar budget
+
+Similar property type
+
+----------------------------------------------------
+
+15 Price Trends
+
+If available
+
+Graph
+
+If unavailable
+
+Show average locality pricing.
+
+----------------------------------------------------
+
+16 FAQs
+
+Auto generate.
+
+Examples
+
+Is this RERA approved?
+
+Is possession near?
+
+Who is the builder?
+
+Nearest metro?
+
+Investment potential?
+
+Property type?
+
+Location?
+
+Loan available?
+
+Stamp duty?
+
+Registration?
+
+Minimum
+
+10 FAQs.
+
+----------------------------------------------------
+
+17 SEO
+
+Generate
+
+Meta Title
+
+Meta Description
+
+Canonical
+
+Open Graph
+
+Twitter
+
+JSON-LD
+
+Breadcrumb Schema
+
+Real Estate Schema
+
+FAQ Schema
+
+Local Business Schema if builder office exists.
+
+----------------------------------------------------
+
+18 Internal Linking
+
+Automatically create links
+
+Nearby Projects
+
+Nearby Localities
+
+Builder Projects
+
+Same Budget Projects
+
+Ready to Move
+
+Luxury
+
+Commercial
+
+Residential
+
+----------------------------------------------------
+
+19 Similar Searches
+
+Generate
+
+Commercial Projects in Gurgaon
+
+Luxury Projects Near Metro
+
+Retail Shops in Sector 65
+
+Office Spaces in Gurgaon
+
+Projects by M3M
+
+----------------------------------------------------
+
+20 Sticky Bottom CTA
+
+Always visible
+
+Book Visit
+
+Call
+
+WhatsApp
+
+Get Price Sheet
+
+----------------------------------------------------
+
+MISSING DATA ENGINE
+
+This is the MOST IMPORTANT PART.
+
+Create a fallback engine.
+
+Example
+
+IF builder missing
+
+Hide builder card.
+
+IF possession missing
+
+Hide possession chip.
+
+IF RERA missing
+
+Hide RERA.
+
+IF amenities missing
+
+Expand locality section.
+
+IF floor plans missing
+
+Expand available units.
+
+IF units missing
+
+Expand investment analysis.
+
+IF project description missing
+
+Generate AI summary.
+
+IF locality information missing
+
+Use Google Maps.
+
+IF Google Maps missing
+
+Generate locality overview using project city.
+
+IF nearby unavailable
+
+Show city highlights.
+
+IF builder unavailable
+
+Generate generic builder profile.
+
+IF images missing
+
+Use project placeholder.
+
+IF price unavailable
+
+Show
+
+"Contact for Price"
+
+Never show
+
+NULL
+
+undefined
+
+NaN
+
+N/A
+
+or empty boxes.
+
+----------------------------------------------------
+
+SEO RULES
+
+Every project page should contain
+
+1500-2500 words
+
+generated from reusable components.
+
+No duplicate content.
+
+Generate unique summaries.
+
+Generate unique FAQs.
+
+Generate unique locality descriptions.
+
+Generate unique investment analysis.
+
+Generate unique page titles.
+
+Generate unique meta descriptions.
+
+----------------------------------------------------
+
+DESIGN RULES
+
+Lots of white space.
+
+Premium typography.
+
+Modern cards.
+
+Rounded corners.
+
+Sticky sidebar on desktop.
+
+Sticky CTA on mobile.
+
+Progressive disclosure.
+
+Accordion FAQs.
+
+Fast loading.
+
+Lazy loading.
+
+Skeleton loaders.
+
+Image optimization.
+
+----------------------------------------------------
+
+COMPONENT ARCHITECTURE
+
+Every section should be an independent reusable component.
+
+Each component should accept
+
+data
+
+loading
+
+empty
+
+error
+
+states.
+
+Components should automatically decide whether to
+
+Render
+
+Hide
+
+Replace
+
+Expand
+
+Generate
+
+based on available data.
+
+----------------------------------------------------
+
+FINAL GOAL
+
+The page should feel like the richest property page on the internet even if only partial project data exists.
+
+Every visitor should always find enough information to make a decision.
+
+Every page should look unique.
+
+Every page should be SEO optimized.
+
+Every page should have excellent UX.
+
+Every page should gracefully adapt to missing data without looking broken.
+
+Build this as a scalable system, not as a one-off page.

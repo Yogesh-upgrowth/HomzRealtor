@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import { formatInr } from "@/lib/intelligence/normalize";
+import { clean } from "@/lib/intelligence/view-model";
 
 type Props = {
   title: string;
@@ -15,7 +16,10 @@ function ProjectCard({ project }: { project: NormalizedProject }) {
   );
   const price = project.min_price_inr
     ? formatInr(project.min_price_inr)
-    : project.price_text || "Price on Request";
+    : clean(project.price_text) || "Price on Request";
+  const builder = clean(project.builder);
+  const possession = clean(project.possession_text);
+  const category = clean(project.property_category);
 
   return (
     <Link
@@ -38,9 +42,11 @@ function ProjectCard({ project }: { project: NormalizedProject }) {
           </div>
         )}
         {/* Category badge */}
-        <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/70 text-[#CEA44E] border border-[#CEA44E]/40">
-          {project.property_category}
-        </span>
+        {category && (
+          <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/70 text-[#CEA44E] border border-[#CEA44E]/40">
+            {category}
+          </span>
+        )}
       </div>
 
       {/* Info */}
@@ -49,19 +55,19 @@ function ProjectCard({ project }: { project: NormalizedProject }) {
           {project.project_name}
         </h3>
         <p className="text-gray-400 text-xs mb-2">
-          {[project.sector, project.city_name].filter(Boolean).join(", ")}
+          {[clean(project.sector), clean(project.city_name)].filter(Boolean).join(", ")}
         </p>
 
         <div className="flex items-center justify-between mt-3">
           <span className="text-[#CEA44E] font-bold text-sm">{price}</span>
-          {project.builder && (
-            <span className="text-gray-500 text-[10px]">{project.builder}</span>
+          {builder && (
+            <span className="text-gray-500 text-[10px]">{builder}</span>
           )}
         </div>
 
-        {project.possession_text && (
+        {possession && (
           <p className="text-gray-500 text-[11px] mt-1">
-            Possession: {project.possession_text}
+            Possession: {possession}
           </p>
         )}
       </div>
@@ -72,6 +78,14 @@ function ProjectCard({ project }: { project: NormalizedProject }) {
 const SimilarProjects = ({ title, projects, heading }: Props) => {
   if (!projects || projects.length === 0) return null;
 
+  const seen = new Set<string>();
+  const unique = projects.filter((p) => {
+    const key = `${p.city_key}-${p.slug}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">
       <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
@@ -79,7 +93,7 @@ const SimilarProjects = ({ title, projects, heading }: Props) => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((p) => (
+        {unique.map((p) => (
           <ProjectCard key={`${p.city_key}-${p.slug}`} project={p} />
         ))}
       </div>

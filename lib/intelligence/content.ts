@@ -6,6 +6,7 @@ import { unstable_cache } from "next/cache";
 import OpenAI from "openai";
 import type { NormalizedProject, } from "./normalize";
 import { formatInr } from "./normalize";
+import { clean } from "./view-model";
 import type { LandmarksMap, ConnectivityItem } from "./geo";
 
 const openai = new OpenAI({
@@ -13,7 +14,10 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
-const MODEL = process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "llama-3.1-8b-instant";
+const MODEL = process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "gpt-4o-mini";
+
+// Bump this to invalidate previously cached AI content (e.g. after model/prompt changes).
+const CONTENT_CACHE_VERSION = "v2";
 
 export type FaqItem = { q: string; a: string };
 
@@ -109,6 +113,10 @@ Return a JSON object with exactly these 5 keys:
     parsed = JSON.parse(response.choices[0]?.message?.content || "{}");
   } catch (err) {
     console.error("[intelligence/content] AI call failed:", err);
+    // Rethrow so unstable_cache does NOT persist an empty payload for a
+    // transient failure. The caller falls back to empty content for this
+    // request, and the next request retries generation.
+    throw err;
   }
 
   const aiFaq: FaqItem[] = Array.isArray(parsed.faq)
@@ -129,49 +137,55 @@ Return a JSON object with exactly these 5 keys:
 export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
   const faqs: FaqItem[] = [];
   const name = project.project_name;
-  const location = [project.sector, project.city_name].filter(Boolean).join(", ");
+  const priceText = clean(project.price_text);
+  const possessionText = clean(project.possession_text);
+  const reraId = clean(project.rera_id);
+  const propertyType = clean(project.property_type);
+  const cityName = clean(project.city_name) || "the city";
+  const builder = clean(project.builder) || "a reputed developer";
+  const location = [clean(project.sector), clean(project.city_name)].filter(Boolean).join(", ");
 
-  if (project.price_text) {
+  if (priceText) {
     faqs.push({
       q: `What is the price of ${name}?`,
-      a: `${name} is priced at ${project.price_text}. Please contact HomzRealtor for the latest pricing and available payment plans.`,
+      a: `${name} is priced at ${priceText}. Please contact HomzRealtor for the latest pricing and available payment plans.`,
     });
   }
 
-  if (project.possession_text) {
+  if (possessionText) {
     faqs.push({
       q: `What is the possession date for ${name}?`,
-      a: `The expected possession date for ${name} is ${project.possession_text}. This is subject to approvals and construction progress.`,
+      a: `The expected possession date for ${name} is ${possessionText}. This is subject to approvals and construction progress.`,
     });
   }
 
-  if (project.rera_id) {
+  if (reraId) {
     faqs.push({
       q: `Is ${name} RERA registered?`,
-      a: `Yes, ${name} is registered under RERA with ID ${project.rera_id}. You can verify this on the official RERA portal.`,
+      a: `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official RERA portal.`,
     });
   }
 
   faqs.push({
     q: `Who is the builder of ${name}?`,
-    a: `${name} is developed by ${project.builder}, a reputed real estate developer in India known for quality construction and timely delivery.`,
+    a: `${name} is developed by ${builder}, a reputed real estate developer in India known for quality construction and timely delivery.`,
   });
 
   faqs.push({
     q: `Where is ${name} located?`,
-    a: `${name} is located in ${location || project.city_name}. The project enjoys excellent connectivity to major commercial and social infrastructure in the area.`,
+    a: `${name} is located in ${location || cityName}. The project enjoys excellent connectivity to major commercial and social infrastructure in the area.`,
   });
 
-  if (project.property_type) {
+  if (propertyType) {
     faqs.push({
       q: `What types of units are available in ${name}?`,
-      a: `${name} offers ${project.property_type} configurations. Get in touch with HomzRealtor for current availability and floor plan details.`,
+      a: `${name} offers ${propertyType} configurations. Get in touch with HomzRealtor for current availability and floor plan details.`,
     });
   }
 
   faqs.push({
     q: `Is ${name} a good investment?`,
-    a: `${name} by ${project.builder} in ${project.city_name} offers strong investment potential given the location, builder reputation, and ongoing infrastructure development in the area. We recommend consulting HomzRealtor's experts for a personalised investment analysis.`,
+    a: `${name} by ${builder} in ${cityName} offers strong investment potential given the location, builder reputation, and ongoing infrastructure development in the area. We recommend consulting HomzRealtor's experts for a personalised investment analysis.`,
   });
 
   faqs.push({
@@ -191,7 +205,7 @@ export function generateProjectContent(
   // On Vercel this cache entry persists 30 days across deploys.
   return unstable_cache(
     () => callOpenAI(project, landmarks, connectivity),
-    ["ai-content", project.city_key, project.slug],
+    ["ai-content", CONTENT_CACHE_VERSION, project.city_key, project.slug],
     { revalidate: 2592000 }
   )();
 }

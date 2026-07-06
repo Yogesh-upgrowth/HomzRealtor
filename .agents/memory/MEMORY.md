@@ -1,4 +1,2 @@
-# Project Memory (index)
-
-- [Background jobs don't survive](background-jobs-teardown.md) — detached setsid/nohup processes are killed when the spawning tool call ends; run long jobs as foreground time-boxed chunks.
-- [Raw pg schema management](raw-pg-schema-management.md) — no ORM; apply DDL to dev DB directly, prod gets it via publish-diff; scheduled jobs are separate deployments, don't clobber the website's.
+- [AI content generation quirks](ai-content-generation.md) — Replit OpenAI gateway needs a real OpenAI model (not llama); unstable_cache will cache empty/failed AI payloads unless you throw + version the cache key.
+- [Project listing Missing Data Engine](project-listing-engine.md) — every user-visible string must pass through `clean()` (view-model.ts); canonical city URLs use slug map, never internal city_key.
