@@ -10,9 +10,31 @@ import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
 
 // app/layout.tsx
 
-export const metadata = {
-  title : "Homz - Your Ultimate Home searching Companion",
-  description: "Discover your dream home with Homz - the ultimate home searching companion. Find the perfect property, compare prices, and get expert advice all in one place.",
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.homzrealtor.com"),
+  title: {
+    default:
+      "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+    template: "%s | HomzRealtor",
+  },
+  description:
+    "Find verified residential and commercial projects across Gurgaon, Noida, Greater Noida, Delhi and Faridabad. Compare prices, explore amenities and get expert advice with HomzRealtor.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "HomzRealtor",
+    url: "https://www.homzrealtor.com",
+    title:
+      "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+    description:
+      "Find verified residential and commercial projects across Delhi NCR. Compare prices, explore amenities and get expert advice with HomzRealtor.",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -22,6 +44,29 @@ export const metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "RealEstateAgent",
+      "@id": "https://www.homzrealtor.com/#organization",
+      name: "HomzRealtor",
+      url: "https://www.homzrealtor.com",
+      logo: "https://www.homzrealtor.com/android-icon-192x192.png",
+      slogan: "Where Your Property Journey Begins.",
+      areaServed: ["Gurgaon", "Noida", "Greater Noida", "Delhi", "Faridabad"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.homzrealtor.com/#website",
+      url: "https://www.homzrealtor.com",
+      name: "HomzRealtor",
+      publisher: { "@id": "https://www.homzrealtor.com/#organization" },
+      inLanguage: "en-IN",
+    },
+  ],
 };
 export default function RootLayout({
   children,
@@ -33,6 +78,12 @@ export default function RootLayout({
       <body
         className="antialiased"
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema).replace(/</g, "\\u003c"),
+          }}
+        />
         <FormProvider>
           <Header />
           <FormComponent />

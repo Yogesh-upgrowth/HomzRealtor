@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const project = await getProjectBySlug(city, slug).catch(() => null);
 
   const title = project
-    ? `${project.project_name} | HomzRealtor`
-    : `${slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} | HomzRealtor`;
+    ? project.project_name
+    : slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const description = project?.about?.[0]
     ? project.about[0].slice(0, 155)
@@ -85,8 +85,63 @@ const ProjectPage = async ({ params }: PageParams) => {
   const view = resolveProjectView(project, { cityParam: city });
   const enquireHref = `/project-listing/${view.citySlug}/${view.slug}/enquire`;
 
+  const pageUrl = `https://www.homzrealtor.com/project-listing/${city}/${slug}`;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.homzrealtor.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Projects",
+            item: "https://www.homzrealtor.com/project-listing",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: view.name,
+            item: pageUrl,
+          },
+        ],
+      },
+      {
+        "@type": "RealEstateListing",
+        name: view.name,
+        url: pageUrl,
+        ...(view.images?.[0] ? { image: view.images[0] } : {}),
+        ...(view.locationLine
+          ? {
+              spatialCoverage: {
+                "@type": "Place",
+                name: view.locationLine,
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: view.cityName,
+                  addressCountry: "IN",
+                },
+              },
+            }
+          : {}),
+      },
+    ],
+  };
+
   return (
     <div className="pb-24 lg:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <ProjectHero
         name={view.name}
         builder={view.builder}

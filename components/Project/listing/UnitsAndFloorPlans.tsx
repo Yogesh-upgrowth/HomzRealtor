@@ -17,9 +17,10 @@ type Props = {
  *  • Else → render nothing (never an empty table).
  */
 const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Props) => {
-  const enquire = (unit: string, price: string) =>
-    `/project-listing/${citySlug}/${slug}/enquire?unit=${encodeURIComponent(unit)}&price=${encodeURIComponent(price)}`;
+  const enquireHref = `/project-listing/${citySlug}/${slug}/enquire`;
 
+  // Available Units table intentionally disabled — uncomment this block to restore it.
+  /*
   if (units.length > 0) {
     return (
       <section className="w-full max-w-7xl mx-auto px-2 my-12">
@@ -45,7 +46,7 @@ const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Prop
                   <td className="p-3 text-gray-700">{u.price}</td>
                   <td className="p-3 text-center">
                     <Link
-                      href={enquire(`${u.unitType} ${u.size}`, u.price)}
+                      href={enquireHref}
                       className="inline-flex items-center gap-1 rounded-md bg-black px-3 py-1.5 text-xs md:text-sm text-white hover:bg-gray-800 transition"
                     >
                       Enquire <ArrowRight size={14} />
@@ -59,6 +60,7 @@ const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Prop
       </section>
     );
   }
+  */
 
   if (propertyType) {
     const configs = propertyType.split(/[,/]/).map((c) => c.trim()).filter(Boolean);
@@ -83,7 +85,7 @@ const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Prop
             ))}
           </div>
           <Link
-            href={`/project-listing/${citySlug}/${slug}/enquire?unit=${encodeURIComponent(propertyType)}&price=On%20Request`}
+            href={enquireHref}
             className="inline-flex items-center gap-2 rounded-md bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition"
           >
             Get Floor Plans &amp; Pricing <ArrowRight size={16} />

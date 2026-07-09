@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { slugify } from "@/components/utils/slugify";
 import Carousel from "@/components/Carousel";
 
@@ -18,14 +18,9 @@ import {
 
 function EnquiryContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
 
   const city = (params?.city as string) || "";
   const slug = (params?.slug as string) || "";
-  const enquiry = (params?.enquiry as string) || "";
-
-  const unit = searchParams.get("unit") || "";
-  const price = searchParams.get("price") || "";
 
   const [project, setProject] = useState<any>(null);
 
@@ -221,9 +216,5 @@ function EnquiryContent() {
 }
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="text-center mt-20">Loading...</div>}>
-      <EnquiryContent />
-    </Suspense>
-  );
+  return <EnquiryContent />;
 }

@@ -6,7 +6,7 @@ import Testimonials from "@/components/Common/Testimonial";
 import customer from "@/assets/images/customer.png";
 
 export const metadata = {
-  title: "About Homz | Trusted Real Estate Advisory & Property Solutions",
+  title: "About Us — Trusted Real Estate Advisory & Property Solutions",
   description:
     "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
   alternates: {

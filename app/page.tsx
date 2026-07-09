@@ -20,7 +20,6 @@ export default function Home() {
         testimonialsData={testimonials}
       />
       <FormComponent />
-      <div className="h-20 testing-replit">"Testing Phase"</div>
     </div>
   );
 }
