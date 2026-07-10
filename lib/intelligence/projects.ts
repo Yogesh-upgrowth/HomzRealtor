@@ -16,6 +16,30 @@ export const CITY_PARAM_MAP: Record<string, string> = {
   noida: "noida",
 };
 
+// The one true URL segment for each city, used for canonical tags, sitemap
+// entries and structured data. Any incoming variant (ggn, gNoida, gnoida…)
+// resolves back to these so a project has a single canonical URL — never
+// /ggn/x AND /gurgaon/x competing as duplicates.
+export const CANONICAL_CITY_SLUG: Record<string, string> = {
+  ggn: "gurgaon",
+  delhi: "delhi",
+  faridabad: "faridabad",
+  gNoida: "greaternoida",
+  noida: "noida",
+};
+
+export function canonicalCitySlug(cityKey: string): string {
+  return CANONICAL_CITY_SLUG[cityKey] || cityKey;
+}
+
+export const CITY_DISPLAY: Record<string, { name: string; state: string }> = {
+  ggn: { name: "Gurgaon", state: "Haryana" },
+  delhi: { name: "Delhi", state: "Delhi" },
+  faridabad: { name: "Faridabad", state: "Haryana" },
+  gNoida: { name: "Greater Noida", state: "Uttar Pradesh" },
+  noida: { name: "Noida", state: "Uttar Pradesh" },
+};
+
 async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
   const [commercial, residential] = await Promise.all([
     fetch(

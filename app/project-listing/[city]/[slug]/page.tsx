@@ -6,7 +6,7 @@ import QuickSnapshot from "@/components/Project/listing/QuickSnapshot";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
-import { getProjectBySlug } from "@/lib/intelligence/projects";
+import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView } from "@/lib/intelligence/view-model";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
@@ -15,28 +15,70 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const { city, slug } = await params;
   const project = await getProjectBySlug(city, slug).catch(() => null);
 
-  const title = project
-    ? project.project_name
-    : slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  if (!project) {
+    const fallbackName = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return {
+      title: fallbackName,
+      description: `Explore ${fallbackName} — pricing, location, amenities and investment insights on HomzRealtor.`,
+      alternates: {
+        canonical: `https://www.homzrealtor.com/project-listing/${city}/${slug}`,
+      },
+    };
+  }
 
-  const description = project?.about?.[0]
-    ? project.about[0].slice(0, 155)
-    : `Explore ${project?.project_name || slug} — pricing, location, amenities and investment insights on HomzRealtor.`;
+  const cityName = project.city_name;
+  const locationLabel = project.sector
+    ? `${project.sector} ${cityName}`
+    : project.micro_market || cityName;
 
-  const image = project?.images?.find(
+  // Rich, keyword-led title built from real data (never just the bare name).
+  // e.g. "M3M Route 65, Sector 65 Gurgaon: Price, Floor Plan & Reviews"
+  const title = `${project.project_name}, ${locationLabel}: Price, Floor Plan & Reviews`;
+
+  // Prefer the project's own narrative when it is substantial; otherwise fall
+  // back to a unique, data-driven template so no two pages share a description.
+  const priceBit =
+    project.min_price_inr || project.price_text ? "latest price, " : "";
+  const templatedDescription =
+    `Explore ${project.project_name} in ${locationLabel}. Check ${priceBit}floor plans, ` +
+    `amenities, ${project.property_category.toLowerCase()} configurations, location ` +
+    `advantages and nearby projects on HomzRealtor.`;
+  const description =
+    project.about?.[0] && project.about[0].length >= 90
+      ? project.about[0].slice(0, 158)
+      : templatedDescription.slice(0, 158);
+
+  const keywords = [
+    project.project_name,
+    `${project.project_name} ${cityName}`,
+    `${project.project_name} price`,
+    `${project.project_name} floor plan`,
+    `${project.property_category} projects in ${cityName}`,
+    project.builder && project.builder !== "Unknown"
+      ? `${project.builder} projects`
+      : null,
+    project.sector ? `projects in ${project.sector} ${cityName}` : null,
+  ].filter(Boolean) as string[];
+
+  const canonicalUrl = `https://www.homzrealtor.com/project-listing/${canonicalCitySlug(
+    project.city_key
+  )}/${slug}`;
+
+  const image = project.images?.find(
     (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
   );
 
   return {
     title,
     description,
+    keywords,
     alternates: {
-      canonical: `https://www.homzrealtor.com/project-listing/${city}/${slug}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.homzrealtor.com/project-listing/${city}/${slug}`,
+      url: canonicalUrl,
       type: "website",
       images: image ? [{ url: image, width: 1200, height: 630, alt: title }] : [],
     },
@@ -83,9 +125,45 @@ const ProjectPage = async ({ params }: PageParams) => {
 
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   const view = resolveProjectView(project, { cityParam: city });
-  const enquireHref = `/project-listing/${view.citySlug}/${view.slug}/enquire`;
+  const canonicalCity = canonicalCitySlug(project.city_key);
+  const enquireHref = `/project-listing/${canonicalCity}/${view.slug}/enquire`;
 
-  const pageUrl = `https://www.homzrealtor.com/project-listing/${city}/${slug}`;
+  // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
+  const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
+
+  // Core structured data (BreadcrumbList + RealEstateListing) is emitted here, in
+  // the immediately-rendered HTML. FAQPage schema lives in <ProjectJsonLd> inside
+  // the streamed intelligence sections — no type is emitted in both places.
+  const listing: Record<string, any> = {
+    "@type": "RealEstateListing",
+    name: view.name,
+    url: pageUrl,
+    ...(view.about[0] ? { description: view.about[0] } : {}),
+    ...(view.images.length ? { image: view.images.slice(0, 5) } : {}),
+    provider: { "@type": "Organization", name: project.builder },
+    address: {
+      "@type": "PostalAddress",
+      ...(project.sector || project.micro_market
+        ? {
+            streetAddress: [project.sector, project.micro_market]
+              .filter(Boolean)
+              .join(", "),
+          }
+        : {}),
+      addressLocality: project.city_name,
+      addressRegion: project.state,
+      addressCountry: "IN",
+    },
+  };
+  if (project.min_price_inr) {
+    listing.offers = {
+      "@type": "AggregateOffer",
+      priceCurrency: "INR",
+      lowPrice: project.min_price_inr,
+      ...(project.max_price_inr ? { highPrice: project.max_price_inr } : {}),
+    };
+  }
+
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -107,30 +185,18 @@ const ProjectPage = async ({ params }: PageParams) => {
           {
             "@type": "ListItem",
             position: 3,
+            name: view.cityName,
+            item: `https://www.homzrealtor.com/project-listing/${canonicalCity}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
             name: view.name,
             item: pageUrl,
           },
         ],
       },
-      {
-        "@type": "RealEstateListing",
-        name: view.name,
-        url: pageUrl,
-        ...(view.images?.[0] ? { image: view.images[0] } : {}),
-        ...(view.locationLine
-          ? {
-              spatialCoverage: {
-                "@type": "Place",
-                name: view.locationLine,
-                address: {
-                  "@type": "PostalAddress",
-                  addressLocality: view.cityName,
-                  addressCountry: "IN",
-                },
-              },
-            }
-          : {}),
-      },
+      listing,
     ],
   };
 

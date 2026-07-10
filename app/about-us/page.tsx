@@ -9,8 +9,22 @@ export const metadata = {
   title: "About Us — Trusted Real Estate Advisory & Property Solutions",
   description:
     "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
+  keywords: [
+    "about HomzRealtor",
+    "real estate advisory Delhi NCR",
+    "trusted property consultants Gurgaon",
+    "property solutions company",
+    "real estate experts Noida",
+  ],
   alternates: {
     canonical: "/about-us",
+  },
+  openGraph: {
+    title: "About Us — Trusted Real Estate Advisory & Property Solutions",
+    description:
+      "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
+    url: "https://www.homzrealtor.com/about-us",
+    type: "website",
   },
 };
 

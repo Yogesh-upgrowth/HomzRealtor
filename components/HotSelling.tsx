@@ -103,9 +103,9 @@ export default function HotSelling() {
         <div className="flex items-center justify-center w-full">
           <div className="h-[1.5px] flex-1 bg-gradient-to-r from-black via-gray-400 to-transparent" />
 
-          <h1 className="mx-4 text-2xl md:text-4xl font-corbert font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent uppercase tracking-wide">
+          <h2 className="mx-4 text-2xl md:text-4xl font-corbert font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent uppercase tracking-wide">
             Hot Selling Real Estate Projects <br />
-          </h1>
+          </h2>
 
           <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-gray-400 to-black" />
         </div>

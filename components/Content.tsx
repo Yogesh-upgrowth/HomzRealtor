@@ -95,12 +95,12 @@ const Content: React.FC<ContentSectionProps> = ({
           <div className="flex flex-col items-center md:items-start gap-3 mb-6 text-center md:text-left">
 
             {/* Title */}
-            <h1
+            <h2
               id="about-heading"
               className="text-xl md:text-2xl font-corbert tracking-wide text-[#212121]"
             >
               {cardData}
-            </h1>
+            </h2>
 
             <p className="text-base md:text-lg text-[#212121]">
               {cardDescription}

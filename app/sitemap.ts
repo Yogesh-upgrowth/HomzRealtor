@@ -2,18 +2,20 @@ import { MetadataRoute } from 'next'
 
 export const dynamic = 'force-dynamic'
 
-// city API key → URL segment used in /project-listing/[city]/[slug]
+// city API key → CANONICAL URL segment used in /project-listing/[city]/[slug].
+// These must match the <link rel="canonical"> the project pages emit, otherwise
+// the sitemap advertises non-canonical URLs (e.g. /ggn/ instead of /gurgaon/).
 const CITY_ENDPOINT_MAP: Record<string, string> = {
-  delhiCommercialProjects:    'delhi',
-  delhiResidentialProjects:   'delhi',
-  faridabadCommercialProjects:'faridabad',
+  delhiCommercialProjects:     'delhi',
+  delhiResidentialProjects:    'delhi',
+  faridabadCommercialProjects: 'faridabad',
   faridabadResidentialProjects:'faridabad',
-  ggnCommercialProjects:      'ggn',
-  ggnResidentialProjects:     'ggn',
-  gNoidaCommercialProjects:   'gNoida',
-  gNoidaResidentialProjects:  'gNoida',
-  noidaCommercialProjects:    'noida',
-  noidaResidentialProjects:   'noida',
+  ggnCommercialProjects:       'gurgaon',
+  ggnResidentialProjects:      'gurgaon',
+  gNoidaCommercialProjects:    'greaternoida',
+  gNoidaResidentialProjects:   'greaternoida',
+  noidaCommercialProjects:     'noida',
+  noidaResidentialProjects:    'noida',
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -52,12 +54,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectUrls: MetadataRoute.Sitemap = entries.map(({ slug, city, updatedAt }) => ({
     url: `${baseUrl}/project-listing/${city}/${slug}`,
     lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }))
+
+  // City landing pages (programmatic hubs) — one per city that returned projects.
+  const cityUrls: MetadataRoute.Sitemap = Array.from(
+    new Set(entries.map((e) => e.city))
+  ).map((city) => ({
+    url: `${baseUrl}/project-listing/${city}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.7,
   }))
 
   return [
-    { url: baseUrl,                           lastModified: new Date() },
-    { url: `${baseUrl}/about-us`,             lastModified: new Date() },
-    { url: `${baseUrl}/project-listing`,      lastModified: new Date() },
+    { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
+    { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${baseUrl}/about-us`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    ...cityUrls,
     ...projectUrls,
   ]
 }

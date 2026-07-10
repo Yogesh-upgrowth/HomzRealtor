@@ -211,9 +211,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-[#FDF094] to-[#B77D2B]" />
-            <h1 className={`text-3xl md:text-4xl font-bold font-corbert ${theme === "dark" ? "text-[#EEEEEE]" : "text-yellow-600"}`}>
+            <h2 className={`text-3xl md:text-4xl font-bold font-corbert ${theme === "dark" ? "text-[#EEEEEE]" : "text-yellow-600"}`}>
               {cardData.title || "OUR MISSION"}
-            </h1>
+            </h2>
             <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-[#FDF094] to-[#B77D2B]" />
           </div>
 

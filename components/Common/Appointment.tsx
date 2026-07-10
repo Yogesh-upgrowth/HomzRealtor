@@ -24,9 +24,9 @@ const AppointmentCard: React.FC<AppointmentProps> = ({
       }}
     >
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-semibold mb-4 tracking-wide">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 tracking-wide">
           {heading}{" "}
-        </h1>
+        </h2>
         <p className="text-base md:text-lg mb-8 opacity-90">{para}</p>
         {btnTxt && (
           <button className="bg-white text-gray-800 font-semibold px-6 py-3 rounded-md hover:bg-gray-200 transition cursor-pointer">

@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   },
   description:
     "Browse verified residential and commercial projects in Gurgaon, Noida, Greater Noida, Delhi and Faridabad. Filter by city, compare prices and enquire directly on HomzRealtor.",
+  keywords: [
+    "projects in Delhi NCR",
+    "residential projects Gurgaon",
+    "commercial projects Noida",
+    "property listing Delhi NCR",
+    "new projects Greater Noida",
+    "flats in Faridabad",
+  ],
   alternates: {
     canonical: "/project-listing",
   },

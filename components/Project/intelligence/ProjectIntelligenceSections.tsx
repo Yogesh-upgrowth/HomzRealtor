@@ -68,6 +68,10 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
     faq: [],
   }));
 
+  // Single source of truth for FAQs so the visible <Faq> and the FAQPage schema
+  // in <ProjectJsonLd> always match — schema must reflect on-page content.
+  const faqItems = content.faq.length > 0 ? content.faq : fallbackFaqs;
+
   const [similarProjects, builderProjects, priceData] = await Promise.all([
     getSimilarProjects(project).catch(() => []),
     getBuilderProjects(project).catch(() => []),
@@ -92,7 +96,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
 
   return (
     <>
-      <ProjectJsonLd project={project} faq={content.faq} connectivity={connectivity} coords={coords} />
+      <ProjectJsonLd project={project} faq={faqItems} connectivity={connectivity} coords={coords} />
 
       {/* Why This Project — auto badges */}
       <WhyThisProject title={view.name} badges={view.whyThisProject} />
@@ -183,7 +187,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
       <InternalLinking similarSearches={view.similarSearches} internalLinks={view.internalLinks} />
 
       {/* FAQ */}
-      <Faq title={project.project_name} items={content.faq.length > 0 ? content.faq : fallbackFaqs} />
+      <Faq title={project.project_name} items={faqItems} />
     </>
   );
 };
