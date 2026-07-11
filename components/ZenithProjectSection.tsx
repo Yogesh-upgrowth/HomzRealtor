@@ -142,7 +142,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
 
                       <td className="p-3 text-center">
                         <Link
-                          href={`/project-listing/${city}/${slug}/enquire`}
+                          href={`/project-listing/${city}/${slug}/flat`}
                           className="inline-block bg-white text-[#754E1A] text-xs md:text-sm px-3 py-1.5 rounded-sm hover:bg-gray-200 transition"
                         >
                           ENQUIRE NOW

@@ -17,7 +17,7 @@ type Props = {
  *  • Else → render nothing (never an empty table).
  */
 const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Props) => {
-  const enquireHref = `/project-listing/${citySlug}/${slug}/enquire`;
+  const enquireHref = `/project-listing/${citySlug}/${slug}/flat`;
 
   // Available Units table intentionally disabled — uncomment this block to restore it.
   /*

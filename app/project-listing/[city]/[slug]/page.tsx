@@ -126,7 +126,7 @@ const ProjectPage = async ({ params }: PageParams) => {
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   const view = resolveProjectView(project, { cityParam: city });
   const canonicalCity = canonicalCitySlug(project.city_key);
-  const enquireHref = `/project-listing/${canonicalCity}/${view.slug}/enquire`;
+  const enquireHref = `/project-listing/${canonicalCity}/${view.slug}/flat`;
 
   // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
   const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
