@@ -1,6 +1,10 @@
 import { MetadataRoute } from 'next'
+import { getSectorsForCity, canonicalCitySlug } from '@/lib/intelligence/projects'
 
 export const dynamic = 'force-dynamic'
+
+// city API key → CANONICAL URL segment. Used to enumerate the sector hub pages.
+const CITY_KEYS = ['ggn', 'delhi', 'faridabad', 'gNoida', 'noida']
 
 // city API key → CANONICAL URL segment used in /project-listing/[city]/[slug].
 // These must match the <link rel="canonical"> the project pages emit, otherwise
@@ -68,11 +72,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  // Sector hub pages: /sectors index + one page per derived sector, per city.
+  const sectorEntries = await Promise.all(
+    CITY_KEYS.map(async (cityKey) => {
+      const citySegment = canonicalCitySlug(cityKey)
+      try {
+        const sectors = await getSectorsForCity(cityKey)
+        const urls: MetadataRoute.Sitemap = [
+          {
+            url: `${baseUrl}/project-listing/${citySegment}/sectors`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.7,
+          },
+          ...sectors.map((s) => ({
+            url: `${baseUrl}/project-listing/${citySegment}/sectors/${s.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.6,
+          })),
+        ]
+        return urls
+      } catch {
+        return [] as MetadataRoute.Sitemap
+      }
+    })
+  )
+  const sectorUrls: MetadataRoute.Sitemap = sectorEntries.flat()
+
   return [
     { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
     { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
     { url: `${baseUrl}/about-us`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     ...cityUrls,
+    ...sectorUrls,
     ...projectUrls,
   ]
 }

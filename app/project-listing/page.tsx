@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
 import devImg from "@/public/totalUnit.svg";
 import { slugify } from "@/components/utils/slugify";
+import { extractSector } from "@/lib/intelligence/normalize";
 import customer from "@/assets/images/customer.png";
 
 const useIsMobile = (breakpoint = 768) => {
@@ -51,15 +52,40 @@ const ProjectListing = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedSector, setSelectedSector] = useState("all");
 
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
 
+  // Sector options for the selected city, derived from the fetched projects
+  // (the backend has no sector field — it's extracted from title + about text).
+  const sectorOptions = useMemo(() => {
+    if (selectedCity === "all") return [] as { sector: string; count: number }[];
+    const counts = new Map<string, number>();
+    for (const p of projects) {
+      if (!p?._sector) continue;
+      counts.set(p._sector, (counts.get(p._sector) || 0) + 1);
+    }
+    const sortKey = (s: string) => {
+      const m = s.match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : 9999;
+    };
+    return Array.from(counts.entries())
+      .map(([sector, count]) => ({ sector, count }))
+      .sort((a, b) => sortKey(a.sector) - sortKey(b.sector));
+  }, [projects, selectedCity]);
+
+  // Apply the sector filter in-place before paginating.
+  const visibleProjects =
+    selectedSector === "all"
+      ? projects
+      : projects.filter((p) => p?._sector === selectedSector);
+
   const startIndex = (currentPage - 1) * cardsPerPage;
   const endIndex = startIndex + cardsPerPage;
 
-  const currentProjects = projects.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(projects.length / cardsPerPage);
+  const currentProjects = visibleProjects.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(visibleProjects.length / cardsPerPage);
 
   // ✅ Helpers
   const getValidImage = (images: string[] = []) => {
@@ -171,7 +197,17 @@ const ProjectListing = () => {
           return Number(bHas) - Number(aHas);
         });
 
-        setProjects(finalData);
+        // ✅ Derive a sector for each project (title + about text) for filtering
+        const withSector = finalData.map((item) => ({
+          ...item,
+          _sector: extractSector(
+            item.projectTitle,
+            item.aboutProject,
+            item.location
+          ),
+        }));
+
+        setProjects(withSector);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -226,24 +262,66 @@ const ProjectListing = () => {
           <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-black/50 to-transparent" />
         </div>
 
-        {/* Dropdown */}
-        <div className="relative w-[220px]">
-          <select
-            value={selectedCity}
-            onChange={(e) => {
-              setSelectedCity(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
-          >
-            <option value="all">All</option>
-            <option value="gurgaon">Gurgaon</option>
-            <option value="delhi">Delhi</option>
-            <option value="faridabad">Faridabad</option>
-            <option value="greaternoida">Greater Noida</option>
-            <option value="noida">Noida</option>
-          </select>
+        {/* Dropdowns */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="relative w-[220px]">
+            <select
+              value={selectedCity}
+              onChange={(e) => {
+                setSelectedCity(e.target.value);
+                setSelectedSector("all");
+                setCurrentPage(1);
+              }}
+              className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
+            >
+              <option value="all">All Cities</option>
+              <option value="gurgaon">Gurgaon</option>
+              <option value="delhi">Delhi</option>
+              <option value="faridabad">Faridabad</option>
+              <option value="greaternoida">Greater Noida</option>
+              <option value="noida">Noida</option>
+            </select>
+          </div>
+
+          {/* Sector filter — appears once a specific city is selected */}
+          {selectedCity !== "all" && sectorOptions.length > 0 && (
+            <div className="relative w-[220px]">
+              <select
+                value={selectedSector}
+                onChange={(e) => {
+                  setSelectedSector(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
+              >
+                <option value="all">All Sectors</option>
+                {sectorOptions.map((s) => (
+                  <option key={s.sector} value={s.sector}>
+                    {s.sector} ({s.count})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
+
+        {/* Link through to the dedicated sector page(s) */}
+        {selectedCity !== "all" && sectorOptions.length > 0 && (
+          <Link
+            href={
+              selectedSector === "all"
+                ? `/project-listing/${selectedCity}/sectors`
+                : `/project-listing/${selectedCity}/sectors/${slugify(
+                    selectedSector
+                  )}`
+            }
+            className="text-sm font-medium text-[#CEA44E] hover:underline"
+          >
+            {selectedSector === "all"
+              ? "Browse all sectors →"
+              : `Open ${selectedSector} page →`}
+          </Link>
+        )}
       </div>
 
       {/* Cards */}

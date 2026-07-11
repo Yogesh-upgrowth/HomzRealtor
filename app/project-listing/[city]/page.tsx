@@ -8,6 +8,7 @@ import {
   CITY_DISPLAY,
   canonicalCitySlug,
   getProjectsForCity,
+  getSectorsForCity,
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
@@ -80,6 +81,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
 
   const projects = await getProjectsForCity(cityKey).catch(() => []);
   const withImages = projects.filter((p) => p.images.length > 0);
+  const sectors = await getSectorsForCity(cityKey).catch(() => []);
 
   const residential = projects.filter((p) => p.property_category === "Residential");
   const commercial = projects.filter((p) => p.property_category === "Commercial");
@@ -165,6 +167,14 @@ const CityLandingPage = async ({ params }: PageParams) => {
           >
             All Projects in {name}
           </Link>
+          {sectors.length > 0 && (
+            <Link
+              href={`/project-listing/${slug}/sectors`}
+              className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B] transition"
+            >
+              Browse by Sector ({sectors.length})
+            </Link>
+          )}
           {residential.length > 0 && (
             <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
               {residential.length} Residential
@@ -193,6 +203,35 @@ const CityLandingPage = async ({ params }: PageParams) => {
           </Link>{" "}
           in the meantime.
         </div>
+      )}
+
+      {/* Browse by sector — programmatic internal linking hub */}
+      {sectors.length > 0 && (
+        <section className="w-full max-w-7xl mx-auto px-4 my-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Browse Property in {name} by Sector
+            </h2>
+            <Link
+              href={`/project-listing/${slug}/sectors`}
+              className="text-sm font-medium text-[#B77D2B] hover:underline whitespace-nowrap"
+            >
+              View all {sectors.length} sectors →
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {sectors.slice(0, 18).map((s) => (
+              <Link
+                key={s.slug}
+                href={`/project-listing/${slug}/sectors/${s.slug}`}
+                className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+              >
+                {s.sector}{" "}
+                <span className="text-gray-400">({s.count})</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Builders in this city — internal linking + content depth */}
