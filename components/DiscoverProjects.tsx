@@ -17,30 +17,35 @@ const projects = [
     title: "Buy Property",
     desc: "Explore a wide range of options to buy your dream property with ease and confidence.",
     img: discoverImage1,
+    href: "/buy-property",
   },
   {
     id: 2,
     title: "Rent Property",
     desc: "Choose from various rental options tailored to your preferences and convenience. With transparent agreements and verified listings, moving into your next home has never been easier.",
     img: discoverImage2,
+    href: "/rent-property",
   },
   {
     id: 3,
     title: "Plots & Lands",
     desc: "Find the perfect plot or land for your dream project, investment, or development plan.",
     img: discoverImage3,
+    href: "/plots-and-lands",
   },
   {
     id: 4,
     title: "Projects",
     desc: "Discover curated projects that match your lifestyle and investment goals.",
     img: discoverImage4,
+    href: "/project-listing",
   },
   {
     id: 5,
     title: "Commercial",
     desc: "Unlock commercial spaces designed for growth, visibility, and long-term success.",
     img: discoverImage5,
+    href: "/commercial",
   },
 ];
 
@@ -104,7 +109,7 @@ export default function DiscoverProject() {
               </p>
 
               <Link
-                href="/project-listing"
+                href={projects[currentIndex].href}
                 className="inline-block mt-3 px-4 py-2 bg-[#CEA44E] text-black rounded"
               >
                 View More
@@ -186,7 +191,7 @@ export default function DiscoverProject() {
                   </p>
 
                   <Link
-                    href="/project-listing"
+                    href={p.href}
                     className="inline-block mt-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded"
                   >
                     View More
