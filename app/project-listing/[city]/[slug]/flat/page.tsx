@@ -1,11 +1,8 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { slugify } from "@/components/utils/slugify";
-import Carousel from "@/components/Carousel";
-
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
+  ChevronRight,
   Zap,
   Utensils,
   Droplets,
@@ -16,205 +13,307 @@ import {
   Building2,
 } from "lucide-react";
 
-function EnquiryContent() {
-  const params = useParams();
+import Carousel from "@/components/Carousel";
+import AppointmentCard from "@/components/Common/Appointment";
+import bgImg from "@/public/appointmentBG.jpg";
+import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { formatInr, type NormalizedProject } from "@/lib/intelligence/normalize";
 
-  const city = (params?.city as string) || "";
-  const slug = (params?.slug as string) || "";
+const SITE = "https://www.homzrealtor.com";
 
-  const [project, setProject] = useState<any>(null);
+type PageParams = { params: Promise<{ city: string; slug: string }> };
 
-  const getCachedProject = (key: string) => {
-    if (typeof window === "undefined") return null;
-    try {
-      return JSON.parse(localStorage.getItem(key) || "null");
-    } catch {
-      return null;
-    }
+const imgFilter = (u: unknown): u is string =>
+  typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u);
+
+// A "flat" child page is only genuinely useful (and thus indexable) for
+// residential projects that carry some flat-relevant data. Commercial/plot
+// projects have no valid "flat" property type, and empty projects would be thin
+// duplicates — both get noindex,follow so we never index low-value combos while
+// keeping the URL live and its links crawlable.
+function isFlatPageIndexable(project: NormalizedProject): boolean {
+  const isResidential = project.property_category === "Residential";
+  const hasContent =
+    project.amenities.length > 0 ||
+    project.specifications.length > 0 ||
+    project.images.length > 0 ||
+    project.interior_images.length > 0 ||
+    project.min_price_inr != null;
+  return isResidential && hasContent;
+}
+
+function locationLabel(project: NormalizedProject): string {
+  return project.sector
+    ? `${project.sector}, ${project.city_name}`
+    : project.micro_market || project.city_name;
+}
+
+export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
+  const { city, slug } = await params;
+  const project = await getProjectBySlug(city, slug).catch(() => null);
+
+  if (!project) {
+    const fallbackName = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return {
+      title: `Flats in ${fallbackName} | HomzRealtor`,
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const loc = locationLabel(project);
+  const canonicalUrl = `${SITE}/project-listing/${canonicalCitySlug(
+    project.city_key
+  )}/${slug}/flat`;
+  const indexable = isFlatPageIndexable(project);
+
+  const priceBit =
+    project.min_price_inr != null
+      ? `Prices from ${formatInr(project.min_price_inr)}. `
+      : "";
+  const title = `Flats in ${project.project_name}, ${loc} — Price & Availability | HomzRealtor`;
+  const description =
+    `Looking for flats in ${project.project_name}, ${loc}? ${priceBit}` +
+    `Check available configurations, floor plans, amenities and specifications, ` +
+    `and enquire about current availability on HomzRealtor.`;
+
+  const image = project.images.find(imgFilter) || project.interior_images.find(imgFilter);
+
+  return {
+    title,
+    description: description.slice(0, 158),
+    keywords: [
+      `flats in ${project.project_name}`,
+      `${project.project_name} flats`,
+      `${project.project_name} ${project.city_name}`,
+      `flats for sale in ${loc}`,
+      `${project.project_name} price`,
+    ],
+    alternates: { canonical: canonicalUrl },
+    robots: indexable ? undefined : { index: false, follow: true },
+    openGraph: {
+      title,
+      description: description.slice(0, 158),
+      url: canonicalUrl,
+      type: "website",
+      images: image ? [{ url: image, width: 1200, height: 630, alt: title }] : [],
+    },
   };
+}
 
-  const setCachedProject = (key: string, value: any) => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(key, JSON.stringify(value));
-  };
+function amenityIcon(item: string) {
+  const key = item.toLowerCase();
+  if (key.includes("power")) return Zap;
+  if (key.includes("restaurant")) return Utensils;
+  if (key.includes("water")) return Droplets;
+  if (key.includes("parking") || key.includes("car")) return Car;
+  if (key.includes("security") || key.includes("cctv")) return Shield;
+  if (key.includes("pool")) return Waves;
+  if (key.includes("park") || key.includes("green")) return Trees;
+  return Building2;
+}
 
-  useEffect(() => {
-    async function fetchProject() {
-      try {
-        if (!city || !slug) return;
+const FlatChildPage = async ({ params }: PageParams) => {
+  const { city, slug } = await params;
+  const project = await getProjectBySlug(city, slug).catch(() => null);
+  if (!project) notFound();
 
-        const cacheKey = `${city}-${slug}`;
+  const citySegment = canonicalCitySlug(project.city_key);
+  const projectUrl = `/project-listing/${citySegment}/${slug}`;
+  const pageUrl = `${SITE}${projectUrl}/flat`;
+  const loc = locationLabel(project);
 
-        const cached = getCachedProject(cacheKey);
-        if (cached) {
-          setProject(cached);
-          return;
-        }
+  const gallery = (
+    project.interior_images.length ? project.interior_images : project.images
+  ).filter(imgFilter);
 
-        const cityKeyMap: Record<string, string> = {
-          ggn: "ggn",
-          gurgaon: "ggn",
-          delhi: "delhi",
-          faridabad: "faridabad",
-          greaternoida: "gNoida",
-          gnoida: "gNoida",
-          gNoida: "gNoida",
-          noida: "noida",
-        };
-
-        const base = cityKeyMap[city];
-        if (!base) return;
-
-        const fetchData = async (type: string) => {
-          const res = await fetch(
-            `https://homzbackend.vercel.app/api/data?city=${base}${type}&page=1&limit=200`
-          );
-          const data = await res.json();
-          return data?.results || [];
-        };
-
-        const [commercial, residential] = await Promise.all([
-          fetchData("CommercialProjects"),
-          fetchData("ResidentialProjects"),
-        ]);
-
-        const allProjects = [...commercial, ...residential];
-
-        const matched = allProjects.find(
-          (p) => slugify(p?.projectTitle || "") === slug
-        );
-
-        if (matched) {
-          setProject(matched);
-          setCachedProject(cacheKey, matched);
-        }
-      } catch (err) {
-        console.error("Error fetching project:", err);
-      }
-    }
-
-    fetchProject();
-  }, [city, slug]);
-
-  const images =
-    project?.interiorImages?.filter((img: string) =>
-      img.match(/\.(jpg|jpeg|png|webp)/)
-    ) || [];
-
-  const convenience = project?.amenities?.find(
-    (item: any) => item.category?.toLowerCase() === "convenience"
+  const convenience = project.amenities.find(
+    (a: { category?: string }) => a?.category?.toLowerCase() === "convenience"
   );
+  const specifications = project.specifications;
 
-  const specifications = project?.specifications || [];
+  const priceRange =
+    project.min_price_inr != null
+      ? project.max_price_inr && project.max_price_inr !== project.min_price_inr
+        ? `${formatInr(project.min_price_inr)} – ${formatInr(project.max_price_inr)}`
+        : formatInr(project.min_price_inr)
+      : project.price_text || null;
 
-  const getAmenityIcon = (item: string) => {
-    const key = item.toLowerCase();
-
-    if (key.includes("power")) return Zap;
-    if (key.includes("restaurant")) return Utensils;
-    if (key.includes("water")) return Droplets;
-    if (key.includes("parking") || key.includes("car")) return Car;
-    if (key.includes("security") || key.includes("cctv")) return Shield;
-    if (key.includes("pool")) return Waves;
-    if (key.includes("park") || key.includes("green")) return Trees;
-
-    return Building2;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: project.city_name,
+        item: `${SITE}/project-listing/${citySegment}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: project.project_name,
+        item: `${SITE}${projectUrl}`,
+      },
+      { "@type": "ListItem", position: 4, name: "Flats", item: pageUrl },
+    ],
   };
+
+  const safeJson = (g: unknown) =>
+    JSON.stringify(g)
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026");
 
   return (
-    <div className="max-w-7xl mx-auto mt-20 p-4 text-black">
+    <div className="pb-16 text-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
+      />
 
-      {/* Title */}
-      <h1 className="text-3xl mx-auto mt-10 text-center font-bold tracking-tight text-gray-900 mb-6">
-        {project?.projectTitle || "Loading..."}
-      </h1>
+      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+        {/* Breadcrumb — crawlable anchors back to parent entities */}
+        <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
+          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+          <ChevronRight size={12} />
+          <Link href={`/project-listing/${citySegment}`} className="hover:text-[#B77D2B]">
+            {project.city_name}
+          </Link>
+          <ChevronRight size={12} />
+          <Link href={projectUrl} className="hover:text-[#B77D2B]">
+            {project.project_name}
+          </Link>
+          <ChevronRight size={12} />
+          <span className="text-gray-800 font-medium">Flats</span>
+        </nav>
 
-      {/* Carousel */}
-      <div className="mb-8">
-        {project && <Carousel images={images} />}
-      </div>
+        {/* Transactional hero */}
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+          Flats in {project.project_name}
+        </h1>
+        <p className="mt-2 text-gray-600">{loc}</p>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {priceRange && (
+            <span className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B]">
+              {priceRange}
+            </span>
+          )}
+          {project.property_type && (
+            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+              {project.property_type}
+            </span>
+          )}
+          {project.possession_text && (
+            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+              Possession: {project.possession_text}
+            </span>
+          )}
+          {project.rera_id && (
+            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+              RERA: {project.rera_id}
+            </span>
+          )}
+        </div>
+
+        {/* Availability status — honest, no fake inventory */}
+        <p className="mt-5 max-w-3xl text-gray-600 leading-relaxed">
+          Enquire for the latest availability, floor plans and price breakup for flats in{" "}
+          {project.project_name}. Our advisors share verified options that match your budget
+          and configuration.
+        </p>
+      </section>
+
+      {/* Gallery */}
+      {gallery.length > 0 && (
+        <section className="w-full max-w-7xl mx-auto px-4 my-8">
+          <Carousel images={gallery} />
+        </section>
+      )}
 
       {/* Amenities */}
-      {convenience && (
-        <>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Amenities
-        </h2>
-        <div className="bg-black border border-gray-700 rounded-xl p-5 mb-8">
-            
-
-          <h2 className="text-xl font-semibold text-white mb-4">
-            {convenience.category}
-          </h2>
-
-          <div className="grid grid-cols-2 gap-y-3 text-sm text-gray-300">
-            {convenience.amenities.map((item: string, index: number) => {
-              const Icon = getAmenityIcon(item);
-
-              return (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 px-2 py-1 rounded-md hover:bg-zinc-900 transition"
-                >
-                  <Icon size={16} className="text-yellow-400 shrink-0" />
-                  <span>{item}</span>
-                </div>
-              );
-            })}
+      {convenience?.amenities?.length > 0 && (
+        <section className="w-full max-w-7xl mx-auto px-4 my-10">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Amenities</h2>
+          <div className="bg-black border border-gray-700 rounded-xl p-5">
+            <h3 className="text-lg font-semibold text-white mb-4">{convenience.category}</h3>
+            <div className="grid grid-cols-2 gap-y-3 text-sm text-gray-300">
+              {convenience.amenities.map((item: string, i: number) => {
+                const Icon = amenityIcon(item);
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-2 py-1 rounded-md hover:bg-zinc-900 transition"
+                  >
+                    <Icon size={16} className="text-yellow-400 shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-
-        </div>
-        </>
+        </section>
       )}
 
       {/* Specifications */}
       {specifications.length > 0 && (
-        <div className="mb-10">
-
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Specifications
-          </h2>
-
+        <section className="w-full max-w-7xl mx-auto px-4 my-10">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Specifications</h2>
           <div className="overflow-x-auto border border-gray-300 rounded-md">
             <table className="w-full border-collapse">
-
               <thead>
                 <tr className="bg-yellow-600/80 text-white text-left">
-                  <th className="px-6 py-4 border-r border-gray-700">
-                    CATEGORY
-                  </th>
-                  <th className="px-6 py-4">
-                    DETAILS
-                  </th>
+                  <th className="px-6 py-4 border-r border-gray-700">CATEGORY</th>
+                  <th className="px-6 py-4">DETAILS</th>
                 </tr>
               </thead>
-
               <tbody>
-                {specifications.map((item: any, index: number) => (
-                  <tr
-                    key={index}
-                    className="bg-black text-white border-t transition"
-                  >
-                    <td className="px-6 py-4 border-r border-gray-200 font-medium">
-                      {item.heading}
-                    </td>
-                    <td className="px-6 py-4">
-                      {item.value}
-                    </td>
-                  </tr>
-                ))}
+                {specifications.map(
+                  (item: { heading?: string; value?: string }, i: number) => (
+                    <tr key={i} className="bg-black text-white border-t">
+                      <td className="px-6 py-4 border-r border-gray-200 font-medium">
+                        {item.heading}
+                      </td>
+                      <td className="px-6 py-4">{item.value}</td>
+                    </tr>
+                  )
+                )}
               </tbody>
-
             </table>
           </div>
-
-        </div>
+        </section>
       )}
 
+      {/* Compact project context — link back to the full project page */}
+      <section className="w-full max-w-7xl mx-auto px-4 my-10">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              About {project.project_name}
+            </h2>
+            <p className="mt-1 text-sm text-gray-600">
+              See the full project — pricing, floor plans, location intelligence and
+              investment insights.
+            </p>
+          </div>
+          <Link
+            href={projectUrl}
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FDF094] to-[#B77D2B] px-5 py-2 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
+          >
+            View full project details →
+          </Link>
+        </div>
+      </section>
+
+      <AppointmentCard
+        bgImage={bgImg}
+        heading={`ENQUIRE ABOUT FLATS IN ${project.project_name.toUpperCase()}`}
+        para={`Get current availability, floor plans and the best price for flats in ${project.project_name}, ${loc} from the HomzRealtor team.`}
+        btnTxt="Check Availability"
+      />
     </div>
   );
-}
+};
 
-export default function Page() {
-  return <EnquiryContent />;
-}
+export default FlatChildPage;

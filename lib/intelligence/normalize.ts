@@ -108,8 +108,10 @@ export type NormalizedProject = {
   min_price_inr: number | null;
   max_price_inr: number | null;
   images: string[];
+  interior_images: string[];
   about: string[];
   amenities: any[];
+  specifications: any[];
   price_list: any[];
   builder_description: string[];
   recent_updates: any[];
@@ -138,8 +140,10 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     min_price_inr: price.min,
     max_price_inr: price.max,
     images: Array.isArray(raw.images) ? raw.images : [],
+    interior_images: Array.isArray(raw.interiorImages) ? raw.interiorImages : [],
     about: Array.isArray(raw.aboutProject) ? raw.aboutProject : [],
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
+    specifications: Array.isArray(raw.specifications) ? raw.specifications : [],
     price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
     builder_description: Array.isArray(raw.builderDescription)
       ? raw.builderDescription
