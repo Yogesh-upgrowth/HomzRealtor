@@ -215,3 +215,99 @@ export async function getPriceInsights(current: NormalizedProject): Promise<Pric
     micro_market: current.micro_market,
   };
 }
+
+// ── Developer browsing ───────────────────────────────────────────────────────
+// The backend has no structured "developer" entity; `builder` is derived by
+// matching the project title against KNOWN_BUILDERS (normalize.ts). These helpers
+// group the already-normalized, already-cached projects (across all cities) by
+// that derived builder so we can render /developer and /developer/[slug] with no
+// extra fetches — the underlying getProjectsForCity calls are unstable_cache'd.
+
+export type DeveloperSummary = {
+  name: string; // display label, e.g. "DLF"
+  slug: string; // URL segment, e.g. "dlf"
+  count: number;
+  withImages: number;
+  residential: number;
+  commercial: number;
+  cities: { slug: string; name: string }[]; // canonical city slug + display name
+};
+
+async function buildDeveloperIndex(): Promise<
+  Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>
+> {
+  const allCities = await Promise.all(ALL_CITY_KEYS.map(getProjectsForCity));
+  const map = new Map<
+    string,
+    { summary: DeveloperSummary; projects: NormalizedProject[] }
+  >();
+
+  for (const projects of allCities) {
+    for (const p of projects) {
+      const builder = p.builder;
+      if (!builder || builder === "Unknown") continue;
+      // Skip junk names the first-word builder heuristic can produce (e.g. a
+      // title starting with a lone "A ..."). Avoids thin, low-quality developer
+      // pages/sitemap entries. Fuller eligibility gating is a later slice.
+      if (builder.trim().length < 3) continue;
+      const slug = slugify(builder);
+      if (!slug || slug.length < 3) continue;
+
+      let entry = map.get(slug);
+      if (!entry) {
+        entry = {
+          summary: {
+            name: builder,
+            slug,
+            count: 0,
+            withImages: 0,
+            residential: 0,
+            commercial: 0,
+            cities: [],
+          },
+          projects: [],
+        };
+        map.set(slug, entry);
+      }
+
+      entry.projects.push(p);
+      entry.summary.count += 1;
+      if (p.images.length > 0) entry.summary.withImages += 1;
+      if (p.property_category === "Commercial") entry.summary.commercial += 1;
+      else entry.summary.residential += 1;
+
+      const citySlug = canonicalCitySlug(p.city_key);
+      if (!entry.summary.cities.some((c) => c.slug === citySlug)) {
+        const disp = CITY_DISPLAY[p.city_key];
+        entry.summary.cities.push({
+          slug: citySlug,
+          name: disp ? disp.name : p.city_name,
+        });
+      }
+    }
+  }
+
+  return map;
+}
+
+export async function getAllBuilders(): Promise<DeveloperSummary[]> {
+  const map = await buildDeveloperIndex();
+  return Array.from(map.values())
+    .map((e) => e.summary)
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+export async function getBuilderBySlug(
+  slug: string
+): Promise<{ summary: DeveloperSummary; projects: NormalizedProject[] } | null> {
+  const map = await buildDeveloperIndex();
+  const entry = map.get(slug.toLowerCase());
+  if (!entry) return null;
+  // Projects with images first, then alphabetical — best cards lead the grid.
+  const projects = [...entry.projects].sort((a, b) => {
+    const ai = a.images.length > 0 ? 0 : 1;
+    const bi = b.images.length > 0 ? 0 : 1;
+    return ai - bi || a.project_name.localeCompare(b.project_name);
+  });
+  return { summary: entry.summary, projects };
+}

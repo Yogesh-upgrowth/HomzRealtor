@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, canonicalCitySlug } from '@/lib/intelligence/projects'
+import { getSectorsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
 
 export const dynamic = 'force-dynamic'
 
@@ -100,12 +100,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   )
   const sectorUrls: MetadataRoute.Sitemap = sectorEntries.flat()
 
+  // Developer hub pages: /developer index + one page per derived developer.
+  let developerUrls: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/developer`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.7,
+    },
+  ]
+  try {
+    const developers = await getAllBuilders()
+    developerUrls = developerUrls.concat(
+      developers.map((d) => ({
+        url: `${baseUrl}/developer/${d.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }))
+    )
+  } catch {
+    // Skip per-developer entries on fetch error — sitemap degrades gracefully.
+  }
+
   return [
     { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
     { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
     { url: `${baseUrl}/about-us`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     ...cityUrls,
     ...sectorUrls,
+    ...developerUrls,
     ...projectUrls,
   ]
 }

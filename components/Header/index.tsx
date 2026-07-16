@@ -85,6 +85,7 @@ const Navbar: React.FC = () => {
             <Link href="/">Home</Link>
             <Link href="/about-us">About Us</Link>
             <Link href="/project-listing">Properties</Link>
+            <Link href="/developer">Developers</Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -129,6 +130,9 @@ const Navbar: React.FC = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Properties
+          </Link>
+          <Link href="/developer" onClick={() => setIsMobileMenuOpen(false)}>
+            Developers
           </Link>
         </div>
       </div>

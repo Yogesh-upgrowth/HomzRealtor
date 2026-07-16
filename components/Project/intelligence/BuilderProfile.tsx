@@ -1,6 +1,9 @@
+import Link from "next/link";
+
 type Props = {
   builder: string;
   text: string;
+  slug?: string; // when set, the developer name links to /developer/[slug]
 };
 
 function RichText({ text }: { text: string }) {
@@ -19,7 +22,7 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-const BuilderProfile = ({ builder, text }: Props) => {
+const BuilderProfile = ({ builder, text, slug }: Props) => {
   if (!text) return null;
 
   return (
@@ -34,7 +37,13 @@ const BuilderProfile = ({ builder, text }: Props) => {
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-widest">Developer</p>
             <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent leading-tight">
-              {builder}
+              {slug ? (
+                <Link href={`/developer/${slug}`} className="hover:opacity-80 transition-opacity">
+                  {builder}
+                </Link>
+              ) : (
+                builder
+              )}
             </h2>
           </div>
         </div>
@@ -44,6 +53,15 @@ const BuilderProfile = ({ builder, text }: Props) => {
         <div className="text-gray-300 text-[15px] leading-7">
           <RichText text={text} />
         </div>
+
+        {slug && (
+          <Link
+            href={`/developer/${slug}`}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FDF094] to-[#B77D2B] px-5 py-2 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
+          >
+            View all projects by {builder} →
+          </Link>
+        )}
       </div>
     </section>
   );

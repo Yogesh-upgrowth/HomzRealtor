@@ -10,6 +10,7 @@ import {
   getProjectsForCity,
   getSectorsForCity,
 } from "@/lib/intelligence/projects";
+import { slugify } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
@@ -237,17 +238,26 @@ const CityLandingPage = async ({ params }: PageParams) => {
       {/* Builders in this city — internal linking + content depth */}
       {builders.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Top Developers in {name}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Top Developers in {name}
+            </h2>
+            <Link
+              href="/developer"
+              className="text-sm font-medium text-[#B77D2B] hover:underline whitespace-nowrap"
+            >
+              View all developers →
+            </Link>
+          </div>
           <div className="flex flex-wrap gap-2">
             {builders.map((b) => (
-              <span
-                key={b}
-                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700"
+              <Link
+                key={b as string}
+                href={`/developer/${slugify(b as string)}`}
+                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-white hover:text-[#B77D2B] border border-transparent hover:border-[#B77D2B] transition"
               >
                 {b}
-              </span>
+              </Link>
             ))}
           </div>
         </section>

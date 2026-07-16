@@ -3,6 +3,7 @@
 // (resolveProjectView). Every section self-hides when it has nothing real to show.
 
 import { CITY_PARAM_MAP, getProjectBySlug, getSimilarProjects, getBuilderProjects, getPriceInsights } from "@/lib/intelligence/projects";
+import { slugify } from "@/lib/intelligence/normalize";
 import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
 import { resolveProjectView } from "@/lib/intelligence/view-model";
@@ -163,7 +164,15 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
       />
 
       {/* Builder profile */}
-      <BuilderProfile builder={project.builder} text={content.builder_profile} />
+      <BuilderProfile
+        builder={project.builder}
+        text={content.builder_profile}
+        slug={
+          project.builder && project.builder !== "Unknown"
+            ? slugify(project.builder)
+            : undefined
+        }
+      />
 
       {/* More by same builder */}
       {builderProjects.length > 0 && (
