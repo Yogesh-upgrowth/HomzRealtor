@@ -49,6 +49,9 @@ const LANDMARK_TYPES = [
   { category: "Schools",          type: "school"        },
   { category: "Hospitals",        type: "hospital"      },
   { category: "Shopping Centres", type: "shopping_mall" },
+  { category: "Supermarkets",     type: "supermarket"   },
+  { category: "Parks",            type: "park"          },
+  { category: "Gyms",             type: "gym"           },
   { category: "Metro Stations",   type: "subway_station"},
   { category: "Hotels",           type: "lodging"       },
   { category: "Restaurants",      type: "restaurant"    },
@@ -121,7 +124,7 @@ export function fetchNearbyLandmarks(lat: number, lng: number) {
       const result: LandmarksMap = {};
       for (const { category, type } of LANDMARK_TYPES) {
         try {
-          const places = await nearbyRaw(lat, lng, type, 6);
+          const places = await nearbyRaw(lat, lng, type, 10);
           if (!places.length) continue;
           result[category] = places.map((p) => {
             const km = haversineKm(lat, lng, p.geometry.location.lat, p.geometry.location.lng);
@@ -137,7 +140,7 @@ export function fetchNearbyLandmarks(lat: number, lng: number) {
       }
       return result;
     },
-    ["landmarks", latKey, lngKey],
+    ["landmarks", "v2", latKey, lngKey],
     { revalidate: 2592000 }
   )();
 }

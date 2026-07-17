@@ -76,11 +76,29 @@ export function extractPriceRange(priceText?: string | null, priceList?: any[] |
   return { min: Math.min(...amounts), max: Math.max(...amounts) };
 }
 
+// Exact rupees with Indian grouping, e.g. 68543 → "₹68,543". Use for monthly /
+// small amounts (EMI, rent, maintenance) where Lakh/Cr rounding loses meaning.
+export function formatInrExact(n: number | null | undefined): string | null {
+  if (n == null) return null;
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(n);
+}
+
+// Short Lakh/Cr formatting for large amounts (property prices, totals). Keeps
+// meaningful precision for sub-crore values and falls back to exact rupees under
+// ₹1 Lakh so small numbers never collapse to "₹0 Lakh"/"₹1 Lakh".
 export function formatInr(n: number | null | undefined): string | null {
   if (n == null) return null;
-  const cr = n / 1e7;
-  if (cr >= 1) return `₹${cr.toFixed(2)} Cr`;
-  return `₹${(n / 1e5).toFixed(0)} Lakh`;
+  const abs = Math.abs(n);
+  if (abs >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
+  if (abs >= 1e5) {
+    const l = n / 1e5;
+    return `₹${Number.isInteger(l) ? l.toFixed(0) : l.toFixed(2)} Lakh`;
+  }
+  return formatInrExact(n);
 }
 
 export function slugify(text: string): string {
@@ -98,6 +116,7 @@ export type NormalizedProject = {
   builder: string;
   property_category: string;
   property_type: string | null;
+  project_status: string | null;
   rera_id: string | null;
   sector: string | null;
   micro_market: string | null;
@@ -130,6 +149,7 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     builder: extractBuilder(name),
     property_category: category,
     property_type: raw.BHKType || null,
+    project_status: raw.projectStatus || null,
     rera_id: raw.reraId || null,
     sector: extractSector(name, raw.aboutProject, raw.location),
     micro_market: extractMicroMarket(name, raw.aboutProject, raw.location),

@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ChevronRight,
-  Zap,
-  Utensils,
-  Droplets,
-  Car,
-  Shield,
-  Waves,
-  Trees,
-  Building2,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import Carousel from "@/components/Carousel";
 import AppointmentCard from "@/components/Common/Appointment";
+import PersonaSections from "@/components/Project/intelligence/PersonaSections";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { formatInr, type NormalizedProject } from "@/lib/intelligence/normalize";
@@ -100,18 +92,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
-function amenityIcon(item: string) {
-  const key = item.toLowerCase();
-  if (key.includes("power")) return Zap;
-  if (key.includes("restaurant")) return Utensils;
-  if (key.includes("water")) return Droplets;
-  if (key.includes("parking") || key.includes("car")) return Car;
-  if (key.includes("security") || key.includes("cctv")) return Shield;
-  if (key.includes("pool")) return Waves;
-  if (key.includes("park") || key.includes("green")) return Trees;
-  return Building2;
-}
-
 const FlatChildPage = async ({ params }: PageParams) => {
   const { city, slug } = await params;
   const project = await getProjectBySlug(city, slug).catch(() => null);
@@ -126,9 +106,6 @@ const FlatChildPage = async ({ params }: PageParams) => {
     project.interior_images.length ? project.interior_images : project.images
   ).filter(imgFilter);
 
-  const convenience = project.amenities.find(
-    (a: { category?: string }) => a?.category?.toLowerCase() === "convenience"
-  );
   const specifications = project.specifications;
 
   const priceRange =
@@ -232,30 +209,6 @@ const FlatChildPage = async ({ params }: PageParams) => {
         </section>
       )}
 
-      {/* Amenities */}
-      {convenience?.amenities?.length > 0 && (
-        <section className="w-full max-w-7xl mx-auto px-4 my-10">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Amenities</h2>
-          <div className="bg-black border border-gray-700 rounded-xl p-5">
-            <h3 className="text-lg font-semibold text-white mb-4">{convenience.category}</h3>
-            <div className="grid grid-cols-2 gap-y-3 text-sm text-gray-300">
-              {convenience.amenities.map((item: string, i: number) => {
-                const Icon = amenityIcon(item);
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 px-2 py-1 rounded-md hover:bg-zinc-900 transition"
-                  >
-                    <Icon size={16} className="text-yellow-400 shrink-0" />
-                    <span>{item}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Specifications */}
       {specifications.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-10">
@@ -284,6 +237,15 @@ const FlatChildPage = async ({ params }: PageParams) => {
           </div>
         </section>
       )}
+
+      {/* Investor / Home-Buyer persona tabs — shared with the project page */}
+      <Suspense
+        fallback={
+          <div className="max-w-7xl mx-auto px-4 my-12 h-40 animate-pulse rounded-xl bg-gray-100" />
+        }
+      >
+        <PersonaSections cityParam={city} slug={slug} />
+      </Suspense>
 
       {/* Compact project context — link back to the full project page */}
       <section className="w-full max-w-7xl mx-auto px-4 my-10">

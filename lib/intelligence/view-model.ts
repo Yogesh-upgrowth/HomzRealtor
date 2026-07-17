@@ -102,6 +102,16 @@ function isKnownBuilder(builder: string): boolean {
 
 /** Best-effort possession status label without ever showing raw junk. */
 function deriveStatus(project: NormalizedProject): string {
+  // Prefer the feed's own status when present (e.g. "New Launch"), normalising
+  // to our canonical labels; only guess from possession text as a fallback.
+  const feed = clean(project.project_status);
+  if (feed) {
+    const f = feed.toLowerCase();
+    if (/ready|rtm|possession available|immediate|completed|delivered/.test(f)) return "Ready to Move";
+    if (/new launch|newly launched|pre.?launch|launching|upcoming/.test(f)) return "New Launch";
+    if (/under.?construction|ongoing|nearing/.test(f)) return "Under Construction";
+    return feed;
+  }
   const p = (clean(project.possession_text) || "").toLowerCase();
   if (!p) return "Status on request";
   if (/ready|rtm|possession available|immediate|completed|delivered/.test(p)) return "Ready to Move";

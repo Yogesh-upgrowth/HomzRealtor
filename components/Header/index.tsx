@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
         <span>
           Exclusive Luxury Properties in Gurgaon – Invest in Your Future Today
         </span>
-        <Link href="/listing" className="font-semibold ml-2">
+        <Link href="/project-listing" className="font-semibold ml-2">
           VIEW ➜
         </Link>
       </div>

@@ -39,7 +39,7 @@ const ProjectHero = ({
   const pills = [propertyCategory, propertyType, status].filter(Boolean) as string[];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-2 mt-28 md:mt-32">
+    <section className="w-full max-w-7xl mx-auto px-2 mt-28 md:mt-32 mb-10">
       {/* Breadcrumb */}
       <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
         <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
