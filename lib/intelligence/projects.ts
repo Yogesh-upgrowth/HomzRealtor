@@ -161,6 +161,22 @@ export async function getSimilarProjects(
     .slice(0, limit);
 }
 
+export async function getSectorProjects(
+  current: NormalizedProject,
+  limit = 6
+): Promise<NormalizedProject[]> {
+  if (!current.sector) return [];
+  const projects = await getProjectsForCity(current.city_key);
+  return projects
+    .filter(
+      (p) =>
+        p.slug !== current.slug &&
+        p.sector === current.sector &&
+        p.images.length > 0
+    )
+    .slice(0, limit);
+}
+
 export async function getBuilderProjects(
   current: NormalizedProject,
   limit = 6

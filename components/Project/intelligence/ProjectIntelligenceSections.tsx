@@ -2,7 +2,7 @@
 // (top), the Investor / Home-Buyer persona tabs (via PersonaSections), and the
 // discovery tail. Every section self-hides when it has nothing real to show.
 
-import { CITY_PARAM_MAP, getProjectBySlug, getSimilarProjects, getBuilderProjects } from "@/lib/intelligence/projects";
+import { CITY_PARAM_MAP, getProjectBySlug, getSimilarProjects, getBuilderProjects, getSectorProjects } from "@/lib/intelligence/projects";
 import { slugify } from "@/lib/intelligence/normalize";
 import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
@@ -64,9 +64,10 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   // in <ProjectJsonLd> always match — schema must reflect on-page content.
   const faqItems = content.faq.length > 0 ? content.faq : fallbackFaqs;
 
-  const [similarProjects, builderProjects] = await Promise.all([
+  const [similarProjects, builderProjects, sectorProjects] = await Promise.all([
     getSimilarProjects(project).catch(() => []),
     getBuilderProjects(project).catch(() => []),
+    getSectorProjects(project).catch(() => []),
   ]);
 
   const view = resolveProjectView(project, {
@@ -104,12 +105,23 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         }
       />
 
+      {/* Compare projects in the same sector */}
+      {sectorProjects.length > 0 && (
+        <SimilarProjects
+          title={project.project_name}
+          projects={sectorProjects}
+          heading={`Compare Other Projects in ${project.sector}`}
+          currentProject={{ city_key: project.city_key, slug: project.slug }}
+        />
+      )}
+
       {/* More by same builder */}
       {builderProjects.length > 0 && (
         <SimilarProjects
           title={project.project_name}
           projects={builderProjects}
-          heading={`More Projects by ${project.builder}`}
+          heading={`${project.builder}'s Other Projects`}
+          currentProject={{ city_key: project.city_key, slug: project.slug }}
         />
       )}
 
@@ -119,6 +131,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
           title={project.project_name}
           projects={similarProjects}
           heading={`Similar Projects in ${project.city_name}`}
+          currentProject={{ city_key: project.city_key, slug: project.slug }}
         />
       )}
 
