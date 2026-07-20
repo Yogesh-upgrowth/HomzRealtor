@@ -238,13 +238,14 @@ const FlatChildPage = async ({ params }: PageParams) => {
         </section>
       )}
 
-      {/* Investor / Home-Buyer persona tabs — shared with the project page */}
+      {/* Unit configurations, pricing & affordability — flat-specific subset,
+          distinct from the full investor/buyer analysis on the project page */}
       <Suspense
         fallback={
           <div className="max-w-7xl mx-auto px-4 my-12 h-40 animate-pulse rounded-xl bg-gray-100" />
         }
       >
-        <PersonaSections cityParam={city} slug={slug} />
+        <PersonaSections cityParam={city} slug={slug} variant="flat" />
       </Suspense>
 
       {/* Compact project context — link back to the full project page */}

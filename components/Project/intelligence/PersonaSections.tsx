@@ -1,7 +1,10 @@
-// Shared, self-fetching server component that renders the Investor / Home-Buyer
-// persona tabs. Used by both the project detail page (via ProjectIntelligenceSections)
-// and the /flat child page. All data fetches are unstable_cache'd, so rendering it
-// on a second page that already fetched the same project is a cache hit.
+// Shared, self-fetching server component. The project detail page (via
+// ProjectIntelligenceSections) renders the full Investor / Home-Buyer persona
+// tabs (variant="full"). The /flat child page renders variant="flat" instead —
+// a lean, unit-configuration & affordability focused subset — so the two pages
+// never show identical content for the same project. All data fetches are
+// unstable_cache'd, so rendering this on a second page that already fetched the
+// same project is a cache hit.
 
 import { CITY_PARAM_MAP, getProjectBySlug, getPriceInsights } from "@/lib/intelligence/projects";
 import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
@@ -29,13 +32,44 @@ import PersonaTabs from "./PersonaTabs";
 type Props = {
   cityParam: string;
   slug: string;
+  variant?: "full" | "flat";
 };
 
-const PersonaSections = async ({ cityParam, slug }: Props) => {
-  const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
-
+const PersonaSections = async ({ cityParam, slug, variant = "full" }: Props) => {
   const project = await getProjectBySlug(cityParam, slug);
   if (!project) return null;
+
+  if (variant === "flat") {
+    const view = resolveProjectView(project, { cityParam });
+    return (
+      <>
+        {/* Configuration-wise pricing (real) + projected price journey */}
+        <PricingDetail
+          title={view.name}
+          priceList={project.price_list}
+          defaultPrice={project.min_price_inr}
+          possessionText={project.possession_text}
+        />
+
+        {/* Available configurations / floor plans */}
+        <UnitsAndFloorPlans
+          title={view.name}
+          citySlug={view.citySlug}
+          slug={view.slug}
+          units={view.units}
+          propertyType={view.propertyType}
+        />
+
+        {/* EMI / affordability calculator */}
+        <EmiCalculator title={view.name} defaultPrice={project.min_price_inr} />
+
+        {/* Amenities */}
+        <AmenitiesShowcase title={view.name} data={view.amenities} />
+      </>
+    );
+  }
+
+  const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
 
   const address = [
     project.project_name,
@@ -128,14 +162,6 @@ const PersonaSections = async ({ cityParam, slug }: Props) => {
             </section>
           )}
 
-          {/* Detailed pricing: real config table + projected price journey */}
-          <PricingDetail
-            title={view.name}
-            priceList={project.price_list}
-            defaultPrice={project.min_price_inr}
-            possessionText={project.possession_text}
-          />
-
           {/* Market position */}
           {priceData && (
             <PriceInsights title={project.project_name} data={priceData} priceList={project.price_list} />
@@ -173,9 +199,6 @@ const PersonaSections = async ({ cityParam, slug }: Props) => {
       }
       buyer={
         <>
-          {/* EMI / affordability calculator */}
-          <EmiCalculator title={view.name} defaultPrice={project.min_price_inr} />
-
           {/* Connectivity scorecard */}
           <ConnectivityScorecard title={project.project_name} items={connectivity} />
 
@@ -199,15 +222,6 @@ const PersonaSections = async ({ cityParam, slug }: Props) => {
               apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
             />
           )}
-
-          {/* Available units / floor plans (with fallback) */}
-          <UnitsAndFloorPlans
-            title={view.name}
-            citySlug={view.citySlug}
-            slug={view.slug}
-            units={view.units}
-            propertyType={view.propertyType}
-          />
 
           {/* Amenities (also relevant to buyers) */}
           <AmenitiesShowcase title={view.name} data={view.amenities} />
