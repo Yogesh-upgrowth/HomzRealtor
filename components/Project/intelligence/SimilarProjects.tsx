@@ -12,14 +12,17 @@ type Props = {
   projects: NormalizedProject[];
   heading?: string;
   currentProject?: CurrentProject;
+  linkTo?: "project" | "flat";
 };
 
 function ProjectCard({
   project,
   currentProject,
+  linkTo = "project",
 }: {
   project: NormalizedProject;
   currentProject?: CurrentProject;
+  linkTo?: "project" | "flat";
 }) {
   const img = project.images.find(
     (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
@@ -43,7 +46,10 @@ function ProjectCard({
 
   return (
     <div className="group bg-black border border-gray-700 rounded-xl overflow-hidden hover:border-[#CEA44E] transition-colors">
-      <Link href={`/project-listing/${project.city_key}/${project.slug}`} className="block">
+      <Link
+        href={`/project-listing/${project.city_key}/${project.slug}${linkTo === "flat" ? "/flat" : ""}`}
+        className="block"
+      >
         {/* Image */}
         <div className="relative h-44 w-full bg-gray-800">
           {img ? (
@@ -103,7 +109,7 @@ function ProjectCard({
   );
 }
 
-const SimilarProjects = ({ title, projects, heading, currentProject }: Props) => {
+const SimilarProjects = ({ title, projects, heading, currentProject, linkTo = "project" }: Props) => {
   if (!projects || projects.length === 0) return null;
 
   const seen = new Set<string>();
@@ -122,7 +128,7 @@ const SimilarProjects = ({ title, projects, heading, currentProject }: Props) =>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {unique.map((p) => (
-          <ProjectCard key={`${p.city_key}-${p.slug}`} project={p} currentProject={currentProject} />
+          <ProjectCard key={`${p.city_key}-${p.slug}`} project={p} currentProject={currentProject} linkTo={linkTo} />
         ))}
       </div>
     </section>

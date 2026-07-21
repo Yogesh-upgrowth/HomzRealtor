@@ -32,13 +32,15 @@ const ICONS: Record<string, LucideIcon> = {
   ShieldCheck,
 };
 
-const WhyThisProject = ({ title, badges }: { title: string; badges: Badge[] }) => {
+type Props = { title: string; badges: Badge[]; heading?: string };
+
+const WhyThisProject = ({ title, badges, heading }: Props) => {
   if (!badges || badges.length === 0) return null;
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">
       <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-        {`Why ${title}`}
+        {heading ?? `Why ${title}`}
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

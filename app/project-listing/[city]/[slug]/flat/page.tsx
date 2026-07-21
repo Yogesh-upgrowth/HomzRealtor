@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 
 import Carousel from "@/components/Carousel";
 import AppointmentCard from "@/components/Common/Appointment";
-import PersonaSections from "@/components/Project/intelligence/PersonaSections";
+import FlatIntelligenceSections from "@/components/Project/intelligence/FlatIntelligenceSections";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { formatInr, type NormalizedProject } from "@/lib/intelligence/normalize";
@@ -238,14 +238,15 @@ const FlatChildPage = async ({ params }: PageParams) => {
         </section>
       )}
 
-      {/* Unit configurations, pricing & affordability — flat-specific subset,
-          distinct from the full investor/buyer analysis on the project page */}
+      {/* Full flat-buying deep dive — configurations, amenities, location,
+          pricing, rental insights, FAQs and similar flats. Exclusive to this
+          page; the project page keeps only the investment-analysis bucket. */}
       <Suspense
         fallback={
           <div className="max-w-7xl mx-auto px-4 my-12 h-40 animate-pulse rounded-xl bg-gray-100" />
         }
       >
-        <PersonaSections cityParam={city} slug={slug} variant="flat" />
+        <FlatIntelligenceSections cityParam={city} slug={slug} />
       </Suspense>
 
       {/* Compact project context — link back to the full project page */}

@@ -76,6 +76,13 @@ export function extractPriceRange(priceText?: string | null, priceList?: any[] |
   return { min: Math.min(...amounts), max: Math.max(...amounts) };
 }
 
+export function extractSizeRange(sizeText?: string | null) {
+  if (!sizeText) return { min: null, max: null };
+  const nums = (String(sizeText).match(/\d+(?:\.\d+)?/g) || []).map(Number);
+  if (nums.length === 0) return { min: null, max: null };
+  return { min: Math.min(...nums), max: Math.max(...nums) };
+}
+
 // Exact rupees with Indian grouping, e.g. 68543 → "₹68,543". Use for monthly /
 // small amounts (EMI, rent, maintenance) where Lakh/Cr rounding loses meaning.
 export function formatInrExact(n: number | null | undefined): string | null {
@@ -126,6 +133,9 @@ export type NormalizedProject = {
   price_text: string | null;
   min_price_inr: number | null;
   max_price_inr: number | null;
+  min_size: number | null;
+  max_size: number | null;
+  size_unit: string | null;
   images: string[];
   interior_images: string[];
   about: string[];
@@ -141,6 +151,7 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
   const meta = CITY_META[cityKey] || { name: cityKey, state: "India" };
   const name = raw.projectTitle || "Untitled Project";
   const price = extractPriceRange(raw.price, raw.priceList);
+  const size = extractSizeRange(raw.size);
 
   return {
     slug: slugify(name),
@@ -159,6 +170,9 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     price_text: raw.price || null,
     min_price_inr: price.min,
     max_price_inr: price.max,
+    min_size: size.min,
+    max_size: size.max,
+    size_unit: raw.size ? "sq.ft" : null,
     images: Array.isArray(raw.images) ? raw.images : [],
     interior_images: Array.isArray(raw.interiorImages) ? raw.interiorImages : [],
     about: Array.isArray(raw.aboutProject) ? raw.aboutProject : [],
