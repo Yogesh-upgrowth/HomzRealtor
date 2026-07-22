@@ -4,7 +4,10 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FormProvider } from "@/context/FormContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { AuthModalProvider } from "@/context/AuthModalContext";
 import FormComponent from "@/components/FormComponent";
+import AuthModal from "@/components/Auth/AuthModal";
 import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
 
@@ -95,15 +98,20 @@ export default function RootLayout({
             __html: JSON.stringify(organizationSchema).replace(/</g, "\\u003c"),
           }}
         />
-        <FormProvider>
-          <Header />
-          <FormComponent />
-          {children}
-          <Footer />
-          <Suspense fallback={null}>
-            <GoogleAnalyticsTracker />
-          </Suspense>
-        </FormProvider>
+        <AuthProvider>
+          <AuthModalProvider>
+            <FormProvider>
+              <Header />
+              <FormComponent />
+              <AuthModal />
+              {children}
+              <Footer />
+              <Suspense fallback={null}>
+                <GoogleAnalyticsTracker />
+              </Suspense>
+            </FormProvider>
+          </AuthModalProvider>
+        </AuthProvider>
         <Toaster richColors position="top-right" />
       </body>
     </html>

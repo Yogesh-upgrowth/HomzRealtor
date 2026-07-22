@@ -2,14 +2,25 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IoMenu, IoClose } from "react-icons/io5";
 import logo from "@/assets/companylogo/logo.png";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthModal } from "@/context/AuthModalContext";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const { openLogin, openSignup } = useAuthModal();
   const transparentPaths = ["/", "/listing"];
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+    router.refresh();
+  };
 
   const [isScrolledPastTop, setIsScrolledPastTop] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -86,6 +97,24 @@ const Navbar: React.FC = () => {
             <Link href="/about-us">About Us</Link>
             <Link href="/project-listing">Properties</Link>
             <Link href="/developer">Developers</Link>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-300">Hi, {user.name}</span>
+                <button onClick={handleLogout} className="text-sm hover:text-[#B77D2B] cursor-pointer">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <button onClick={openLogin} className="cursor-pointer">Login</button>
+                <button
+                  onClick={openSignup}
+                  className="rounded-full bg-gradient-to-r from-[#FDF094] to-[#B77D2B] px-4 py-1.5 text-sm font-semibold text-black cursor-pointer"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -134,6 +163,44 @@ const Navbar: React.FC = () => {
           <Link href="/developer" onClick={() => setIsMobileMenuOpen(false)}>
             Developers
           </Link>
+
+          <div className="border-t border-gray-700 pt-6">
+            {user ? (
+              <div className="flex flex-col gap-4">
+                <span className="text-gray-400 text-base">Hi, {user.name}</span>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="text-left cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <button
+                  className="text-left cursor-pointer"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    openLogin();
+                  }}
+                >
+                  Login
+                </button>
+                <button
+                  className="text-left cursor-pointer"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    openSignup();
+                  }}
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
