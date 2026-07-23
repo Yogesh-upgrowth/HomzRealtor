@@ -3,6 +3,7 @@
 
 import { unstable_cache } from "next/cache";
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
+import { normalizeAmenities } from "./view-model";
 
 const ALL_CITY_KEYS = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
 
@@ -229,6 +230,54 @@ export async function getPriceInsights(current: NormalizedProject): Promise<Pric
     micro_market_avg_inr: mmAvg,
     city_name: current.city_name,
     micro_market: current.micro_market,
+  };
+}
+
+// Sector-average aggregation — deliberately queries the unfiltered project
+// list (not getSectorProjects, which drops image-less projects for display
+// cards) since an honest average must include every peer, not just the
+// photogenic ones. Returns null when there are too few peers for "average"
+// to mean anything rather than one arbitrary comparison.
+export type SectorAverages = {
+  sector: string;
+  sampleSize: number;
+  avg_min_price_inr: number | null;
+  avg_unit_options: number | null;
+  avg_amenity_count: number | null;
+};
+
+const MIN_SECTOR_SAMPLE = 2;
+
+export async function getSectorAverages(current: NormalizedProject): Promise<SectorAverages | null> {
+  if (!current.sector) return null;
+
+  const projects = await getProjectsForCity(current.city_key);
+  const peers = projects.filter((p) => p.sector === current.sector && p.slug !== current.slug);
+  if (peers.length < MIN_SECTOR_SAMPLE) return null;
+
+  const priced = peers.filter((p) => p.min_price_inr != null && p.min_price_inr > 0);
+  const avg_min_price_inr =
+    priced.length > 0
+      ? Math.round(priced.reduce((s, p) => s + p.min_price_inr!, 0) / priced.length)
+      : null;
+
+  const avg_unit_options = Math.round(
+    peers.reduce((s, p) => s + (Array.isArray(p.price_list) ? p.price_list.length : 0), 0) / peers.length
+  );
+
+  const avg_amenity_count = Math.round(
+    peers.reduce((s, p) => {
+      const amenities = normalizeAmenities(p.amenities);
+      return s + amenities.reduce((n, c) => n + c.amenities.length, 0);
+    }, 0) / peers.length
+  );
+
+  return {
+    sector: current.sector,
+    sampleSize: peers.length,
+    avg_min_price_inr,
+    avg_unit_options: avg_unit_options || null,
+    avg_amenity_count: avg_amenity_count || null,
   };
 }
 

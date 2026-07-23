@@ -4,6 +4,8 @@ type Props = {
   builder: string;
   text: string;
   slug?: string; // when set, the developer name links to /developer/[slug]
+  stats?: { label: string; value: string }[];
+  badges?: string[];
 };
 
 function RichText({ text }: { text: string }) {
@@ -22,7 +24,7 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-const BuilderProfile = ({ builder, text, slug }: Props) => {
+const BuilderProfile = ({ builder, text, slug, stats, badges }: Props) => {
   if (!text) return null;
 
   return (
@@ -53,6 +55,27 @@ const BuilderProfile = ({ builder, text, slug }: Props) => {
         <div className="text-gray-300 text-[15px] leading-7">
           <RichText text={text} />
         </div>
+
+        {((stats && stats.length > 0) || (badges && badges.length > 0)) && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {badges?.map((b) => (
+              <span
+                key={b}
+                className="rounded-full border border-[#B77D2B]/40 bg-[#CEA44E]/10 px-3 py-1 text-xs font-medium text-[#CEA44E]"
+              >
+                {b}
+              </span>
+            ))}
+            {stats?.map((s) => (
+              <span
+                key={s.label}
+                className="rounded-full border border-gray-700 px-3 py-1 text-xs text-gray-300"
+              >
+                <span className="font-semibold text-white">{s.value}</span> {s.label}
+              </span>
+            ))}
+          </div>
+        )}
 
         {slug && (
           <Link

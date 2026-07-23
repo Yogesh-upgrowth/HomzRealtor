@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import ProjectIntelligenceSections from "@/components/Project/intelligence/ProjectIntelligenceSections";
 import ProjectHero from "@/components/Project/listing/ProjectHero";
+import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
 import QuickSnapshot from "@/components/Project/listing/QuickSnapshot";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import AppointmentCard from "@/components/Common/Appointment";
@@ -208,6 +209,8 @@ const ProjectPage = async ({ params }: PageParams) => {
           __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
         }}
       />
+      <StickyMiniHeader name={view.name} />
+
       <ProjectHero
         name={view.name}
         builder={view.builder}
@@ -220,9 +223,11 @@ const ProjectPage = async ({ params }: PageParams) => {
         rera={view.rera}
         priceText={view.priceText}
         priceSubtext={view.priceSubtext}
+        possession={view.possession}
         images={view.images}
         enquireHref={enquireHref}
       />
+      <div id="hero-sentinel" />
 
       <div className="mt-6">
         <QuickSnapshot chips={view.snapshot} />

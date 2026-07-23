@@ -35,13 +35,15 @@ const Gauge = ({ score, grade }: { score: number; grade: string }) => {
   );
 };
 
-const InvestmentScore = ({ title, data }: { title: string; data: Score | null }) => {
+type Props = { title: string; data: Score | null; heading?: string };
+
+const InvestmentScore = ({ title, data, heading }: Props) => {
   if (!data) return null;
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">
       <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-        {`Investment Score - ${title}`}
+        {heading ?? `Investment Score - ${title}`}
       </h2>
 
       <div className="rounded-2xl bg-black border border-gray-700 p-6 md:p-8">

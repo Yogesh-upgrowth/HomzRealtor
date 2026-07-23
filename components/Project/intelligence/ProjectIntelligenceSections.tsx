@@ -1,23 +1,37 @@
-// Server component — fetches shared intelligence data and renders the overview
-// (top), the Investor / Home-Buyer persona tabs (via PersonaSections), and the
-// discovery tail. Every section self-hides when it has nothing real to show.
+// Server component — the project detail page's full section flow, modeled on
+// a reference mobile template. The Investor/Home-Buyer breakdown is the
+// original full-detail PersonaSections (price insights, calculators, location
+// intelligence, connectivity, configurations, amenities) restored per user
+// request — everything else (Compare, Specifications, FAQ teaser, Similar
+// Projects) still avoids duplicating what /flat already shows in full. Every
+// section self-hides when it has nothing real to show.
 
-import { CITY_PARAM_MAP, getProjectBySlug, getSimilarProjects, getBuilderProjects, getSectorProjects } from "@/lib/intelligence/projects";
+import {
+  CITY_PARAM_MAP,
+  getProjectBySlug,
+  getPriceInsights,
+  getSimilarProjects,
+  getBuilderProjects,
+  getSectorProjects,
+  getSectorAverages,
+} from "@/lib/intelligence/projects";
 import { slugify } from "@/lib/intelligence/normalize";
 import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
-import { resolveProjectView } from "@/lib/intelligence/view-model";
+import { resolveProjectView, isKnownBuilder } from "@/lib/intelligence/view-model";
+import { buildLocationSummary, buildMarketSummary, buildInvestmentSummary } from "@/lib/intelligence/summaries";
+import type { Chapter } from "./OverviewSheet";
 
-import WhyThisProject from "@/components/Project/listing/WhyThisProject";
-import AiSummary from "@/components/Project/listing/AiSummary";
-import KeyHighlights from "@/components/Project/listing/KeyHighlights";
-import InternalLinking from "@/components/Project/listing/InternalLinking";
+import HighlightStats from "@/components/Project/listing/HighlightStats";
 
-import BuilderProfile from "./BuilderProfile";
-import Faq from "./Faq";
-import ProjectJsonLd from "./ProjectJsonLd";
-import SimilarProjects from "./SimilarProjects";
+import OverviewSection from "./OverviewSection";
+import GalleryTabs from "./GalleryTabs";
 import PersonaSections from "./PersonaSections";
+import SpecificationsAccordion from "./SpecificationsAccordion";
+import BuilderProfile from "./BuilderProfile";
+import SectorCompareTeaser from "./SectorCompareTeaser";
+import SimilarProjects from "./SimilarProjects";
+import FaqTeaser from "./FaqTeaser";
 
 type Props = {
   cityParam: string;
@@ -50,8 +64,6 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
       ])
     : [{}, []];
 
-  const fallbackFaqs = buildFallbackFaqs(project);
-
   const content = await generateProjectContent(project, landmarks, connectivity).catch(() => ({
     location_intelligence: "",
     investment_analysis: "",
@@ -60,11 +72,12 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
     faq: [],
   }));
 
-  // Single source of truth for FAQs so the visible <Faq> and the FAQPage schema
-  // in <ProjectJsonLd> always match — schema must reflect on-page content.
+  const fallbackFaqs = buildFallbackFaqs(project);
   const faqItems = content.faq.length > 0 ? content.faq : fallbackFaqs;
 
-  const [similarProjects, builderProjects, sectorProjects] = await Promise.all([
+  const [priceData, sectorAverages, similarProjects, builderProjects, sectorProjects] = await Promise.all([
+    getPriceInsights(project).catch(() => null),
+    getSectorAverages(project).catch(() => null),
     getSimilarProjects(project).catch(() => []),
     getBuilderProjects(project).catch(() => []),
     getSectorProjects(project).catch(() => []),
@@ -77,24 +90,58 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
     cityParam,
   });
 
+  // Combined, deduped "Similar Projects" preview — one compact set instead of
+  // the three separate full sections /flat shows.
+  const combinedSimilar = [...sectorProjects, ...builderProjects, ...similarProjects]
+    .filter((p, i, arr) => arr.findIndex((x) => x.city_key === p.city_key && x.slug === p.slug) === i)
+    .slice(0, 3);
+
+  // Overview chapters — real content only, deterministic fallback when AI text
+  // is unavailable (same fallback helpers used elsewhere in the codebase).
+  const locationText = content.location_intelligence || buildLocationSummary(project, connectivity, landmarks);
+  const marketText = content.area_market_insights || buildMarketSummary(project, priceData);
+  const investmentText = content.investment_analysis || buildInvestmentSummary(view, project, connectivity, priceData);
+
+  const chapters: Chapter[] = [
+    view.about.length > 0 && { kicker: "OVERVIEW", title: `About ${view.name}`, body: view.about.join("\n\n") },
+    locationText && { kicker: "LOCATION", title: "Location Intelligence", body: locationText },
+    investmentText && { kicker: "INVESTMENT", title: "Investment Analysis", body: investmentText },
+    marketText && { kicker: "MARKET", title: "Area & Market Insights", body: marketText },
+  ].filter(Boolean) as Chapter[];
+
+  // Developer stats/badges — only honestly-derivable facts, nothing fabricated.
+  const builderStats = [
+    builderProjects.length > 0 && { label: "projects listed", value: `${builderProjects.length}+` },
+    { label: `developer active in ${view.cityName}`, value: "✓" },
+  ].filter(Boolean) as { label: string; value: string }[];
+  const builderBadges = [
+    isKnownBuilder(project.builder) && "Established Developer",
+    project.rera_id && "RERA Registered",
+  ].filter(Boolean) as string[];
+
   return (
     <>
-      <ProjectJsonLd project={project} faq={faqItems} connectivity={connectivity} coords={coords} />
+      {/* Why this property — three reasons it stands out */}
+      <HighlightStats title={view.name} stats={view.highlightStats} />
 
-      {/* Why This Project — auto badges */}
-      <WhyThisProject title={view.name} badges={view.whyThisProject} />
+      {/* Overview + full-overview reading sheet */}
+      <OverviewSection title={view.name} about={view.about} chapters={chapters} />
 
-      {/* Overview — project's own narrative */}
-      <AiSummary title={view.name} about={view.about} />
+      {/* Gallery & plans */}
+      <GalleryTabs
+        title={view.name}
+        exterior={view.images}
+        interior={project.interior_images || []}
+        masterPlan={view.masterPlan}
+      />
 
-      {/* Key Highlights — derived bullets */}
-      <KeyHighlights title={view.name} highlights={view.keyHighlights} />
-
-      {/* Persona tabs (Investor / Home Buyer) — shared with the /flat page */}
+      {/* Investor / Home-Buyer persona tabs — full detail, as before */}
       <PersonaSections cityParam={cityParam} slug={slug} />
 
-      {/* ══════════════════════ ABOUT & DISCOVERY ══════════════════════ */}
-      {/* Builder profile */}
+      {/* Specifications */}
+      <SpecificationsAccordion title={view.name} specifications={project.specifications} />
+
+      {/* Developer */}
       <BuilderProfile
         builder={project.builder}
         text={content.builder_profile}
@@ -103,43 +150,29 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
             ? slugify(project.builder)
             : undefined
         }
+        stats={builderStats}
+        badges={builderBadges}
       />
 
-      {/* Compare projects in the same sector */}
-      {sectorProjects.length > 0 && (
+      {/* Compare — this project vs. sector average, plus similar projects */}
+      <SectorCompareTeaser
+        title={view.name}
+        minPriceInr={project.min_price_inr}
+        unitCount={view.units.length}
+        amenityCount={view.amenityCount}
+        averages={sectorAverages}
+      />
+      {combinedSimilar.length > 0 && (
         <SimilarProjects
           title={project.project_name}
-          projects={sectorProjects}
-          heading={`Compare Other Projects in ${project.sector}`}
+          projects={combinedSimilar}
+          heading={`Similar Projects`}
           currentProject={{ city_key: project.city_key, slug: project.slug }}
         />
       )}
 
-      {/* More by same builder */}
-      {builderProjects.length > 0 && (
-        <SimilarProjects
-          title={project.project_name}
-          projects={builderProjects}
-          heading={`${project.builder}'s Other Projects`}
-          currentProject={{ city_key: project.city_key, slug: project.slug }}
-        />
-      )}
-
-      {/* Similar in city */}
-      {similarProjects.length > 0 && (
-        <SimilarProjects
-          title={project.project_name}
-          projects={similarProjects}
-          heading={`Similar Projects in ${project.city_name}`}
-          currentProject={{ city_key: project.city_key, slug: project.slug }}
-        />
-      )}
-
-      {/* Internal linking + popular searches */}
-      <InternalLinking similarSearches={view.similarSearches} internalLinks={view.internalLinks} />
-
-      {/* FAQ */}
-      <Faq title={project.project_name} items={faqItems} />
+      {/* FAQ — teaser, full list lives on /flat */}
+      <FaqTeaser title={project.project_name} items={faqItems} citySlug={view.citySlug} slug={view.slug} />
     </>
   );
 };

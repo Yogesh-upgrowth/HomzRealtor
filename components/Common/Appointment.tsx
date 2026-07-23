@@ -1,5 +1,8 @@
+"use client";
+
 import { StaticImageData } from "next/image";
-import React from "react";
+import React, { useContext } from "react";
+import { FormContext } from "@/context/FormContext";
 
 type AppointmentProps = {
   heading: string;
@@ -14,6 +17,7 @@ const AppointmentCard: React.FC<AppointmentProps> = ({
   btnTxt = "Schedule Site Visit",
   bgImage,
 }) => {
+  const { openForm } = useContext(FormContext);
   const backgroundImageUrl =
     typeof bgImage === "string" ? bgImage : bgImage?.src;
   return (
@@ -29,7 +33,10 @@ const AppointmentCard: React.FC<AppointmentProps> = ({
         </h2>
         <p className="text-base md:text-lg mb-8 opacity-90">{para}</p>
         {btnTxt && (
-          <button className="bg-white text-gray-800 font-semibold px-6 py-3 rounded-md hover:bg-gray-200 transition cursor-pointer">
+          <button
+            onClick={openForm}
+            className="bg-white text-gray-800 font-semibold px-6 py-3 rounded-md hover:bg-gray-200 transition cursor-pointer"
+          >
             {btnTxt.toUpperCase()}
           </button>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Building2, BadgeCheck, ChevronRight } from "lucide-react";
+import { MapPin, Building2, BadgeCheck, ChevronRight, Images } from "lucide-react";
 import Carousel from "@/components/Carousel";
 import ProjectCtas from "./ProjectCtas";
 
@@ -17,6 +17,8 @@ type Props = {
   rera: string | null;
   priceText: string;
   priceSubtext: string | null;
+  possession?: string | null;
+  investmentScore?: { score: number; grade: string } | null;
   images: string[];
   enquireHref: string;
 };
@@ -33,6 +35,8 @@ const ProjectHero = ({
   rera,
   priceText,
   priceSubtext,
+  possession,
+  investmentScore,
   images,
   enquireHref,
 }: Props) => {
@@ -107,7 +111,30 @@ const ProjectHero = ({
               <p className="text-2xl font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
                 {priceText}
               </p>
+              {(possession || investmentScore) && (
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-gray-200 pt-3 text-xs text-gray-500">
+                  {possession && <span>Possession: {possession}</span>}
+                  {investmentScore && (
+                    <span>
+                      Homz Score:{" "}
+                      <span className="font-semibold text-[#B77D2B]">
+                        {investmentScore.score}
+                      </span>{" "}
+                      · {investmentScore.grade}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
+
+            {images.length > 0 && (
+              <a
+                href="#gallery"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#B77D2B] hover:opacity-80"
+              >
+                <Images size={15} /> View gallery
+              </a>
+            )}
 
             <div className="mt-auto pt-5">
               <ProjectCtas name={name} enquireHref={enquireHref} variant="hero" />

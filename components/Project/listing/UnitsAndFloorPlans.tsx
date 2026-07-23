@@ -8,6 +8,7 @@ type Props = {
   slug: string;
   units: UnitRow[];
   propertyType: string | null;
+  priceText?: string | null;
 };
 
 /**
@@ -16,7 +17,7 @@ type Props = {
  *  • Else if we know the configuration types → show a configuration summary + CTA.
  *  • Else → render nothing (never an empty table).
  */
-const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Props) => {
+const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType, priceText }: Props) => {
   const enquireHref = `/project-listing/${citySlug}/${slug}/flat`;
 
   // Available Units table intentionally disabled — uncomment this block to restore it.
@@ -83,12 +84,17 @@ const UnitsAndFloorPlans = ({ title, citySlug, slug, units, propertyType }: Prop
                 {c}
               </span>
             ))}
+            {priceText && (
+              <span className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B]">
+                from {priceText}
+              </span>
+            )}
           </div>
           <Link
             href={enquireHref}
             className="inline-flex items-center gap-2 rounded-md bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition"
           >
-            Get Floor Plans &amp; Pricing <ArrowRight size={16} />
+            See full pricing &amp; configurations on the Flats page <ArrowRight size={16} />
           </Link>
         </div>
       </section>

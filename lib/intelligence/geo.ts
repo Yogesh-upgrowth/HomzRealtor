@@ -80,12 +80,19 @@ async function gFetch(url: string) {
   return res.json();
 }
 
-async function geocodeRaw(address: string): Promise<{ lat: number; lng: number } | null> {
+async function geocodeRaw(
+  address: string
+): Promise<{ lat: number; lng: number; formattedAddress: string | null } | null> {
   if (!KEY) return null;
   const data = await gFetch(`${BASE}/geocode/json?address=${encodeURIComponent(address)}&region=in&key=${KEY}`);
   if (data.status !== "OK" || !data.results?.length) return null;
-  const loc = data.results[0].geometry.location;
-  return { lat: loc.lat as number, lng: loc.lng as number };
+  const result = data.results[0];
+  const loc = result.geometry.location;
+  return {
+    lat: loc.lat as number,
+    lng: loc.lng as number,
+    formattedAddress: (result.formatted_address as string) || null,
+  };
 }
 
 async function nearbyRaw(lat: number, lng: number, type: string, limit = 6): Promise<any[]> {
@@ -108,10 +115,15 @@ async function distanceRaw(oLat: number, oLng: number, dLat: number, dLng: numbe
 
 // ── Public cached functions ──────────────────────────────────────────────────
 
+// Bump this when geocodeRaw's return shape changes so previously-cached
+// entries (missing new fields) don't linger for the rest of their 30-day
+// window — same pattern as content.ts's CONTENT_CACHE_VERSION.
+const GEOCODE_CACHE_VERSION = "v2";
+
 export function geocodeProject(address: string) {
   return unstable_cache(
     () => geocodeRaw(address),
-    ["geocode", address.slice(0, 60)],
+    ["geocode", GEOCODE_CACHE_VERSION, address.slice(0, 60)],
     { revalidate: 2592000 }
   )();
 }

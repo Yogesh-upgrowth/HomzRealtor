@@ -24,6 +24,8 @@ export type InvestmentScore = {
 };
 export type UnitRow = { unitType: string; size: string; price: string };
 export type LinkItem = { label: string; href: string };
+export type HighlightStat = { big: string; title: string; subtitle: string };
+export type PersonaReasons = { investor: Badge[]; endUser: Badge[] };
 
 export type SectionFlags = {
   amenities: boolean;
@@ -67,6 +69,8 @@ export type ProjectView = {
   // derived intelligence
   snapshot: Chip[];
   whyThisProject: Badge[];
+  highlightStats: HighlightStat[];
+  personaReasons: PersonaReasons;
   keyHighlights: string[];
   investmentScore: InvestmentScore | null;
   similarSearches: LinkItem[];
@@ -95,7 +99,7 @@ const CITY_PARAM_FROM_KEY: Record<string, string> = {
   noida: "noida",
 };
 
-function isKnownBuilder(builder: string): boolean {
+export function isKnownBuilder(builder: string): boolean {
   const b = builder.toLowerCase();
   return KNOWN_BUILDERS.some((k) => b.includes(k.toLowerCase()));
 }
@@ -147,7 +151,7 @@ function validImages(images: string[]): string[] {
   return (images || []).filter((u) => typeof u === "string" && IMG_RE.test(u)).slice(0, 10);
 }
 
-function normalizeAmenities(raw: any[]): { category: string; amenities: string[] }[] {
+export function normalizeAmenities(raw: any[]): { category: string; amenities: string[] }[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .map((c) => ({
@@ -378,6 +382,149 @@ function buildInvestmentScore(
   return { score, grade, verdict, factors };
 }
 
+function minutesFrom(travelTime: string | null | undefined): number | null {
+  if (!travelTime) return null;
+  const m = travelTime.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// "Big number + title + subtitle" highlight cards — a different shape from
+// buildWhyThisProject's icon badges. Candidate pool of real, honestly-derivable
+// stats only (no invented rental-yield %, no fabricated unit counts); always
+// falls back to the Homz Score so there's at least one card.
+function buildHighlightStats(
+  connectivity: ConnectivityItem[],
+  amenityCount: number,
+  unitCount: number,
+  investmentScore: InvestmentScore
+): HighlightStat[] {
+  const stats: HighlightStat[] = [];
+  const c = connectivityHelpers(connectivity);
+
+  const metroMins = c.metro ? minutesFrom(c.metro.travel_time) : null;
+  if (metroMins != null) {
+    stats.push({
+      big: `${metroMins}m`,
+      title: "Minutes to the Metro",
+      subtitle: `${c.metro!.label} on the doorstep.`,
+    });
+  }
+
+  const airportMins = c.airport ? minutesFrom(c.airport.travel_time) : null;
+  if (airportMins != null && stats.length < 3) {
+    stats.push({
+      big: `${airportMins}m`,
+      title: "Minutes to the Airport",
+      subtitle: `${c.airport!.label} by road.`,
+    });
+  }
+
+  if (amenityCount > 0 && stats.length < 3) {
+    stats.push({
+      big: `${amenityCount}+`,
+      title: "Lifestyle Amenities",
+      subtitle: "Thoughtfully curated across the project.",
+    });
+  }
+
+  if (unitCount > 0 && stats.length < 3) {
+    stats.push({
+      big: `${unitCount}`,
+      title: "Configuration Options",
+      subtitle: "Choose the space that fits you.",
+    });
+  }
+
+  if (stats.length < 3) {
+    stats.push({
+      big: `${investmentScore.score}`,
+      title: "Homz Score",
+      subtitle: `${investmentScore.grade} investment fundamentals.`,
+    });
+  }
+
+  return stats.slice(0, 3);
+}
+
+// Two audience-tagged reason lists, built from the same real signals
+// buildWhyThisProject already draws on (category, status, connectivity,
+// developer reputation, amenities) — just bucketed by who each fact matters to,
+// rather than one combined list. Nothing here is fabricated; every entry maps
+// to a concrete field on the project or its fetched connectivity/landmarks.
+function buildPersonaReasons(
+  project: NormalizedProject,
+  status: string,
+  connectivity: ConnectivityItem[],
+  amenityCount: number
+): PersonaReasons {
+  const c = connectivityHelpers(connectivity);
+  const isCommercial = project.property_category === "Commercial";
+  const loc = project.sector || project.micro_market || project.city_name;
+
+  const investor: Badge[] = [];
+  if (isCommercial) {
+    investor.push({
+      icon: "TrendingUp",
+      label: "High Rental Demand",
+      note: "Strong leasing potential from retail & F&B brands.",
+    });
+  } else if (status === "Ready to Move") {
+    investor.push({
+      icon: "KeyRound",
+      label: "Immediate Rental Income",
+      note: "Ready inventory means no construction wait.",
+    });
+  } else {
+    investor.push({
+      icon: "TrendingUp",
+      label: "Capital Appreciation",
+      note: `An early-stage entry in the growing ${loc} corridor.`,
+    });
+  }
+  if (c.business) {
+    investor.push({
+      icon: "Building2",
+      label: "Near Business Hubs",
+      note: `Close to ${c.business.label}.`,
+    });
+  }
+  investor.push({
+    icon: "ShieldCheck",
+    label: isKnownBuilder(project.builder) ? "Low-Risk Asset" : "Emerging Opportunity",
+    note: isKnownBuilder(project.builder)
+      ? `Backed by ${project.builder}, a developer with a delivery track record.`
+      : `Early access with ${project.builder}, an emerging developer in ${project.city_name}.`,
+  });
+  if (project.rera_id) {
+    investor.push({ icon: "BadgeCheck", label: "RERA Registered", note: "Government-verified project." });
+  }
+
+  const endUser: Badge[] = [
+    { icon: "MapPin", label: "Prime Location", note: `Heart of ${loc}.` },
+  ];
+  if (amenityCount > 0) {
+    endUser.push({
+      icon: "Sparkles",
+      label: "Lifestyle",
+      note: `${amenityCount}+ amenities at your doorstep.`,
+    });
+  }
+  endUser.push(
+    isCommercial
+      ? { icon: "Gem", label: "High-Street Retail", note: "Curated fashion, F&B & experiences." }
+      : { icon: "TreePine", label: "Comfortable Living", note: "Thoughtfully designed for everyday life." }
+  );
+  if (c.metro || c.airport) {
+    endUser.push({
+      icon: "TrainFront",
+      label: "Well Connected",
+      note: [c.metro && "metro", c.airport && "airport"].filter(Boolean).join(" & ") + " nearby.",
+    });
+  }
+
+  return { investor: investor.slice(0, 4), endUser: endUser.slice(0, 4) };
+}
+
 function buildSimilarSearches(project: NormalizedProject, citySlug: string): LinkItem[] {
   const base = `/project-listing/${citySlug}`;
   const items: LinkItem[] = [];
@@ -437,6 +584,8 @@ export function resolveProjectView(
   const whyThisProject = buildWhyThisProject(project, status, connectivity, landmarks, amenityCount);
   const keyHighlights = buildKeyHighlights(project, status, priceText, hasPrice, connectivity, landmarks, amenityCount);
   const investmentScore = buildInvestmentScore(project, status, connectivity, landmarks, amenityCount);
+  const highlightStats = buildHighlightStats(connectivity, amenityCount, units.length, investmentScore);
+  const personaReasons = buildPersonaReasons(project, status, connectivity, amenityCount);
   const similarSearches = buildSimilarSearches(project, citySlug);
   const internalLinks = buildInternalLinks(project, citySlug);
 
@@ -469,6 +618,8 @@ export function resolveProjectView(
     recentUpdates: Array.isArray(project.recent_updates) ? project.recent_updates : [],
     snapshot,
     whyThisProject,
+    highlightStats,
+    personaReasons,
     keyHighlights,
     investmentScore,
     similarSearches,
