@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { NewLaunchProject } from "@/lib/intelligence/homepage";
+import SafeProjectImage from "./SafeProjectImage";
 
 type Props = {
   projects: NewLaunchProject[];
@@ -37,11 +37,9 @@ const LatestLaunches = ({ projects }: Props) => {
         >
           <div className="relative aspect-video">
             {feature.image && (
-              <Image
+              <SafeProjectImage
                 src={feature.image}
                 alt={feature.name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 55vw"
               />
             )}
@@ -71,7 +69,7 @@ const LatestLaunches = ({ projects }: Props) => {
               className="flex flex-1 items-center gap-3.5 rounded-[18px] border border-white/[0.08] bg-[#141416] p-3.5 hover:border-[#D9B268]/35 transition-colors"
             >
               <div className="relative h-[70px] w-[70px] shrink-0 overflow-hidden rounded-xl">
-                {p.image && <Image src={p.image} alt={p.name} fill className="object-cover" />}
+                {p.image && <SafeProjectImage src={p.image} alt={p.name} sizes="70px" />}
               </div>
               <div className="min-w-0">
                 <h4 className="truncate text-[14.5px] font-bold text-white">{p.name}</h4>

@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import getValidImage from "./utils/helper/getValidImage";
 import { slugify } from "./utils/slugify";
+import SafeProjectImage from "./Home/SafeProjectImage";
 
 // ✅ Mobile hook
 const useIsMobile = (breakpoint = 768) => {
@@ -193,13 +193,7 @@ export default function HotSelling() {
               >
                 <div className="relative h-52 w-full overflow-hidden">
                   {image ? (
-                    <Image
-                      src={image}
-                      alt={p.projectTitle}
-                      fill
-                      className="object-cover group-hover:scale-105 transition duration-500"
-                      sizes="300px"
-                    />
+                    <SafeProjectImage src={image} alt={p.projectTitle} sizes="300px" />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-[#1a1a1d] text-gray-600">
                       No Image
