@@ -52,9 +52,13 @@ type Props = {
   title: string;
   data: PriceInsightsData;
   priceList?: PriceRow[];
+  // When true, skips the outer section wrapper + heading so this can be
+  // nested inside another composite section (e.g. PricingAndPayment) without
+  // a duplicate heading. Default false keeps /flat's usage unchanged.
+  bare?: boolean;
 };
 
-const PriceInsights = ({ title, data, priceList = [] }: Props) => {
+const PriceInsights = ({ title, data, priceList = [], bare = false }: Props) => {
   const {
     project_min_inr,
     city_avg_inr,
@@ -108,12 +112,7 @@ const PriceInsights = ({ title, data, priceList = [] }: Props) => {
 
   if (!hasUnitChart && !hasCompareChart) return null;
 
-  return (
-    <section className="w-full max-w-7xl mx-auto px-2 my-12">
-      <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-        Price Insights – {title}
-      </h2>
-
+  const grid = (
       <div
         className={`grid gap-4 ${
           hasUnitChart && hasCompareChart
@@ -211,6 +210,16 @@ const PriceInsights = ({ title, data, priceList = [] }: Props) => {
           </div>
         )}
       </div>
+  );
+
+  if (bare) return grid;
+
+  return (
+    <section className="w-full max-w-7xl mx-auto px-2 my-12">
+      <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
+        Price Insights – {title}
+      </h2>
+      {grid}
     </section>
   );
 };

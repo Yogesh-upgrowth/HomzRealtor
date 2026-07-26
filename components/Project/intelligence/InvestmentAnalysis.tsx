@@ -7,10 +7,7 @@ function RichText({ text }: { text: string }) {
     <>
       {blocks.map((b, i) =>
         b.startsWith("## ") ? (
-          <h3
-            key={i}
-            className="text-lg font-semibold text-gray-900 mt-5 mb-2"
-          >
+          <h3 key={i} className="text-lg font-semibold text-white mt-5 mb-2">
             {b.slice(3)}
           </h3>
         ) : (
@@ -32,19 +29,12 @@ const InvestmentAnalysis = ({ title, text }: Props) => {
   if (!text) return null;
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-2 my-12">
-      <article className="bg-gray-100 rounded-lg p-6">
-        <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-3">
-          {`Investment Analysis - ${title}`}
-        </h2>
-
-        <div className="border-b border-gray-300 mb-4" />
-
-        <div className="text-gray-700 text-[15px] leading-7">
-          <RichText text={text} />
-        </div>
-      </article>
-    </section>
+    <article className="rounded-[20px] border border-white/[0.07] bg-[#141416] p-6 md:p-7">
+      <h3 className="text-lg font-bold text-white mb-3">Investment Analysis – {title}</h3>
+      <div className="text-gray-300 text-[15px] leading-7">
+        <RichText text={text} />
+      </div>
+    </article>
   );
 };
 

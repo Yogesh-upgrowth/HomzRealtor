@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function ImageCarousel({ images = [] }: { images: string[] }) {
   const [current, setCurrent] = useState(0);
 
-  // ✅ fallback for broken images
-  const [imgError, setImgError] = useState(false);
+  // Tracks which slide indices failed to load, keyed by index — so one broken
+  // image doesn't permanently hide every other (working) slide in the set.
+  const [failed, setFailed] = useState<Set<number>>(new Set());
 
   // ✅ autoplay
   useEffect(() => {
@@ -31,21 +32,31 @@ export default function ImageCarousel({ images = [] }: { images: string[] }) {
 
   if (!images.length) return null;
 
+  const currentFailed = failed.has(current);
+
   return (
     <div className="relative w-full max-w-4xl mx-auto group">
 
       {/* ✅ Image Container */}
-      <div className="relative h-[300px] md:h-[450px] overflow-hidden rounded-2xl shadow-lg">
+      <div className="relative h-[300px] md:h-[450px] overflow-hidden rounded-2xl shadow-lg bg-gray-100">
 
-        <Image
-          src={!imgError ? images[current] : "/fallback.jpg"}
-          alt={`slide-${current}`}
-          fill
-          priority={current === 0}
-          onError={() => setImgError(true)}
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 1200px"
-        />
+        {currentFailed ? (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-gray-400">
+            <ImageOff size={32} />
+            <span className="text-sm">Image unavailable</span>
+          </div>
+        ) : (
+          <Image
+            key={current}
+            src={images[current]}
+            alt={`slide-${current}`}
+            fill
+            priority={current === 0}
+            onError={() => setFailed((prev) => new Set(prev).add(current))}
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 1200px"
+          />
+        )}
 
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
@@ -24,6 +27,7 @@ function ProjectCard({
   currentProject?: CurrentProject;
   linkTo?: "project" | "flat";
 }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const img = project.images.find(
     (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
   );
@@ -52,11 +56,12 @@ function ProjectCard({
       >
         {/* Image */}
         <div className="relative h-44 w-full bg-gray-800">
-          {img ? (
+          {img && !imgFailed ? (
             <Image
               src={img}
               alt={project.project_name}
               fill
+              onError={() => setImgFailed(true)}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />

@@ -2,15 +2,24 @@
 
 import React, { useState, useContext } from "react";
 import { toast } from "sonner";
+import { X, ShieldCheck, Sparkles, Leaf } from "lucide-react";
 import { FormContext } from "@/context/FormContext";
 
 type FormState = {
   name: string;
   email: string;
   phone: string;
-  pan: string;
   terms: boolean;
 };
+
+const inputClass =
+  "w-full rounded-xl border border-white/10 bg-[#1a1a1d] px-4 py-3.5 text-[14.5px] text-white placeholder:text-gray-500 outline-none focus:border-[#D9B268] transition-colors";
+
+const HIGHLIGHTS = [
+  { icon: Sparkles, title: "Exclusive Location", text: "Located in Gurgaon's most prestigious areas." },
+  { icon: ShieldCheck, title: "World Class Amenities", text: "Curated for comfort, security and lifestyle." },
+  { icon: Leaf, title: "Sustainable Living", text: "Thoughtfully designed, future-ready spaces." },
+];
 
 export default function FormComponent({
   initial,
@@ -25,7 +34,6 @@ export default function FormComponent({
     name: initial?.name ?? "",
     email: initial?.email ?? "",
     phone: initial?.phone ?? "",
-    pan: initial?.pan ?? "",
     terms: initial?.terms ?? false,
   });
 
@@ -68,7 +76,6 @@ export default function FormComponent({
           name: "",
           email: "",
           phone: "",
-          pan: "",
           terms: false,
         });
 
@@ -88,54 +95,49 @@ export default function FormComponent({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-2 sm:px-4">
-      <div className="bg-[#1c1c1c] text-white rounded-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto flex flex-col md:flex-row gap-6 md:gap-10 p-4 sm:p-6 md:p-18 relative">
+      <div className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto rounded-[24px] border border-white/10 bg-[#141416] text-white shadow-[0_30px_90px_rgba(0,0,0,0.6)] flex flex-col md:flex-row gap-8 md:gap-10 p-6 sm:p-8 md:p-12">
 
         {/* Close Button */}
         <button
           onClick={closeForm}
-          className="absolute top-3 right-3 text-gray-300 hover:text-white"
+          aria-label="Close"
+          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors cursor-pointer"
         >
-          ✕
+          <X size={16} />
         </button>
 
         {/* LEFT SIDE */}
         <div className="flex-1 flex flex-col mt-2 md:mt-6">
-          <h2 className="text-lg sm:text-xl md:text-3xl font-bold text-center md:text-left mb-4 bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
-            GET A CIBIL LINKED HOME LOAN ESTIMATE
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268]">
+            Talk to an expert
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
+            Get a Personalised Property &amp; Loan Estimate
           </h2>
 
-          <div className="hidden md:block space-y-5 text-sm text-gray-300">
-            <div>
-              <p className="font-semibold text-lg">🏠 EXCLUSIVE LOCATION</p>
-              <p className="text-gray-400">
-                Located in Pune’s most prestigious areas.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-lg">🌍 WORLD CLASS AMENITIES</p>
-              <p className="text-gray-400">
-                Located in Pune’s most prestigious areas.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-lg">🌿 SUSTAINABLE LIVING</p>
-              <p className="text-gray-400">
-                Located in Pune’s most prestigious areas.
-              </p>
-            </div>
+          <div className="hidden md:flex flex-col gap-5">
+            {HIGHLIGHTS.map((h) => (
+              <div key={h.title} className="flex items-start gap-3.5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#D9B268]/25 bg-[#D9B268]/10 text-[#D9B268]">
+                  <h.icon size={18} />
+                </span>
+                <div>
+                  <p className="font-semibold text-white">{h.title}</p>
+                  <p className="text-sm text-gray-400">{h.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="hidden md:grid grid-cols-2 gap-6 mt-8 text-yellow-400 text-sm">
+          <div className="hidden md:grid grid-cols-2 gap-6 mt-8 pt-6 border-t border-white/[0.08]">
             <div>
-              <p className="text-xl font-bold">25500+</p>
-              <p className="text-gray-300 text-xs">Happy Customers</p>
+              <p className="font-display text-2xl text-white">25500+</p>
+              <p className="text-gray-500 text-xs mt-0.5">Happy Customers</p>
             </div>
 
             <div>
-              <p className="text-xl font-bold">45 Million Sq.Ft.</p>
-              <p className="text-gray-300 text-xs">Area Sold</p>
+              <p className="font-display text-2xl text-white">45 Mn+ Sq.Ft.</p>
+              <p className="text-gray-500 text-xs mt-0.5">Area Sold</p>
             </div>
           </div>
         </div>
@@ -143,7 +145,7 @@ export default function FormComponent({
         {/* RIGHT SIDE FORM */}
         <form
           onSubmit={handleSubmit}
-          className="flex-1 flex flex-col gap-4 text-sm"
+          className="flex-1 flex flex-col gap-3.5 text-sm"
         >
           <input
             type="text"
@@ -152,7 +154,7 @@ export default function FormComponent({
             value={form.name}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
+            className={inputClass}
           />
 
           <input
@@ -162,7 +164,7 @@ export default function FormComponent({
             value={form.email}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
+            className={inputClass}
           />
 
           <input
@@ -172,38 +174,28 @@ export default function FormComponent({
             value={form.phone}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
+            className={inputClass}
           />
 
-          <input
-            type="text"
-            name="pan"
-            placeholder="PAN Number"
-            value={form.pan}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black"
-          />
-
-          <label className="flex items-start gap-2 text-xs text-gray-400">
+          <label className="flex items-start gap-2.5 text-xs text-gray-400 mt-1">
             <input
               type="checkbox"
               name="terms"
               checked={form.terms}
               onChange={handleChange}
-              className="mt-1 accent-yellow-400"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#D9B268] cursor-pointer"
             />
 
             <span>
               I accept the{" "}
-              <span className="text-yellow-400">Terms</span>.
+              <span className="text-[#D9B268] font-medium">Terms &amp; Conditions</span>.
             </span>
           </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 p-3 rounded-md bg-white text-black font-semibold disabled:opacity-50"
+            className="mt-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 font-bold text-[#1c1608] hover:brightness-105 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             {loading ? "Submitting..." : "Submit"}
           </button>

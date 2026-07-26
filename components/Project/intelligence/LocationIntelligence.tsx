@@ -28,9 +28,12 @@ function RichText({ text }: { text: string }) {
 type Props = {
   project: NormalizedProject;
   text?: string;
+  // Additive — default "light" keeps /flat's usage (FlatIntelligenceSections)
+  // unchanged. The redesigned main project page passes variant="dark".
+  variant?: "light" | "dark";
 };
 
-const LocationIntelligence = ({ project, text }: Props) => {
+const LocationIntelligence = ({ project, text, variant = "light" }: Props) => {
   if (!text) return null;
 
   const chips = [
@@ -39,6 +42,28 @@ const LocationIntelligence = ({ project, text }: Props) => {
     project.city_name,
     project.state,
   ].filter(Boolean) as string[];
+
+  if (variant === "dark") {
+    return (
+      <div className="rounded-[22px] border border-white/[0.08] bg-gradient-to-br from-[#D9B268]/[0.06] to-transparent p-6 md:p-8">
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-5">
+            {chips.map((c) => (
+              <span
+                key={c}
+                className="text-xs font-medium text-gray-300 bg-[#141416] border border-white/10 rounded-full px-3 py-1.5"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+        )}
+        <div className="text-gray-300 text-[15px] leading-7">
+          <RichText text={text} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">

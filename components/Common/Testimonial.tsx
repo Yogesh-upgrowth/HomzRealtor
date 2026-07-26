@@ -57,21 +57,21 @@ export default function Testimonials({
   }, [emblaApi]);
 
   return (
-    <section className="max-w-[1444px] mx-auto px-3 sm:px-6">
+    <section className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 border-b border-white/[0.06]">
       {/* Title */}
       <div className="flex items-center justify-center gap-4 w-full">
-        <div className="flex-1 h-px bg-gradient-to-r from-black/50 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
 
-        <h2 className="font-second font-medium text-2xl sm:text-3xl md:text-[40px] leading-[120%] tracking-[0.02em] uppercase text-center bg-gradient-to-b from-[#fdf094] to-[#b77d2b] bg-clip-text text-transparent">
+        <h2 className="font-display font-medium text-2xl sm:text-3xl md:text-[40px] leading-[120%] tracking-[0.02em] uppercase text-center bg-gradient-to-b from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
           {title}
         </h2>
 
-        <div className="flex-1 h-px bg-gradient-to-l from-black/50 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-l from-white/20 to-transparent"></div>
       </div>
 
       {/* Subtitle */}
       {subtitle && (
-        <p className="text-gray-600 mt-4 mb-8 text-center text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
+        <p className="text-gray-400 mt-4 mb-8 text-center text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}
@@ -83,7 +83,7 @@ export default function Testimonials({
           type="button"
           onClick={scrollPrev}
           disabled={prevBtnDisabled}
-          className="absolute z-30 top-1/2 -translate-y-1/2 left-2 sm:-left-6 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#1f1f1f] text-[#cea44e] hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="absolute z-30 top-1/2 -translate-y-1/2 left-2 sm:-left-6 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#1a1a1d] border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -110,12 +110,12 @@ export default function Testimonials({
               return (
                 <article
                   key={item.id}
-                  className="flex-shrink-0 basis-[90%] sm:basis-1/2 lg:basis-1/3 bg-black text-white rounded-lg px-4 sm:px-6 py-6 sm:py-8 shadow-md flex flex-col justify-between"
+                  className="flex-shrink-0 basis-[90%] sm:basis-1/2 lg:basis-1/3 bg-[#141416] border border-white/[0.08] text-white rounded-[18px] px-4 sm:px-6 py-6 sm:py-8 shadow-md flex flex-col justify-between"
                 >
                   {/* Content */}
-                  <div className="bg-[#1f1f1f] rounded-md px-4 py-5 mb-5">
+                  <div className="bg-[#1a1a1d] rounded-md px-4 py-5 mb-5">
                     {/* Rating */}
-                    <div className="flex text-[#cea44e] mb-3">
+                    <div className="flex text-[#D9B268] mb-3">
                       {Array.from({ length: item.rating }).map((_, i) => (
                         <span key={i}>★</span>
                       ))}
@@ -123,7 +123,7 @@ export default function Testimonials({
 
                     {/* Text */}
                     <p
-                      className={`text-xs sm:text-sm md:text-base text-gray-200 leading-relaxed ${
+                      className={`text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed ${
                         isExpanded ? "line-clamp-none" : "line-clamp-3"
                       }`}
                     >
@@ -136,7 +136,7 @@ export default function Testimonials({
                       onClick={() =>
                         setExpandedId(isExpanded ? null : item.id)
                       }
-                      className="text-[#cea44e] underline underline-offset-2 mt-2 cursor-pointer"
+                      className="text-[#D9B268] underline underline-offset-2 mt-2 cursor-pointer"
                     >
                       {isExpanded ? "Read less" : "Read more"}
                     </button>
@@ -174,7 +174,7 @@ export default function Testimonials({
           type="button"
           onClick={scrollNext}
           disabled={nextBtnDisabled}
-          className="absolute z-30 top-1/2 -translate-y-1/2 right-2 sm:-right-6 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#1f1f1f] text-[#cea44e] hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="absolute z-30 top-1/2 -translate-y-1/2 right-2 sm:-right-6 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#1a1a1d] border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

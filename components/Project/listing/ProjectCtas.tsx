@@ -49,39 +49,49 @@ const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
     }
   };
 
+  const isHero = variant === "hero";
+
   return (
-    <div className={variant === "hero" ? "space-y-3" : "flex gap-2"}>
-      <div className={variant === "hero" ? "grid grid-cols-2 gap-3" : "flex gap-2"}>
+    <div className={isHero ? "space-y-3" : "flex gap-2"}>
+      <div className={isHero ? "grid grid-cols-2 gap-3" : "flex gap-2"}>
         <Link
           href={enquireHref}
-          className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-[#FDF094] to-[#B77D2B] px-4 py-3 text-sm font-semibold text-black hover:opacity-90 transition"
+          className={
+            isHero
+              ? "flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 text-[15px] font-bold text-[#1c1608] shadow-[0_12px_34px_rgba(201,154,75,0.3)] hover:brightness-105 transition"
+              : "flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-[#FDF094] to-[#B77D2B] px-4 py-3 text-sm font-semibold text-black hover:opacity-90 transition"
+          }
         >
           <CalendarCheck size={18} /> Site Visit
         </Link>
         <Link
           href={enquireHref}
-          className="flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition"
+          className={
+            isHero
+              ? "flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-3.5 text-[15px] font-semibold text-white hover:border-[#D9B268] transition-colors"
+              : "flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition"
+          }
         >
           <IndianRupee size={18} /> Best Price
         </Link>
       </div>
 
-      {variant === "hero" && (
+      {isHero && (
         <div className="flex gap-3">
           <button
             onClick={toggleSave}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${
               saved
-                ? "border-[#B77D2B] bg-[#CEA44E]/10 text-[#B77D2B]"
-                : "border-gray-300 text-gray-700 hover:border-gray-400"
+                ? "border-[#D9B268] bg-[#D9B268]/10 text-[#D9B268]"
+                : "border-white/15 text-gray-300 hover:border-white/30"
             }`}
           >
-            <Heart size={16} className={saved ? "fill-[#B77D2B]" : ""} />
+            <Heart size={16} className={saved ? "fill-[#D9B268]" : ""} />
             {saved ? "Saved" : "Save"}
           </button>
           <button
             onClick={share}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-400 transition"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-gray-300 hover:border-white/30 transition-colors"
           >
             {copied ? <Check size={16} /> : <Share2 size={16} />}
             {copied ? "Copied" : "Share"}

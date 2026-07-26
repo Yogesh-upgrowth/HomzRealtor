@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
@@ -10,6 +11,7 @@ import devImg from "@/public/totalUnit.svg";
 import { slugify } from "@/components/utils/slugify";
 import { extractSector } from "@/lib/intelligence/normalize";
 import customer from "@/assets/images/customer.png";
+import { instrumentSerif, manrope } from "@/lib/fonts";
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -28,21 +30,21 @@ const useIsMobile = (breakpoint = 768) => {
 };
 
 const CardSkeleton = () => (
-  <div className="w-full rounded-sm overflow-hidden shadow-sm bg-white animate-pulse">
-    <div className="w-full h-[230px] md:h-[304px] bg-gray-200" />
+  <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#141416] animate-pulse">
+    <div className="w-full h-[230px] md:h-[304px] bg-white/5" />
     <div className="flex py-2 pl-2 gap-2">
-      <div className="h-5 w-28 bg-gray-200 rounded" />
+      <div className="h-5 w-28 bg-white/5 rounded" />
     </div>
     <div className="p-4 space-y-3">
-      <div className="h-5 w-3/4 bg-gray-200 rounded" />
+      <div className="h-5 w-3/4 bg-white/5 rounded" />
       <div className="grid grid-cols-2 gap-3">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-8 bg-gray-200 rounded" />
+          <div key={i} className="h-8 bg-white/5 rounded" />
         ))}
       </div>
     </div>
-    <div className="p-3 border-t">
-      <div className="h-9 bg-gray-200 rounded" />
+    <div className="p-3 border-t border-white/[0.08]">
+      <div className="h-9 bg-white/5 rounded" />
     </div>
   </div>
 );
@@ -220,7 +222,7 @@ const ProjectListing = () => {
 
   // ✅ Format for card
   const formatProject = (project: any) => ({
-    imgUrl: getValidImage(project.images) || "/fallback.jpg",
+    imgUrl: getValidImage(project.images) || "/dummy.svg",
     location: project.location || "N/A",
     reranumber: project.reraId || "N/A",
     title: project.projectTitle || "Untitled Project",
@@ -250,143 +252,145 @@ const ProjectListing = () => {
   });
 
   return (
-    <div className="max-w-2xl md:max-w-7xl text-black px-4 md:px-0 mx-auto mt-10">
+    <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen bg-[#0B0B0C] text-white`}>
+      <div className="max-w-2xl md:max-w-7xl px-4 md:px-2 mx-auto pt-32 pb-16">
 
-      {/* Title + Dropdown */}
-      <div className="flex flex-col items-center gap-4 mb-6 mt-32">
-        <div className="flex items-center gap-4 w-full justify-center">
-          <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-black/50 to-transparent" />
-          <h1 className="text-2xl md:text-3xl font-bold tracking-widest text-center">
-            Residential &amp; Commercial Projects in Delhi NCR
-          </h1>
-          <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-black/50 to-transparent" />
-        </div>
-
-        {/* Dropdowns */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <div className="relative w-[220px]">
-            <select
-              value={selectedCity}
-              onChange={(e) => {
-                setSelectedCity(e.target.value);
-                setSelectedSector("all");
-                setCurrentPage(1);
-              }}
-              className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
-            >
-              <option value="all">All Cities</option>
-              <option value="gurgaon">Gurgaon</option>
-              <option value="delhi">Delhi</option>
-              <option value="faridabad">Faridabad</option>
-              <option value="greaternoida">Greater Noida</option>
-              <option value="noida">Noida</option>
-            </select>
+        {/* Title + Dropdown */}
+        <div className="flex flex-col items-center gap-5 mb-10">
+          <div className="flex items-center gap-4 w-full justify-center">
+            <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-white/25 to-transparent" />
+            <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-center text-white">
+              Residential &amp; Commercial Projects in Delhi NCR
+            </h1>
+            <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-white/25 to-transparent" />
           </div>
 
-          {/* Sector filter — appears once a specific city is selected */}
-          {selectedCity !== "all" && sectorOptions.length > 0 && (
+          {/* Dropdowns */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="relative w-[220px]">
               <select
-                value={selectedSector}
+                value={selectedCity}
                 onChange={(e) => {
-                  setSelectedSector(e.target.value);
+                  setSelectedCity(e.target.value);
+                  setSelectedSector("all");
                   setCurrentPage(1);
                 }}
-                className="w-full bg-white border px-4 py-2 rounded-lg shadow-sm"
+                className="w-full rounded-xl border border-white/10 bg-[#1a1a1d] px-4 py-2.5 text-white outline-none focus:border-[#D9B268] transition-colors"
               >
-                <option value="all">All Sectors</option>
-                {sectorOptions.map((s) => (
-                  <option key={s.sector} value={s.sector}>
-                    {s.sector} ({s.count})
-                  </option>
-                ))}
+                <option value="all">All Cities</option>
+                <option value="gurgaon">Gurgaon</option>
+                <option value="delhi">Delhi</option>
+                <option value="faridabad">Faridabad</option>
+                <option value="greaternoida">Greater Noida</option>
+                <option value="noida">Noida</option>
               </select>
             </div>
+
+            {/* Sector filter — appears once a specific city is selected */}
+            {selectedCity !== "all" && sectorOptions.length > 0 && (
+              <div className="relative w-[220px]">
+                <select
+                  value={selectedSector}
+                  onChange={(e) => {
+                    setSelectedSector(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-[#1a1a1d] px-4 py-2.5 text-white outline-none focus:border-[#D9B268] transition-colors"
+                >
+                  <option value="all">All Sectors</option>
+                  {sectorOptions.map((s) => (
+                    <option key={s.sector} value={s.sector}>
+                      {s.sector} ({s.count})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Link through to the dedicated sector page(s) */}
+          {selectedCity !== "all" && sectorOptions.length > 0 && (
+            <Link
+              href={
+                selectedSector === "all"
+                  ? `/project-listing/${selectedCity}/sectors`
+                  : `/project-listing/${selectedCity}/sectors/${slugify(
+                      selectedSector
+                    )}`
+              }
+              className="text-sm font-medium text-[#D9B268] hover:opacity-80 transition"
+            >
+              {selectedSector === "all"
+                ? "Browse all sectors →"
+                : `Open ${selectedSector} page →`}
+            </Link>
           )}
         </div>
 
-        {/* Link through to the dedicated sector page(s) */}
-        {selectedCity !== "all" && sectorOptions.length > 0 && (
-          <Link
-            href={
-              selectedSector === "all"
-                ? `/project-listing/${selectedCity}/sectors`
-                : `/project-listing/${selectedCity}/sectors/${slugify(
-                    selectedSector
-                  )}`
-            }
-            className="text-sm font-medium text-[#CEA44E] hover:underline"
-          >
-            {selectedSector === "all"
-              ? "Browse all sectors →"
-              : `Open ${selectedSector} page →`}
-          </Link>
-        )}
-      </div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+          {loading ? (
+            [...Array(isMobile ? 4 : 8)].map((_, i) => <CardSkeleton key={i} />)
+          ) : currentProjects.length > 0 ? (
+            currentProjects.map((project: any, index: number) => (
+              <Link
+                key={index}
+                href={`/project-listing/${project.city}/${slugify(
+                  project?.projectTitle || "project"
+                )}`}
+              >
+                <HomesCard {...formatProject(project)} />
+              </Link>
+            ))
+          ) : (
+            <p className="text-center col-span-2 text-gray-500 py-16">No projects found</p>
+          )}
+        </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
-        {loading ? (
-          [...Array(isMobile ? 4 : 8)].map((_, i) => <CardSkeleton key={i} />)
-        ) : currentProjects.length > 0 ? (
-          currentProjects.map((project: any, index: number) => (
-            <Link
-              key={index}
-              href={`/project-listing/${project.city}/${slugify(
-                project?.projectTitle || "project"
-              )}`}
-            >
-              <HomesCard {...formatProject(project)} />
-            </Link>
-          ))
-        ) : (
-          <p className="text-center col-span-2 text-gray-500 py-16">No projects found</p>
-        )}
-      </div>
-
-      {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-2 text-[#CEA44E] font-bold disabled:opacity-30"
-        >
-          ‹
-        </button>
-
-        {getVisiblePages().map((p) => (
+        {/* Pagination */}
+        <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
           <button
-            key={p}
-            onClick={() => setCurrentPage(p)}
-            className={`px-3 py-2 rounded-md ${
-              currentPage === p
-                ? "bg-[#CEA44E] text-black"
-                : "bg-black text-white"
-            }`}
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
           >
-            {p}
+            <ChevronLeft size={16} />
           </button>
-        ))}
 
-        <button
-          onClick={() =>
-            setCurrentPage((p) => Math.min(p + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-          className="px-3 py-2 text-[#CEA44E] font-bold disabled:opacity-30"
-        >
-          ›
-        </button>
+          {getVisiblePages().map((p) => (
+            <button
+              key={p}
+              onClick={() => setCurrentPage(p)}
+              className={`h-10 w-10 rounded-full font-semibold transition-colors ${
+                currentPage === p
+                  ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
+                  : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage((p) => Math.min(p + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+
+        {/* Banner */}
+        <PromoBanner
+          heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
+          text="Step into homes that resonate with your aspirations."
+          buttonText="CONTACT NOW"
+          buttonLink="/contact"
+          imageSrc={customer}
+        />
       </div>
-
-      {/* Banner */}
-      <PromoBanner
-        heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
-        text="Step into homes that resonate with your aspirations."
-        buttonText="CONTACT NOW"
-        buttonLink="/contact"
-        imageSrc={customer}
-      />
     </div>
   );
 };

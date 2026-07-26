@@ -65,22 +65,22 @@ export default function DiscoverProject() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1444px] mx-auto gap-10 my-10 px-4">
+    <section className="flex flex-col w-full max-w-7xl mx-auto gap-10 py-14 md:py-20 px-4 border-b border-white/[0.06]">
       
       {/* Heading */}
       <div className="w-full flex flex-col items-center justify-center text-center">
         <div className="flex items-center justify-center w-full">
-          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-black via-gray-400 to-transparent" />
+          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-white/30 via-white/10 to-transparent" />
 
-          <h2 className="mx-4 text-2xl md:text-4xl font-corbert font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent uppercase tracking-wide">
+          <h2 className="mx-4 text-2xl md:text-4xl font-display font-bold bg-gradient-to-b from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent uppercase tracking-wide">
             Discover The Latest Projects
           </h2>
 
-          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-gray-400 to-black" />
+          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-white/30" />
         </div>
       </div>
 
-      <p className="mt-3 text-gray-600 text-lg font-sans max-w-3xl mx-auto text-center">
+      <p className="mt-3 text-gray-400 text-lg font-sans max-w-3xl mx-auto text-center">
         Explore off-plan and upcoming properties before they hit the mainstream market.
       </p>
 
@@ -89,7 +89,7 @@ export default function DiscoverProject() {
 
         {/* ✅ MOBILE SLIDER */}
         <div className="block md:hidden relative">
-          <div className="relative w-[90%] mx-auto h-[420px] overflow-hidden rounded-xs bg-white/10 backdrop-blur-md shadow-xs">
+          <div className="relative w-[90%] mx-auto h-[420px] overflow-hidden rounded-xl border border-white/[0.08] bg-[#141416] shadow-xl">
             <Image
               src={projects[currentIndex].img}
               alt={projects[currentIndex].title}
@@ -100,7 +100,7 @@ export default function DiscoverProject() {
             <div className="absolute inset-0 bg-black/30"></div>
 
             <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-lg font-semibold text-[#CEA44E]">
+              <h2 className="text-lg font-semibold text-[#D9B268]">
                 {projects[currentIndex].title}
               </h2>
 
@@ -110,7 +110,7 @@ export default function DiscoverProject() {
 
               <Link
                 href={projects[currentIndex].href}
-                className="inline-block mt-3 px-4 py-2 bg-[#CEA44E] text-black rounded"
+                className="inline-block mt-3 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold rounded"
               >
                 View More
               </Link>
@@ -122,14 +122,14 @@ export default function DiscoverProject() {
             {/* Prev Button */}
             <button
               onClick={prevSlide}
-              className="w-10 h-10 flex items-center justify-center rounded-md bg-gray-500 shadow hover:bg-gray-300 transition"
+              className="w-10 h-10 flex items-center justify-center rounded-md border border-white/10 text-white hover:border-[#D9B268] transition"
             >
               <Image
                 src={arrow}
                 alt="Previous"
                 width={10}
                 height={10}
-                className="rotate-180"
+                className="rotate-180 invert"
               />
             </button>
 
@@ -139,7 +139,7 @@ export default function DiscoverProject() {
                 <div
                   key={i}
                   className={`h-2 w-2 rounded-full transition-all ${
-                    i === currentIndex ? "bg-black scale-110" : "bg-gray-400"
+                    i === currentIndex ? "bg-[#D9B268] scale-110" : "bg-white/20"
                   }`}
                 />
               ))}
@@ -148,7 +148,7 @@ export default function DiscoverProject() {
             {/* Next Button */}
             <button
               onClick={nextSlide}
-              className="w-10 h-10 flex items-center justify-center rounded-md bg-[#CEA44E] shadow hover:bg-yellow-600 transition"
+              className="w-10 h-10 flex items-center justify-center rounded-md bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] shadow hover:brightness-105 transition"
             >
               <Image
                 src={arrow}
@@ -182,7 +182,7 @@ export default function DiscoverProject() {
 
               {active === p.id ? (
                 <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                  <h2 className="text-[24px] font-semibold text-amber-300">
+                  <h2 className="text-[24px] font-semibold text-[#D9B268]">
                     {p.title}
                   </h2>
 
@@ -192,7 +192,7 @@ export default function DiscoverProject() {
 
                   <Link
                     href={p.href}
-                    className="inline-block mt-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded"
+                    className="inline-block mt-4 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] hover:brightness-105 text-[#1c1608] font-semibold rounded"
                   >
                     View More
                   </Link>
@@ -208,6 +208,6 @@ export default function DiscoverProject() {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

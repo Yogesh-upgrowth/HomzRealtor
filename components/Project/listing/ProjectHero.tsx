@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Building2, BadgeCheck, ChevronRight, Images } from "lucide-react";
-import Carousel from "@/components/Carousel";
 import ProjectCtas from "./ProjectCtas";
 
 type Props = {
@@ -23,6 +23,9 @@ type Props = {
   enquireHref: string;
 };
 
+// Full-bleed hero — sole consumer is app/project-listing/[city]/[slug]/page.tsx,
+// safe to redesign freely. Multi-image browsing lives entirely in the
+// "Gallery & Plans" section (GalleryTabs, #gallery) further down the page.
 const ProjectHero = ({
   name,
   builder,
@@ -33,113 +36,86 @@ const ProjectHero = ({
   propertyType,
   status,
   rera,
-  priceText,
-  priceSubtext,
-  possession,
-  investmentScore,
   images,
   enquireHref,
 }: Props) => {
   const pills = [propertyCategory, propertyType, status].filter(Boolean) as string[];
+  const heroImage = images[0] || null;
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-2 mt-28 md:mt-32 mb-10">
-      {/* Breadcrumb */}
-      <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-        <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
-        <ChevronRight size={12} />
-        <Link href="/project-listing" className="hover:text-[#B77D2B]">Projects</Link>
-        <ChevronRight size={12} />
-        <Link href={`/project-listing/${citySlug}`} className="hover:text-[#B77D2B]">{cityName}</Link>
-        <ChevronRight size={12} />
-        <span className="text-gray-800 font-medium line-clamp-1">{name}</span>
-      </nav>
+    <section id="top" className="relative">
+      <div className="absolute inset-0 overflow-hidden">
+        {heroImage ? (
+          <Image
+            src={heroImage}
+            alt={name}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        ) : (
+          <div className="h-full w-full bg-[#141416]" />
+        )}
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0C]/60 via-[#0B0B0C]/15 to-[#0B0B0C]" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
-        {/* Gallery */}
-        <div className="lg:col-span-3">
-          {images.length > 0 ? (
-            <div className="[&_.max-w-4xl]:max-w-none">
-              <Carousel images={images} />
-            </div>
-          ) : (
-            <div className="flex h-[300px] md:h-[450px] items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
-              Images coming soon
-            </div>
-          )}
+      <div className="relative mx-auto flex min-h-[clamp(480px,72vh,640px)] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 md:px-2 md:pt-32">
+        {/* Breadcrumb */}
+        <nav className="mb-auto flex flex-wrap items-center gap-1 pt-2 text-xs text-gray-300">
+          <Link href="/" className="hover:text-[#D9B268]">Home</Link>
+          <ChevronRight size={12} />
+          <Link href="/project-listing" className="hover:text-[#D9B268]">Projects</Link>
+          <ChevronRight size={12} />
+          <Link href={`/project-listing/${citySlug}`} className="hover:text-[#D9B268]">{cityName}</Link>
+          <ChevronRight size={12} />
+          <span className="line-clamp-1 font-medium text-[#D9B268]">{name}</span>
+        </nav>
+
+        {pills.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {pills.map((p) => (
+              <span
+                key={p}
+                className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-gray-100"
+              >
+                {p}
+              </span>
+            ))}
+            {rera && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-[#63C08D]/30 bg-[#63C08D]/14 px-3 py-1.5 text-xs font-bold text-[#7fd3a5]">
+                <BadgeCheck size={13} /> RERA Registered
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="mb-1.5 flex items-center gap-1.5 text-sm text-[#D9B268]">
+          <Building2 size={14} />
+          <span>{builder}</span>
         </div>
 
-        {/* Info panel */}
-        <div className="lg:col-span-2">
-          <div className="h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col">
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <Building2 size={15} className="text-[#B77D2B]" />
-              <span>{builder}</span>
-            </div>
+        <h1 className="mb-4 max-w-[15ch] font-display text-[clamp(40px,7vw,80px)] leading-[0.98] tracking-tight text-white">
+          {name}
+        </h1>
 
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-              {name}
-            </h1>
+        <div className="mb-7 flex items-start gap-1.5 text-sm text-gray-300 md:text-base">
+          <MapPin size={16} className="mt-0.5 shrink-0 text-[#D9B268]" />
+          <span>{locationLine}</span>
+        </div>
 
-            <div className="mt-2 flex items-start gap-1.5 text-sm text-gray-600">
-              <MapPin size={16} className="text-[#B77D2B] shrink-0 mt-0.5" />
-              <span>{locationLine}</span>
-            </div>
-
-            {pills.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {pills.map((p) => (
-                  <span
-                    key={p}
-                    className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
-                  >
-                    {p}
-                  </span>
-                ))}
-                {rera && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
-                    <BadgeCheck size={13} /> RERA
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="mt-5 rounded-xl bg-gray-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-gray-400">
-                {priceSubtext || "Price"}
-              </p>
-              <p className="text-2xl font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
-                {priceText}
-              </p>
-              {(possession || investmentScore) && (
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-gray-200 pt-3 text-xs text-gray-500">
-                  {possession && <span>Possession: {possession}</span>}
-                  {investmentScore && (
-                    <span>
-                      Homz Score:{" "}
-                      <span className="font-semibold text-[#B77D2B]">
-                        {investmentScore.score}
-                      </span>{" "}
-                      · {investmentScore.grade}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {images.length > 0 && (
-              <a
-                href="#gallery"
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#B77D2B] hover:opacity-80"
-              >
-                <Images size={15} /> View gallery
-              </a>
-            )}
-
-            <div className="mt-auto pt-5">
-              <ProjectCtas name={name} enquireHref={enquireHref} variant="hero" />
-            </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-md flex-1">
+            <ProjectCtas name={name} enquireHref={enquireHref} variant="hero" />
           </div>
+          {images.length > 0 && (
+            <a
+              href="#gallery"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-[#D9B268] transition-colors"
+            >
+              <Images size={15} /> View Gallery
+            </a>
+          )}
         </div>
       </div>
     </section>

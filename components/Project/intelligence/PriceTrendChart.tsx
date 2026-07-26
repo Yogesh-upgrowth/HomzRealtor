@@ -42,6 +42,10 @@ type Props = {
   priceList: PriceRow[];
   defaultPrice: number | null;
   possessionText: string | null;
+  // When true, skips the outer section wrapper + heading so this can be
+  // nested inside another composite section (e.g. PricingAndPayment) without
+  // a duplicate heading. Default false keeps /flat's usage unchanged.
+  bare?: boolean;
 };
 
 function InrTooltip({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) {
@@ -57,7 +61,7 @@ function InrTooltip({ active, payload, label }: { active?: boolean; payload?: an
 // Projected price journey (current real price → possession estimate). Only the
 // starting point is real (from the listing); the trajectory is an illustrative,
 // user-adjustable appreciation estimate — never presented as historical data.
-const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText }: Props) => {
+const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare = false }: Props) => {
   const configPrices = (Array.isArray(priceList) ? priceList : [])
     .map((r) => parsePriceStr(String(r.price ?? "")))
     .filter((n): n is number => !!n);
@@ -85,12 +89,7 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText }: Pro
   const gain = projected - base;
   const growthPct = base > 0 ? Math.round((projected / base - 1) * 100) : 0;
 
-  return (
-    <section className="w-full max-w-7xl mx-auto px-2 my-12">
-      <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-        {`Price Trends – ${title}`}
-      </h2>
-
+  const card = (
       <div className="rounded-2xl bg-black border border-gray-700 p-6 md:p-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
           <div>
@@ -163,6 +162,16 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText }: Pro
           returns. Launch-price and historical transaction data are not available for this project.
         </p>
       </div>
+  );
+
+  if (bare) return card;
+
+  return (
+    <section className="w-full max-w-7xl mx-auto px-2 my-12">
+      <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
+        {`Price Trends – ${title}`}
+      </h2>
+      {card}
     </section>
   );
 };

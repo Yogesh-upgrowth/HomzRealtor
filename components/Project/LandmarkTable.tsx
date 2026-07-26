@@ -31,9 +31,9 @@ const LandmarksTable = ({ data,title }: Props) => {
           <button
             key={category}
             onClick={() => setActive(category)}
-            className={`whitespace-nowrap px-5 py-2 rounded-md text-sm font-medium transition ${
+            className={`whitespace-nowrap px-5 py-2 rounded-md text-sm font-semibold transition ${
               active === category
-                ? "bg-yellow-600 text-white"
+                ? "bg-gradient-to-r from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
                 : "bg-zinc-800 text-gray-300 hover:bg-zinc-700"
             }`}
           >
@@ -48,7 +48,7 @@ const LandmarksTable = ({ data,title }: Props) => {
 
           {/* Header */}
           <thead>
-            <tr className="bg-yellow-600/80 text-white text-left">
+            <tr className="bg-gradient-to-r from-[#F2D79B]/90 to-[#C99A4B]/90 text-[#1c1608] text-left">
               <th className="px-6 py-4 border-r border-gray-300">
                 {active.toUpperCase()} NAME
               </th>

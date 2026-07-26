@@ -25,12 +25,11 @@ const HomesCard: React.FC<HomeCardProps> = ({
   btntag,
 }) => {
   return (
-    <div className="w-full rounded-sm overflow-hidden shadow-sm bg-white text-black hover:shadow-xl transition">
-
+    <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#141416] text-white hover:border-[#D9B268]/35 hover:-translate-y-1 transition">
       {/* Image */}
       <div className="relative w-full h-[230px] md:h-[304px]">
         <Image
-          src={imgUrl || "/fallback.jpg"}
+          src={imgUrl || "/dummy.svg"}
           alt={title}
           fill
           className="object-cover"
@@ -39,27 +38,24 @@ const HomesCard: React.FC<HomeCardProps> = ({
 
       {/* Location */}
       <div className="flex py-2 pl-2 gap-2">
-        {/* <div className="bg-gray-800 text-white text-xs px-2 py-1 rounded">
-          {location}
-        </div> */}
-        <div className="bg-gray-700 text-white text-xs px-2 py-1 rounded">
+        <div className="bg-white/[0.06] border border-white/10 text-gray-300 text-xs px-2 py-1 rounded-full">
           RERA: {reranumber}
         </div>
       </div>
 
       {/* Title */}
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-2">{title}</h2>
+        <h2 className="text-lg font-semibold mb-2 text-white">{title}</h2>
 
         <div className="grid grid-cols-2 gap-3">
           {specifications.map((spec, i) => (
             <div key={i} className="flex items-center gap-2">
               {spec.icon && (
-                <Image src={spec.icon} alt="" width={20} height={20} />
+                <Image src={spec.icon} alt="" width={20} height={20} className="opacity-80" />
               )}
               <div>
-                <p className="text-xs">{spec.label}</p>
-                <p className="text-sm font-semibold text-[#CEA44E]">
+                <p className="text-xs text-gray-500">{spec.label}</p>
+                <p className="text-sm font-semibold text-[#D9B268]">
                   {spec.value}
                 </p>
               </div>
@@ -69,8 +65,8 @@ const HomesCard: React.FC<HomeCardProps> = ({
       </div>
 
       {/* Price */}
-      <div className="p-3 border-t">
-        <button className="w-full bg-gradient-to-r from-[#E4C66D] to-[#B67F2C] text-white py-2 rounded">
+      <div className="p-3 border-t border-white/[0.08]">
+        <button className="w-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold py-2 rounded-xl hover:brightness-105 transition">
           {btntag}
         </button>
       </div>

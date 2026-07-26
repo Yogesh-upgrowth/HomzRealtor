@@ -3,12 +3,14 @@ import { Suspense } from "react";
 import ProjectIntelligenceSections from "@/components/Project/intelligence/ProjectIntelligenceSections";
 import ProjectHero from "@/components/Project/listing/ProjectHero";
 import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
-import QuickSnapshot from "@/components/Project/listing/QuickSnapshot";
+import KeyFactsRibbon from "@/components/Project/listing/KeyFactsRibbon";
+import EnquiryRail from "@/components/Project/listing/EnquiryRail";
+import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
-import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView } from "@/lib/intelligence/view-model";
+import { instrumentSerif, manrope } from "@/lib/fonts";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
 
@@ -94,10 +96,10 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 const IntelligenceSkeleton = () => (
   <div className="w-full max-w-7xl mx-auto px-2 my-12 space-y-4 animate-pulse">
-    <div className="h-6 w-64 rounded bg-gray-200" />
+    <div className="h-6 w-64 rounded bg-white/10" />
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-24 rounded-xl bg-gray-100" />
+        <div key={i} className="h-24 rounded-xl bg-white/5" />
       ))}
     </div>
   </div>
@@ -127,7 +129,10 @@ const ProjectPage = async ({ params }: PageParams) => {
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   const view = resolveProjectView(project, { cityParam: city });
   const canonicalCity = canonicalCitySlug(project.city_key);
-  const enquireHref = `/project-listing/${canonicalCity}/${view.slug}/flat`;
+  // Points at the in-page enquiry rail (below) rather than navigating away —
+  // this page now carries its own configs/pricing/location/calculators/FAQ, so
+  // there's no need to funnel enquiries out to /flat.
+  const enquireHref = "#enquire";
 
   // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
   const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
@@ -211,39 +216,52 @@ const ProjectPage = async ({ params }: PageParams) => {
       />
       <StickyMiniHeader name={view.name} />
 
-      <ProjectHero
-        name={view.name}
-        builder={view.builder}
-        cityName={view.cityName}
-        citySlug={view.citySlug}
-        locationLine={view.locationLine}
-        propertyCategory={view.propertyCategory}
-        propertyType={view.propertyType}
-        status={view.status}
-        rera={view.rera}
-        priceText={view.priceText}
-        priceSubtext={view.priceSubtext}
-        possession={view.possession}
-        images={view.images}
-        enquireHref={enquireHref}
-      />
-      <div id="hero-sentinel" />
+      {/* Dark-luxury theme is scoped to this page's own subtree — Header/
+          Footer (rendered in app/layout.tsx, outside this returned JSX) and
+          the rest of the site keep their current look. */}
+      <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui bg-[#0B0B0C] text-white`}>
+        <ProjectHero
+          name={view.name}
+          builder={view.builder}
+          cityName={view.cityName}
+          citySlug={view.citySlug}
+          locationLine={view.locationLine}
+          propertyCategory={view.propertyCategory}
+          propertyType={view.propertyType}
+          status={view.status}
+          rera={view.rera}
+          priceText={view.priceText}
+          priceSubtext={view.priceSubtext}
+          possession={view.possession}
+          images={view.images}
+          enquireHref={enquireHref}
+        />
+        <div id="hero-sentinel" />
 
-      <div className="mt-6">
-        <QuickSnapshot chips={view.snapshot} />
+        <KeyFactsRibbon
+          priceText={view.priceText}
+          priceSubtext={view.priceSubtext}
+          possession={view.possession}
+          status={view.status}
+          unitCount={view.units.length}
+          investmentScore={view.investmentScore}
+        />
+
+        <div className="max-w-7xl mx-auto px-2 lg:grid lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-10 mt-4">
+          <main className="min-w-0">
+            {/* Geo + AI heavy sections stream in (all cached after first load) */}
+            <Suspense fallback={<IntelligenceSkeleton />}>
+              <ProjectIntelligenceSections cityParam={city} slug={slug} />
+            </Suspense>
+          </main>
+
+          <aside className="mt-10 lg:mt-0 lg:sticky lg:top-28 lg:self-start lg:py-10">
+            <EnquiryRail projectName={view.name} locationLine={view.locationLine} />
+          </aside>
+        </div>
+
+        <FinalCtaSection projectName={view.name} locationLine={view.locationLine} bgImage={bgImg} />
       </div>
-
-      {/* Geo + AI heavy sections stream in (all cached after first load) */}
-      <Suspense fallback={<IntelligenceSkeleton />}>
-        <ProjectIntelligenceSections cityParam={city} slug={slug} />
-      </Suspense>
-
-      <AppointmentCard
-        bgImage={bgImg}
-        heading="SCHEDULE YOUR SITE VISIT"
-        para={`Get expert guidance on ${view.name} — pricing, availability and a personalised investment view from the HomzRealtor team.`}
-        btnTxt="Schedule Site Visit"
-      />
 
       <StickyCta
         name={view.name}

@@ -69,7 +69,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           <div className="flex-shrink-0 w-full md:w-1/2 h-[260px] md:h-[420px] relative">
             <Image
               className="object-cover rounded-xs"
-              src={cardData.imageSrc || cardData.image || "/fallback.jpg"}
+              src={cardData.imageSrc || cardData.image || "/dummy.svg"}
               alt={cardData.imageAlt || "Image"}
               fill
               priority

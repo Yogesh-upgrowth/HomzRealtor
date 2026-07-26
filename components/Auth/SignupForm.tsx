@@ -8,7 +8,7 @@ import type { AuthUser } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 
 const inputClass =
-  "p-3 border border-gray-600 rounded-md bg-transparent focus:bg-white focus:text-black outline-none";
+  "w-full rounded-xl border border-white/10 bg-[#1a1a1d] px-4 py-3.5 text-[14.5px] text-white placeholder:text-gray-500 outline-none focus:border-[#D9B268] transition-colors";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -57,21 +57,24 @@ const SignupForm = () => {
 
   return (
     <div className="w-full max-w-md pt-6">
-      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
+      <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268] text-center">
+        Join Homz Realtor
+      </p>
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-7 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
         Create Your Account
       </h2>
 
       {/* Role toggle */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-5">
         {(["customer", "agent"] as const).map((r) => (
           <button
             key={r}
             type="button"
             onClick={() => setRole(r)}
-            className={`p-3 rounded-md font-semibold capitalize transition cursor-pointer ${
+            className={`rounded-xl px-4 py-3 font-semibold capitalize transition cursor-pointer ${
               role === r
-                ? "bg-gradient-to-r from-[#FDF094] to-[#B77D2B] text-black"
-                : "border border-gray-600 text-gray-300 hover:border-[#B77D2B] hover:text-[#B77D2B]"
+                ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
+                : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268]"
             }`}
           >
             {r}
@@ -79,7 +82,7 @@ const SignupForm = () => {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 text-sm">
         <input
           type="text"
           placeholder="Full Name"
@@ -119,7 +122,7 @@ const SignupForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 p-3 rounded-md bg-white text-black font-semibold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          className="mt-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 font-bold text-[#1c1608] hover:brightness-105 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
         >
           {loading ? "Creating account..." : `Sign Up as ${role === "agent" ? "Agent" : "Customer"}`}
         </button>
@@ -127,7 +130,7 @@ const SignupForm = () => {
 
       <p className="text-center text-gray-400 text-sm mt-6">
         Already have an account?{" "}
-        <button type="button" onClick={openLogin} className="text-[#CEA44E] font-medium cursor-pointer">
+        <button type="button" onClick={openLogin} className="text-[#D9B268] font-semibold cursor-pointer hover:opacity-80 transition">
           Log in
         </button>
       </p>

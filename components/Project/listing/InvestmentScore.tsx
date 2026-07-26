@@ -1,39 +1,5 @@
 import type { InvestmentScore as Score } from "@/lib/intelligence/view-model";
-
-const Gauge = ({ score, grade }: { score: number; grade: string }) => {
-  const radius = 70;
-  const circumference = 2 * Math.PI * radius;
-  const dash = (score / 100) * circumference;
-
-  return (
-    <div className="relative h-[180px] w-[180px] shrink-0">
-      <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90">
-        <defs>
-          <linearGradient id="score-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FDF094" />
-            <stop offset="100%" stopColor="#B77D2B" />
-          </linearGradient>
-        </defs>
-        <circle cx="80" cy="80" r={radius} fill="none" stroke="#2a2a2a" strokeWidth="12" />
-        <circle
-          cx="80"
-          cy="80"
-          r={radius}
-          fill="none"
-          stroke="url(#score-gold)"
-          strokeWidth="12"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${circumference}`}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold text-white">{score}</span>
-        <span className="text-xs text-gray-400">out of 100</span>
-        <span className="mt-1 text-sm font-semibold text-[#CEA44E]">{grade}</span>
-      </div>
-    </div>
-  );
-};
+import ScoreRing from "./ScoreRing";
 
 type Props = { title: string; data: Score | null; heading?: string };
 
@@ -48,7 +14,7 @@ const InvestmentScore = ({ title, data, heading }: Props) => {
 
       <div className="rounded-2xl bg-black border border-gray-700 p-6 md:p-8">
         <div className="flex flex-col lg:flex-row items-center gap-8">
-          <Gauge score={data.score} grade={data.grade} />
+          <ScoreRing score={data.score} grade={data.grade} size={180} />
 
           <div className="flex-1 w-full">
             <p className="text-gray-300 text-[15px] leading-7 mb-6">{data.verdict}</p>

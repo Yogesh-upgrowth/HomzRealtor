@@ -12,6 +12,8 @@ const config: Config = {
     extend: {
       fontFamily: {
                 custom: ['Zolina', 'sans-serif'], // Added 'sans-serif' as a fallback
+                display: ['var(--font-display)', 'serif'], // Instrument Serif, project-listing/[city]/[slug] page only
+                ui: ['var(--font-ui)', 'sans-serif'], // Manrope, project-listing/[city]/[slug] page only
       },
     },
   },

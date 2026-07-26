@@ -1,124 +1,31 @@
-// app/page.tsx
 "use client";
 
 import React, { useContext } from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import lodha from "@/assets/companylogo/lodha.png";
-import kalpataru from "@/assets/companylogo/kalpataru.png";
-import logoipsum from "@/assets/companylogo/logoipsum.png";
-import sarvome from "@/assets/companylogo/sarvome.png";
-import rentIcon from "@/assets/images/rentIcon.png";
-import propertyIcon from "@/assets/images/propertyIcon.png";
-import plotLandIcon from "@/assets/images/plot&landIcon.png";
-import projectsIcon from "@/assets/images/projectsIcon.png";
-import commercialIcon from "@/assets/images/commercialIcons.png";
 import herobg from "@/assets/images/herobg.png";
 import { FormContext } from "@/context/FormContext";
+import QuickSearchPanel from "@/components/Home/QuickSearchPanel";
 
 type Feature = {
   label: string;
   href: string;
-  icon: StaticImageData;
 };
 
 const features: Feature[] = [
-  { label: "Buy Property", href: "/", icon: propertyIcon },
-  { label: "Rent Property", href: "/", icon: rentIcon },
-  { label: "Plots & Land", href: "/", icon: plotLandIcon },
-  { label: "Projects", href: "/project-listing", icon: projectsIcon },
-  { label: "Commercial", href: "/", icon: commercialIcon },
+  { label: "Buy Property", href: "/buy-property" },
+  { label: "Rent Property", href: "/rent-property" },
+  { label: "Plots & Land", href: "/plots-and-lands" },
+  { label: "Projects", href: "/project-listing" },
+  { label: "Commercial", href: "/commercial" },
 ];
 
-const brandLogos = [kalpataru, lodha, sarvome, logoipsum, lodha];
-
-// export default function Hero() {
-//   const {openForm} = useContext(FormContext);
-//   return (
-//     <main className="min-h-screen bg-black text-white">
-//       {/* HERO */}
-//       <section className="relative isolate overflow-hidden rounded-b-3xl bg-white">
-//         {/* Background image */}
-//         <div className="absolute inset-0 -z-10">
-//           <Image
-//             src={herobg}
-//             alt="Modern city apartments"
-//             fill
-//             priority
-//             className="object-cover"
-//           />
-//           {/* Dark overlay */}
-//           <div className="absolute inset-0 bg-black/55" />
-//         </div>
-
-//         {/* Content */}
-//         <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-20 md:pb-28 text-center">
-//           <h1 className="text-2xl sm:text-3xl md:text-6xl font-normal tracking-wide leading-tight md:pt-10">
-//             <span className="block font-sans">HOMES YOU CAN TRUST, IN THE</span>
-//             <span className="mt-2 block  font-sans bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
-//               CITY YOU LOVE.
-//             </span>
-//           </h1>
-
-//           <p className="mx-auto mt-5 max-w-3xl text-gray-200/90">
-//             Buy, Rent, or Sell—discover verified listings, expert guidance, and properties that feel like home.
-//           </p>
-
-//           {/* Feature cards */}
-//           <div className="mx-auto mt-10 grid w-full max-w-[1444px] grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 justify-items-center">
-//             {features.map((f) => (
-//                 <Link
-//                 key={f.label}
-//                 href={f.href}
-//                 className="group relative flex items-center gap-4 rounded-sm border border-amber-200 px-4 py-3 bg-transparent transition hover:bg-white/15 w-full max-w-[238px] h-[80px]"
-//                 >
-//                 <div className="flex items-center gap-4">
-//                     <span className="grid place-items-center rounded-sm text-amber-300">
-//                     <Image src={f.icon} alt="image" width={32} height={32} />
-//                     </span>
-//                     <span className="text-md font-semibold">{f.label}</span>
-//                 </div>
-//                 </Link>
-//             ))}
-//             </div>
-
-//           {/* CTA */}
-//           <div className="mt-14">
-//             <button
-//               onClick={openForm}
-//               className="inline-flex items-center rounded-md bg-white px-8 py-4 text-md font-bold tracking-wide text-gray-900 shadow-lg transition hover:shadow-xl cursor-pointer "
-//             >
-//               TALK TO A LOCAL EXPERT
-//             </button>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Trusted by strip */}
-//       <section className="bg-[#0E0E0E] rounded-b-3xl">
-//         <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 py-10">
-//           <p className="text-center text-gray-400 text-lg">
-//             Trusted by the world’s best companies—social proof to build credibility.
-//           </p>
-//           <div className="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 items-center">
-//             {brandLogos.map((src, i) => (
-//               <div key={i} className="flex items-center justify-center opacity-80 hover:opacity-100 transition">
-//                 <Image
-//                   src={src}
-//                   alt={`Brand ${i + 1}`}
-//                   width={140}
-//                   height={40}
-//                   className="h-8 w-auto object-contain"
-//                 />
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-//     </main>
-//   );
-// }
-//  ------------------------------------------------------------------ dynamic conponent ------------------------------------------------
+const TRUST_STATS = [
+  { value: "25500+", label: "Happy Customers" },
+  { value: "45 Mn+", label: "Sq.ft. Area Sold" },
+  { value: "500+", label: "Skilled Professionals" },
+  { value: "750+", label: "Channel Associates" },
+];
 
 export default function Hero({
   variant,
@@ -139,101 +46,59 @@ export default function Hero({
   return (
     <>
       {variant === "default" ? (
-        <main className="bg-black text-white">
-          {/* HERO */}
-          <section className="relative isolate overflow-hidden h-screen rounded-b-3xl border-x border-b border-white/25 bg-white">
-            {/* Background image */}
-            <div className="absolute inset-0 -z-10">
-              <Image
-                src={herobg}
-                alt="Modern city apartments"
-                fill
-                priority
-                className="object-cover"
-              />
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/55" />
-            </div>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <Image src={herobg} alt="Luxury property in Gurgaon" fill priority className="object-cover" />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0C]/60 via-[#0B0B0C]/20 to-[#0B0B0C]" />
 
-            {/* Content — flex column centred vertically */}
-            <div className="h-full flex flex-col justify-start md:justify-center items-center mx-auto max-w-6xl px-4 md:px-6 lg:px-8 pt-28 pb-8 md:pt-0 md:pb-0 text-center w-full">
-              <h1 className="text-[clamp(1.25rem,5vw,3.75rem)] font-normal tracking-wide leading-tight">
-                <span className="block font-sans">
-                  HOMES YOU CAN TRUST, IN THE
-                </span>
-                <span className="block font-sans bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent">
-                  CITY YOU LOVE.
-                </span>
-              </h1>
+          <div className="relative mx-auto flex min-h-[clamp(560px,88vh,780px)] max-w-7xl flex-col justify-end px-4 pb-14 pt-32 md:px-6">
+            <span className="mb-5 inline-flex w-fit items-center rounded-full border border-white/15 bg-black/40 px-4 py-2 text-[12px] font-bold text-gray-100 backdrop-blur-sm">
+              #1 Trusted Property Platform in Gurgaon
+            </span>
 
-              <p className="mx-auto mt-3 md:mt-5 max-w-3xl md:text-base text-gray-200/90 text-[18px]">
-                Buy, Rent, or Sell—discover verified listings, expert guidance,
-                and properties that feel like home.
-              </p>
+            <h1 className="mb-4 max-w-[16ch] text-[clamp(34px,6.4vw,68px)] font-extrabold uppercase leading-[1.04] tracking-tight text-white">
+              Homes you can trust,{" "}
+              <span className="bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
+                in the city you love.
+              </span>
+            </h1>
 
-              {/* Feature cards */}
-              <div className="flex flex-col items-center">
+            <p className="mb-7 max-w-[480px] text-[15.5px] leading-relaxed text-gray-300">
+              Buy, rent or sell — discover verified listings, expert guidance, and
+              properties that feel like home.
+            </p>
 
-              {/* CTA */}
-              <div className="md:mt-16 mt-14 order-1 md:order-2">
-                <button
-                  onClick={openForm}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-8 py-4 text-sm md:text-md font-bold tracking-wide text-[#754E1A] shadow-lg transition hover:shadow-xl cursor-pointer w-full max-w-lg md:w-[420px]"
+            <QuickSearchPanel />
+
+            <div className="mt-7 flex flex-wrap gap-2.5">
+              {features.map((f) => (
+                <Link
+                  key={f.label}
+                  href={f.href}
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition-colors"
                 >
-                  TALK TO A LOCAL EXPERT
-                </button>
-              </div>
+                  {f.label}
+                </Link>
+              ))}
+              <button
+                onClick={openForm}
+                className="rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 py-2 text-[13px] font-bold text-[#1c1608] hover:brightness-105 transition cursor-pointer"
+              >
+                Talk to a Local Expert
+              </button>
+            </div>
 
-              {/* Grid */}
-              <div className="mt-5 md:mt-8 w-full max-w-xs md:max-w-[1544px] flex flex-col md:grid md:grid-cols-5 gap-3 md:gap-4 items-center order-2 md:order-1">
-                {features.map((f) => (
-                  <Link
-                      key={f.label}
-                      href={f.href}
-                      className="group relative flex items-center justify-center md:gap-3 rounded-md border border-amber-200/70 px-5 py-4 transition bg-black/30 hover:bg-black/50 w-full h-[60px] md:h-[65px] ml-[0px] mr-[0px]"
-                    >
-                      <span className="absolute left-4 md:static grid place-items-center rounded-sm text-amber-300 shrink-0">
-                        <Image
-                          src={f.icon}
-                          alt="image"
-                          width={28}
-                          height={28}
-                        />
-                      </span>
-                      <span className="text-base font-semibold whitespace-nowrap">{f.label}</span>
-                    </Link>
-                ))}
-              </div>
+            <div className="mt-8 flex flex-wrap gap-x-9 gap-y-3 border-t border-white/10 pt-6">
+              {TRUST_STATS.map((s) => (
+                <div key={s.label} className="flex items-baseline gap-2">
+                  <span className="font-display text-xl text-gray-200">{s.value}</span>
+                  <span className="text-[12.5px] text-gray-500">{s.label}</span>
+                </div>
+              ))}
             </div>
-            </div>
-          </section>
-
-          {/* Trusted by strip */}
-          <section className="bg-[#0E0E0E] rounded-b-3xl">
-            <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 py-10">
-              <p className="text-center text-gray-400 text-lg">
-                Trusted by the world’s best companies—social proof to build
-                credibility.
-              </p>
-              <div className="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 items-center">
-                {brandLogos.map((src, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-center opacity-80 hover:opacity-100 transition"
-                  >
-                    <Image
-                      src={src}
-                      alt={`Brand ${i + 1}`}
-                      width={140}
-                      height={40}
-                      className="h-8 w-auto object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </main>
+          </div>
+        </section>
       ) : (
         //  IMAGE-CENTRIC LAYOUT
         <main className="overflow-x-hidden">

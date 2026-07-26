@@ -87,7 +87,7 @@ const Navbar: React.FC = () => {
               alt="Logo"
               width={120}
               height={40}
-              className="w-[90px] h-[32px] md:w-[110px] md:h-[40px]"
+              className="h-8 w-auto md:h-10"
             />
           </Link>
 

@@ -50,15 +50,15 @@ const BottomSheet = ({ open, onClose, title, progress, onBodyScroll, children }:
         }`}
       />
 
-      {/* Panel */}
+      {/* Panel — bottom sheet on mobile, right-side drawer at lg: */}
       <div
         role="dialog"
         aria-modal="true"
-        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] flex-col rounded-t-2xl bg-[#1c1c1c] text-white shadow-2xl transition-transform duration-300 ease-out ${
-          open ? "translate-y-0" : "translate-y-full"
+        className={`absolute inset-x-0 bottom-0 flex max-h-[90vh] flex-col rounded-t-2xl bg-[#1c1c1c] text-white shadow-2xl transition-transform duration-300 ease-out lg:inset-x-auto lg:inset-y-0 lg:right-0 lg:h-full lg:max-h-none lg:w-full lg:max-w-[600px] lg:rounded-none lg:border-l lg:border-white/10 lg:translate-y-0 ${
+          open ? "translate-y-0 lg:translate-x-0" : "translate-y-full lg:translate-x-full"
         }`}
       >
-        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-600" />
+        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-600 lg:hidden" />
 
         {progress != null && (
           <div className="h-[3px] w-full shrink-0 bg-gray-800">

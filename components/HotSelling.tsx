@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import getValidImage from "./utils/helper/getValidImage";
 import { slugify } from "./utils/slugify";
 
@@ -33,10 +34,15 @@ interface Project {
 
 export default function HotSelling() {
   const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [selectedCity, setSelectedCity] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const scrollByCards = (dir: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -97,129 +103,129 @@ export default function HotSelling() {
   }, [selectedCity]);
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-[1444px] mx-auto px-4 md:px-6 text-center mt-8">
-        {/* Heading */}
-        <div className="flex items-center justify-center w-full">
-          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-black via-gray-400 to-transparent" />
-
-          <h2 className="mx-4 text-2xl md:text-4xl font-corbert font-bold bg-gradient-to-b from-[#FDF094] to-[#B77D2B] bg-clip-text text-transparent uppercase tracking-wide">
-            Hot Selling Real Estate Projects <br />
+    <section id="featured-projects" className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 scroll-mt-24 border-b border-white/[0.06]">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="mb-3.5 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268]">
+            Handpicked for you
+          </p>
+          <h2 className="text-[clamp(26px,3.6vw,38px)] font-bold tracking-tight text-white">
+            Featured Projects in Gurgaon
           </h2>
-
-          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-gray-400 to-black" />
         </div>
-
-        <p className="mt-3 text-gray-600 text-lg font-sans max-w-3xl mx-auto">
-          Discover the Best Opportunities in Residential & Commercial Spaces
-        </p>
-
-        {/* ✅ City Selector */}
-        <div className="mt-6 flex justify-center text-black">
-          {isMobile ? (
-            // 📱 Mobile Dropdown
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="px-4 py-2 border rounded-md"
-            >
-              <option className="cursor-pointer" value="all">All</option>
-              <option value="gurgaon">Gurgaon</option>
-              <option value="delhi">Delhi</option>
-              <option value="faridabad">Faridabad</option>
-              <option value="greaternoida">Greater Noida</option>
-              <option value="noida">Noida</option>
-            </select>
-          ) : (
-            // 🖥 Desktop Tabs
-            <div className="flex gap-4 text-black flex-wrap justify-center">
-              {[
-                "all",
-                "gurgaon",
-                "delhi",
-                "faridabad",
-                "greaternoida",
-                "noida",
-              ].map((city) => (
-                <button
-                  key={city}
-                  onClick={() => setSelectedCity(city)}
-                  className={`px-5 py-2 border rounded-md cursor-pointer capitalize transition ${
-                    selectedCity === city
-                      ? "bg-black text-white"
-                      : "bg-white text-black"
-                  }`}
-                >
-                  {city}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Project Cards */}
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-          {loading ? (
-            [...Array(3)].map((_, i) => (
-              <div key={i} className="overflow-hidden rounded-lg shadow-sm animate-pulse">
-                <div className="h-60 w-full bg-gray-200" />
-                <div className="py-4 pl-6 space-y-3">
-                  <div className="h-5 w-3/4 bg-gray-200 rounded" />
-                  <div className="h-4 w-1/3 bg-gray-200 rounded" />
-                </div>
-              </div>
-            ))
-          ) : projects.length > 0 ? (
-            projects.map((p: any, index: number) => {
-              const image = getValidImage(p.images);
-              const href = `/project-listing/${p.citySlug}/${slugify(p.projectTitle || "project")}`;
-
-              return (
-                <Link
-                  key={index}
-                  href={href}
-                  className="group overflow-hidden rounded-xs shadow-sm hover:shadow-lg transition block"
-                >
-                  <div className="relative h-60 w-full overflow-hidden">
-                    {image ? (
-                      <Image
-                        src={image}
-                        alt={p.projectTitle}
-                        fill
-                        className="object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full bg-gray-200 text-gray-400">
-                        No Image
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="py-4 pl-6 text-left">
-                    <h3 className="text-lg font-semibold text-gray-900 py-2 group-hover:text-[#B77D2B] transition">
-                      {p.projectTitle}
-                    </h3>
-                    <p className="text-[#B77D2B] font-semibold">
-                      {p.price || "View Details"}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })
-          ) : (
-            <p className="col-span-3 text-center text-gray-500">No projects found</p>
-          )}
-        </div>
-
-        {/* View All Button */}
-        <div className="mt-10">
-          <Link
-            href="/project-listing"
-            className="px-12 py-4 bg-gradient-to-b from-[#FDF094] to-[#B77D2B] text-black font-medium rounded-md shadow-md hover:opacity-90 transition"
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => scrollByCards(-1)}
+            aria-label="Previous"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors"
           >
-            View All
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={() => scrollByCards(1)}
+            aria-label="Next"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors"
+          >
+            <ChevronRight size={18} />
+          </button>
+          <Link href="/project-listing" className="ml-2 text-[13px] font-bold text-[#D9B268] whitespace-nowrap">
+            View All →
           </Link>
         </div>
+      </div>
+
+      {/* City selector */}
+      <div className="mb-7 flex justify-start">
+        {isMobile ? (
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="rounded-lg border border-white/10 bg-[#1a1a1d] px-4 py-2.5 text-sm text-white"
+          >
+            <option value="all">All Cities</option>
+            <option value="gurgaon">Gurgaon</option>
+            <option value="delhi">Delhi</option>
+            <option value="faridabad">Faridabad</option>
+            <option value="greaternoida">Greater Noida</option>
+            <option value="noida">Noida</option>
+          </select>
+        ) : (
+          <div className="flex flex-wrap gap-2.5">
+            {["all", "gurgaon", "delhi", "faridabad", "greaternoida", "noida"].map((city) => (
+              <button
+                key={city}
+                onClick={() => setSelectedCity(city)}
+                className={`rounded-full px-4.5 py-2 text-[13px] font-bold capitalize transition ${
+                  selectedCity === city
+                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
+                    : "border border-white/10 text-gray-400 hover:text-white"
+                }`}
+              >
+                {city}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Project cards — horizontal scroll-snap row */}
+      <div ref={scrollRef} className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+        {loading ? (
+          [...Array(3)].map((_, i) => (
+            <div key={i} className="w-[300px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] animate-pulse">
+              <div className="h-52 w-full bg-white/5" />
+              <div className="space-y-3 p-5">
+                <div className="h-5 w-3/4 rounded bg-white/5" />
+                <div className="h-4 w-1/3 rounded bg-white/5" />
+              </div>
+            </div>
+          ))
+        ) : projects.length > 0 ? (
+          projects.map((p: any, index: number) => {
+            const image = getValidImage(p.images);
+            const href = `/project-listing/${p.citySlug}/${slugify(p.projectTitle || "project")}`;
+
+            return (
+              <Link
+                key={index}
+                href={href}
+                className="group w-[300px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
+              >
+                <div className="relative h-52 w-full overflow-hidden">
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={p.projectTitle}
+                      fill
+                      className="object-cover group-hover:scale-105 transition duration-500"
+                      sizes="300px"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-[#1a1a1d] text-gray-600">
+                      No Image
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5">
+                  <h3 className="mb-1.5 text-[15.5px] font-bold text-white group-hover:text-[#D9B268] transition-colors">
+                    {p.projectTitle}
+                  </h3>
+                  {p.location && (
+                    <p className="mb-3 flex items-center gap-1.5 text-[12px] text-gray-500">
+                      <MapPin size={12} className="text-[#D9B268]" /> {p.location}
+                    </p>
+                  )}
+                  <p className="font-display text-lg text-[#D9B268]">
+                    {p.price || "View Details"}
+                  </p>
+                </div>
+              </Link>
+            );
+          })
+        ) : (
+          <p className="text-gray-500">No projects found</p>
+        )}
       </div>
     </section>
   );
