@@ -48,13 +48,22 @@ export default function HotSelling() {
     async function fetchData() {
       setLoading(true);
       try {
+        // Each call catches its own error and resolves to [] rather than
+        // rejecting — otherwise a single flaky endpoint (Promise.all fails
+        // fast on the first rejection) would blank out the entire section
+        // even when the other 9 of 10 calls succeeded.
         const fetchCityData = async (cityKey: string, citySlug: string, limit = 3) => {
-          const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          return (data?.results || [])
-            .filter((item: any) => Array.isArray(item.images) && item.images.length > 0)
-            .map((item: any) => ({ ...item, citySlug }));
+          try {
+            const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
+            const res = await fetch(url);
+            if (!res.ok) return [];
+            const data = await res.json();
+            return (data?.results || [])
+              .filter((item: any) => Array.isArray(item.images) && item.images.length > 0)
+              .map((item: any) => ({ ...item, citySlug }));
+          } catch {
+            return [];
+          }
         };
 
         const cityKeyMap: Record<string, string> = {
@@ -68,8 +77,11 @@ export default function HotSelling() {
         let finalData: any[] = [];
 
         if (selectedCity === "all") {
+          // Second element of each tuple is the canonical URL slug used in
+          // card links — must match canonicalCitySlug() in
+          // lib/intelligence/projects.ts, never the raw API city key.
           const cities: [string, string][] = [
-            ["ggn", "ggn"],
+            ["ggn", "gurgaon"],
             ["delhi", "delhi"],
             ["faridabad", "faridabad"],
             ["gNoida", "greaternoida"],

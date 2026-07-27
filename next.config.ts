@@ -23,6 +23,37 @@ const nextConfig = {
         destination: "/project-listing/:city/:slug/flat",
         permanent: true,
       },
+      // Project routes accept both the raw API city key (e.g. "ggn") and the
+      // canonical slug (e.g. "gurgaon") — both render the same content, which
+      // is a duplicate-content problem. Every internal link now points at the
+      // canonical slug only; these redirects catch stale external
+      // backlinks/bookmarks still using the short code, matching the
+      // <link rel="canonical"> already declared on these pages.
+      {
+        source: "/project-listing/ggn",
+        destination: "/project-listing/gurgaon",
+        permanent: true,
+      },
+      {
+        source: "/project-listing/ggn/:path*",
+        destination: "/project-listing/gurgaon/:path*",
+        permanent: true,
+      },
+      {
+        source: "/project-listing/compare/ggn/:path*",
+        destination: "/project-listing/compare/gurgaon/:path*",
+        permanent: true,
+      },
+      {
+        source: "/project-listing/gnoida/:path*",
+        destination: "/project-listing/greaternoida/:path*",
+        permanent: true,
+      },
+      {
+        source: "/project-listing/compare/gnoida/:path*",
+        destination: "/project-listing/compare/greaternoida/:path*",
+        permanent: true,
+      },
     ];
   },
 };

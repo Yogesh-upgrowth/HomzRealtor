@@ -1,15 +1,16 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
 import devImg from "@/public/totalUnit.svg";
 import { slugify } from "@/components/utils/slugify";
-import { extractSector } from "@/lib/intelligence/normalize";
+import { extractSector, extractPriceRange } from "@/lib/intelligence/normalize";
 import customer from "@/assets/images/customer.png";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
@@ -49,12 +50,42 @@ const CardSkeleton = () => (
   </div>
 );
 
-const ProjectListing = () => {
+// Budget range keys (shared with QuickSearchPanel) → min/max in rupees.
+const BUDGET_RANGES: Record<string, { min: number; max: number | null }> = {
+  "under-50l": { min: 0, max: 50_00_000 },
+  "50l-1cr": { min: 50_00_000, max: 1_00_00_000 },
+  "1cr-2cr": { min: 1_00_00_000, max: 2_00_00_000 },
+  "above-2cr": { min: 2_00_00_000, max: null },
+  "under-1cr": { min: 0, max: 1_00_00_000 },
+};
+
+const COMMERCIAL_TYPES = new Set(["Commercial", "Office Space", "Retail"]);
+const RESIDENTIAL_TYPES = new Set(["Apartment", "Villa"]);
+
+function ProjectListingInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCity, setSelectedCity] = useState("all");
   const [selectedSector, setSelectedSector] = useState("all");
+
+  // Search filters — seeded from the URL so a search from the homepage hero
+  // (or any shared/bookmarked link) actually lands on filtered results.
+  const q = searchParams.get("q") || "";
+  const type = searchParams.get("type") || "";
+  const budget = searchParams.get("budget") || "";
+  const bhk = searchParams.get("bhk") || "";
+  const hasActiveFilters = Boolean(q || type || budget || bhk);
+
+  const clearFilter = (key: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    const query = params.toString();
+    router.push(query ? `/project-listing?${query}` : "/project-listing");
+  };
 
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
@@ -77,17 +108,62 @@ const ProjectListing = () => {
       .sort((a, b) => sortKey(a.sector) - sortKey(b.sector));
   }, [projects, selectedCity]);
 
-  // Apply the sector filter in-place before paginating.
-  const visibleProjects =
-    selectedSector === "all"
-      ? projects
-      : projects.filter((p) => p?._sector === selectedSector);
+  // Apply the sector filter, then the search filters (q / type / budget / bhk),
+  // before paginating. Every filter here is genuinely applied — nothing is a
+  // no-op default. `type` only constrains results when it maps to something
+  // real in the data (commercial vs. residential); "Plot" does a best-effort
+  // text match since the feed has no explicit property-type field.
+  const visibleProjects = useMemo(() => {
+    let list =
+      selectedSector === "all"
+        ? projects
+        : projects.filter((p) => p?._sector === selectedSector);
+
+    if (q) {
+      const needle = q.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.projectTitle?.toLowerCase().includes(needle) ||
+          p.location?.toLowerCase().includes(needle) ||
+          p._sector?.toLowerCase().includes(needle)
+      );
+    }
+
+    if (type) {
+      if (COMMERCIAL_TYPES.has(type)) {
+        list = list.filter((p) => p._category === "commercial");
+      } else if (RESIDENTIAL_TYPES.has(type)) {
+        list = list.filter((p) => p._category === "residential");
+      } else if (type === "Plot") {
+        list = list.filter((p) =>
+          `${p.projectTitle || ""} ${(p.aboutProject || []).join(" ")}`
+            .toLowerCase()
+            .match(/\bplot|\bland\b/)
+        );
+      }
+    }
+
+    if (bhk) {
+      list = list.filter((p) => p.BHKType?.toLowerCase().includes(bhk.toLowerCase()));
+    }
+
+    if (budget && BUDGET_RANGES[budget]) {
+      const { min, max } = BUDGET_RANGES[budget];
+      list = list.filter((p) => {
+        const { min: priceMin } = extractPriceRange(p.price);
+        if (priceMin == null) return false;
+        return priceMin >= min && (max == null || priceMin < max);
+      });
+    }
+
+    return list;
+  }, [projects, selectedSector, q, type, budget, bhk]);
 
   const startIndex = (currentPage - 1) * cardsPerPage;
   const endIndex = startIndex + cardsPerPage;
 
   const currentProjects = visibleProjects.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(visibleProjects.length / cardsPerPage);
+  const totalPages = Math.max(1, Math.ceil(visibleProjects.length / cardsPerPage));
 
   // ✅ Helpers
   const getValidImage = (images: string[] = []) => {
@@ -128,6 +204,10 @@ const ProjectListing = () => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [totalPages, currentPage]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, type, budget, bhk]);
+
   // ✅ Fetch API
   useEffect(() => {
     async function fetchData() {
@@ -135,12 +215,21 @@ const ProjectListing = () => {
       try {
         let finalData: any[] = [];
 
+        // Each call catches its own error and resolves to [] rather than
+        // rejecting — otherwise Promise.all fails fast on the first
+        // rejection and blanks out the whole page even when most of the
+        // endpoints succeeded.
         const fetchCityData = async (key: string, limit = 20) => {
-          const res = await fetch(
-            `https://homzbackend.vercel.app/api/data?city=${key}&page=1&limit=${limit}`
-          );
-          const data = await res.json();
-          return data?.results || [];
+          try {
+            const res = await fetch(
+              `https://homzbackend.vercel.app/api/data?city=${key}&page=1&limit=${limit}`
+            );
+            if (!res.ok) return [];
+            const data = await res.json();
+            return data?.results || [];
+          } catch {
+            return [];
+          }
         };
 
         const cityKeyMap: any = {
@@ -162,14 +251,16 @@ const ProjectListing = () => {
 
           const results = await Promise.all(promises);
 
-          // ✅ attach city properly
+          // ✅ attach city + real category (commercial/residential) properly
           finalData = results.flatMap((arr, index) => {
             const baseIndex = Math.floor(index / 2);
             const city = bases[baseIndex];
+            const category = index % 2 === 0 ? "commercial" : "residential";
 
             return arr.map((item: any) => ({
               ...item,
               city,
+              _category: category,
             }));
           });
         } else {
@@ -186,10 +277,13 @@ const ProjectListing = () => {
             keys.map((key) => fetchCityData(key))
           );
 
-          finalData = results.flat().map((item: any) => ({
-            ...item,
-            city: base,
-          }));
+          finalData = results.flatMap((arr, index) =>
+            arr.map((item: any) => ({
+              ...item,
+              city: base,
+              _category: index === 0 ? "commercial" : "residential",
+            }))
+          );
         }
 
         // ✅ Sort: images first
@@ -251,6 +345,13 @@ const ProjectListing = () => {
     ],
   });
 
+  const activeFilterChips = [
+    q && { key: "q", label: `"${q}"` },
+    type && { key: "type", label: type },
+    budget && { key: "budget", label: BUDGET_RANGES[budget] ? budget.replace(/-/g, " ") : budget },
+    bhk && { key: "bhk", label: `${bhk} BHK` },
+  ].filter(Boolean) as { key: string; label: string }[];
+
   return (
     <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen bg-[#0B0B0C] text-white`}>
       <div className="max-w-2xl md:max-w-7xl px-4 md:px-2 mx-auto pt-32 pb-16">
@@ -264,6 +365,25 @@ const ProjectListing = () => {
             </h1>
             <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-white/25 to-transparent" />
           </div>
+
+          {/* Active search filters — confirms the user's search was received */}
+          {activeFilterChips.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {activeFilterChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  onClick={() => clearFilter(chip.key)}
+                  className="flex items-center gap-1.5 rounded-full border border-[#D9B268]/30 bg-[#D9B268]/10 px-3.5 py-1.5 text-[12.5px] font-semibold text-[#D9B268]"
+                >
+                  {chip.label}
+                  <X size={12} />
+                </button>
+              ))}
+              <Link href="/project-listing" className="text-[12.5px] text-gray-500 hover:text-gray-300 underline">
+                Clear all
+              </Link>
+            </div>
+          )}
 
           {/* Dropdowns */}
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -343,44 +463,57 @@ const ProjectListing = () => {
               </Link>
             ))
           ) : (
-            <p className="text-center col-span-2 text-gray-500 py-16">No projects found</p>
+            <div className="text-center col-span-2 py-16">
+              <p className="text-gray-400 mb-3">
+                {hasActiveFilters
+                  ? "No projects match your search."
+                  : "No projects found"}
+              </p>
+              {hasActiveFilters && (
+                <Link href="/project-listing" className="text-sm font-medium text-[#D9B268] hover:opacity-80">
+                  Clear filters and browse all projects →
+                </Link>
+              )}
+            </div>
           )}
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          {getVisiblePages().map((p) => (
+        {visibleProjects.length > 0 && (
+          <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
             <button
-              key={p}
-              onClick={() => setCurrentPage(p)}
-              className={`h-10 w-10 rounded-full font-semibold transition-colors ${
-                currentPage === p
-                  ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
-                  : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40"
-              }`}
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
-              {p}
+              <ChevronLeft size={16} />
             </button>
-          ))}
 
-          <button
-            onClick={() =>
-              setCurrentPage((p) => Math.min(p + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
+            {getVisiblePages().map((p) => (
+              <button
+                key={p}
+                onClick={() => setCurrentPage(p)}
+                className={`h-10 w-10 rounded-full font-semibold transition-colors ${
+                  currentPage === p
+                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
+                    : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setCurrentPage((p) => Math.min(p + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
 
         {/* Banner */}
         <PromoBanner
@@ -393,6 +526,13 @@ const ProjectListing = () => {
       </div>
     </div>
   );
-};
+}
 
-export default ProjectListing;
+// useSearchParams() requires a Suspense boundary in a client-rendered page.
+export default function ProjectListing() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0B0B0C]" />}>
+      <ProjectListingInner />
+    </Suspense>
+  );
+}

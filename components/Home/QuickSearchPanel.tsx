@@ -8,24 +8,43 @@ import { MapPin, Building2, IndianRupee, BedDouble, Search } from "lucide-react"
 const TABS = ["Buy", "Rent", "Commercial", "Plots"];
 
 const TRENDING = [
-  { label: "Sector 65", href: "/project-listing" },
-  { label: "Golf Course Road", href: "/project-listing" },
-  { label: "Ready to move", href: "/project-listing" },
-  { label: "Commercial spaces", href: "/commercial" },
-  { label: "Under ₹1 Cr", href: "/project-listing" },
+  { label: "Sector 65", href: "/project-listing?q=Sector+65" },
+  { label: "Golf Course Road", href: "/project-listing?q=Golf+Course+Road" },
+  { label: "Ready to move", href: "/project-listing?q=Ready+to+Move" },
+  { label: "Commercial spaces", href: "/project-listing?type=Commercial" },
+  { label: "Under ₹1 Cr", href: "/project-listing?budget=under-1cr" },
 ];
 
-// Presentational quick-search UI embedded in the Hero. No backend filtering —
-// submitting just navigates to the real /project-listing browse page.
+const PROPERTY_TYPES = ["Any Type", "Apartment", "Villa", "Plot", "Office Space", "Retail"];
+const BUDGETS = [
+  { label: "Any Budget", value: "" },
+  { label: "Under ₹50 Lakh", value: "under-50l" },
+  { label: "₹50L – ₹1 Cr", value: "50l-1cr" },
+  { label: "₹1 Cr – ₹2 Cr", value: "1cr-2cr" },
+  { label: "Above ₹2 Cr", value: "above-2cr" },
+];
+const BHKS = ["Any BHK", "1 BHK", "2 BHK", "3 BHK", "4+ BHK"];
+
+// Every selection here is passed through as a real query param to
+// /project-listing, which applies whatever it can genuinely filter on
+// (location/name text, price range, BHK, and a best-effort property-type
+// match) rather than silently discarding the user's search.
 const QuickSearchPanel = () => {
   const router = useRouter();
   const [tab, setTab] = useState("Buy");
   const [location, setLocation] = useState("");
+  const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
+  const [budget, setBudget] = useState(BUDGETS[0].value);
+  const [bhk, setBhk] = useState(BHKS[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (location.trim()) params.set("q", location.trim());
+    if (propertyType !== "Any Type") params.set("type", propertyType);
+    if (budget) params.set("budget", budget);
+    if (bhk !== "Any BHK") params.set("bhk", bhk.replace(" BHK", ""));
+    if (tab === "Commercial") params.set("type", "Commercial");
     const query = params.toString();
     router.push(query ? `/project-listing?${query}` : "/project-listing");
   };
@@ -65,33 +84,46 @@ const QuickSearchPanel = () => {
 
         <label className={fieldCls}>
           <Building2 size={17} className="shrink-0 text-gray-500" />
-          <select className="w-full appearance-none bg-transparent text-white outline-none" defaultValue="Apartment">
-            <option>Apartment</option>
-            <option>Villa</option>
-            <option>Plot</option>
-            <option>Office Space</option>
-            <option>Retail</option>
+          <select
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {PROPERTY_TYPES.map((t) => (
+              <option key={t} className="bg-[#1a1a1d]">
+                {t}
+              </option>
+            ))}
           </select>
         </label>
 
         <label className={fieldCls}>
           <IndianRupee size={16} className="shrink-0 text-gray-500" />
-          <select className="w-full appearance-none bg-transparent text-white outline-none" defaultValue="Under ₹50 Lakh">
-            <option>Under ₹50 Lakh</option>
-            <option>₹50L – ₹1 Cr</option>
-            <option>₹1 Cr – ₹2 Cr</option>
-            <option>Above ₹2 Cr</option>
+          <select
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {BUDGETS.map((b) => (
+              <option key={b.value} value={b.value} className="bg-[#1a1a1d]">
+                {b.label}
+              </option>
+            ))}
           </select>
         </label>
 
         <label className={fieldCls}>
           <BedDouble size={17} className="shrink-0 text-gray-500" />
-          <select className="w-full appearance-none bg-transparent text-white outline-none" defaultValue="Any BHK">
-            <option>Any BHK</option>
-            <option>1 BHK</option>
-            <option>2 BHK</option>
-            <option>3 BHK</option>
-            <option>4+ BHK</option>
+          <select
+            value={bhk}
+            onChange={(e) => setBhk(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {BHKS.map((b) => (
+              <option key={b} className="bg-[#1a1a1d]">
+                {b}
+              </option>
+            ))}
           </select>
         </label>
 

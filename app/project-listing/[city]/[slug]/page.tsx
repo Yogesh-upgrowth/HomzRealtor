@@ -127,8 +127,14 @@ const ProjectPage = async ({ params }: PageParams) => {
   }
 
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
-  const view = resolveProjectView(project, { cityParam: city });
+  // Always resolve the view against the canonical city slug (e.g. "gurgaon",
+  // never "ggn") — the route itself accepts both, but every internal link
+  // generated from `view.citySlug` (breadcrumb, similar-project cards, sector
+  // links, etc.) must consistently point at the one canonical URL, matching
+  // the <link rel="canonical"> tag below rather than mirroring whichever
+  // non-canonical alias the visitor happened to land on.
   const canonicalCity = canonicalCitySlug(project.city_key);
+  const view = resolveProjectView(project, { cityParam: canonicalCity });
   // Points at the in-page enquiry rail (below) rather than navigating away —
   // this page now carries its own configs/pricing/location/calculators/FAQ, so
   // there's no need to funnel enquiries out to /flat.
@@ -244,14 +250,13 @@ const ProjectPage = async ({ params }: PageParams) => {
           possession={view.possession}
           status={view.status}
           unitCount={view.units.length}
-          investmentScore={view.investmentScore}
         />
 
         <div className="max-w-7xl mx-auto px-2 lg:grid lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-10 mt-4">
           <main className="min-w-0">
             {/* Geo + AI heavy sections stream in (all cached after first load) */}
             <Suspense fallback={<IntelligenceSkeleton />}>
-              <ProjectIntelligenceSections cityParam={city} slug={slug} />
+              <ProjectIntelligenceSections cityParam={canonicalCity} slug={slug} />
             </Suspense>
           </main>
 

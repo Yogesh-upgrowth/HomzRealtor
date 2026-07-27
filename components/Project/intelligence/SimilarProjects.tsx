@@ -51,7 +51,7 @@ function ProjectCard({
   return (
     <div className="group bg-black border border-gray-700 rounded-xl overflow-hidden hover:border-[#CEA44E] transition-colors">
       <Link
-        href={`/project-listing/${project.city_key}/${project.slug}${linkTo === "flat" ? "/flat" : ""}`}
+        href={`/project-listing/${canonicalCitySlug(project.city_key)}/${project.slug}${linkTo === "flat" ? "/flat" : ""}`}
         className="block"
       >
         {/* Image */}

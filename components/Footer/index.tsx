@@ -1,6 +1,5 @@
-"use client";
-
 import Image from "next/image";
+import Link from "next/link";
 import logo from "@/assets/companylogo/logo.png";
 
 export default function Footer() {
@@ -21,24 +20,24 @@ export default function Footer() {
         <div className="flex flex-col md:items-end">
           <ul className="grid grid-cols-2 md:flex flex-cols-2 md:flex-row gap-4 md:gap-8 text-sm font-medium">
             <li>
-              <a href="#" className="hover:text-[#FDF094] transition-colors">
+              <Link href="/" className="hover:text-[#FDF094] transition-colors">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-[#FDF094] transition-colors">
+              <Link href="/project-listing" className="hover:text-[#FDF094] transition-colors">
                 Projects
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-[#FDF094] transition-colors">
+              <Link href="/developer" className="hover:text-[#FDF094] transition-colors">
                 Developers
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-[#FDF094] transition-colors">
+              <Link href="/#consult" className="hover:text-[#FDF094] transition-colors">
                 Contact
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
