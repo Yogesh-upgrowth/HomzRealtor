@@ -9,7 +9,7 @@ import AppointmentCard from "@/components/Common/Appointment";
 import FlatIntelligenceSections from "@/components/Project/intelligence/FlatIntelligenceSections";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
-import { formatInr, type NormalizedProject } from "@/lib/intelligence/normalize";
+import { formatInr, truncateAtWord, type NormalizedProject } from "@/lib/intelligence/normalize";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -70,9 +70,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
   const image = project.images.find(imgFilter) || project.interior_images.find(imgFilter);
 
+  const truncatedDescription = truncateAtWord(description);
+
   return {
     title,
-    description: description.slice(0, 158),
+    description: truncatedDescription,
     keywords: [
       `flats in ${project.project_name}`,
       `${project.project_name} flats`,
@@ -84,7 +86,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {
       title,
-      description: description.slice(0, 158),
+      description: truncatedDescription,
       url: canonicalUrl,
       type: "website",
       images: image ? [{ url: image, width: 1200, height: 630, alt: title }] : [],
@@ -205,7 +207,7 @@ const FlatChildPage = async ({ params }: PageParams) => {
       {/* Gallery */}
       {gallery.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-8">
-          <Carousel images={gallery} />
+          <Carousel images={gallery} alt={`${project.project_name} — flat interior`} />
         </section>
       )}
 

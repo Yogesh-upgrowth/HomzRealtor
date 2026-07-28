@@ -11,9 +11,20 @@ const QuickSnapshot = ({ chips }: { chips: Chip[] }) => {
             <p className="text-[11px] uppercase tracking-wide text-gray-500 font-medium">
               {chip.label}
             </p>
-            <p className="text-sm md:text-base font-semibold text-[#ececea] mt-0.5 line-clamp-2">
-              {chip.value}
-            </p>
+            {chip.label === "RERA" ? (
+              <a
+                href="https://haryanarera.gov.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm md:text-base font-semibold text-[#D9B268] hover:text-[#e8c88a] mt-0.5 line-clamp-2 underline decoration-[#D9B268]/40 underline-offset-2"
+              >
+                {chip.value} — verify ↗
+              </a>
+            ) : (
+              <p className="text-sm md:text-base font-semibold text-[#ececea] mt-0.5 line-clamp-2">
+                {chip.value}
+              </p>
+            )}
           </div>
         ))}
       </div>

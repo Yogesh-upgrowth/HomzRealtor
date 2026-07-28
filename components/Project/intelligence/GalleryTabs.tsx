@@ -41,7 +41,7 @@ const GalleryTabs = ({ title, exterior, interior, masterPlan }: Props) => {
         />
       )}
 
-      <Carousel images={activeBucket.images} />
+      <Carousel images={activeBucket.images} alt={`${title} — ${activeBucket.label}`} />
     </section>
   );
 };

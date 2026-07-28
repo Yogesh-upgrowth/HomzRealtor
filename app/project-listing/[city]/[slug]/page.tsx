@@ -10,6 +10,7 @@ import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView } from "@/lib/intelligence/view-model";
+import { truncateAtWord } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
@@ -35,27 +36,33 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     : project.micro_market || cityName;
 
   // Rich, keyword-led title built from real data (never just the bare name).
-  // e.g. "M3M Route 65, Sector 65 Gurgaon: Price, Floor Plan & Reviews"
-  const title = `${project.project_name}, ${locationLabel}: Price, Floor Plan & Reviews`;
+  // e.g. "M3M Route 65, Sector 65 Gurgaon: Price, Payment Plan & Location"
+  // Deliberately doesn't promise "Floor Plan" or "Reviews" — this page has
+  // neither section, and a title that over-promises just teaches search
+  // engines the page bounces.
+  const title = `${project.project_name}, ${locationLabel}: Price, Payment Plan & Location`;
+  // The root layout's title.template ("%s | HomzRealtor") appends the brand
+  // suffix to the real <title> tag automatically, but openGraph/twitter
+  // titles bypass that template — so they need the suffix added explicitly.
+  const socialTitle = `${title} | HomzRealtor`;
 
   // Prefer the project's own narrative when it is substantial; otherwise fall
   // back to a unique, data-driven template so no two pages share a description.
   const priceBit =
     project.min_price_inr || project.price_text ? "latest price, " : "";
   const templatedDescription =
-    `Explore ${project.project_name} in ${locationLabel}. Check ${priceBit}floor plans, ` +
+    `Explore ${project.project_name} in ${locationLabel}. Check ${priceBit}payment plans, ` +
     `amenities, ${project.property_category.toLowerCase()} configurations, location ` +
     `advantages and nearby projects on HomzRealtor.`;
   const description =
     project.about?.[0] && project.about[0].length >= 90
-      ? project.about[0].slice(0, 158)
-      : templatedDescription.slice(0, 158);
+      ? truncateAtWord(project.about[0])
+      : truncateAtWord(templatedDescription);
 
   const keywords = [
     project.project_name,
     `${project.project_name} ${cityName}`,
     `${project.project_name} price`,
-    `${project.project_name} floor plan`,
     `${project.property_category} projects in ${cityName}`,
     project.builder && project.builder !== "Unknown"
       ? `${project.builder} projects`
@@ -79,7 +86,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: canonicalUrl,
       type: "website",
@@ -87,7 +94,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: socialTitle,
       description,
       images: image ? [image] : [],
     },
@@ -213,7 +220,7 @@ const ProjectPage = async ({ params }: PageParams) => {
   };
 
   return (
-    <div className="pb-24 lg:pb-0">
+    <div className="pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

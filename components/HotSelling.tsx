@@ -1,29 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
 import getValidImage from "./utils/helper/getValidImage";
 import { slugify } from "./utils/slugify";
 import SafeProjectImage from "./Home/SafeProjectImage";
-
-// ✅ Mobile hook
-const useIsMobile = (breakpoint = 768) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < breakpoint);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, [breakpoint]);
-
-  return isMobile;
-};
 
 interface Project {
   name: string;
@@ -33,16 +15,8 @@ interface Project {
 }
 
 export default function HotSelling() {
-  const isMobile = useIsMobile();
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const [selectedCity, setSelectedCity] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const scrollByCards = (dir: 1 | -1) => {
-    scrollRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -51,7 +25,7 @@ export default function HotSelling() {
         // Each call catches its own error and resolves to [] rather than
         // rejecting — otherwise a single flaky endpoint (Promise.all fails
         // fast on the first rejection) would blank out the entire section
-        // even when the other 9 of 10 calls succeeded.
+        // even when the other call succeeded.
         const fetchCityData = async (cityKey: string, citySlug: string, limit = 3) => {
           try {
             const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
@@ -66,44 +40,15 @@ export default function HotSelling() {
           }
         };
 
-        const cityKeyMap: Record<string, string> = {
-          gurgaon: "ggn",
-          delhi: "delhi",
-          faridabad: "faridabad",
-          greaternoida: "gNoida",
-          noida: "noida",
-        };
+        // Gurgaon-only — the site's sole focus market. "ggn" is the raw API
+        // city key; "gurgaon" is the canonical URL slug used in card links
+        // (must match canonicalCitySlug() in lib/intelligence/projects.ts).
+        const [commercial, residential] = await Promise.all([
+          fetchCityData("ggnCommercialProjects", "gurgaon"),
+          fetchCityData("ggnResidentialProjects", "gurgaon"),
+        ]);
 
-        let finalData: any[] = [];
-
-        if (selectedCity === "all") {
-          // Second element of each tuple is the canonical URL slug used in
-          // card links — must match canonicalCitySlug() in
-          // lib/intelligence/projects.ts, never the raw API city key.
-          const cities: [string, string][] = [
-            ["ggn", "gurgaon"],
-            ["delhi", "delhi"],
-            ["faridabad", "faridabad"],
-            ["gNoida", "greaternoida"],
-            ["noida", "noida"],
-          ];
-          const results = await Promise.all(
-            cities.flatMap(([key, slug]) => [
-              fetchCityData(`${key}CommercialProjects`, slug),
-              fetchCityData(`${key}ResidentialProjects`, slug),
-            ])
-          );
-          finalData = results.flat();
-        } else {
-          const base = cityKeyMap[selectedCity];
-          const [commercial, residential] = await Promise.all([
-            fetchCityData(`${base}CommercialProjects`, selectedCity),
-            fetchCityData(`${base}ResidentialProjects`, selectedCity),
-          ]);
-          finalData = [...commercial, ...residential];
-        }
-
-        setProjects(finalData.slice(0, 3));
+        setProjects([...commercial, ...residential].slice(0, 4));
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
@@ -112,7 +57,7 @@ export default function HotSelling() {
     }
 
     fetchData();
-  }, [selectedCity]);
+  }, []);
 
   return (
     <section id="featured-projects" className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 scroll-mt-24 border-b border-white/[0.06]">
@@ -126,65 +71,17 @@ export default function HotSelling() {
           </h2>
         </div>
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => scrollByCards(-1)}
-            aria-label="Previous"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            onClick={() => scrollByCards(1)}
-            aria-label="Next"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors"
-          >
-            <ChevronRight size={18} />
-          </button>
-          <Link href="/project-listing" className="ml-2 text-[13px] font-bold text-[#D9B268] whitespace-nowrap">
+          <Link href="/project-listing" className="text-[13px] font-bold text-[#D9B268] whitespace-nowrap">
             View All →
           </Link>
         </div>
       </div>
 
-      {/* City selector */}
-      <div className="mb-7 flex justify-start">
-        {isMobile ? (
-          <select
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className="rounded-lg border border-white/10 bg-[#1a1a1d] px-4 py-2.5 text-sm text-white"
-          >
-            <option value="all">All Cities</option>
-            <option value="gurgaon">Gurgaon</option>
-            <option value="delhi">Delhi</option>
-            <option value="faridabad">Faridabad</option>
-            <option value="greaternoida">Greater Noida</option>
-            <option value="noida">Noida</option>
-          </select>
-        ) : (
-          <div className="flex flex-wrap gap-2.5">
-            {["all", "gurgaon", "delhi", "faridabad", "greaternoida", "noida"].map((city) => (
-              <button
-                key={city}
-                onClick={() => setSelectedCity(city)}
-                className={`rounded-full px-4.5 py-2 text-[13px] font-bold capitalize transition ${
-                  selectedCity === city
-                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
-                    : "border border-white/10 text-gray-400 hover:text-white"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Project cards — horizontal scroll-snap row */}
-      <div ref={scrollRef} className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+      {/* Project cards — responsive grid, no horizontal scroll */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {loading ? (
-          [...Array(3)].map((_, i) => (
-            <div key={i} className="w-[300px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] animate-pulse">
+          [...Array(4)].map((_, i) => (
+            <div key={i} className="overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] animate-pulse">
               <div className="h-52 w-full bg-white/5" />
               <div className="space-y-3 p-5">
                 <div className="h-5 w-3/4 rounded bg-white/5" />
@@ -201,11 +98,15 @@ export default function HotSelling() {
               <Link
                 key={index}
                 href={href}
-                className="group w-[300px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
+                className="group overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
               >
                 <div className="relative h-52 w-full overflow-hidden">
                   {image ? (
-                    <SafeProjectImage src={image} alt={p.projectTitle} sizes="300px" />
+                    <SafeProjectImage
+                      src={image}
+                      alt={p.projectTitle}
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-[#1a1a1d] text-gray-600">
                       No Image

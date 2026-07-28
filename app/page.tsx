@@ -49,7 +49,7 @@ export default async function Home() {
   };
 
   return (
-    <div className="pb-16 md:pb-0">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -86,6 +86,6 @@ export default async function Home() {
         <FloatingWhatsApp />
         <MobileBottomNav />
       </div>
-    </div>
+    </>
   );
 }

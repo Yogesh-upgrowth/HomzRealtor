@@ -105,10 +105,13 @@ export function isKnownBuilder(builder: string): boolean {
 }
 
 /** Best-effort possession status label without ever showing raw junk. */
-function deriveStatus(project: NormalizedProject): string {
+export function deriveStatusFromText(
+  projectStatus: string | null | undefined,
+  possessionText: string | null | undefined
+): string {
   // Prefer the feed's own status when present (e.g. "New Launch"), normalising
   // to our canonical labels; only guess from possession text as a fallback.
-  const feed = clean(project.project_status);
+  const feed = clean(projectStatus);
   if (feed) {
     const f = feed.toLowerCase();
     if (/ready|rtm|possession available|immediate|completed|delivered/.test(f)) return "Ready to Move";
@@ -116,7 +119,7 @@ function deriveStatus(project: NormalizedProject): string {
     if (/under.?construction|ongoing|nearing/.test(f)) return "Under Construction";
     return feed;
   }
-  const p = (clean(project.possession_text) || "").toLowerCase();
+  const p = (clean(possessionText) || "").toLowerCase();
   if (!p) return "Status on request";
   if (/ready|rtm|possession available|immediate|completed|delivered/.test(p)) return "Ready to Move";
   if (/new launch|newly launched|pre.?launch|launching/.test(p)) return "New Launch";
@@ -128,6 +131,10 @@ function deriveStatus(project: NormalizedProject): string {
     return "Under Construction";
   }
   return "Under Construction";
+}
+
+export function deriveStatus(project: NormalizedProject): string {
+  return deriveStatusFromText(project.project_status, project.possession_text);
 }
 
 function priceStrings(project: NormalizedProject): {

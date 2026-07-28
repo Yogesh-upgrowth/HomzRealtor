@@ -9,6 +9,9 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 
+const PROMO_DISMISS_KEY = "promoBarDismissedAt";
+const PROMO_DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -25,6 +28,22 @@ const Navbar: React.FC = () => {
   const [isScrolledPastTop, setIsScrolledPastTop] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Starts true so the initial client render matches the server-rendered
+  // markup (avoiding a hydration mismatch); the dismissal check only runs
+  // after mount, same as any other localStorage-driven UI state.
+  const [showPromoBar, setShowPromoBar] = useState(true);
+
+  useEffect(() => {
+    const dismissedAt = Number(localStorage.getItem(PROMO_DISMISS_KEY));
+    if (dismissedAt && Date.now() - dismissedAt < PROMO_DISMISS_DURATION_MS) {
+      setShowPromoBar(false);
+    }
+  }, []);
+
+  const dismissPromoBar = () => {
+    localStorage.setItem(PROMO_DISMISS_KEY, String(Date.now()));
+    setShowPromoBar(false);
+  };
 
   const isTransparentPage = transparentPaths.includes(pathname);
 
@@ -68,14 +87,23 @@ const Navbar: React.FC = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50">
       {/* Top Strip */}
-      <div className="text-[10px] md:text-sm bg-black text-white flex justify-between md:justify-center px-3 py-2">
-        <span>
-          Exclusive Luxury Properties in Gurgaon – Invest in Your Future Today
-        </span>
-        <Link href="/project-listing" className="font-semibold ml-2">
-          VIEW ➜
-        </Link>
-      </div>
+      {showPromoBar && (
+        <div className="relative text-[10px] md:text-sm bg-black text-white flex items-center justify-between md:justify-center gap-2 px-3 py-2 pr-9 md:pr-12">
+          <span>
+            Exclusive Luxury Properties in Gurgaon – Invest in Your Future Today
+          </span>
+          <Link href="/project-listing" className="font-semibold ml-2">
+            VIEW ➜
+          </Link>
+          <button
+            onClick={dismissPromoBar}
+            aria-label="Dismiss announcement"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            <IoClose size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Main Navbar */}
       <div className={`w-full transition-all duration-300 border-b border-white/25 ${navBackgroundClass}`}>

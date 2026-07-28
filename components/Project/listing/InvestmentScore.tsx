@@ -13,6 +13,20 @@ const InvestmentScore = ({ title, data, heading }: Props) => {
       </h2>
 
       <div className="rounded-2xl bg-black border border-gray-700 p-6 md:p-8">
+        <details className="mb-5 group">
+          <summary className="cursor-pointer list-none inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#CEA44E] hover:text-[#e8c88a] transition-colors">
+            How we calculate this score
+            <span className="transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <p className="mt-2.5 text-[13px] leading-relaxed text-gray-400">
+            The {data.score}/100 score is the sum of five weighted factors, shown below with
+            their individual scores: Developer Reputation (out of 20), Connectivity (out of 25),
+            Social Infrastructure (out of 20), Product &amp; Compliance (out of 20), and Entry
+            Timing (out of 15) — {data.factors.reduce((s, f) => s + f.max, 0)} points total,
+            scaled to 100.
+          </p>
+        </details>
+
         <div className="flex flex-col lg:flex-row items-center gap-8">
           <ScoreRing score={data.score} grade={data.grade} size={180} />
 

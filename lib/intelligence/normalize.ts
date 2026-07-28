@@ -108,6 +108,17 @@ export function formatInr(n: number | null | undefined): string | null {
   return formatInrExact(n);
 }
 
+// Truncates at the last whole word before maxLength and appends an ellipsis,
+// instead of hard-cutting mid-word (e.g. "...beautifully designed high-str").
+// No-op (returns the original string) if it already fits.
+export function truncateAtWord(text: string, maxLength = 158): string {
+  if (!text || text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(" ");
+  const safe = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${safe.trimEnd()}…`;
+}
+
 export function slugify(text: string): string {
   return (text || "")
     .toLowerCase()

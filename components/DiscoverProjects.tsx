@@ -94,6 +94,7 @@ export default function DiscoverProject() {
               src={projects[currentIndex].img}
               alt={projects[currentIndex].title}
               fill
+              sizes="90vw"
               className="object-cover"
             />
 
@@ -122,7 +123,8 @@ export default function DiscoverProject() {
             {/* Prev Button */}
             <button
               onClick={prevSlide}
-              className="w-10 h-10 flex items-center justify-center rounded-md border border-white/10 text-white hover:border-[#D9B268] transition"
+              aria-label="Previous project"
+              className="w-11 h-11 flex items-center justify-center rounded-md border border-white/10 text-white hover:border-[#D9B268] transition"
             >
               <Image
                 src={arrow}
@@ -148,7 +150,8 @@ export default function DiscoverProject() {
             {/* Next Button */}
             <button
               onClick={nextSlide}
-              className="w-10 h-10 flex items-center justify-center rounded-md bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] shadow hover:brightness-105 transition"
+              aria-label="Next project"
+              className="w-11 h-11 flex items-center justify-center rounded-md bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] shadow hover:brightness-105 transition"
             >
               <Image
                 src={arrow}
@@ -175,6 +178,7 @@ export default function DiscoverProject() {
                 src={p.img}
                 alt={p.title}
                 fill
+                sizes="450px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
 

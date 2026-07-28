@@ -5,7 +5,7 @@ import discoverImage2 from "@/assets/images/discoverImage2.jpg";
 import discoverImage3 from "@/assets/images/discoverImage3.png";
 
 const FEATURES = [
-  { icon: ShieldCheck, title: "Verified Listings", text: "100% verified property listings you can trust." },
+  { icon: ShieldCheck, title: "Verified Listings", text: "Every listing verified by our compliance team." },
   { icon: Users, title: "Expert Guidance", text: "Get advice from local experts and consultants." },
   { icon: IndianRupee, title: "Best Deals", text: "Access exclusive deals and early-bird offers." },
   { icon: FileCheck2, title: "Transparent Process", text: "Clear, honest and hassle-free transactions." },

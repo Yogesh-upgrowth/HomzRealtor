@@ -1,18 +1,24 @@
 import Link from "next/link";
 
+// Each chip maps to real, working /project-listing filters (q/type/budget/bhk/
+// status/micromarket — see app/project-listing/page.tsx). Two of the original
+// twelve labels ("Rental Yield Properties", "Pre-Leased Retail Gurgaon")
+// described attributes with no backing field anywhere in the data model
+// (rental yield is a calculator on the project detail page, not a listing
+// attribute; lease status isn't tracked at all) — rather than link them to a
+// filter that silently returns the full unfiltered list, they're dropped
+// until that data actually exists.
 const SEARCHES = [
-  "2 BHK in Sector 57",
-  "3 BHK Golf Course Road",
-  "Ready to Move Flats Gurgaon",
-  "Commercial Shops Sector 65",
-  "Plots on Sohna Road",
-  "Villas in Sector 92",
-  "Office Space Dwarka Expressway",
-  "Luxury Apartments Under 2 Cr",
-  "Rental Yield Properties",
-  "New Launch Projects 2026",
-  "Pre-Leased Retail Gurgaon",
-  "Studio Apartments Gurgaon",
+  { label: "2 BHK in Sector 57", href: "/project-listing?bhk=2&q=Sector+57" },
+  { label: "3 BHK Golf Course Road", href: "/project-listing?bhk=3&micromarket=golf-course-road" },
+  { label: "Ready to Move Flats Gurgaon", href: "/project-listing?status=ready-to-move" },
+  { label: "Commercial Shops Sector 65", href: "/project-listing?type=Commercial&q=Sector+65" },
+  { label: "Plots on Sohna Road", href: "/project-listing?type=Plot&micromarket=sohna-road" },
+  { label: "Villas in Sector 92", href: "/project-listing?type=Villa&q=Sector+92" },
+  { label: "Office Space Dwarka Expressway", href: "/project-listing?type=Office+Space&micromarket=dwarka-expressway" },
+  { label: "Luxury Apartments Under 2 Cr", href: "/project-listing?type=Apartment&budget=under-2cr" },
+  { label: "New Launch Projects", href: "/project-listing?status=new-launch" },
+  { label: "Studio Apartments Gurgaon", href: "/project-listing?type=Apartment" },
 ];
 
 const PopularSearches = () => {
@@ -28,11 +34,11 @@ const PopularSearches = () => {
       <div className="flex flex-wrap gap-2.5">
         {SEARCHES.map((s) => (
           <Link
-            key={s}
-            href="/project-listing"
+            key={s.label}
+            href={s.href}
             className="rounded-full border border-white/10 bg-[#141416] px-4.5 py-2.5 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition"
           >
-            {s}
+            {s.label}
           </Link>
         ))}
       </div>

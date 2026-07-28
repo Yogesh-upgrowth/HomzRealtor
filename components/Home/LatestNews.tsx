@@ -44,7 +44,7 @@ const LatestNews = () => {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.35fr_1fr]">
         <article className="overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#141416]">
           <div className="relative aspect-video">
-            <Image src={LEAD.img} alt="" fill className="object-cover" />
+            <Image src={LEAD.img} alt={LEAD.title} fill className="object-cover" />
             <span className="absolute left-4 top-4 rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-3 py-1 text-[10.5px] font-bold uppercase tracking-wide text-[#1c1608]">
               {LEAD.tag}
             </span>
@@ -60,11 +60,11 @@ const LatestNews = () => {
           {OTHERS.map((n) => (
             <article key={n.title} className="flex gap-4 overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] p-3">
               <div className="relative h-[92px] w-[120px] shrink-0 overflow-hidden rounded-xl">
-                <Image src={n.img} alt="" fill className="object-cover" />
+                <Image src={n.img} alt={n.title} fill className="object-cover" />
               </div>
               <div className="py-1">
                 <span className="text-[10.5px] font-bold uppercase tracking-wide text-[#D9B268]">{n.tag}</span>
-                <h4 className="mt-1.5 text-[14.5px] font-bold leading-snug text-white">{n.title}</h4>
+                <h3 className="mt-1.5 text-[14.5px] font-bold leading-snug text-white">{n.title}</h3>
                 <span className="mt-1.5 block text-[11px] text-gray-600">{n.date}</span>
               </div>
             </article>

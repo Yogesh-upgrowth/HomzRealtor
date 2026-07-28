@@ -38,17 +38,17 @@ const HomzIntelligence = () => {
               href="#consult"
               className="inline-flex items-center rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-6 py-3.5 text-[14.5px] font-bold text-[#1c1608] hover:brightness-105 transition"
             >
-              Get Your Free Report
+              Talk to an Analyst
             </a>
           </div>
 
           <div className="rounded-[20px] border border-white/10 bg-[#111113] p-6">
             <div className="mb-5 flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                Price growth by sector (5yr)
+                Price growth by sector (6yr)
               </span>
               <span className="rounded-full border border-[#63C08D]/30 bg-[#63C08D]/12 px-3 py-1 text-[12px] font-bold text-[#7fd3a5]">
-                +18.4%
+                +62% cumulative
               </span>
             </div>
 
@@ -58,7 +58,7 @@ const HomzIntelligence = () => {
                 return (
                   <div key={b.year} className="flex flex-1 flex-col items-center gap-2">
                     {isLast && (
-                      <span className="text-[11px] font-bold text-[#D9B268]">+18.4%</span>
+                      <span className="text-[11px] font-bold text-[#D9B268]">+62%</span>
                     )}
                     <div
                       className={`w-full rounded-t-[4px] ${

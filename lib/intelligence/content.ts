@@ -162,7 +162,7 @@ export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
   if (reraId) {
     faqs.push({
       q: `Is ${name} RERA registered?`,
-      a: `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official RERA portal.`,
+      a: `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official Haryana RERA portal at haryanarera.gov.in.`,
     });
   }
 

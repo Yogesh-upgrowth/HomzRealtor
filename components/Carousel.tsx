@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function ImageCarousel({ images = [] }: { images: string[] }) {
+export default function ImageCarousel({
+  images = [],
+  alt,
+}: {
+  images: string[];
+  // Descriptive base text (e.g. "M3M Route 65 — Exterior") for image alt
+  // attributes — falls back to a generic label only if the caller omits it.
+  alt?: string;
+}) {
   const [current, setCurrent] = useState(0);
 
   // Tracks which slide indices failed to load, keyed by index — so one broken
@@ -49,7 +57,11 @@ export default function ImageCarousel({ images = [] }: { images: string[] }) {
           <Image
             key={current}
             src={images[current]}
-            alt={`slide-${current}`}
+            alt={
+              alt
+                ? `${alt} — photo ${current + 1} of ${images.length}`
+                : `Property photo ${current + 1} of ${images.length}`
+            }
             fill
             priority={current === 0}
             onError={() => setFailed((prev) => new Set(prev).add(current))}

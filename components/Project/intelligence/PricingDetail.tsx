@@ -29,6 +29,22 @@ function possessionYear(possessionText: string | null): number | null {
   return m ? parseInt(m[1], 10) : null;
 }
 
+const MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+// Months remaining from today to possession — the actual holding period,
+// not a rounded whole-year count. Without this, a project possessing in 7
+// months was treated as a full 1-year horizon since only the possession
+// YEAR was compared, overstating the projected appreciation.
+function monthsToPossession(possessionText: string | null): number | null {
+  const year = possessionYear(possessionText);
+  if (!year) return null;
+  const lower = (possessionText || "").toLowerCase();
+  const monthIdx = MONTH_NAMES.findIndex((m) => lower.includes(m));
+  const now = new Date();
+  const months = (year - now.getFullYear()) * 12 + ((monthIdx >= 0 ? monthIdx : 0) - now.getMonth());
+  return months > 0 ? months : null;
+}
+
 type PriceRow = {
   bhkType?: string;
   unitType?: string;
@@ -76,24 +92,38 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
   const configPrices = rows.map((r) => r.priceInr).filter((n): n is number => !!n);
   const base = configPrices.length ? Math.min(...configPrices) : defaultPrice ?? 10000000;
   const possYear = possessionYear(possessionText);
+  const monthsOut = monthsToPossession(possessionText);
 
   // ── Projected price journey (current → possession) ─────────────────────────
   const [rate, setRate] = useState<number>(8);
   const nowYear = new Date().getFullYear();
   const years =
     possYear && possYear > nowYear && possYear - nowYear <= 15 ? possYear - nowYear : 3;
+  // Exact holding period for the "at possession" figure — a fractional year
+  // (e.g. 0.58 for 7 months) rather than the rounded whole year used for the
+  // chart's x-axis ticks, so the projected gain isn't overstated when
+  // possession is under a year away.
+  const preciseYears = monthsOut != null ? monthsOut / 12 : years;
 
   const journey = useMemo(() => {
     const data: { year: string; value: number }[] = [];
-    for (let y = 0; y <= years; y++) {
+    for (let y = 0; y < years; y++) {
       data.push({ year: String(nowYear + y), value: Math.round(base * Math.pow(1 + rate / 100, y)) });
     }
+    data.push({
+      year: possYear ? String(possYear) : String(nowYear + years),
+      value: Math.round(base * Math.pow(1 + rate / 100, preciseYears)),
+    });
     return data;
-  }, [base, rate, years, nowYear]);
+  }, [base, rate, years, nowYear, preciseYears, possYear]);
 
   const projected = journey[journey.length - 1]?.value ?? base;
   const gain = projected - base;
   const growthPct = base > 0 ? Math.round((projected / base - 1) * 100) : 0;
+  const holdingPeriodLabel =
+    monthsOut != null && monthsOut < 12
+      ? `${monthsOut} month${monthsOut === 1 ? "" : "s"}`
+      : `${Math.round(preciseYears * 10) / 10} yr${Math.round(preciseYears * 10) / 10 === 1 ? "" : "s"}`;
   const hasTable = rows.length > 0;
 
   return (
@@ -176,7 +206,7 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">Projected Gain</p>
             <p className="text-xl font-bold text-white mt-1">{formatInr(gain) ?? "—"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">
-              {growthPct}% over {years} yr{years === 1 ? "" : "s"}
+              {growthPct}% over {holdingPeriodLabel}
             </p>
           </div>
         </div>

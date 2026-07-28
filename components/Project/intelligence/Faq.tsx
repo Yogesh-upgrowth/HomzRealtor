@@ -9,7 +9,7 @@ const Faq = ({ title, items }: Props) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-2 my-12">
+    <section id="faq" className="w-full max-w-7xl mx-auto px-2 my-12 scroll-mt-24">
       <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
         {`Frequently Asked Questions - ${title}`}
       </h2>

@@ -113,11 +113,13 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   const marketText = content.area_market_insights || buildMarketSummary(project, priceData);
   const investmentText = content.investment_analysis || buildInvestmentSummary(view, project, connectivity, priceData);
 
+  // Only the About text lives in the "Read full overview" sheet. Location,
+  // Investment and Market text are NOT duplicated here — they already render
+  // in full, always-visible, further down this same page (the Location
+  // section, the Investment/Market grid) — repeating them in the sheet too
+  // printed identical paragraphs twice on the page.
   const chapters: Chapter[] = [
     view.about.length > 0 && { kicker: "OVERVIEW", title: `About ${view.name}`, body: view.about.join("\n\n") },
-    locationText && { kicker: "LOCATION", title: "Location Intelligence", body: locationText },
-    investmentText && { kicker: "INVESTMENT", title: "Investment Analysis", body: investmentText },
-    marketText && { kicker: "MARKET", title: "Area & Market Insights", body: marketText },
   ].filter(Boolean) as Chapter[];
 
   // Developer stats/badges — only honestly-derivable facts, nothing fabricated.

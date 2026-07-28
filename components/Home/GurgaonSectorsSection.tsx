@@ -29,7 +29,9 @@ const GurgaonSectorsSection = ({ citySlug, sectors }: Props) => {
             className="rounded-[16px] border border-white/[0.08] bg-[#141416] px-3 py-4 text-center hover:border-[#D9B268]/40 transition-colors"
           >
             <span className="block text-[13px] font-bold text-gray-200">{s.sector}</span>
-            <span className="mt-1 block text-[11px] text-gray-600">{s.count} projects</span>
+            <span className="mt-1 block text-[11px] text-gray-600">
+              {s.count} {s.count === 1 ? "project" : "projects"}
+            </span>
           </Link>
         ))}
       </div>

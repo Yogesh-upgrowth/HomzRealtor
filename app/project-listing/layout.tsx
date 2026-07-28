@@ -2,26 +2,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "All Projects — Residential & Commercial Properties in Delhi NCR",
+    default: "All Projects — Residential & Commercial Properties in Gurgaon",
     template: "%s | HomzRealtor",
   },
   description:
-    "Browse verified residential and commercial projects in Gurgaon, Noida, Greater Noida, Delhi and Faridabad. Filter by city, compare prices and enquire directly on HomzRealtor.",
+    "Browse verified residential and commercial projects in Gurgaon. Filter by sector, compare prices and enquire directly on HomzRealtor.",
   keywords: [
-    "projects in Delhi NCR",
+    "projects in Gurgaon",
     "residential projects Gurgaon",
-    "commercial projects Noida",
-    "property listing Delhi NCR",
-    "new projects Greater Noida",
-    "flats in Faridabad",
+    "commercial projects Gurgaon",
+    "property listing Gurgaon",
+    "new projects Gurgaon",
+    "flats in Gurgaon",
   ],
   alternates: {
     canonical: "/project-listing",
   },
   openGraph: {
-    title: "All Projects — Residential & Commercial Properties in Delhi NCR",
+    title: "All Projects — Residential & Commercial Properties in Gurgaon",
     description:
-      "Browse verified residential and commercial projects across Delhi NCR on HomzRealtor.",
+      "Browse verified residential and commercial projects across Gurgaon on HomzRealtor.",
     url: "https://www.homzrealtor.com/project-listing",
     type: "website",
   },

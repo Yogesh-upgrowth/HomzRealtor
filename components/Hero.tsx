@@ -48,13 +48,20 @@ export default function Hero({
       {variant === "default" ? (
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
-            <Image src={herobg} alt="Luxury property in Gurgaon" fill priority className="object-cover" />
+            <Image
+              src={herobg}
+              alt="Luxury property in Gurgaon"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0C]/60 via-[#0B0B0C]/20 to-[#0B0B0C]" />
 
           <div className="relative mx-auto flex min-h-[clamp(560px,88vh,780px)] max-w-7xl flex-col justify-end px-4 pb-14 pt-32 md:px-6">
             <span className="mb-5 inline-flex w-fit items-center rounded-full border border-white/15 bg-black/40 px-4 py-2 text-[12px] font-bold text-gray-100 backdrop-blur-sm">
-              #1 Trusted Property Platform in Gurgaon
+              Trusted by 25,500+ buyers across Gurgaon
             </span>
 
             <h1 className="mb-4 max-w-[16ch] text-[clamp(34px,6.4vw,68px)] font-extrabold uppercase leading-[1.04] tracking-tight text-white">
@@ -108,6 +115,7 @@ export default function Hero({
               src={propertyDetails?.imageUrl || "/istockphoto.svg"} // Placeholder image
               alt={propertyDetails?.name || "Property background"}
               fill
+              sizes="100vw"
               className="object-cover rounded-b-lg"
             />
             {/* Dark Overlay */}

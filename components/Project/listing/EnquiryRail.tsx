@@ -29,8 +29,19 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setForm((prev) => ({ ...prev, phone: digitsOnly }));
+  };
+
+  const isValidPhone = /^[6-9]\d{9}$/.test(form.phone);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidPhone) {
+      toast.error("Enter a valid 10-digit mobile number starting with 6-9.");
+      return;
+    }
     try {
       setLoading(true);
       const response = await fetch("/api/contact", {
@@ -130,12 +141,19 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
                     inputMode="numeric"
                     name="phone"
                     value={form.phone}
-                    onChange={handleChange}
+                    onChange={handlePhoneChange}
                     placeholder="Phone number"
+                    pattern="[6-9][0-9]{9}"
+                    maxLength={10}
                     required
                     className={inputCls}
                   />
                 </div>
+                {form.phone.length > 0 && !isValidPhone && (
+                  <p className="text-[12px] text-red-400">
+                    Enter a valid 10-digit mobile number starting with 6-9.
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={loading}

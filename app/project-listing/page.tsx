@@ -10,7 +10,14 @@ import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
 import devImg from "@/public/totalUnit.svg";
 import { slugify } from "@/components/utils/slugify";
-import { extractSector, extractPriceRange } from "@/lib/intelligence/normalize";
+import {
+  extractSector,
+  extractPriceRange,
+  extractMicroMarket,
+  extractBuilder,
+  slugify as toSlug,
+} from "@/lib/intelligence/normalize";
+import { deriveStatusFromText } from "@/lib/intelligence/view-model";
 import customer from "@/assets/images/customer.png";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
@@ -57,6 +64,7 @@ const BUDGET_RANGES: Record<string, { min: number; max: number | null }> = {
   "1cr-2cr": { min: 1_00_00_000, max: 2_00_00_000 },
   "above-2cr": { min: 2_00_00_000, max: null },
   "under-1cr": { min: 0, max: 1_00_00_000 },
+  "under-2cr": { min: 0, max: 2_00_00_000 },
 };
 
 const COMMERCIAL_TYPES = new Set(["Commercial", "Office Space", "Retail"]);
@@ -69,7 +77,6 @@ function ProjectListingInner() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCity, setSelectedCity] = useState("all");
   const [selectedSector, setSelectedSector] = useState("all");
 
   // Search filters — seeded from the URL so a search from the homepage hero
@@ -78,7 +85,10 @@ function ProjectListingInner() {
   const type = searchParams.get("type") || "";
   const budget = searchParams.get("budget") || "";
   const bhk = searchParams.get("bhk") || "";
-  const hasActiveFilters = Boolean(q || type || budget || bhk);
+  const status = searchParams.get("status") || "";
+  const micromarket = searchParams.get("micromarket") || "";
+  const builder = searchParams.get("builder") || "";
+  const hasActiveFilters = Boolean(q || type || budget || bhk || status || micromarket || builder);
 
   const clearFilter = (key: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -90,10 +100,9 @@ function ProjectListingInner() {
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
 
-  // Sector options for the selected city, derived from the fetched projects
+  // Sector options within Gurgaon, derived from the fetched projects
   // (the backend has no sector field — it's extracted from title + about text).
   const sectorOptions = useMemo(() => {
-    if (selectedCity === "all") return [] as { sector: string; count: number }[];
     const counts = new Map<string, number>();
     for (const p of projects) {
       if (!p?._sector) continue;
@@ -106,7 +115,7 @@ function ProjectListingInner() {
     return Array.from(counts.entries())
       .map(([sector, count]) => ({ sector, count }))
       .sort((a, b) => sortKey(a.sector) - sortKey(b.sector));
-  }, [projects, selectedCity]);
+  }, [projects]);
 
   // Apply the sector filter, then the search filters (q / type / budget / bhk),
   // before paginating. Every filter here is genuinely applied — nothing is a
@@ -156,8 +165,32 @@ function ProjectListingInner() {
       });
     }
 
+    if (status) {
+      const target =
+        status === "ready-to-move"
+          ? "Ready to Move"
+          : status === "under-construction"
+          ? "Under Construction"
+          : status === "new-launch"
+          ? "New Launch"
+          : null;
+      if (target) list = list.filter((p) => p._status === target);
+    }
+
+    if (micromarket === "golf-course-road") {
+      // Both Golf Course Road and Golf Course Extension Road count as
+      // "golf-facing" — matches the homepage Collections tile's grouping.
+      list = list.filter((p) => p._microMarket?.toLowerCase().includes("golf"));
+    } else if (micromarket) {
+      list = list.filter((p) => p._microMarket && toSlug(p._microMarket) === micromarket);
+    }
+
+    if (builder) {
+      list = list.filter((p) => toSlug(p._builder || "") === builder);
+    }
+
     return list;
-  }, [projects, selectedSector, q, type, budget, bhk]);
+  }, [projects, selectedSector, q, type, budget, bhk, status, micromarket, builder]);
 
   const startIndex = (currentPage - 1) * cardsPerPage;
   const endIndex = startIndex + cardsPerPage;
@@ -206,20 +239,21 @@ function ProjectListingInner() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [q, type, budget, bhk]);
+  }, [q, type, budget, bhk, status, micromarket, builder]);
 
   // ✅ Fetch API
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       try {
-        let finalData: any[] = [];
-
         // Each call catches its own error and resolves to [] rather than
         // rejecting — otherwise Promise.all fails fast on the first
         // rejection and blanks out the whole page even when most of the
         // endpoints succeeded.
-        const fetchCityData = async (key: string, limit = 20) => {
+        // limit=500 matches lib/intelligence/projects.ts's fetchCityRaw — keeps
+        // this page's filtered counts consistent with the homepage Collections
+        // tiles, which query the full catalogue via getProjectsForCity.
+        const fetchCityData = async (key: string, limit = 500) => {
           try {
             const res = await fetch(
               `https://homzbackend.vercel.app/api/data?city=${key}&page=1&limit=${limit}`
@@ -232,59 +266,21 @@ function ProjectListingInner() {
           }
         };
 
-        const cityKeyMap: any = {
-          gurgaon: "ggn",
-          delhi: "delhi",
-          faridabad: "faridabad",
-          greaternoida: "gNoida",
-          noida: "noida",
-        };
+        // Gurgaon-only — the site's sole focus market. "ggn" is the raw API
+        // city key; "gurgaon" is the canonical URL slug used in card links
+        // (must match canonicalCitySlug() in lib/intelligence/projects.ts).
+        const results = await Promise.all([
+          fetchCityData("ggnCommercialProjects"),
+          fetchCityData("ggnResidentialProjects"),
+        ]);
 
-        // 🔥 ALL cities
-        if (selectedCity === "all") {
-          const bases = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
-
-          const promises = bases.flatMap((base) => [
-            fetchCityData(`${base}CommercialProjects`),
-            fetchCityData(`${base}ResidentialProjects`),
-          ]);
-
-          const results = await Promise.all(promises);
-
-          // ✅ attach city + real category (commercial/residential) properly
-          finalData = results.flatMap((arr, index) => {
-            const baseIndex = Math.floor(index / 2);
-            const city = bases[baseIndex];
-            const category = index % 2 === 0 ? "commercial" : "residential";
-
-            return arr.map((item: any) => ({
-              ...item,
-              city,
-              _category: category,
-            }));
-          });
-        } else {
-          const base = cityKeyMap[selectedCity];
-
-          if (!base) return;
-
-          const keys = [
-            `${base}CommercialProjects`,
-            `${base}ResidentialProjects`,
-          ];
-
-          const results = await Promise.all(
-            keys.map((key) => fetchCityData(key))
-          );
-
-          finalData = results.flatMap((arr, index) =>
-            arr.map((item: any) => ({
-              ...item,
-              city: base,
-              _category: index === 0 ? "commercial" : "residential",
-            }))
-          );
-        }
+        const finalData: any[] = results.flatMap((arr, index) =>
+          arr.map((item: any) => ({
+            ...item,
+            city: "gurgaon",
+            _category: index === 0 ? "commercial" : "residential",
+          }))
+        );
 
         // ✅ Sort: images first
         finalData.sort((a, b) => {
@@ -293,7 +289,8 @@ function ProjectListingInner() {
           return Number(bHas) - Number(aHas);
         });
 
-        // ✅ Derive a sector for each project (title + about text) for filtering
+        // ✅ Derive sector / micro-market / status / builder for each project
+        // (title + about text + feed status/possession) for filtering
         const withSector = finalData.map((item) => ({
           ...item,
           _sector: extractSector(
@@ -301,6 +298,13 @@ function ProjectListingInner() {
             item.aboutProject,
             item.location
           ),
+          _microMarket: extractMicroMarket(
+            item.projectTitle,
+            item.aboutProject,
+            item.location
+          ),
+          _status: deriveStatusFromText(item.projectStatus, item.possession),
+          _builder: extractBuilder(item.projectTitle),
         }));
 
         setProjects(withSector);
@@ -312,7 +316,7 @@ function ProjectListingInner() {
     }
 
     fetchData();
-  }, [selectedCity]);
+  }, []);
 
   // ✅ Format for card
   const formatProject = (project: any) => ({
@@ -350,6 +354,9 @@ function ProjectListingInner() {
     type && { key: "type", label: type },
     budget && { key: "budget", label: BUDGET_RANGES[budget] ? budget.replace(/-/g, " ") : budget },
     bhk && { key: "bhk", label: `${bhk} BHK` },
+    status && { key: "status", label: status.replace(/-/g, " ") },
+    micromarket && { key: "micromarket", label: micromarket.replace(/-/g, " ") },
+    builder && { key: "builder", label: builder.replace(/-/g, " ") },
   ].filter(Boolean) as { key: string; label: string }[];
 
   return (
@@ -361,7 +368,7 @@ function ProjectListingInner() {
           <div className="flex items-center gap-4 w-full justify-center">
             <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-white/25 to-transparent" />
             <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-center text-white">
-              Residential &amp; Commercial Projects in Delhi NCR
+              Residential &amp; Commercial Projects in Gurgaon
             </h1>
             <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-white/25 to-transparent" />
           </div>
@@ -385,29 +392,9 @@ function ProjectListingInner() {
             </div>
           )}
 
-          {/* Dropdowns */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <div className="relative w-[220px]">
-              <select
-                value={selectedCity}
-                onChange={(e) => {
-                  setSelectedCity(e.target.value);
-                  setSelectedSector("all");
-                  setCurrentPage(1);
-                }}
-                className="w-full rounded-xl border border-white/10 bg-[#1a1a1d] px-4 py-2.5 text-white outline-none focus:border-[#D9B268] transition-colors"
-              >
-                <option value="all">All Cities</option>
-                <option value="gurgaon">Gurgaon</option>
-                <option value="delhi">Delhi</option>
-                <option value="faridabad">Faridabad</option>
-                <option value="greaternoida">Greater Noida</option>
-                <option value="noida">Noida</option>
-              </select>
-            </div>
-
-            {/* Sector filter — appears once a specific city is selected */}
-            {selectedCity !== "all" && sectorOptions.length > 0 && (
+          {/* Sector filter — Gurgaon-only */}
+          {sectorOptions.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <div className="relative w-[220px]">
                 <select
                   value={selectedSector}
@@ -425,16 +412,16 @@ function ProjectListingInner() {
                   ))}
                 </select>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Link through to the dedicated sector page(s) */}
-          {selectedCity !== "all" && sectorOptions.length > 0 && (
+          {sectorOptions.length > 0 && (
             <Link
               href={
                 selectedSector === "all"
-                  ? `/project-listing/${selectedCity}/sectors`
-                  : `/project-listing/${selectedCity}/sectors/${slugify(
+                  ? `/project-listing/gurgaon/sectors`
+                  : `/project-listing/gurgaon/sectors/${slugify(
                       selectedSector
                     )}`
               }

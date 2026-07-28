@@ -36,9 +36,9 @@ const StickyMiniHeader = ({ name }: { name: string }) => {
         >
           <ChevronLeft size={20} />
         </button>
-        <h1 className="min-w-0 flex-1 truncate text-[15px] font-semibold text-white">
+        <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-white">
           {name}
-        </h1>
+        </p>
       </div>
     </div>
   );
