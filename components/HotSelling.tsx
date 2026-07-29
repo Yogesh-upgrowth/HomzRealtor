@@ -1,63 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { MapPin } from "lucide-react";
 import getValidImage from "./utils/helper/getValidImage";
 import { slugify } from "./utils/slugify";
 import SafeProjectImage from "./Home/SafeProjectImage";
+import LoadError from "./Common/LoadError";
+import { useHomzProjects } from "@/hooks/useHomzProjects";
+import { categorySegment } from "@/lib/scraping/homzbackend";
 
-interface Project {
-  name: string;
-  location: string;
-  price?: string;
-  image: string;
-}
+// Gurgaon-only — the site's sole focus market. "ggn" is the raw API city key;
+// "gurgaon" is the canonical URL slug used in card links (must match
+// canonicalCitySlug() in lib/intelligence/projects.ts).
+const SOURCES = [
+  { segment: categorySegment("ggn", "Commercial"), limit: 3 },
+  { segment: categorySegment("ggn", "Residential"), limit: 3 },
+];
 
 export default function HotSelling() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error, retry } = useHomzProjects(SOURCES);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        // Each call catches its own error and resolves to [] rather than
-        // rejecting — otherwise a single flaky endpoint (Promise.all fails
-        // fast on the first rejection) would blank out the entire section
-        // even when the other call succeeded.
-        const fetchCityData = async (cityKey: string, citySlug: string, limit = 3) => {
-          try {
-            const url = `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=${limit}`;
-            const res = await fetch(url);
-            if (!res.ok) return [];
-            const data = await res.json();
-            return (data?.results || [])
-              .filter((item: any) => Array.isArray(item.images) && item.images.length > 0)
-              .map((item: any) => ({ ...item, citySlug }));
-          } catch {
-            return [];
-          }
-        };
-
-        // Gurgaon-only — the site's sole focus market. "ggn" is the raw API
-        // city key; "gurgaon" is the canonical URL slug used in card links
-        // (must match canonicalCitySlug() in lib/intelligence/projects.ts).
-        const [commercial, residential] = await Promise.all([
-          fetchCityData("ggnCommercialProjects", "gurgaon"),
-          fetchCityData("ggnResidentialProjects", "gurgaon"),
-        ]);
-
-        setProjects([...commercial, ...residential].slice(0, 4));
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const projects = useMemo(
+    () =>
+      data
+        .flatMap((results) =>
+          results
+            .filter((item) => Array.isArray(item.images) && item.images.length > 0)
+            .map((item) => ({ ...item, citySlug: "gurgaon" }))
+        )
+        .slice(0, 4),
+    [data]
+  );
 
   return (
     <section id="featured-projects" className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 scroll-mt-24 border-b border-white/[0.06]">
@@ -78,6 +52,9 @@ export default function HotSelling() {
       </div>
 
       {/* Project cards — responsive grid, no horizontal scroll */}
+      {error ? (
+        <LoadError message={error} onRetry={retry} />
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {loading ? (
           [...Array(4)].map((_, i) => (
@@ -90,7 +67,7 @@ export default function HotSelling() {
             </div>
           ))
         ) : projects.length > 0 ? (
-          projects.map((p: any, index: number) => {
+          projects.map((p, index) => {
             const image = getValidImage(p.images);
             const href = `/project-listing/${p.citySlug}/${slugify(p.projectTitle || "project")}`;
 
@@ -104,7 +81,7 @@ export default function HotSelling() {
                   {image ? (
                     <SafeProjectImage
                       src={image}
-                      alt={p.projectTitle}
+                      alt={p.projectTitle || "Project"}
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     />
                   ) : (
@@ -134,6 +111,7 @@ export default function HotSelling() {
           <p className="text-gray-500">No projects found</p>
         )}
       </div>
+      )}
     </section>
   );
 }

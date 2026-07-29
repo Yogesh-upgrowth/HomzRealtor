@@ -20,6 +20,9 @@ import {
 import { deriveStatusFromText } from "@/lib/intelligence/view-model";
 import customer from "@/assets/images/customer.png";
 import { instrumentSerif, manrope } from "@/lib/fonts";
+import { useHomzProjects } from "@/hooks/useHomzProjects";
+import { categorySegment, type RawHomzProject } from "@/lib/scraping/homzbackend";
+import LoadError from "@/components/Common/LoadError";
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -70,12 +73,38 @@ const BUDGET_RANGES: Record<string, { min: number; max: number | null }> = {
 const COMMERCIAL_TYPES = new Set(["Commercial", "Office Space", "Retail"]);
 const RESIDENTIAL_TYPES = new Set(["Apartment", "Villa"]);
 
+const getValidImage = (images: string[] = []) => {
+  return images.find(
+    (url) =>
+      typeof url === "string" &&
+      /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
+  );
+};
+
+const hasValidImage = (images: string[] = []) => {
+  return images.some(
+    (url) =>
+      typeof url === "string" &&
+      /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
+  );
+};
+
+// Gurgaon-only — the site's sole focus market. "ggn" is the raw API city key;
+// "gurgaon" is the canonical URL slug used in card links (must match
+// canonicalCitySlug() in lib/intelligence/projects.ts). limit=500 matches
+// lib/intelligence/projects.ts's fetchCityRaw — keeps this page's filtered
+// counts consistent with the homepage Collections tiles, which query the full
+// catalogue via getProjectsForCity. Order matters: index 0 is commercial.
+const SOURCES = [
+  { segment: categorySegment("ggn", "Commercial"), limit: 500 },
+  { segment: categorySegment("ggn", "Residential"), limit: 500 },
+];
+
 function ProjectListingInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error, retry } = useHomzProjects(SOURCES);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSector, setSelectedSector] = useState("all");
 
@@ -99,6 +128,42 @@ function ProjectListingInner() {
 
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
+
+  // Derive card + filter fields from the raw catalogue data the hook fetched.
+  // Sector / micro-market / status / builder come from title + about text +
+  // feed status/possession (the backend has no structured fields for them).
+  const projects = useMemo(() => {
+    const finalData = data.flatMap((arr, index) =>
+      arr.map((item) => ({
+        ...item,
+        city: "gurgaon",
+        _category: index === 0 ? "commercial" : "residential",
+      }))
+    );
+
+    // ✅ Sort: images first
+    finalData.sort((a, b) => {
+      const aHas = hasValidImage(a.images);
+      const bHas = hasValidImage(b.images);
+      return Number(bHas) - Number(aHas);
+    });
+
+    return finalData.map((item) => ({
+      ...item,
+      _sector: extractSector(
+        item.projectTitle,
+        item.aboutProject,
+        item.location
+      ),
+      _microMarket: extractMicroMarket(
+        item.projectTitle,
+        item.aboutProject,
+        item.location
+      ),
+      _status: deriveStatusFromText(item.projectStatus, item.possession),
+      _builder: extractBuilder(item.projectTitle || ""),
+    }));
+  }, [data]);
 
   // Sector options within Gurgaon, derived from the fetched projects
   // (the backend has no sector field — it's extracted from title + about text).
@@ -198,23 +263,6 @@ function ProjectListingInner() {
   const currentProjects = visibleProjects.slice(startIndex, endIndex);
   const totalPages = Math.max(1, Math.ceil(visibleProjects.length / cardsPerPage));
 
-  // ✅ Helpers
-  const getValidImage = (images: string[] = []) => {
-    return images.find(
-      (url) =>
-        typeof url === "string" &&
-        /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
-    );
-  };
-
-  const hasValidImage = (images: string[] = []) => {
-    return images.some(
-      (url) =>
-        typeof url === "string" &&
-        /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
-    );
-  };
-
   // ✅ Pagination
   const getVisiblePages = () => {
     if (!isMobile) {
@@ -241,85 +289,8 @@ function ProjectListingInner() {
     setCurrentPage(1);
   }, [q, type, budget, bhk, status, micromarket, builder]);
 
-  // ✅ Fetch API
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        // Each call catches its own error and resolves to [] rather than
-        // rejecting — otherwise Promise.all fails fast on the first
-        // rejection and blanks out the whole page even when most of the
-        // endpoints succeeded.
-        // limit=500 matches lib/intelligence/projects.ts's fetchCityRaw — keeps
-        // this page's filtered counts consistent with the homepage Collections
-        // tiles, which query the full catalogue via getProjectsForCity.
-        const fetchCityData = async (key: string, limit = 500) => {
-          try {
-            const res = await fetch(
-              `https://homzbackend.vercel.app/api/data?city=${key}&page=1&limit=${limit}`
-            );
-            if (!res.ok) return [];
-            const data = await res.json();
-            return data?.results || [];
-          } catch {
-            return [];
-          }
-        };
-
-        // Gurgaon-only — the site's sole focus market. "ggn" is the raw API
-        // city key; "gurgaon" is the canonical URL slug used in card links
-        // (must match canonicalCitySlug() in lib/intelligence/projects.ts).
-        const results = await Promise.all([
-          fetchCityData("ggnCommercialProjects"),
-          fetchCityData("ggnResidentialProjects"),
-        ]);
-
-        const finalData: any[] = results.flatMap((arr, index) =>
-          arr.map((item: any) => ({
-            ...item,
-            city: "gurgaon",
-            _category: index === 0 ? "commercial" : "residential",
-          }))
-        );
-
-        // ✅ Sort: images first
-        finalData.sort((a, b) => {
-          const aHas = hasValidImage(a.images);
-          const bHas = hasValidImage(b.images);
-          return Number(bHas) - Number(aHas);
-        });
-
-        // ✅ Derive sector / micro-market / status / builder for each project
-        // (title + about text + feed status/possession) for filtering
-        const withSector = finalData.map((item) => ({
-          ...item,
-          _sector: extractSector(
-            item.projectTitle,
-            item.aboutProject,
-            item.location
-          ),
-          _microMarket: extractMicroMarket(
-            item.projectTitle,
-            item.aboutProject,
-            item.location
-          ),
-          _status: deriveStatusFromText(item.projectStatus, item.possession),
-          _builder: extractBuilder(item.projectTitle),
-        }));
-
-        setProjects(withSector);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
-
   // ✅ Format for card
-  const formatProject = (project: any) => ({
+  const formatProject = (project: RawHomzProject) => ({
     imgUrl: getValidImage(project.images) || "/dummy.svg",
     location: project.location || "N/A",
     reranumber: project.reraId || "N/A",
@@ -436,10 +407,14 @@ function ProjectListingInner() {
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
-          {loading ? (
+          {error ? (
+            <div className="col-span-1 md:col-span-2">
+              <LoadError message={error} onRetry={retry} />
+            </div>
+          ) : loading ? (
             [...Array(isMobile ? 4 : 8)].map((_, i) => <CardSkeleton key={i} />)
           ) : currentProjects.length > 0 ? (
-            currentProjects.map((project: any, index: number) => (
+            currentProjects.map((project, index) => (
               <Link
                 key={index}
                 href={`/project-listing/${project.city}/${slugify(

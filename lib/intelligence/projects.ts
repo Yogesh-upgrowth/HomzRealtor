@@ -4,6 +4,11 @@
 import { unstable_cache } from "next/cache";
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { normalizeAmenities } from "./view-model";
+import {
+  homzDataUrl,
+  categorySegment,
+  type RawHomzProject,
+} from "@/lib/scraping/homzbackend";
 
 const ALL_CITY_KEYS = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
 
@@ -41,26 +46,21 @@ export const CITY_DISPLAY: Record<string, { name: string; state: string }> = {
   noida: { name: "Noida", state: "Uttar Pradesh" },
 };
 
+function fetchSegment(segment: string): Promise<RawHomzProject[]> {
+  return fetch(homzDataUrl(segment), { next: { revalidate: 3600 } })
+    .then((r) => r.json())
+    .then((d) => (Array.isArray(d?.results) ? d.results : []))
+    .catch(() => []);
+}
+
 async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
   const [commercial, residential] = await Promise.all([
-    fetch(
-      `https://homzbackend.vercel.app/api/data?city=${cityKey}CommercialProjects&page=1&limit=500`,
-      { next: { revalidate: 3600 } }
-    )
-      .then((r) => r.json())
-      .then((d) => (Array.isArray(d?.results) ? d.results : []))
-      .catch(() => []),
-    fetch(
-      `https://homzbackend.vercel.app/api/data?city=${cityKey}ResidentialProjects&page=1&limit=500`,
-      { next: { revalidate: 3600 } }
-    )
-      .then((r) => r.json())
-      .then((d) => (Array.isArray(d?.results) ? d.results : []))
-      .catch(() => []),
+    fetchSegment(categorySegment(cityKey, "Commercial")),
+    fetchSegment(categorySegment(cityKey, "Residential")),
   ]);
   return [
-    ...commercial.map((r: any) => normalizeProject(r, cityKey, "Commercial")),
-    ...residential.map((r: any) => normalizeProject(r, cityKey, "Residential")),
+    ...commercial.map((r) => normalizeProject(r, cityKey, "Commercial")),
+    ...residential.map((r) => normalizeProject(r, cityKey, "Residential")),
   ];
 }
 

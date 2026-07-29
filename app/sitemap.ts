@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getSectorsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
+import { homzDataUrl, type RawHomzProject } from '@/lib/scraping/homzbackend'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,12 +32,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await Promise.all(
     Object.entries(CITY_ENDPOINT_MAP).map(async ([cityKey, citySegment]) => {
       try {
-        const res = await fetch(
-          `https://homzbackend.vercel.app/api/data?city=${cityKey}&page=1&limit=200`,
-          { next: { revalidate: 3600 } }
-        )
+        const res = await fetch(homzDataUrl(cityKey, 1, 200), {
+          next: { revalidate: 3600 },
+        })
         const json = await res.json()
-        const projects: any[] = json?.results || []
+        const projects: RawHomzProject[] = json?.results || []
 
         for (const p of projects) {
           if (!p?.projectTitle || typeof p.projectTitle !== 'string') continue
