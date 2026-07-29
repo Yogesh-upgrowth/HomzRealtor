@@ -9,10 +9,18 @@ import { formatInr } from "./normalize";
 import { clean } from "./view-model";
 import type { LandmarksMap, ConnectivityItem } from "./geo";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+// Constructed lazily on first use — the SDK constructor throws when no API key
+// is configured, and doing that at import time crashes every page that imports
+// this module (and `next build`) in environments without the key. Lazy, the
+// throw lands in the existing catch paths and pages degrade to fallback content.
+let openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  openaiClient ??= new OpenAI({
+    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+    baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  });
+  return openaiClient;
+}
 
 const MODEL = process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "gpt-4o-mini";
 
@@ -102,7 +110,7 @@ Return a JSON object with exactly these 5 keys:
 
   let parsed: any = {};
   try {
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: MODEL,
       messages: [
         { role: "system", content: SYSTEM },

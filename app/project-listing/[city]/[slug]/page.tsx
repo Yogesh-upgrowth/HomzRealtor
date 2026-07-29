@@ -4,6 +4,7 @@ import ProjectIntelligenceSections from "@/components/Project/intelligence/Proje
 import ProjectHero from "@/components/Project/listing/ProjectHero";
 import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
 import KeyFactsRibbon from "@/components/Project/listing/KeyFactsRibbon";
+import StatusStrip from "@/components/Project/listing/StatusStrip";
 import EnquiryRail from "@/components/Project/listing/EnquiryRail";
 import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
@@ -258,6 +259,12 @@ const ProjectPage = async ({ params }: PageParams) => {
           status={view.status}
           unitCount={view.units.length}
         />
+
+        {/* Live listing status (tracked in MongoDB) — streams in after the
+            ribbon; renders nothing until the property is tracked. */}
+        <Suspense fallback={null}>
+          <StatusStrip cityKey={project.city_key} slug={slug} />
+        </Suspense>
 
         <div className="max-w-7xl mx-auto px-2 lg:grid lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-10 mt-4">
           <main className="min-w-0">
