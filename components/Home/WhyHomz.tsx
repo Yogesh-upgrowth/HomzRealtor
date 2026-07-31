@@ -40,13 +40,31 @@ const WhyHomz = () => {
         <div className="relative">
           <div className="grid h-[380px] grid-cols-[1.3fr_1fr] grid-rows-2 gap-3.5 md:h-[440px]">
             <div className="relative row-span-2 overflow-hidden rounded-[18px]">
-              <Image src={aboutHomz} alt="Luxury living room interior" fill className="object-cover" />
+              <Image
+                src={aboutHomz}
+                alt="Luxury living room interior"
+                fill
+                sizes="(min-width: 1024px) 28vw, 55vw"
+                className="object-cover"
+              />
             </div>
             <div className="relative overflow-hidden rounded-[18px]">
-              <Image src={discoverImage2} alt="Modern kitchen interior" fill className="object-cover" />
+              <Image
+                src={discoverImage2}
+                alt="Modern kitchen interior"
+                fill
+                sizes="(min-width: 1024px) 22vw, 40vw"
+                className="object-cover"
+              />
             </div>
             <div className="relative overflow-hidden rounded-[18px]">
-              <Image src={discoverImage3} alt="Master bedroom interior" fill className="object-cover" />
+              <Image
+                src={discoverImage3}
+                alt="Master bedroom interior"
+                fill
+                sizes="(min-width: 1024px) 22vw, 40vw"
+                className="object-cover"
+              />
             </div>
           </div>
           <div className="absolute bottom-5 left-5 flex items-center gap-3 rounded-[18px] border border-white/10 bg-[#131315] px-4.5 py-3.5 shadow-[0_24px_70px_rgba(0,0,0,0.45)]">

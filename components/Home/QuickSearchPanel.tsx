@@ -10,7 +10,7 @@ const TABS = ["Buy", "Rent", "Commercial", "Plots"];
 const TRENDING = [
   { label: "Sector 65", href: "/project-listing?q=Sector+65" },
   { label: "Golf Course Road", href: "/project-listing?q=Golf+Course+Road" },
-  { label: "Ready to move", href: "/project-listing?q=Ready+to+Move" },
+  { label: "Ready to move", href: "/project-listing?status=ready-to-move" },
   { label: "Commercial spaces", href: "/project-listing?type=Commercial" },
   { label: "Under ₹1 Cr", href: "/project-listing?budget=under-1cr" },
 ];

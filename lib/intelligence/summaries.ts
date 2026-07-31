@@ -57,7 +57,7 @@ export function buildLocationSummary(
     if (!list || !list.length) continue;
     const nearest = [...list].sort((a, b) => a.distance_km - b.distance_km)[0];
     nearbyBits.push(
-      `${list.length} ${cat.toLowerCase()} (nearest ${nearest.name}, ${nearest.distance_text})`
+      `${cat.toLowerCase()} (nearest ${nearest.name}, ${nearest.distance_text})`
     );
   }
   if (nearbyBits.length) {

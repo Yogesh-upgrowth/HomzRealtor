@@ -75,9 +75,14 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     project.city_key
   )}/${slug}`;
 
-  const image = project.images?.find(
+  const rawImage = project.images?.find(
     (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
   );
+  // The scraped CDN URL's resize params (e.g. "aio=w-0;h-550;") reflect
+  // whatever size the scrape happened to capture, often below the
+  // 1200x630 social-share target — request an OG-appropriate size for
+  // sharing purposes only (on-page display is unaffected).
+  const image = rawImage?.replace(/aio=[^&]*/i, "aio=w-1200;h-630;");
 
   return {
     title,

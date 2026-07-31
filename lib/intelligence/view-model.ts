@@ -12,8 +12,9 @@
 
 import { formatInr, KNOWN_BUILDERS, type NormalizedProject } from "./normalize";
 import type { ConnectivityItem, LandmarksMap } from "./geo";
+import { reraPortalFor } from "./rera";
 
-export type Chip = { label: string; value: string };
+export type Chip = { label: string; value: string; href?: string };
 export type Badge = { icon: string; label: string; note?: string };
 export type ScoreFactor = { label: string; earned: number; max: number; note: string };
 export type InvestmentScore = {
@@ -218,7 +219,11 @@ function buildSnapshot(project: NormalizedProject, view: {
   push("Location", project.sector || project.micro_market);
   push("City", project.city_name);
   push("Developer", project.builder && project.builder !== "Unknown" ? project.builder : null);
-  push("RERA", project.rera_id);
+  const reraId = clean(project.rera_id);
+  if (reraId) {
+    const portal = reraPortalFor(project.state);
+    chips.push({ label: "RERA", value: reraId, href: portal?.url });
+  }
   if (view.unitCount > 0) push("Unit Options", `${view.unitCount} configurations`);
   if (view.amenityCount > 0) push("Amenities", `${view.amenityCount}+ amenities`);
   return chips.slice(0, 8);
@@ -411,7 +416,7 @@ function buildHighlightStats(
   const metroMins = c.metro ? minutesFrom(c.metro.travel_time) : null;
   if (metroMins != null) {
     stats.push({
-      big: `${metroMins}m`,
+      big: `${metroMins} min`,
       title: "Minutes to the Metro",
       subtitle: `${c.metro!.label} on the doorstep.`,
     });
@@ -420,7 +425,7 @@ function buildHighlightStats(
   const airportMins = c.airport ? minutesFrom(c.airport.travel_time) : null;
   if (airportMins != null && stats.length < 3) {
     stats.push({
-      big: `${airportMins}m`,
+      big: `${airportMins} min`,
       title: "Minutes to the Airport",
       subtitle: `${c.airport!.label} by road.`,
     });

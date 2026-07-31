@@ -11,9 +11,9 @@ const QuickSnapshot = ({ chips }: { chips: Chip[] }) => {
             <p className="text-[11px] uppercase tracking-wide text-gray-500 font-medium">
               {chip.label}
             </p>
-            {chip.label === "RERA" ? (
+            {chip.label === "RERA" && chip.href ? (
               <a
-                href="https://haryanarera.gov.in/"
+                href={chip.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-sm md:text-base font-semibold text-[#D9B268] hover:text-[#e8c88a] mt-0.5 line-clamp-2 underline decoration-[#D9B268]/40 underline-offset-2"

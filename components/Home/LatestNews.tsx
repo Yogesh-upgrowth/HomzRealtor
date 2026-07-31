@@ -60,7 +60,7 @@ const LatestNews = () => {
           {OTHERS.map((n) => (
             <article key={n.title} className="flex gap-4 overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] p-3">
               <div className="relative h-[92px] w-[120px] shrink-0 overflow-hidden rounded-xl">
-                <Image src={n.img} alt={n.title} fill className="object-cover" />
+                <Image src={n.img} alt={n.title} fill sizes="120px" className="object-cover" />
               </div>
               <div className="py-1">
                 <span className="text-[10.5px] font-bold uppercase tracking-wide text-[#D9B268]">{n.tag}</span>

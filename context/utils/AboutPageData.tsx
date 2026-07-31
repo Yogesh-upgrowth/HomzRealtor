@@ -27,30 +27,6 @@ export const testimonials: TestimonialsType[] = [
     text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
     rating: 5,
   },
-  {
-    id: 4,
-    name: "Arush Deshmukh",
-    role: "Marketing Manager, Happy Living Realty",
-    image: dummy,
-    text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
-    rating: 5,
-  },
-  {
-    id: 5,
-    name: "Pooja Jain",
-    role: "Marketing Manager, Green Spaces Realty",
-    image: dummy,
-    text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
-    rating: 5,
-  },
-  {
-    id: 6,
-    name: "Dr. Narayan Deshmukh",
-    role: "Financial Advisor, Urban Elite Residences",
-    image: dummy,
-    text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
-    rating: 5,
-  },
 ];
 const aboutPageData = {
   // about us Section

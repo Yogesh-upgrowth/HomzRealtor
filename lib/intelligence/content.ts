@@ -8,6 +8,7 @@ import type { NormalizedProject, } from "./normalize";
 import { formatInr } from "./normalize";
 import { clean } from "./view-model";
 import type { LandmarksMap, ConnectivityItem } from "./geo";
+import { reraPortalFor } from "./rera";
 
 // Constructed lazily on first use — the SDK constructor throws when no API key
 // is configured, and doing that at import time crashes every page that imports
@@ -168,9 +169,12 @@ export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
   }
 
   if (reraId) {
+    const portal = reraPortalFor(project.state);
     faqs.push({
       q: `Is ${name} RERA registered?`,
-      a: `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official Haryana RERA portal at haryanarera.gov.in.`,
+      a: portal
+        ? `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official ${portal.name} portal at ${portal.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}.`
+        : `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this with your state's RERA authority.`,
     });
   }
 

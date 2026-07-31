@@ -72,6 +72,7 @@ const HomzIntelligence = () => {
             </div>
             <div className="mt-2.5 flex justify-between text-[11px] text-gray-600">
               <span>{BARS[0].year}</span>
+              <span aria-hidden="true">–</span>
               <span>{BARS[BARS.length - 1].year}</span>
             </div>
           </div>

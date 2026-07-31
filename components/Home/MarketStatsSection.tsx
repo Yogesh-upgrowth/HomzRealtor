@@ -13,7 +13,7 @@ const MarketStatsSection = () => {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 border-b border-white/[0.06]">
       <p className="mb-3.5 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268]">
-        Live market data
+        Market snapshot
       </p>
       <h2 className="mb-8 text-[clamp(26px,3.6vw,38px)] font-bold tracking-tight text-white">
         Gurgaon Real Estate at a Glance

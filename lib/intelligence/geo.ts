@@ -168,12 +168,16 @@ export function buildConnectivity(cityKey: string, lat: number, lng: number) {
       try {
         const dm = await distanceRaw(lat, lng, anchors.airport.lat, anchors.airport.lng);
         rows.push({ label: anchors.airport.label, category: "airport", distance_km: dm.distanceKm, travel_time: dm.travelTime });
-      } catch {}
+      } catch (err) {
+        console.error("[buildConnectivity] airport lookup failed", err);
+      }
 
       try {
         const dm = await distanceRaw(lat, lng, anchors.business.lat, anchors.business.lng);
         rows.push({ label: anchors.business.label, category: "business", distance_km: dm.distanceKm, travel_time: dm.travelTime });
-      } catch {}
+      } catch (err) {
+        console.error("[buildConnectivity] business anchor lookup failed", err);
+      }
 
       try {
         const metros = await nearbyRaw(lat, lng, "subway_station", 1);
@@ -182,7 +186,9 @@ export function buildConnectivity(cityKey: string, lat: number, lng: number) {
           const dm = await distanceRaw(lat, lng, m.geometry.location.lat, m.geometry.location.lng);
           rows.push({ label: `${m.name} (Metro)`, category: "metro", distance_km: dm.distanceKm, travel_time: dm.travelTime });
         }
-      } catch {}
+      } catch (err) {
+        console.error("[buildConnectivity] metro lookup failed", err);
+      }
 
       try {
         const trains = await nearbyRaw(lat, lng, "train_station", 1);
@@ -191,7 +197,9 @@ export function buildConnectivity(cityKey: string, lat: number, lng: number) {
           const dm = await distanceRaw(lat, lng, t.geometry.location.lat, t.geometry.location.lng);
           rows.push({ label: `${t.name} (Railway)`, category: "railway", distance_km: dm.distanceKm, travel_time: dm.travelTime });
         }
-      } catch {}
+      } catch (err) {
+        console.error("[buildConnectivity] railway lookup failed", err);
+      }
 
       return rows;
     },

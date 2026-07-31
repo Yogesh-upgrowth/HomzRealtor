@@ -89,8 +89,14 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
 
   const [rate, setRate] = useState<number>(8);
   const nowYear = new Date().getFullYear();
+  // A possession date already in the past (e.g. a Ready to Move project) is
+  // not a real future target — only treat it as one for display/labeling
+  // when it's genuinely ahead of today. The illustrative projection itself
+  // still needs a horizon, so it falls back to a plain 3-year window rather
+  // than being framed as "at possession" for a year that has already happened.
+  const futurePossessionYear = possYear && possYear > nowYear ? possYear : null;
   const years =
-    possYear && possYear > nowYear && possYear - nowYear <= 15 ? possYear - nowYear : 3;
+    futurePossessionYear && futurePossessionYear - nowYear <= 15 ? futurePossessionYear - nowYear : 3;
   // The exact holding period used for the "at possession" figure — a
   // fractional year (e.g. 0.58 for 7 months) rather than the rounded whole
   // year used for the chart's x-axis ticks, so the projected gain isn't
@@ -104,11 +110,11 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
       data.push({ year: String(nowYear + y), value: Math.round(base * Math.pow(1 + rate / 100, y)) });
     }
     data.push({
-      year: possYear ? String(possYear) : String(nowYear + years),
+      year: futurePossessionYear ? String(futurePossessionYear) : String(nowYear + years),
       value: Math.round(base * Math.pow(1 + rate / 100, preciseYears)),
     });
     return data;
-  }, [base, rate, years, nowYear, preciseYears, possYear]);
+  }, [base, rate, years, nowYear, preciseYears, futurePossessionYear]);
 
   if (!base || journey.length === 0) return null;
 
@@ -127,7 +133,7 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
             <h3 className="text-gray-300 text-sm font-medium">Projected Price Journey</h3>
             <p className="text-gray-500 text-xs">
               Current price today → projected value at possession
-              {possYear ? ` (${possYear})` : ""}
+              {futurePossessionYear ? ` (${futurePossessionYear})` : ""}
             </p>
           </div>
           <div className="flex items-center gap-3 text-sm">
@@ -153,7 +159,7 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
           </div>
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">
-              At Possession{possYear ? ` (${possYear})` : ""}
+              At Possession{futurePossessionYear ? ` (${futurePossessionYear})` : ""}
             </p>
             <p className="text-xl font-bold text-[#CEA44E] mt-1">{formatInr(projected) ?? "—"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">Projected estimate</p>

@@ -27,10 +27,10 @@ const PropertyInsights = () => {
         {GUIDES.map((g) => (
           <div key={g.title} className="flex gap-4 border-b border-white/[0.08] py-4.5">
             <div className="relative h-[76px] w-[100px] shrink-0 overflow-hidden rounded-xl">
-              <Image src={g.img} alt={g.title} fill className="object-cover" />
+              <Image src={g.img} alt={g.title} fill sizes="100px" className="object-cover" />
             </div>
             <div>
-              <h4 className="mb-1.5 text-[14.5px] font-bold leading-snug text-white">{g.title}</h4>
+              <h3 className="mb-1.5 text-[14.5px] font-bold leading-snug text-white">{g.title}</h3>
               <span className="text-[11.5px] font-semibold uppercase tracking-wide text-gray-600">{g.read}</span>
             </div>
           </div>

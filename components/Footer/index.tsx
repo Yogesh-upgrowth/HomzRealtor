@@ -2,7 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/companylogo/logo.png";
 
+// Real-estate is a YMYL (Your Money or Your Life) category — Google and
+// buyers both weight demonstrable trust signals heavily here. Fill these in
+// with the company's actual registered details before relying on this for
+// compliance; each line only renders when non-empty, so leaving one blank
+// simply omits it rather than showing a fake value.
+const COMPANY_INFO = {
+  officeAddress: "",
+  gstNumber: "",
+  hararaAgentNumber: "", // HARERA channel-partner/agent registration number
+};
+
 export default function Footer() {
+  const hasCompanyInfo =
+    COMPANY_INFO.officeAddress || COMPANY_INFO.gstNumber || COMPANY_INFO.hararaAgentNumber;
+
   return (
     <footer className="bg-black text-gray-300 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="max-w-[1397px] mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -15,6 +29,15 @@ export default function Footer() {
             dream home, investment property, or a space that suits your
             lifestyle.
           </p>
+          {hasCompanyInfo && (
+            <div className="mt-4 space-y-1 text-sm text-gray-500">
+              {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
+              {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
+              {COMPANY_INFO.hararaAgentNumber && (
+                <p>HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col md:items-end">
@@ -37,6 +60,23 @@ export default function Footer() {
             <li>
               <Link href="/#consult" className="hover:text-[#FDF094] transition-colors">
                 Contact
+              </Link>
+            </li>
+          </ul>
+          <ul className="mt-4 grid grid-cols-2 md:flex flex-cols-2 md:flex-row gap-4 md:gap-8 text-sm text-gray-500">
+            <li>
+              <Link href="/privacy-policy" className="hover:text-[#FDF094] transition-colors">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-[#FDF094] transition-colors">
+                Terms of Use
+              </Link>
+            </li>
+            <li>
+              <Link href="/disclaimer" className="hover:text-[#FDF094] transition-colors">
+                Disclaimer
               </Link>
             </li>
           </ul>

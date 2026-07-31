@@ -102,8 +102,12 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   });
 
   // Combined, deduped "Similar Projects" preview for the Compare+Similar
-  // section — one compact set rather than three separate full grids.
+  // section — one compact set rather than three separate full grids. Excludes
+  // anything already shown above under "More by {builder}" so the same card
+  // never appears twice on the page.
+  const builderSlugs = new Set(builderProjects.map((p) => `${p.city_key}-${p.slug}`));
   const combinedSimilar = [...sectorProjects, ...similarProjects]
+    .filter((p) => !builderSlugs.has(`${p.city_key}-${p.slug}`))
     .filter((p, i, arr) => arr.findIndex((x) => x.city_key === p.city_key && x.slug === p.slug) === i)
     .slice(0, 3);
 
@@ -119,7 +123,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   // section, the Investment/Market grid) — repeating them in the sheet too
   // printed identical paragraphs twice on the page.
   const chapters: Chapter[] = [
-    view.about.length > 0 && { kicker: "OVERVIEW", title: `About ${view.name}`, body: view.about.join("\n\n") },
+    view.about.length > 2 && { kicker: "OVERVIEW", title: `About ${view.name}`, body: view.about.slice(2).join("\n\n") },
   ].filter(Boolean) as Chapter[];
 
   // Developer stats/badges — only honestly-derivable facts, nothing fabricated.

@@ -22,17 +22,18 @@ import FinalCta from "@/components/Home/FinalCta";
 import FloatingWhatsApp from "@/components/Home/FloatingWhatsApp";
 import MobileBottomNav from "@/components/Home/MobileBottomNav";
 import { getAllBuilders, getSectorsForCity, canonicalCitySlug } from "@/lib/intelligence/projects";
-import { getNewLaunchProjects } from "@/lib/intelligence/homepage";
+import { getNewLaunchProjects, getFeaturedProjects } from "@/lib/intelligence/homepage";
 import { HOME_FAQS } from "@/lib/content/homeFaq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 const GURGAON_CITY_KEY = "ggn";
 
 export default async function Home() {
-  const [builders, sectors, newLaunches] = await Promise.all([
+  const [builders, sectors, newLaunches, featured] = await Promise.all([
     getAllBuilders().catch(() => []),
     getSectorsForCity(GURGAON_CITY_KEY).catch(() => []),
     getNewLaunchProjects(GURGAON_CITY_KEY, 6).catch(() => []),
+    getFeaturedProjects(GURGAON_CITY_KEY, 4).catch(() => []),
   ]);
 
   const topBuilders = builders.slice(0, 6);
@@ -48,18 +49,34 @@ export default async function Home() {
     })),
   };
 
+  const organizationLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: "HomzRealtor",
+    url: "https://www.homzrealtor.com",
+    areaServed: ["Gurgaon", "Delhi", "Noida", "Greater Noida", "Faridabad"],
+  };
+
+  const safeJsonLd = (data: unknown) =>
+    JSON.stringify(data)
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026");
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqLd).replace(/</g, "\\u003c"),
-        }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqLd) }}
       />
 
       <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui bg-[#0B0B0C] text-white`}>
         <Hero variant="default" />
-        <HotSelling />
+        <HotSelling projects={featured} />
         <Collections />
         <LatestLaunches projects={newLaunches} />
         <DevelopersSection developers={topBuilders} />

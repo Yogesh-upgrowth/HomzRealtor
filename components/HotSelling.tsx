@@ -1,38 +1,16 @@
-"use client";
-
 import Link from "next/link";
-import { useMemo } from "react";
 import { MapPin } from "lucide-react";
-import getValidImage from "./utils/helper/getValidImage";
-import { slugify } from "./utils/slugify";
+import type { NewLaunchProject } from "@/lib/intelligence/homepage";
 import SafeProjectImage from "./Home/SafeProjectImage";
-import LoadError from "./Common/LoadError";
-import { useHomzProjects } from "@/hooks/useHomzProjects";
-import { categorySegment } from "@/lib/scraping/homzbackend";
 
-// Gurgaon-only — the site's sole focus market. "ggn" is the raw API city key;
-// "gurgaon" is the canonical URL slug used in card links (must match
-// canonicalCitySlug() in lib/intelligence/projects.ts).
-const SOURCES = [
-  { segment: categorySegment("ggn", "Commercial"), limit: 3 },
-  { segment: categorySegment("ggn", "Residential"), limit: 3 },
-];
+type Props = {
+  projects: NewLaunchProject[];
+};
 
-export default function HotSelling() {
-  const { data, loading, error, retry } = useHomzProjects(SOURCES);
-
-  const projects = useMemo(
-    () =>
-      data
-        .flatMap((results) =>
-          results
-            .filter((item) => Array.isArray(item.images) && item.images.length > 0)
-            .map((item) => ({ ...item, citySlug: "gurgaon" }))
-        )
-        .slice(0, 4),
-    [data]
-  );
-
+// Real projects (see lib/intelligence/homepage.ts's getFeaturedProjects) —
+// server-fetched with cross-city backfill, same resilience pattern as
+// LatestLaunches, so a transient fetch hiccup never leaves this section empty.
+export default function HotSelling({ projects }: Props) {
   return (
     <section id="featured-projects" className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 scroll-mt-24 border-b border-white/[0.06]">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -52,65 +30,44 @@ export default function HotSelling() {
       </div>
 
       {/* Project cards — responsive grid, no horizontal scroll */}
-      {error ? (
-        <LoadError message={error} onRetry={retry} />
-      ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {loading ? (
-          [...Array(4)].map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] animate-pulse">
-              <div className="h-52 w-full bg-white/5" />
-              <div className="space-y-3 p-5">
-                <div className="h-5 w-3/4 rounded bg-white/5" />
-                <div className="h-4 w-1/3 rounded bg-white/5" />
+      {projects.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {projects.map((p) => (
+            <Link
+              key={`${p.citySlug}-${p.slug}`}
+              href={`/project-listing/${p.citySlug}/${p.slug}`}
+              className="group overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
+            >
+              <div className="relative h-52 w-full overflow-hidden">
+                {p.image ? (
+                  <SafeProjectImage
+                    src={p.image}
+                    alt={p.name}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-[#1a1a1d] text-gray-600">
+                    No Image
+                  </div>
+                )}
               </div>
-            </div>
-          ))
-        ) : projects.length > 0 ? (
-          projects.map((p, index) => {
-            const image = getValidImage(p.images);
-            const href = `/project-listing/${p.citySlug}/${slugify(p.projectTitle || "project")}`;
 
-            return (
-              <Link
-                key={index}
-                href={href}
-                className="group overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
-              >
-                <div className="relative h-52 w-full overflow-hidden">
-                  {image ? (
-                    <SafeProjectImage
-                      src={image}
-                      alt={p.projectTitle || "Project"}
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-[#1a1a1d] text-gray-600">
-                      No Image
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-5">
-                  <h3 className="mb-1.5 text-[15.5px] font-bold text-white group-hover:text-[#D9B268] transition-colors">
-                    {p.projectTitle}
-                  </h3>
-                  {p.location && (
-                    <p className="mb-3 flex items-center gap-1.5 text-[12px] text-gray-500">
-                      <MapPin size={12} className="text-[#D9B268]" /> {p.location}
-                    </p>
-                  )}
-                  <p className="font-display text-lg text-[#D9B268]">
-                    {p.price || "View Details"}
-                  </p>
-                </div>
-              </Link>
-            );
-          })
-        ) : (
-          <p className="text-gray-500">No projects found</p>
-        )}
-      </div>
+              <div className="p-5">
+                <h3 className="mb-1.5 text-[15.5px] font-bold text-white group-hover:text-[#D9B268] transition-colors">
+                  {p.name}
+                </h3>
+                <p className="mb-3 flex items-center gap-1.5 text-[12px] text-gray-500">
+                  <MapPin size={12} className="text-[#D9B268]" /> {p.locationLine}
+                </p>
+                <p className="font-display text-lg text-[#D9B268]">
+                  {p.priceText || "View Details"}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500">No projects found</p>
       )}
     </section>
   );

@@ -30,7 +30,7 @@ const GurgaonSectorsSection = ({ citySlug, sectors }: Props) => {
           >
             <span className="block text-[13px] font-bold text-gray-200">{s.sector}</span>
             <span className="mt-1 block text-[11px] text-gray-600">
-              {s.count} {s.count === 1 ? "project" : "projects"}
+              · {s.count} {s.count === 1 ? "project" : "projects"}
             </span>
           </Link>
         ))}
