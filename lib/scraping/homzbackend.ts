@@ -188,20 +188,22 @@ async function fetchSegment<T>(
   const url = homzDataUrl(citySegment, opts.page ?? 1, opts.limit ?? 500);
   const isBrowser = typeof window !== "undefined";
 
-  if (!isBrowser) {
-    // Server callers manage their own caching (unstable_cache / next revalidate).
-    const data = await fetchJson<DataResponse<T>>(url, { signal: opts.signal });
-    return Array.isArray(data?.results) ? data.results : [];
-  }
-
+  // Server callers used to rely on Next's own caches (unstable_cache / fetch
+  // `next: { revalidate }`) instead of this map. Both throw/silently drop the
+  // entry once a segment exceeds 2MB — real city segments routinely do (5-8MB)
+  // — so every server request re-fetched and re-parsed the whole segment from
+  // scratch. The in-memory map below has no such limit, so server callers now
+  // share it too; only sessionStorage (line below) stays browser-only.
   if (!opts.force) {
     const hit = memoryCache.get(url) as CacheEntry<T> | undefined;
     if (hit && hit.expires > Date.now()) return hit.data;
 
-    const stored = readSession<T>(url);
-    if (stored) {
-      memoryCache.set(url, stored);
-      return stored.data;
+    if (isBrowser) {
+      const stored = readSession<T>(url);
+      if (stored) {
+        memoryCache.set(url, stored);
+        return stored.data;
+      }
     }
 
     const pending = inFlight.get(url) as Promise<T[]> | undefined;

@@ -1,14 +1,9 @@
 // Project fetching and similarity helpers — no database required.
 // Fetches from homzbackend API with Next.js fetch caching (1 hour).
 
-import { unstable_cache } from "next/cache";
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { normalizeAmenities } from "./view-model";
-import {
-  homzDataUrl,
-  categorySegment,
-  type RawHomzProject,
-} from "@/lib/scraping/homzbackend";
+import { fetchProjects, categorySegment } from "@/lib/scraping/homzbackend";
 
 const ALL_CITY_KEYS = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
 
@@ -46,17 +41,10 @@ export const CITY_DISPLAY: Record<string, { name: string; state: string }> = {
   noida: { name: "Noida", state: "Uttar Pradesh" },
 };
 
-function fetchSegment(segment: string): Promise<RawHomzProject[]> {
-  return fetch(homzDataUrl(segment), { next: { revalidate: 3600 } })
-    .then((r) => r.json())
-    .then((d) => (Array.isArray(d?.results) ? d.results : []))
-    .catch(() => []);
-}
-
 async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
   const [commercial, residential] = await Promise.all([
-    fetchSegment(categorySegment(cityKey, "Commercial")),
-    fetchSegment(categorySegment(cityKey, "Residential")),
+    fetchProjects(categorySegment(cityKey, "Commercial")).catch(() => []),
+    fetchProjects(categorySegment(cityKey, "Residential")).catch(() => []),
   ]);
   return [
     ...commercial.map((r) => normalizeProject(r, cityKey, "Commercial")),
@@ -64,11 +52,15 @@ async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
   ];
 }
 
-export const getProjectsForCity = unstable_cache(
-  fetchCityRaw,
-  ["city-projects"],
-  { revalidate: 3600 }
-);
+// NOT wrapped in unstable_cache, and no longer using `fetch`'s own
+// `next: { revalidate }` cache either: both throw/silently drop the entry
+// once a cached payload exceeds 2MB, and a real city segment routinely runs
+// 5-8MB (the backend used to truncate at 500 records — fixed this session —
+// so this used to fit only because the data was silently incomplete).
+// fetchProjects() (lib/scraping/homzbackend.ts) now does the caching instead,
+// via a plain in-memory Map with no such size limit — shared with the
+// browser fetch path, just skipping the sessionStorage layer server-side.
+export const getProjectsForCity = fetchCityRaw;
 
 export async function getProjectBySlug(
   cityParam: string,
@@ -286,7 +278,8 @@ export async function getSectorAverages(current: NormalizedProject): Promise<Sec
 // matching the project title against KNOWN_BUILDERS (normalize.ts). These helpers
 // group the already-normalized, already-cached projects (across all cities) by
 // that derived builder so we can render /developer and /developer/[slug] with no
-// extra fetches — the underlying getProjectsForCity calls are unstable_cache'd.
+// extra fetches — the underlying getProjectsForCity calls are cached one layer
+// down, by fetchSegment()'s own `next: { revalidate }` fetch.
 
 export type DeveloperSummary = {
   name: string; // display label, e.g. "DLF"
