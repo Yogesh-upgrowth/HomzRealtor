@@ -1,8 +1,26 @@
 import { MetadataRoute } from 'next'
 import { getSectorsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
-import { homzDataUrl, type RawHomzProject } from '@/lib/scraping/homzbackend'
+import {
+  homzDataUrl,
+  propertySegment,
+  type PropertyCategory,
+  type RawHomzProject,
+  type RawHomzProperty,
+} from '@/lib/scraping/homzbackend'
+import { slugForProperty } from '@/lib/intelligence/property-view'
 
 export const dynamic = 'force-dynamic'
+
+// Sale/Rent/Pg/Commercial listing pages — same city scope as the Projects
+// pages above (ggn/Gurgaon only, matching the current frontend scope
+// decision), same 200-per-segment cap as the Projects loop below to keep
+// the sitemap size reasonable.
+const PROPERTY_ROUTE_BASE: Record<PropertyCategory, string> = {
+  Sale: 'buy-property',
+  Rent: 'rent-property',
+  Pg: 'pg-property',
+  Commercial: 'commercial',
+}
 
 // city API key → CANONICAL URL segment. Used to enumerate the sector hub pages.
 const CITY_KEYS = ['ggn', 'delhi', 'faridabad', 'gNoida', 'noida']
@@ -123,6 +141,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Skip per-developer entries on fetch error — sitemap degrades gracefully.
   }
 
+  // Sale/Rent/Pg/Commercial listings — index page per category plus one
+  // detail-page entry per listing, mirroring the Projects loop above.
+  const propertyEntries: MetadataRoute.Sitemap = []
+  await Promise.all(
+    (Object.entries(PROPERTY_ROUTE_BASE) as [PropertyCategory, string][]).map(
+      async ([category, routeBase]) => {
+        try {
+          const res = await fetch(homzDataUrl(propertySegment('ggn', category), 1, 200), {
+            next: { revalidate: 3600 },
+          })
+          const json = await res.json()
+          const properties: RawHomzProperty[] = json?.results || []
+          for (const p of properties) {
+            if (!p?.title) continue
+            propertyEntries.push({
+              url: `${baseUrl}/${routeBase}/gurgaon/${slugForProperty(p)}`,
+              lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+              changeFrequency: 'weekly',
+              priority: 0.7,
+            })
+          }
+        } catch {
+          // Skip on fetch error — sitemap degrades gracefully
+        }
+      }
+    )
+  )
+  const propertyIndexUrls: MetadataRoute.Sitemap = Object.values(PROPERTY_ROUTE_BASE).map(
+    (routeBase) => ({
+      url: `${baseUrl}/${routeBase}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    })
+  )
+
   return [
     { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
     { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
@@ -134,5 +188,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...sectorUrls,
     ...developerUrls,
     ...projectUrls,
+    ...propertyIndexUrls,
+    ...propertyEntries,
   ]
 }

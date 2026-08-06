@@ -2,10 +2,33 @@
 const nextConfig = {
   allowedDevOrigins: ["*.replit.dev", "*.sisko.replit.dev", "*.repl.co"],
   images: {
+    // static.squareyards.com/loangateway.urbanmoney.com were the only hosts
+    // Projects images ever used. The Sale/Rent/PG/Commercial listing feed
+    // pulls real images from a wider set — confirmed against live data
+    // (img.squareyards.com, img.staticmb.com for MagicBricks, and
+    // www.squareyards.com, which occasionally carries a real photo alongside
+    // site-logo assets under /assets/ — filtered at the source in
+    // lib/intelligence/property-view.ts's validImages() instead of blocked
+    // here, since blocking the host would also drop any genuine photo on it).
     remotePatterns: [
       {
         protocol: "https",
         hostname: "static.squareyards.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.squareyards.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.squareyards.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.staticmb.com",
         pathname: "/**",
       },
       {

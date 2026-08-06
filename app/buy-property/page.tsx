@@ -1,19 +1,14 @@
-import ComingSoon from "@/components/Common/ComingSoon";
+import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 
 export const metadata = {
-  title: "Buy Property — Coming Soon",
+  title: "Buy Property in Gurgaon | Homz",
   description:
-    "Buy Property listings are coming soon to Homz. Explore a wide range of options to buy your dream property with ease and confidence.",
+    "Resale and new-launch properties for sale in Gurgaon — filter by property type, BHK, budget, and possession status.",
   alternates: {
     canonical: "/buy-property",
   },
 };
 
 export default function BuyPropertyPage() {
-  return (
-    <ComingSoon
-      title="Buy Property"
-      description="Explore a wide range of options to buy your dream property with ease and confidence. This section is coming soon — stay tuned!"
-    />
-  );
+  return <PropertyListingPage category="Sale" />;
 }

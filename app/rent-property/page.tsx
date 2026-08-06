@@ -1,19 +1,14 @@
-import ComingSoon from "@/components/Common/ComingSoon";
+import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 
 export const metadata = {
-  title: "Rent Property — Coming Soon",
+  title: "Rent Property in Gurgaon | Homz",
   description:
-    "Rent Property listings are coming soon to Homz. Choose from various rental options tailored to your preferences and convenience.",
+    "Browse verified rental listings in Gurgaon — apartments, builder floors, and more. Filter by property type, BHK, budget, and possession status.",
   alternates: {
     canonical: "/rent-property",
   },
 };
 
 export default function RentPropertyPage() {
-  return (
-    <ComingSoon
-      title="Rent Property"
-      description="Choose from various rental options tailored to your preferences and convenience. This section is coming soon — stay tuned!"
-    />
-  );
+  return <PropertyListingPage category="Rent" />;
 }

@@ -1,19 +1,14 @@
-import ComingSoon from "@/components/Common/ComingSoon";
+import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 
 export const metadata = {
-  title: "Commercial — Coming Soon",
+  title: "Commercial Properties in Gurgaon | Homz",
   description:
-    "Commercial listings are coming soon to Homz. Unlock commercial spaces designed for growth, visibility, and long-term success.",
+    "Shops, offices, showrooms, and commercial land for sale and rent in Gurgaon — filter by investment grade, property type, and budget.",
   alternates: {
     canonical: "/commercial",
   },
 };
 
 export default function CommercialPage() {
-  return (
-    <ComingSoon
-      title="Commercial"
-      description="Unlock commercial spaces designed for growth, visibility, and long-term success. This section is coming soon — stay tuned!"
-    />
-  );
+  return <PropertyListingPage category="Commercial" />;
 }

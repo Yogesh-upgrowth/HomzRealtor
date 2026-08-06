@@ -53,6 +53,10 @@ export type PropertyCategory = "Sale" | "Rent" | "Pg" | "Commercial";
  *  price/area/config, not a priceList/flats breakdown), and carries raw
  *  numeric fields for client-side filtering rather than display strings only. */
 export type RawHomzProperty = {
+  /** Stable natural key ("source:source_id"), e.g. "magicbricks:4d4238...".
+   *  Individual listings don't have unique titles the way projects do, so
+   *  detail-page slugs must incorporate this rather than just the title. */
+  id?: string;
   title?: string;
   location?: string;
   price?: string;
@@ -83,6 +87,14 @@ export type RawHomzProperty = {
   landmarks?: Record<string, { name: string; distance: string }[]>;
   listingUrl?: string;
   updatedAt?: string;
+  /** 0-100, from the backend's real enrichment pipeline (homz enrich
+   *  scores) — not a client-side heuristic. Null until enrichment has run. */
+  investmentScore?: number | null;
+  riskScore?: number | null;
+  locationScore?: number | null;
+  /** One-time LLM-generated summary (homz enrich property-summaries), not a
+   *  live per-page-load call. Null until that enrichment tier has run. */
+  aiSummary?: string | null;
   [key: string]: unknown;
 };
 

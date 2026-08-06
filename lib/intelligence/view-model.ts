@@ -155,7 +155,7 @@ function priceStrings(project: NormalizedProject): {
 }
 
 const IMG_RE = /\.(jpg|jpeg|png|webp)(\?|$)/i;
-function validImages(images: string[]): string[] {
+export function validImages(images: string[]): string[] {
   return (images || []).filter((u) => typeof u === "string" && IMG_RE.test(u)).slice(0, 10);
 }
 
