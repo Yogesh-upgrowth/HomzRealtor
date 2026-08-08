@@ -1,18 +1,25 @@
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 
-function RichText({ text }: { text: string }) {
+// "## " subheadings (e.g. "Location & Connectivity", "What's Nearby") come
+// from the AI-generated text itself, not from this component's own markup —
+// their color has to follow `variant` or they render illegibly: text-gray-900
+// is correct on the light variant's white card, but on the dark project
+// page (variant="dark") it was rendering near-black text on a near-black
+// background.
+function RichText({ text, variant = "light" }: { text: string; variant?: "light" | "dark" }) {
   const blocks = text
     .split(/\n{2,}/)
     .map((s) => s.trim())
     .filter(Boolean);
+  const headingClass =
+    variant === "dark"
+      ? "text-lg font-semibold text-[#D9B268] mt-5 mb-2"
+      : "text-lg font-semibold text-gray-900 mt-5 mb-2";
   return (
     <>
       {blocks.map((b, i) =>
         b.startsWith("## ") ? (
-          <h3
-            key={i}
-            className="text-lg font-semibold text-gray-900 mt-5 mb-2"
-          >
+          <h3 key={i} className={headingClass}>
             {b.slice(3)}
           </h3>
         ) : (
@@ -59,7 +66,7 @@ const LocationIntelligence = ({ project, text, variant = "light" }: Props) => {
           </div>
         )}
         <div className="text-gray-300 text-[15px] leading-7">
-          <RichText text={text} />
+          <RichText text={text} variant="dark" />
         </div>
       </div>
     );

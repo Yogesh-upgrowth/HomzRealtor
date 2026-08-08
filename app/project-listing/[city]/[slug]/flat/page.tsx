@@ -10,13 +10,11 @@ import FlatIntelligenceSections from "@/components/Project/intelligence/FlatInte
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { formatInr, truncateAtWord, type NormalizedProject } from "@/lib/intelligence/normalize";
+import { validImages } from "@/lib/intelligence/view-model";
 
 const SITE = "https://www.homzrealtor.com";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
-
-const imgFilter = (u: unknown): u is string =>
-  typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u);
 
 // A "flat" child page is only genuinely useful (and thus indexable) for
 // residential projects that carry some flat-relevant data. Commercial/plot
@@ -68,7 +66,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     `Check available configurations, floor plans, amenities and specifications, ` +
     `and enquire about current availability on HomzRealtor.`;
 
-  const image = project.images.find(imgFilter) || project.interior_images.find(imgFilter);
+  const image = validImages(project.images)[0] || validImages(project.interior_images)[0];
 
   const truncatedDescription = truncateAtWord(description);
 
@@ -104,9 +102,9 @@ const FlatChildPage = async ({ params }: PageParams) => {
   const pageUrl = `${SITE}${projectUrl}/flat`;
   const loc = locationLabel(project);
 
-  const gallery = (
+  const gallery = validImages(
     project.interior_images.length ? project.interior_images : project.images
-  ).filter(imgFilter);
+  );
 
   const specifications = project.specifications;
 

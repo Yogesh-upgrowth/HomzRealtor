@@ -4,7 +4,7 @@ import { permanentRedirect } from "next/navigation";
 import ProjectCompare from "@/components/Project/compare/ProjectCompare";
 import ProjectCompareJsonLd from "@/components/Project/compare/ProjectCompareJsonLd";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
-import { resolveProjectView } from "@/lib/intelligence/view-model";
+import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };
@@ -49,9 +49,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const canonicalCity = canonicalCitySlug(projectA.city_key);
   const canonicalUrl = `https://www.homzrealtor.com/project-listing/compare/${canonicalCity}/${sortedA}/${sortedB}`;
 
-  const image =
-    projectA.images?.find((u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)) ||
-    projectB.images?.find((u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u));
+  const image = validImages(projectA.images || [])[0] || validImages(projectB.images || [])[0];
 
   const truncatedDescription = truncateAtWord(description);
 
@@ -119,7 +117,10 @@ const ComparePage = async ({ params }: PageParams) => {
   const pageUrl = `https://www.homzrealtor.com/project-listing/compare/${canonicalCity}/${sortedA}/${sortedB}`;
 
   return (
-    <div className="pb-24 lg:pb-0">
+    // flow-root contains ProjectCompare's own trailing bottom margin (mb-10)
+    // inside this div — without it, that margin escaped past lg:pb-0 on
+    // desktop widths, showing as a bare white gap before the footer.
+    <div className="pb-24 lg:pb-0 flow-root">
       <ProjectCompareJsonLd
         cityName={viewA.cityName}
         citySlug={canonicalCity}

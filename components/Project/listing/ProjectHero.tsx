@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useLayoutEffect, useState } from "react";
 import { MapPin, Building2, BadgeCheck, ChevronRight, Images } from "lucide-react";
 import ProjectCtas from "./ProjectCtas";
 
@@ -42,6 +43,22 @@ const ProjectHero = ({
   const pills = [propertyCategory, propertyType, status].filter(Boolean) as string[];
   const heroImage = images[0] || null;
 
+  // Measured from the real navbar (#site-navbar) rather than a hardcoded
+  // pt-28 guess — the navbar shrinks by ~35-45px once its promo bar is
+  // dismissed (persisted for 7 days), which otherwise left extra dead space
+  // above the breadcrumb for any returning visitor. 112 matches pt-28, used
+  // until the real height is measured on mount.
+  const [topOffset, setTopOffset] = useState(112);
+  useLayoutEffect(() => {
+    const navEl = document.getElementById("site-navbar");
+    if (!navEl) return;
+    const update = () => setTopOffset(navEl.getBoundingClientRect().height);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(navEl);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="top" className="relative">
       <div className="absolute inset-0 overflow-hidden">
@@ -60,16 +77,19 @@ const ProjectHero = ({
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0C]/60 via-[#0B0B0C]/15 to-[#0B0B0C]" />
 
-      <div className="relative mx-auto flex min-h-[clamp(480px,72vh,640px)] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 md:px-2 md:pt-32">
-        {/* Breadcrumb */}
-        <nav className="mb-auto flex flex-wrap items-center gap-1 pt-2 text-xs text-gray-300">
-          <Link href="/" className="hover:text-[#D9B268]">Home</Link>
-          <ChevronRight size={12} />
-          <Link href="/project-listing" className="hover:text-[#D9B268]">Projects</Link>
-          <ChevronRight size={12} />
-          <Link href={`/project-listing/${citySlug}`} className="hover:text-[#D9B268]">{cityName}</Link>
-          <ChevronRight size={12} />
-          <span className="line-clamp-1 font-medium text-[#D9B268]">{name}</span>
+      <div
+        style={{ paddingTop: topOffset }}
+        className="relative mx-auto flex min-h-[clamp(480px,72vh,640px)] max-w-7xl flex-col justify-end px-4 pb-16 md:px-2"
+      >
+
+        <nav className="mb-auto flex items-center gap-1 pt-2 text-xs text-gray-300">
+          <Link href="/" className="shrink-0 hover:text-[#D9B268]">Home</Link>
+          <ChevronRight size={12} className="shrink-0" />
+          <Link href="/project-listing" className="shrink-0 hover:text-[#D9B268]">Projects</Link>
+          <ChevronRight size={12} className="shrink-0" />
+          <Link href={`/project-listing/${citySlug}`} className="shrink-0 hover:text-[#D9B268]">{cityName}</Link>
+          <ChevronRight size={12} className="shrink-0" />
+          <span className="min-w-0 flex-1 truncate font-medium text-[#D9B268]">{name}</span>
         </nav>
 
         {pills.length > 0 && (

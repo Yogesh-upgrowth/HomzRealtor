@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
 // Fades in once the hero (marked by a sentinel div the page renders just below
-// it) scrolls out of view. Sits below the always-present global Navbar (fixed,
-// top-0, z-50, ~64-100px tall) rather than at top-0, so the two don't overlap.
-// No wishlist icon here — ProjectCtas in the hero already has a working
-// Save/Heart toggle, so a second one would be redundant.
+// it) scrolls out of view. Sits below the always-present global Navbar
+// (#site-navbar, fixed, top-0, z-50) rather than at top-0, so the two don't
+// overlap. No wishlist icon here — ProjectCtas in the hero already has a
+// working Save/Heart toggle, so a second one would be redundant.
 const StickyMiniHeader = ({ name }: { name: string }) => {
   const [visible, setVisible] = useState(false);
+  // Measured from the real navbar rather than assumed via a hardcoded
+  // top-16/top-24 offset — the navbar's own height changes (~101px -> ~65px
+  // on desktop) once its promo bar is dismissed (persisted in localStorage
+  // for 7 days), and a stale hardcoded offset left a real gap of exposed,
+  // unmasked page content between the shrunk navbar and this bar.
+  const [navHeight, setNavHeight] = useState(96);
+
+  useLayoutEffect(() => {
+    const navEl = document.getElementById("site-navbar");
+    if (!navEl) return;
+    const update = () => setNavHeight(navEl.getBoundingClientRect().height);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(navEl);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const sentinel = document.getElementById("hero-sentinel");
@@ -24,7 +40,8 @@ const StickyMiniHeader = ({ name }: { name: string }) => {
 
   return (
     <div
-      className={`fixed inset-x-0 top-16 md:top-24 z-40 border-b border-white/[0.08] bg-[#0B0B0C]/90 backdrop-blur-xl transition-transform duration-200 ${
+      style={{ top: navHeight }}
+      className={`fixed inset-x-0 z-40 border-b border-white/[0.08] bg-[#0B0B0C]/90 backdrop-blur-xl transition-transform duration-200 ${
         visible ? "translate-y-0" : "-translate-y-[calc(100%+6rem)]"
       }`}
     >

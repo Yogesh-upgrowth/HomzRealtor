@@ -155,8 +155,28 @@ function priceStrings(project: NormalizedProject): {
 }
 
 const IMG_RE = /\.(jpg|jpeg|png|webp)(\?|$)/i;
+// Sitewide chrome — logo, developer-logo thumbnail, amenity-icon sprites —
+// occasionally rides along in a scraped image list on the same host and with
+// a real photo extension (e.g. "www.squareyards.com/assets/images/
+// squareyards.png"), so it survives IMG_RE. Filtered here, before the
+// slice(0, 10) below, so a chrome image can't occupy one of the 10 slots a
+// real photo would otherwise get.
+//
+// /tn-projectflagship/ and /connect/profilepic/ are a second, worse case:
+// SquareYards' own listing page embeds a "similar projects" rail and an
+// agent's profile photo on the same page the scraper reads, and those slip
+// into this property's images array too — confirmed against live data, e.g.
+// a Dreamways Aqva listing whose images included "tn-flagshipimg2.jpg" (a
+// generic decor stock photo with the SquareYards logo watermarked into the
+// pixels, reused across unrelated listings) plus thumbnails for entirely
+// different projects ("tn-pyramid-spring-valley...", "tn-santur-azalea...").
+// These aren't chrome (real photo extension, not a site asset) but they are
+// never this listing's own photo, so they're excluded the same way.
+const CHROME_PATH_RE = /\/assets\/images\/|\/developerlogo\/|\/tn-projectflagship\/|\/connect\/profilepic\//i;
 export function validImages(images: string[]): string[] {
-  return (images || []).filter((u) => typeof u === "string" && IMG_RE.test(u)).slice(0, 10);
+  return (images || [])
+    .filter((u) => typeof u === "string" && IMG_RE.test(u) && !CHROME_PATH_RE.test(u))
+    .slice(0, 10);
 }
 
 export function normalizeAmenities(raw: any[]): { category: string; amenities: string[] }[] {

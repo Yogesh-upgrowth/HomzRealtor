@@ -17,7 +17,7 @@ import {
   extractBuilder,
   slugify as toSlug,
 } from "@/lib/intelligence/normalize";
-import { deriveStatusFromText } from "@/lib/intelligence/view-model";
+import { deriveStatusFromText, validImages } from "@/lib/intelligence/view-model";
 import customer from "@/assets/images/customer.png";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import { useHomzProjects } from "@/hooks/useHomzProjects";
@@ -73,21 +73,9 @@ const BUDGET_RANGES: Record<string, { min: number; max: number | null }> = {
 const COMMERCIAL_TYPES = new Set(["Commercial", "Office Space", "Retail"]);
 const RESIDENTIAL_TYPES = new Set(["Apartment", "Villa"]);
 
-const getValidImage = (images: string[] = []) => {
-  return images.find(
-    (url) =>
-      typeof url === "string" &&
-      /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
-  );
-};
+const getValidImage = (images: string[] = []) => validImages(images)[0];
 
-const hasValidImage = (images: string[] = []) => {
-  return images.some(
-    (url) =>
-      typeof url === "string" &&
-      /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url)
-  );
-};
+const hasValidImage = (images: string[] = []) => validImages(images).length > 0;
 
 // Gurgaon-only — the site's sole focus market. "ggn" is the raw API city key;
 // "gurgaon" is the canonical URL slug used in card links (must match
@@ -263,15 +251,17 @@ function ProjectListingInner() {
   const currentProjects = visibleProjects.slice(startIndex, endIndex);
   const totalPages = Math.max(1, Math.ceil(visibleProjects.length / cardsPerPage));
 
-  // ✅ Pagination
+  // ✅ Pagination — windowed on every screen size. Unwindowed on desktop used
+  // to render one button per page (100+ for the full catalogue), wrapping
+  // into an unusable wall of buttons.
   const getVisiblePages = () => {
-    if (!isMobile) {
+    const maxVisible = isMobile ? 4 : 7;
+    if (totalPages <= maxVisible) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
-    const maxVisible = 4;
-    let start = currentPage;
-    let end = currentPage + maxVisible - 1;
+    let start = Math.max(currentPage - Math.floor(maxVisible / 2), 1);
+    let end = start + maxVisible - 1;
 
     if (end > totalPages) {
       end = totalPages;

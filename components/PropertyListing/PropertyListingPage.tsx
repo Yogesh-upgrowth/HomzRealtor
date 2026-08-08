@@ -30,6 +30,7 @@ import {
   type RawHomzProperty,
 } from "@/lib/scraping/homzbackend";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
+import { validImages } from "@/lib/intelligence/view-model";
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -109,11 +110,9 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
 // look" bar; revisit once there's usage data on the actual score distribution.
 const INVESTMENT_GRADE_THRESHOLD = 60;
 
-const getValidImage = (images: string[] = []) =>
-  images.find((url) => typeof url === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url));
+const getValidImage = (images: string[] = []) => validImages(images)[0];
 
-const hasValidImage = (images: string[] = []) =>
-  images.some((url) => typeof url === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url));
+const hasValidImage = (images: string[] = []) => validImages(images).length > 0;
 
 // Individual listings don't have unique titles the way projects do (many
 // units share "3 BHK Flat for Sale in Sector 60"), so the slug must include

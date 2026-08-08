@@ -20,7 +20,12 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
   const routeBase = ROUTE_BASE[view.category];
 
   return (
-    <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen bg-[#0B0B0C] text-white`}>
+    // flow-root establishes a block formatting context so the last section's
+    // own bottom margin (my-14 on the Enquiry CTA) is contained inside this
+    // div's painted background instead of collapsing through it — without it,
+    // that margin rendered as a gap of bare (white) page background between
+    // this section and the footer.
+    <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen flow-root bg-[#0B0B0C] text-white`}>
       {/* Hero */}
       <section className="relative w-full h-[52vh] min-h-[360px] overflow-hidden">
         {view.heroImage ? (

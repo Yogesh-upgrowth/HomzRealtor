@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import { formatInr } from "@/lib/intelligence/normalize";
-import { clean } from "@/lib/intelligence/view-model";
+import { clean, validImages } from "@/lib/intelligence/view-model";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
 
 type CurrentProject = { city_key: string; slug: string };
@@ -28,9 +28,7 @@ function ProjectCard({
   linkTo?: "project" | "flat";
 }) {
   const [imgFailed, setImgFailed] = useState(false);
-  const img = project.images.find(
-    (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
-  );
+  const img = validImages(project.images)[0];
   const price = project.min_price_inr
     ? formatInr(project.min_price_inr)
     : clean(project.price_text) || "Price on Request";

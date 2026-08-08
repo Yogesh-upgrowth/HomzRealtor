@@ -23,15 +23,10 @@ import type { Badge, Chip, HighlightStat, LinkItem, PersonaReasons } from "./vie
 import { slugify } from "@/components/utils/slugify";
 import type { PropertyCategory, RawHomzProperty } from "@/lib/scraping/homzbackend";
 
-// A stray site-logo/branding asset occasionally rides along in the scraped
-// image list (e.g. "www.squareyards.com/assets/images/squareyards.png") —
-// not a real property photo. Filtered here rather than in view-model.ts's
-// shared validImages(), since Projects' image lists don't have this problem
-// and this shouldn't change their behavior.
-const ASSET_PATH_RE = /\/assets\//i;
-function propertyImages(images: string[]): string[] {
-  return validImages(images).filter((url) => !ASSET_PATH_RE.test(url));
-}
+// Chrome-asset filtering (site logo, developer-logo thumbnail, amenity
+// icons) now lives in view-model.ts's validImages() — Projects' image lists
+// turned out to have the exact same problem, not just Properties'.
+const propertyImages = validImages;
 
 export type PropertyScoreView = {
   score: number;

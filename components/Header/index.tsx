@@ -85,7 +85,10 @@ const Navbar: React.FC = () => {
       : "bg-transparent";
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50">
+    // id used by components/Project/listing/StickyMiniHeader.tsx to measure
+    // this navbar's real rendered height (it changes when the promo bar
+    // above is dismissed) rather than guessing it with a hardcoded offset.
+    <nav id="site-navbar" className="fixed top-0 left-0 w-full z-50">
       {/* Top Strip */}
       {showPromoBar && (
         <div className="relative text-[10px] md:text-sm bg-black text-white flex items-center justify-between md:justify-center gap-2 px-3 py-2 pr-9 md:pr-12">

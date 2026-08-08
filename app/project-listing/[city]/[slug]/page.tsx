@@ -10,7 +10,7 @@ import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
-import { resolveProjectView } from "@/lib/intelligence/view-model";
+import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
@@ -75,9 +75,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     project.city_key
   )}/${slug}`;
 
-  const rawImage = project.images?.find(
-    (u) => typeof u === "string" && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(u)
-  );
+  const rawImage = validImages(project.images || [])[0];
   // The scraped CDN URL's resize params (e.g. "aio=w-0;h-550;") reflect
   // whatever size the scrape happened to capture, often below the
   // 1200x630 social-share target — request an OG-appropriate size for
@@ -226,7 +224,7 @@ const ProjectPage = async ({ params }: PageParams) => {
   };
 
   return (
-    <div className="pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -235,10 +233,9 @@ const ProjectPage = async ({ params }: PageParams) => {
       />
       <StickyMiniHeader name={view.name} />
 
-      {/* Dark-luxury theme is scoped to this page's own subtree — Header/
-          Footer (rendered in app/layout.tsx, outside this returned JSX) and
-          the rest of the site keep their current look. */}
-      <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui bg-[#0B0B0C] text-white`}>
+      <div
+        className={`${instrumentSerif.variable} ${manrope.variable} font-ui bg-[#0B0B0C] text-white pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0`}
+      >
         <ProjectHero
           name={view.name}
           builder={view.builder}
