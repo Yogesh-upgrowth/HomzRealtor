@@ -206,7 +206,19 @@ function ProjectListingInner() {
     }
 
     if (bhk) {
-      list = list.filter((p) => p.BHKType?.toLowerCase().includes(bhk.toLowerCase()));
+      // "4+" (QuickSearchPanel's top BHK option) means "any unit count >= 4" —
+      // BHKType strings (e.g. "2, 3, 4 BHK") never contain a literal "+", so a
+      // plain substring match against "4+" could never match anything, always
+      // silently returning zero results for this search.
+      if (bhk.endsWith("+")) {
+        const min = parseInt(bhk, 10);
+        list = list.filter((p) => {
+          const nums = p.BHKType?.match(/\d+/g)?.map(Number) || [];
+          return nums.some((n) => n >= min);
+        });
+      } else {
+        list = list.filter((p) => p.BHKType?.toLowerCase().includes(bhk.toLowerCase()));
+      }
     }
 
     if (budget && BUDGET_RANGES[budget]) {

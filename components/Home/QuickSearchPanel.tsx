@@ -25,10 +25,31 @@ const BUDGETS = [
 ];
 const BHKS = ["Any BHK", "1 BHK", "2 BHK", "3 BHK", "4+ BHK"];
 
-// Every selection here is passed through as a real query param to
-// /project-listing, which applies whatever it can genuinely filter on
-// (location/name text, price range, BHK, and a best-effort property-type
-// match) rather than silently discarding the user's search.
+// Each tab searches a genuinely different dataset — individual resale/CGHS
+// listings (e.g. a 2 BHK flat in a Sector 56 society) live in the Sale
+// Properties feed behind /buy-property, NOT the Projects feed behind
+// /project-listing. Every tab used to route to /project-listing regardless
+// of selection, so real inventory in the other three feeds was completely
+// unreachable from this search panel. "Plots" has no listing feed of its
+// own yet (/plots-and-lands is a placeholder), so it just navigates there.
+const TAB_ROUTE: Record<string, string> = {
+  Buy: "/buy-property",
+  Rent: "/rent-property",
+  Commercial: "/commercial",
+  Plots: "/plots-and-lands",
+};
+
+// /buy-property, /rent-property and /commercial (PropertyListingPage.tsx)
+// filter on the backend's raw propertyType key, not this panel's display
+// label — passing "Apartment" straight through would never match anything.
+const PROPERTY_TYPE_KEY: Record<string, string> = {
+  Apartment: "apartment",
+  Villa: "villa",
+  Plot: "plot",
+  "Office Space": "office",
+  Retail: "retail_shop",
+};
+
 const QuickSearchPanel = () => {
   const router = useRouter();
   const [tab, setTab] = useState("Buy");
@@ -39,14 +60,25 @@ const QuickSearchPanel = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const base = TAB_ROUTE[tab] || "/project-listing";
+
+    // The Plots page is a placeholder with no filters to apply yet.
+    if (tab === "Plots") {
+      router.push(base);
+      return;
+    }
+
     const params = new URLSearchParams();
     if (location.trim()) params.set("q", location.trim());
-    if (propertyType !== "Any Type") params.set("type", propertyType);
+    if (propertyType !== "Any Type") {
+      const key = PROPERTY_TYPE_KEY[propertyType];
+      if (key) params.set("type", key);
+    }
     if (budget) params.set("budget", budget);
-    if (bhk !== "Any BHK") params.set("bhk", bhk.replace(" BHK", ""));
-    if (tab === "Commercial") params.set("type", "Commercial");
+    // PropertyListingPage.tsx's filter param is "bedrooms", not "bhk".
+    if (bhk !== "Any BHK") params.set("bedrooms", bhk.replace(" BHK", ""));
     const query = params.toString();
-    router.push(query ? `/project-listing?${query}` : "/project-listing");
+    router.push(query ? `${base}?${query}` : base);
   };
 
   const fieldCls =

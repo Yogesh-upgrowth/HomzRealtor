@@ -212,7 +212,17 @@ function PropertyListingInner({
     }
 
     if (propertyType) list = list.filter((p) => p.propertyType === propertyType);
-    if (bedrooms) list = list.filter((p) => String(p.bedrooms ?? "") === bedrooms);
+    if (bedrooms) {
+      // "4+" (the homepage search's top BHK option) means "4 or more" — an
+      // exact string match against bedrooms would never match a listing with
+      // 5 bedrooms, silently hiding real inventory from that search.
+      if (bedrooms.endsWith("+")) {
+        const min = parseInt(bedrooms, 10);
+        list = list.filter((p) => typeof p.bedrooms === "number" && p.bedrooms >= min);
+      } else {
+        list = list.filter((p) => String(p.bedrooms ?? "") === bedrooms);
+      }
+    }
 
     if (budget && BUDGET_RANGES[budget]) {
       const { min, max } = BUDGET_RANGES[budget];
