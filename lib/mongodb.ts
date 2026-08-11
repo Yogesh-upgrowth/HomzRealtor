@@ -35,7 +35,7 @@ export function getMongoClient(): Promise<MongoClient> {
   return clientPromise;
 }
 
-const DB_NAME = process.env.MONGODB_DB || "homzrealtor";
+const DB_NAME = process.env.MONGODB_DB || "homz";
 
 export async function getDb() {
   const client = await getMongoClient();

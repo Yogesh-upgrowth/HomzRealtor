@@ -36,6 +36,13 @@ const nextConfig = {
         hostname: "loangateway.urbanmoney.com",
         pathname: "/**",
       },
+      {
+        // Agent-uploaded property photos (Vercel Blob public URLs) —
+        // store-id subdomain varies per Blob store, hence the wildcard.
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
     ],
   },
   async redirects() {

@@ -130,6 +130,11 @@ const Navbar: React.FC = () => {
             <Link href="/developer">Developers</Link>
             {user ? (
               <div className="flex items-center gap-4">
+                {user.role === "agent" && (
+                  <Link href="/dashboard" className="text-sm hover:text-[#B77D2B]">
+                    Dashboard
+                  </Link>
+                )}
                 <span className="text-sm text-gray-300">Hi, {user.name}</span>
                 <button onClick={handleLogout} className="text-sm hover:text-[#B77D2B] cursor-pointer">
                   Logout
@@ -198,6 +203,11 @@ const Navbar: React.FC = () => {
           <div className="border-t border-gray-700 pt-6">
             {user ? (
               <div className="flex flex-col gap-4">
+                {user.role === "agent" && (
+                  <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+                )}
                 <span className="text-gray-400 text-base">Hi, {user.name}</span>
                 <button
                   onClick={() => {
