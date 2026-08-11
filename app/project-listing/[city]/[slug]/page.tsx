@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import ProjectIntelligenceSections from "@/components/Project/intelligence/ProjectIntelligenceSections";
 import ProjectHero from "@/components/Project/listing/ProjectHero";
 import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
@@ -11,7 +12,7 @@ import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
-import { truncateAtWord } from "@/lib/intelligence/normalize";
+import { truncateAtWord, slugify } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
@@ -120,22 +121,7 @@ const ProjectPage = async ({ params }: PageParams) => {
   const { city, slug } = await params;
   const project = await getProjectBySlug(city, slug).catch(() => null);
 
-  if (!project) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Project not found</h1>
-        <p className="text-gray-500 mb-6">
-          We couldn&apos;t find this project. It may have been removed or the link is incorrect.
-        </p>
-        <a
-          href="/project-listing"
-          className="rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          Browse all projects
-        </a>
-      </div>
-    );
-  }
+  if (!project) notFound();
 
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   // Always resolve the view against the canonical city slug (e.g. "gurgaon",
@@ -153,6 +139,12 @@ const ProjectPage = async ({ params }: PageParams) => {
 
   // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
   const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
+
+  // Links this project back up to its sector hub page — the hub already
+  // links down to its projects, but nothing on the project page itself
+  // linked back up, leaving sector pages under-linked internally.
+  const sectorSlug = project.sector ? slugify(project.sector) : null;
+  const sectorHref = sectorSlug ? `/project-listing/${canonicalCity}/sectors/${sectorSlug}` : null;
 
   // Core structured data (BreadcrumbList + RealEstateListing) is emitted here, in
   // the immediately-rendered HTML. FAQPage schema lives in <ProjectJsonLd> inside
@@ -211,9 +203,19 @@ const ProjectPage = async ({ params }: PageParams) => {
             name: view.cityName,
             item: `https://www.homzrealtor.com/project-listing/${canonicalCity}`,
           },
+          ...(sectorHref
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 4,
+                  name: project.sector,
+                  item: `https://www.homzrealtor.com${sectorHref}`,
+                },
+              ]
+            : []),
           {
             "@type": "ListItem",
-            position: 4,
+            position: sectorHref ? 5 : 4,
             name: view.name,
             item: pageUrl,
           },
@@ -241,6 +243,8 @@ const ProjectPage = async ({ params }: PageParams) => {
           builder={view.builder}
           cityName={view.cityName}
           citySlug={view.citySlug}
+          sectorLabel={project.sector}
+          sectorHref={sectorHref}
           locationLine={view.locationLine}
           propertyCategory={view.propertyCategory}
           propertyType={view.propertyType}

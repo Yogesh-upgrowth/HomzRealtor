@@ -43,6 +43,7 @@ const ExpertConsultation = () => {
 
   const inputCls =
     "w-full rounded-xl bg-[#1a1a1d] border border-white/10 px-4 py-3.5 text-[14.5px] text-white placeholder:text-gray-500 outline-none focus:border-[#D9B268] transition-colors";
+  const labelCls = "mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500";
 
   return (
     <section id="consult" className="w-full max-w-7xl mx-auto px-4 py-14 md:py-20 scroll-mt-24 border-b border-white/[0.06]">
@@ -94,24 +95,40 @@ const ExpertConsultation = () => {
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
               <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                <input name="name" value={form.name} onChange={handleChange} placeholder="Full Name" required className={inputCls} />
-                <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" required className={inputCls} />
+                <div>
+                  <label htmlFor="consult-name" className={labelCls}>Full Name</label>
+                  <input id="consult-name" name="name" value={form.name} onChange={handleChange} placeholder="Full Name" required className={inputCls} />
+                </div>
+                <div>
+                  <label htmlFor="consult-phone" className={labelCls}>Phone Number</label>
+                  <input id="consult-phone" type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" required className={inputCls} />
+                </div>
               </div>
-              <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" required className={inputCls} />
-              <select name="interest" value={form.interest} onChange={handleChange} className={inputCls}>
-                <option>Interested in Buying</option>
-                <option>Interested in Renting</option>
-                <option>Interested in Commercial</option>
-                <option>Interested in Investment</option>
-              </select>
-              <textarea
-                name="message"
-                value={form.message}
-                onChange={handleChange}
-                placeholder="Tell us about your requirement (optional)"
-                rows={3}
-                className={`${inputCls} resize-vertical`}
-              />
+              <div>
+                <label htmlFor="consult-email" className={labelCls}>Email Address</label>
+                <input id="consult-email" type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" required className={inputCls} />
+              </div>
+              <div>
+                <label htmlFor="consult-interest" className={labelCls}>I&apos;m interested in</label>
+                <select id="consult-interest" name="interest" value={form.interest} onChange={handleChange} className={inputCls}>
+                  <option>Interested in Buying</option>
+                  <option>Interested in Renting</option>
+                  <option>Interested in Commercial</option>
+                  <option>Interested in Investment</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="consult-message" className={labelCls}>Message (optional)</label>
+                <textarea
+                  id="consult-message"
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  placeholder="Tell us about your requirement (optional)"
+                  rows={3}
+                  className={`${inputCls} resize-vertical`}
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}

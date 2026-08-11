@@ -16,12 +16,27 @@ const TRENDING = [
 ];
 
 const PROPERTY_TYPES = ["Any Type", "Apartment", "Villa", "Plot", "Office Space", "Retail"];
-const BUDGETS = [
+
+// Sale/Commercial listings are priced in crores (priceValue); Rent listings
+// are priced in monthly rupees (rentMonthly, ~6k-8.3L/month in the live feed).
+// These used to share one crore-scale dropdown regardless of tab, so every
+// budget-filtered Rent search silently returned zero results — a value like
+// ₹40,000/month can never satisfy "min: 2,00,00,000". Key values here must
+// match PropertyListingPage.tsx's BUDGET_RANGES_SALE/BUDGET_RANGES_RENT.
+const BUDGETS_SALE = [
   { label: "Any Budget", value: "" },
   { label: "Under ₹50 Lakh", value: "under-50l" },
   { label: "₹50L – ₹1 Cr", value: "50l-1cr" },
   { label: "₹1 Cr – ₹2 Cr", value: "1cr-2cr" },
   { label: "Above ₹2 Cr", value: "above-2cr" },
+];
+const BUDGETS_RENT = [
+  { label: "Any Budget", value: "" },
+  { label: "Under ₹25k/mo", value: "under-25k" },
+  { label: "₹25k – ₹50k/mo", value: "25k-50k" },
+  { label: "₹50k – ₹1L/mo", value: "50k-1l" },
+  { label: "₹1L – ₹3L/mo", value: "1l-3l" },
+  { label: "Above ₹3L/mo", value: "above-3l" },
 ];
 const BHKS = ["Any BHK", "1 BHK", "2 BHK", "3 BHK", "4+ BHK"];
 
@@ -55,8 +70,17 @@ const QuickSearchPanel = () => {
   const [tab, setTab] = useState("Buy");
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
-  const [budget, setBudget] = useState(BUDGETS[0].value);
+  const [budget, setBudget] = useState("");
   const [bhk, setBhk] = useState(BHKS[0]);
+  const budgets = tab === "Rent" ? BUDGETS_RENT : BUDGETS_SALE;
+
+  // The two budget scales use disjoint value sets (e.g. "above-2cr" vs
+  // "above-3l") — switching tabs without resetting could carry a crore-scale
+  // value into a Rent search (or vice versa), silently matching nothing.
+  const handleTabChange = (nextTab: string) => {
+    setTab(nextTab);
+    setBudget("");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +115,7 @@ const QuickSearchPanel = () => {
           <button
             key={t}
             type="button"
-            onClick={() => setTab(t)}
+            onClick={() => handleTabChange(t)}
             className={`rounded-full px-5 py-2.5 text-[13.5px] font-bold transition ${
               tab === t
                 ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
@@ -136,7 +160,7 @@ const QuickSearchPanel = () => {
             onChange={(e) => setBudget(e.target.value)}
             className="w-full appearance-none bg-transparent text-white outline-none"
           >
-            {BUDGETS.map((b) => (
+            {budgets.map((b) => (
               <option key={b.value} value={b.value} className="bg-[#1a1a1d]">
                 {b.label}
               </option>

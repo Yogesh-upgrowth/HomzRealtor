@@ -64,13 +64,30 @@ const CardSkeleton = () => (
 );
 
 // Same budget keys as app/project-listing/page.tsx's BUDGET_RANGES, in rupees.
-const BUDGET_RANGES: Record<string, { min: number; max: number | null }> = {
+// Sale/Commercial listings are priced via priceValue (crore scale — Commercial
+// has zero rentMonthly records in the feed, confirmed against live data: every
+// priced commercial listing carries priceValue, none carry rentMonthly).
+const BUDGET_RANGES_SALE: Record<string, { min: number; max: number | null }> = {
   "under-50l": { min: 0, max: 50_00_000 },
   "50l-1cr": { min: 50_00_000, max: 1_00_00_000 },
   "1cr-2cr": { min: 1_00_00_000, max: 2_00_00_000 },
   "above-2cr": { min: 2_00_00_000, max: null },
   "under-1cr": { min: 0, max: 1_00_00_000 },
   "under-2cr": { min: 0, max: 2_00_00_000 },
+};
+
+// Rent/PG listings are priced via rentMonthly (rupee scale, confirmed range
+// ~6,000-8,30,000/month in the live feed) — filtering these against the
+// crore-scale ranges above meant a "value >= min" check against e.g.
+// 2,00,00,000 could never pass for any real monthly rent, so every budget
+// filter on /rent-property silently returned zero results no matter what
+// else was searched.
+const BUDGET_RANGES_RENT: Record<string, { min: number; max: number | null }> = {
+  "under-25k": { min: 0, max: 25_000 },
+  "25k-50k": { min: 25_000, max: 50_000 },
+  "50k-1l": { min: 50_000, max: 1_00_000 },
+  "1l-3l": { min: 1_00_000, max: 3_00_000 },
+  "above-3l": { min: 3_00_000, max: null },
 };
 
 const ROUTE_BASE: Record<PropertyCategory, string> = {
@@ -134,6 +151,8 @@ function PropertyListingInner({
   const router = useRouter();
   const routeBase = ROUTE_BASE[category];
   const citySlug = canonicalCitySlug(cityKey);
+  const isRentScale = category === "Rent" || category === "Pg";
+  const budgetRanges = isRentScale ? BUDGET_RANGES_RENT : BUDGET_RANGES_SALE;
 
   // limit=10000: this segment is exported in full by the backend (no 500-cap
   // truncation — that was a real bug fixed earlier), so this must ask for
@@ -224,8 +243,8 @@ function PropertyListingInner({
       }
     }
 
-    if (budget && BUDGET_RANGES[budget]) {
-      const { min, max } = BUDGET_RANGES[budget];
+    if (budget && budgetRanges[budget]) {
+      const { min, max } = budgetRanges[budget];
       list = list.filter((p) => {
         const value = p.priceValue ?? p.rentMonthly;
         if (value == null) return false;
@@ -280,18 +299,6 @@ function PropertyListingInner({
   const endIndex = startIndex + cardsPerPage;
   const currentProperties = visibleProperties.slice(startIndex, endIndex);
   const totalPages = Math.max(1, Math.ceil(visibleProperties.length / cardsPerPage));
-
-  const getVisiblePages = () => {
-    if (!isMobile) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    const maxVisible = 4;
-    let start = currentPage;
-    let end = currentPage + maxVisible - 1;
-    if (end > totalPages) {
-      end = totalPages;
-      start = Math.max(end - maxVisible + 1, 1);
-    }
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  };
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
@@ -413,10 +420,22 @@ function PropertyListingInner({
               className={selectClass}
             >
               <option value="">Any Budget</option>
-              <option value="under-50l">Under 50 L</option>
-              <option value="50l-1cr">50 L - 1 Cr</option>
-              <option value="1cr-2cr">1 Cr - 2 Cr</option>
-              <option value="above-2cr">Above 2 Cr</option>
+              {isRentScale ? (
+                <>
+                  <option value="under-25k">Under ₹25k/mo</option>
+                  <option value="25k-50k">₹25k - ₹50k/mo</option>
+                  <option value="50k-1l">₹50k - ₹1L/mo</option>
+                  <option value="1l-3l">₹1L - ₹3L/mo</option>
+                  <option value="above-3l">Above ₹3L/mo</option>
+                </>
+              ) : (
+                <>
+                  <option value="under-50l">Under 50 L</option>
+                  <option value="50l-1cr">50 L - 1 Cr</option>
+                  <option value="1cr-2cr">1 Cr - 2 Cr</option>
+                  <option value="above-2cr">Above 2 Cr</option>
+                </>
+              )}
             </select>
 
             <select
@@ -490,34 +509,28 @@ function PropertyListingInner({
           )}
         </div>
 
-        {/* Pagination */}
-        {visibleProperties.length > 0 && (
-          <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
+        {/* Pagination — prev/next arrows only. A row of numbered page buttons
+            used to render here, one per page, which overflowed badly once a
+            category had enough listings to need dozens of pages. */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-6 mb-2 text-sm sm:text-base">
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
+              aria-label="Previous page"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronLeft size={16} />
             </button>
 
-            {getVisiblePages().map((p) => (
-              <button
-                key={p}
-                onClick={() => setCurrentPage(p)}
-                className={`h-10 w-10 rounded-full font-semibold transition-colors ${
-                  currentPage === p
-                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
-                    : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            <span className="text-gray-400">
+              Page {currentPage} of {totalPages}
+            </span>
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
+              aria-label="Next page"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronRight size={16} />
@@ -529,7 +542,7 @@ function PropertyListingInner({
           heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
           text="Step into homes that resonate with your aspirations."
           buttonText="CONTACT NOW"
-          buttonLink="/contact"
+          buttonLink="/#consult"
           imageSrc={customer}
         />
       </div>

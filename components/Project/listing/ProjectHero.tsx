@@ -11,6 +11,8 @@ type Props = {
   builder: string;
   cityName: string;
   citySlug: string;
+  sectorLabel?: string | null;
+  sectorHref?: string | null;
   locationLine: string;
   propertyCategory: string;
   propertyType: string | null;
@@ -32,6 +34,8 @@ const ProjectHero = ({
   builder,
   cityName,
   citySlug,
+  sectorLabel,
+  sectorHref,
   locationLine,
   propertyCategory,
   propertyType,
@@ -89,6 +93,12 @@ const ProjectHero = ({
           <ChevronRight size={12} className="shrink-0" />
           <Link href={`/project-listing/${citySlug}`} className="shrink-0 hover:text-[#D9B268]">{cityName}</Link>
           <ChevronRight size={12} className="shrink-0" />
+          {sectorHref && sectorLabel && (
+            <>
+              <Link href={sectorHref} className="shrink-0 hover:text-[#D9B268]">{sectorLabel}</Link>
+              <ChevronRight size={12} className="shrink-0" />
+            </>
+          )}
           <span className="min-w-0 flex-1 truncate font-medium text-[#D9B268]">{name}</span>
         </nav>
 

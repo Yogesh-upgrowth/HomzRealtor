@@ -7,6 +7,7 @@ import { getBuilderBySlug, getAllBuilders } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -49,6 +50,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       description,
       url: `${SITE}/developer/${summary.slug}`,
       type: "website",
+      images: [DEFAULT_OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [DEFAULT_OG_IMAGE.url],
     },
   };
 }

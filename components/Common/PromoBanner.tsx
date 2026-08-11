@@ -24,7 +24,8 @@ const PromoBanner: React.FC<PromoBannerProps> = ({
         src={imageSrc}
         alt="Couple reviewing properties with an agent"
         fill
-        priority
+        loading="lazy"
+        sizes="(min-width: 768px) 100vw, 0vw"
         className="hidden md:block object-cover z-0 scale-x-[-1]"
       />
 

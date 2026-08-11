@@ -16,7 +16,14 @@ const COMPANY_INFO = {
   hararaAgentNumber: "", // HARERA channel-partner/agent registration number
 };
 
-export default function Footer() {
+type FooterLink = { label: string; href: string };
+
+type FooterProps = {
+  topSectors?: FooterLink[];
+  topDevelopers?: FooterLink[];
+};
+
+export default function Footer({ topSectors = [], topDevelopers = [] }: FooterProps) {
   const hasCompanyInfo =
     COMPANY_INFO.officeAddress || COMPANY_INFO.gstNumber || COMPANY_INFO.hararaAgentNumber;
 
@@ -34,8 +41,8 @@ export default function Footer() {
         isHome ? "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : ""
       }`}
     >
-      <div className="max-w-[1397px] mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
+      <div className="max-w-[1397px] mx-auto px-6 py-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-4">
             <Image src={logo} alt="Homz Realtor Logo" width={90} height={90} />
           </div>
@@ -55,8 +62,11 @@ export default function Footer() {
           )}
         </div>
 
-        <div className="flex flex-col md:items-end">
-          <ul className="grid grid-cols-2 md:flex flex-cols-2 md:flex-row gap-4 md:gap-8 text-sm font-medium">
+        <div>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
+            Company
+          </p>
+          <ul className="space-y-2.5 text-sm font-medium">
             <li>
               <Link href="/" className="hover:text-[#FDF094] transition-colors">
                 Home
@@ -78,7 +88,7 @@ export default function Footer() {
               </Link>
             </li>
           </ul>
-          <ul className="mt-4 grid grid-cols-2 md:flex flex-cols-2 md:flex-row gap-4 md:gap-8 text-sm text-gray-500">
+          <ul className="mt-6 space-y-2.5 text-sm text-gray-500">
             <li>
               <Link href="/privacy-policy" className="hover:text-[#FDF094] transition-colors">
                 Privacy Policy
@@ -96,6 +106,40 @@ export default function Footer() {
             </li>
           </ul>
         </div>
+
+        {topSectors.length > 0 && (
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
+              Popular Sectors
+            </p>
+            <ul className="space-y-2.5 text-sm font-medium">
+              {topSectors.map((s) => (
+                <li key={s.href}>
+                  <Link href={s.href} className="hover:text-[#FDF094] transition-colors">
+                    {s.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {topDevelopers.length > 0 && (
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
+              Top Developers
+            </p>
+            <ul className="space-y-2.5 text-sm font-medium">
+              {topDevelopers.map((d) => (
+                <li key={d.href}>
+                  <Link href={d.href} className="hover:text-[#FDF094] transition-colors">
+                    {d.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Divider */}

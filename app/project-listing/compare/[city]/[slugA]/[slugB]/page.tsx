@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { permanentRedirect } from "next/navigation";
+import { ChevronRight } from "lucide-react";
+import { notFound, permanentRedirect } from "next/navigation";
 import ProjectCompare from "@/components/Project/compare/ProjectCompare";
 import ProjectCompareJsonLd from "@/components/Project/compare/ProjectCompareJsonLd";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
@@ -93,23 +94,7 @@ const ComparePage = async ({ params }: PageParams) => {
     getProjectBySlug(city, sortedB).catch(() => null),
   ]);
 
-  if (!projectA || !projectB) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Projects not found</h1>
-        <p className="text-gray-500 mb-6">
-          We couldn&apos;t find one or both of these projects. They may have been removed or the
-          link is incorrect.
-        </p>
-        <Link
-          href="/project-listing"
-          className="rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          Browse all projects
-        </Link>
-      </div>
-    );
-  }
+  if (!projectA || !projectB) notFound();
 
   const viewA = resolveProjectView(projectA, { cityParam: city });
   const viewB = resolveProjectView(projectB, { cityParam: city });
@@ -130,6 +115,28 @@ const ComparePage = async ({ params }: PageParams) => {
         urlB={`https://www.homzrealtor.com/project-listing/${viewB.citySlug}/${viewB.slug}`}
         pageUrl={pageUrl}
       />
+
+      <section className="w-full max-w-5xl mx-auto px-2 mt-28 md:mt-32">
+        {/* Breadcrumb */}
+        <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
+          <Link href="/" className="hover:text-[#B77D2B]">
+            Home
+          </Link>
+          <ChevronRight size={12} />
+          <Link href="/project-listing" className="hover:text-[#B77D2B]">
+            Projects
+          </Link>
+          <ChevronRight size={12} />
+          <Link href={`/project-listing/${canonicalCity}`} className="hover:text-[#B77D2B]">
+            {viewA.cityName}
+          </Link>
+          <ChevronRight size={12} />
+          <span className="text-gray-800 font-medium">
+            Compare: {viewA.name} vs {viewB.name}
+          </span>
+        </nav>
+      </section>
+
       <ProjectCompare viewA={viewA} viewB={viewB} />
     </div>
   );

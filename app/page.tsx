@@ -49,14 +49,6 @@ export default async function Home() {
     })),
   };
 
-  const organizationLd = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    name: "HomzRealtor",
-    url: "https://www.homzrealtor.com",
-    areaServed: ["Gurgaon", "Delhi", "Noida", "Greater Noida", "Faridabad"],
-  };
-
   const safeJsonLd = (data: unknown) =>
     JSON.stringify(data)
       .replace(/</g, "\\u003c")
@@ -65,10 +57,6 @@ export default async function Home() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationLd) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(faqLd) }}

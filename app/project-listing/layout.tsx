@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +25,11 @@ export const metadata: Metadata = {
       "Browse verified residential and commercial projects across Gurgaon on HomzRealtor.",
     url: "https://www.homzrealtor.com/project-listing",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 

@@ -263,26 +263,6 @@ function ProjectListingInner() {
   const currentProjects = visibleProjects.slice(startIndex, endIndex);
   const totalPages = Math.max(1, Math.ceil(visibleProjects.length / cardsPerPage));
 
-  // ✅ Pagination — windowed on every screen size. Unwindowed on desktop used
-  // to render one button per page (100+ for the full catalogue), wrapping
-  // into an unusable wall of buttons.
-  const getVisiblePages = () => {
-    const maxVisible = isMobile ? 4 : 7;
-    if (totalPages <= maxVisible) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    let start = Math.max(currentPage - Math.floor(maxVisible / 2), 1);
-    let end = start + maxVisible - 1;
-
-    if (end > totalPages) {
-      end = totalPages;
-      start = Math.max(end - maxVisible + 1, 1);
-    }
-
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  };
-
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [totalPages, currentPage]);
@@ -442,36 +422,30 @@ function ProjectListingInner() {
           )}
         </div>
 
-        {/* Pagination */}
-        {visibleProjects.length > 0 && (
-          <div className="flex justify-center items-center gap-2 mt-6 mb-2 text-sm sm:text-base">
+        {/* Pagination — prev/next arrows only. A row of numbered page buttons
+            used to render here, one per page, which overflowed badly across
+            the full catalogue's 100+ pages. */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-6 mb-2 text-sm sm:text-base">
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
+              aria-label="Previous page"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronLeft size={16} />
             </button>
 
-            {getVisiblePages().map((p) => (
-              <button
-                key={p}
-                onClick={() => setCurrentPage(p)}
-                className={`h-10 w-10 rounded-full font-semibold transition-colors ${
-                  currentPage === p
-                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
-                    : "border border-white/10 text-gray-300 hover:border-[#D9B268]/40"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            <span className="text-gray-400">
+              Page {currentPage} of {totalPages}
+            </span>
 
             <button
               onClick={() =>
                 setCurrentPage((p) => Math.min(p + 1, totalPages))
               }
               disabled={currentPage === totalPages}
+              aria-label="Next page"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronRight size={16} />
@@ -484,7 +458,7 @@ function ProjectListingInner() {
           heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
           text="Step into homes that resonate with your aspirations."
           buttonText="CONTACT NOW"
-          buttonLink="/contact"
+          buttonLink="/#consult"
           imageSrc={customer}
         />
       </div>

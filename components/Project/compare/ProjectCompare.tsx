@@ -87,7 +87,7 @@ const ProjectCompare = ({ viewA, viewB }: Props) => {
   const rows = buildRows(viewA, viewB);
 
   return (
-    <section className="w-full max-w-5xl mx-auto px-2 mt-28 mb-10">
+    <section className="w-full max-w-5xl mx-auto px-2 mb-10">
       <h1 className="text-2xl sm:text-3xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6 text-center">
         {viewA.name} vs {viewB.name}
       </h1>

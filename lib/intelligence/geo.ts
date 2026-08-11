@@ -134,18 +134,34 @@ export function fetchNearbyLandmarks(lat: number, lng: number) {
   return unstable_cache(
     async (): Promise<LandmarksMap> => {
       const result: LandmarksMap = {};
+      const seen = new Set<string>();
       for (const { category, type } of LANDMARK_TYPES) {
         try {
           const places = await nearbyRaw(lat, lng, type, 10);
           if (!places.length) continue;
-          result[category] = places.map((p) => {
-            const km = haversineKm(lat, lng, p.geometry.location.lat, p.geometry.location.lng);
-            return {
-              name: p.name as string,
-              distance_km: Math.round(km * 100) / 100,
-              distance_text: fmtDistance(km),
-            };
-          });
+          // Google's nearbysearch `type` filter is a request hint, not a hard
+          // guarantee — it can still return loosely-matched businesses whose
+          // own `types` don't actually include what we asked for (e.g. a nail
+          // studio surfacing under "school"). Enforce it ourselves, and dedupe
+          // on name+distance since the same place can otherwise resurface
+          // across categories or within one.
+          const landmarks = places
+            .filter((p) => Array.isArray(p.types) && p.types.includes(type))
+            .map((p) => {
+              const km = haversineKm(lat, lng, p.geometry.location.lat, p.geometry.location.lng);
+              return {
+                name: p.name as string,
+                distance_km: Math.round(km * 100) / 100,
+                distance_text: fmtDistance(km),
+              };
+            })
+            .filter((l) => {
+              const key = `${l.name}|${l.distance_km}`;
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            });
+          if (landmarks.length) result[category] = landmarks;
         } catch {
           // Skip category if Places API fails — section still renders without it
         }

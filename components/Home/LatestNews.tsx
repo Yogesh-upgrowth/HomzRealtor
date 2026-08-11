@@ -44,7 +44,13 @@ const LatestNews = () => {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.35fr_1fr]">
         <article className="overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#141416]">
           <div className="relative aspect-video">
-            <Image src={LEAD.img} alt={LEAD.title} fill className="object-cover" />
+            <Image
+              src={LEAD.img}
+              alt={LEAD.title}
+              fill
+              sizes="(min-width: 1024px) 57vw, 100vw"
+              className="object-cover"
+            />
             <span className="absolute left-4 top-4 rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-3 py-1 text-[10.5px] font-bold uppercase tracking-wide text-[#1c1608]">
               {LEAD.tag}
             </span>

@@ -21,7 +21,7 @@ const features: Feature[] = [
 ];
 
 const TRUST_STATS = [
-  { value: "25500+", label: "Happy Customers" },
+  { value: "25,500+", label: "Happy Customers" },
   { value: "45 Mn+", label: "Sq.ft. Area Sold" },
   { value: "500+", label: "Skilled Professionals" },
   { value: "750+", label: "Channel Associates" },

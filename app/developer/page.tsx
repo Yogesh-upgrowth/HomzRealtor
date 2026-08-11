@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { getAllBuilders } from "@/lib/intelligence/projects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
       "Browse real estate developers and builders across Delhi NCR and explore their projects on HomzRealtor.",
     url: `${SITE}/developer`,
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 

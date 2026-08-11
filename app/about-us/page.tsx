@@ -4,6 +4,7 @@ import AboutSections from "@/components/About/AboutSections";
 import aboutPageData, { testimonials } from "@/context/utils/AboutPageData";
 import Testimonials from "@/components/Common/Testimonial";
 import customer from "@/assets/images/customer.png";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {
   title: "About Us — Trusted Real Estate Advisory & Property Solutions",
@@ -25,6 +26,11 @@ export const metadata = {
       "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
     url: "https://www.homzrealtor.com/about-us",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 
@@ -84,7 +90,7 @@ const About = () => {
           heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
           text="Step into homes that resonate with your aspirations. From timeless architecture to thoughtfully designed interiors, discover properties that elevate everyday living. Your perfect match is just a call away."
           buttonText="CONTACT NOW"
-          buttonLink="/contact"
+          buttonLink="/#consult"
           imageSrc={customer}
         />
       </div>

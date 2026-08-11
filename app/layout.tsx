@@ -10,6 +10,10 @@ import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
+import ogImage from "@/assets/images/herobg.png";
+import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+
+const FOOTER_CITY_KEY = "ggn";
 
 // app/layout.tsx
 
@@ -45,9 +49,18 @@ export const metadata: Metadata = {
     description:
       "Find verified residential and commercial projects across Delhi NCR. Compare prices, explore amenities and get expert advice with HomzRealtor.",
     locale: "en_IN",
+    images: [
+      {
+        url: ogImage.src,
+        width: ogImage.width,
+        height: ogImage.height,
+        alt: "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: [ogImage.src],
   },
   icons: {
     icon: [
@@ -82,11 +95,28 @@ const organizationSchema = {
     },
   ],
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Footer's "Popular Sectors" / "Top Developers" links — fetched once here
+  // (cached via unstable_cache inside these functions) rather than in Footer
+  // itself, since Footer needs usePathname() and so must stay a client
+  // component. Failures degrade to an empty list rather than breaking the
+  // footer on every page.
+  const [sectors, builders] = await Promise.all([
+    getSectorsForCity(FOOTER_CITY_KEY).catch(() => []),
+    getAllBuilders().catch(() => []),
+  ]);
+  const topSectors = [...sectors]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6)
+    .map((s) => ({ label: s.sector, href: `/project-listing/${canonicalCitySlug(FOOTER_CITY_KEY)}/sectors/${s.slug}` }));
+  const topDevelopers = builders
+    .slice(0, 6)
+    .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
+
   return (
     <html lang="en">
       <body
@@ -105,7 +135,7 @@ export default function RootLayout({
               <FormComponent />
               <AuthModal />
               {children}
-              <Footer />
+              <Footer topSectors={topSectors} topDevelopers={topDevelopers} />
               <Suspense fallback={null}>
                 <GoogleAnalyticsTracker />
               </Suspense>
