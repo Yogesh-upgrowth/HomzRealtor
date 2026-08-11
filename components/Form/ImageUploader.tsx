@@ -50,10 +50,21 @@ export default function ImageUploader({
     itemsRef.current = items;
   }, [items]);
 
+  // Single source of truth for the cover invariant: whenever exactly one
+  // image exists, or none of the current images are flagged, the first one
+  // is the cover. This guarantees a lone image is always the card photo
+  // without every call site (upload, remove, retry) having to re-derive it.
+  const emit = (next: UploadedMedia[]) => {
+    const normalized =
+      kind === "image" && next.length > 0 && !next.some((i) => i.isCover)
+        ? next.map((item, idx) => (idx === 0 ? { ...item, isCover: true } : item))
+        : next;
+    itemsRef.current = normalized;
+    onChange(normalized);
+  };
+
   const patchItem = (id: string, patch: (item: UploadedMedia) => UploadedMedia) => {
-    const next = itemsRef.current.map((item) => (item.id === id ? patch(item) : item));
-    itemsRef.current = next;
-    onChange(next);
+    emit(itemsRef.current.map((item) => (item.id === id ? patch(item) : item)));
   };
 
   const startUpload = async (file: File) => {
@@ -63,13 +74,11 @@ export default function ImageUploader({
       url: kind === "image" ? URL.createObjectURL(file) : null,
       file,
       tag: null,
-      isCover: kind === "image" && itemsRef.current.length === 0,
+      isCover: false,
       status: "uploading",
       progress: 0,
     };
-    const next = [...itemsRef.current, localPreview];
-    itemsRef.current = next;
-    onChange(next);
+    emit([...itemsRef.current, localPreview]);
 
     try {
       const blob = await upload(`properties/${clientTempId}/${crypto.randomUUID()}-${file.name}`, file, {
@@ -98,20 +107,15 @@ export default function ImageUploader({
   };
 
   const removeItem = (id: string) => {
-    const removed = items.find((i) => i.id === id);
-    const rest = items.filter((i) => i.id !== id);
-    if (removed?.isCover && rest.length > 0 && kind === "image") {
-      rest[0] = { ...rest[0], isCover: true };
-    }
-    onChange(rest);
+    emit(items.filter((i) => i.id !== id));
   };
 
   const setCover = (id: string) => {
-    onChange(items.map((item) => ({ ...item, isCover: item.id === id })));
+    emit(items.map((item) => ({ ...item, isCover: item.id === id })));
   };
 
   const setTag = (id: string, tag: string) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, tag } : item)));
+    emit(items.map((item) => (item.id === id ? { ...item, tag } : item)));
   };
 
   return (
