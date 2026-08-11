@@ -29,7 +29,13 @@ export default function PropertyListingCard({
     <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#141416]">
       <div className="relative w-full h-[200px] bg-white/5">
         {property.coverImageUrl ? (
-          <Image src={property.coverImageUrl} alt={property.locality} fill className="object-cover" />
+          <Image
+            src={property.coverImageUrl}
+            alt={property.locality}
+            fill
+            unoptimized
+            className="object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <Home size={28} className="text-gray-600" />
