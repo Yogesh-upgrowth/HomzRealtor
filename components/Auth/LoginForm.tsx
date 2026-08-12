@@ -18,8 +18,10 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const asAdmin = submitter?.value === "admin";
 
     setLoading(true);
     try {
@@ -35,7 +37,20 @@ const LoginForm = () => {
         return;
       }
 
-      toast.success(`Welcome back, ${data.user.name}!`);
+      // A valid login is a valid login either way — "Login as Admin" is a
+      // navigation shortcut, not a security boundary. requireAdmin() on the
+      // /admin routes is what actually enforces access.
+      if (asAdmin && (data.user.role === "admin" || data.user.role === "super_admin")) {
+        await refresh();
+        close();
+        router.push("/admin");
+        return;
+      }
+      if (asAdmin) {
+        toast.error("This account doesn't have admin access");
+      } else {
+        toast.success(`Welcome back, ${data.user.name}!`);
+      }
       await refresh();
       close();
       router.refresh();
@@ -73,13 +88,26 @@ const LoginForm = () => {
           className={inputClass}
         />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 font-bold text-[#1c1608] hover:brightness-105 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-        >
-          {loading ? "Logging in..." : "Log In"}
-        </button>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="submit"
+            name="intent"
+            value="login"
+            disabled={loading}
+            className="flex-1 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 font-bold text-[#1c1608] hover:brightness-105 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {loading ? "Logging in..." : "Log In"}
+          </button>
+          <button
+            type="submit"
+            name="intent"
+            value="admin"
+            disabled={loading}
+            className="flex-1 rounded-xl border border-[#D9B268]/40 px-4 py-3.5 font-bold text-[#D9B268] hover:bg-[#D9B268]/10 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          >
+            Login as Admin
+          </button>
+        </div>
       </form>
 
       <p className="text-center text-gray-400 text-sm mt-6">

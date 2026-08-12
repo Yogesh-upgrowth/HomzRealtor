@@ -6,7 +6,12 @@ import type { ObjectId } from "mongodb";
 // API). Grouped into the same 5 buckets as the wizard's steps so the Mongo
 // doc, the zod schema, and the client form state all share one shape.
 
-export type PropertyStatus = "active" | "inactive" | "archived";
+export type PropertyStatus = "pending" | "active" | "inactive" | "rejected" | "archived";
+// pending  = just submitted or resubmitted — awaiting admin review (the default on create).
+// active   = approved, live in "My Property".
+// inactive = agent paused it (e.g. rented/sold).
+// rejected = admin rejected it — the agent can edit and resubmit, moving it back to "pending".
+// archived = admin took down a live listing, or the agent's own soft-delete.
 
 export type ListingType = "Sale" | "Rent";
 export type BuildingType = "Residential" | "Commercial";
@@ -77,10 +82,17 @@ export type PropertyImage = {
   isCover: boolean;
 };
 
+export type PropertyModeration = {
+  reviewedBy: ObjectId | null; // admin/super_admin's users._id
+  reviewedAt: Date | null;
+  rejectionReason: string | null;
+};
+
 export type AgentPropertyDoc = {
   _id?: ObjectId;
   ownerId: ObjectId; // -> users._id
   status: PropertyStatus;
+  moderation: PropertyModeration;
   createdAt: Date;
   updatedAt: Date;
 
@@ -137,7 +149,8 @@ export type AgentPropertyDoc = {
 };
 
 // Lightweight projection for the "My Property" grid — avoids shipping full
-// amenities/detailedConfig for a card view.
+// amenities/detailedConfig for a card view. Includes the rejection reason so
+// the agent can see why without opening a detail view.
 export type AgentPropertyListItem = {
   id: string;
   status: PropertyStatus;
@@ -148,13 +161,28 @@ export type AgentPropertyListItem = {
   bhk: BHK;
   price: { amount: number; unit: string };
   coverImageUrl: string | null;
+  rejectionReason: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
+// Admin-facing list projection — same shape as AgentPropertyListItem plus
+// which agent owns it, since admins review submissions across all agents.
+export type AdminPropertyListItem = AgentPropertyListItem & {
+  ownerId: string;
+  ownerName: string;
+  ownerEmail: string;
+};
+
 export type AgentPropertyDetail = {
   id: string;
+  ownerId: string;
   status: PropertyStatus;
+  moderation: {
+    reviewedBy: string | null;
+    reviewedAt: string | null;
+    rejectionReason: string | null;
+  };
   createdAt: string;
   updatedAt: string;
   basicInfo: AgentPropertyDoc["basicInfo"];
@@ -164,4 +192,29 @@ export type AgentPropertyDetail = {
   media: AgentPropertyDoc["media"];
   detailedConfig: AgentPropertyDoc["detailedConfig"];
   description: AgentPropertyDoc["description"];
+};
+
+// Audit trail for admin review actions — mirrors the property_status_events
+// pattern in lib/status/types.ts. "removed" covers an admin taking down an
+// already-active listing later, distinct from the initial approve/reject
+// cycle, kept in the same log so a listing has one place to see its full
+// moderation history.
+export type PropertyReviewAction = "approved" | "rejected" | "removed";
+
+export type PropertyReviewEventDoc = {
+  _id?: ObjectId;
+  propertyId: ObjectId; // -> agent_properties._id
+  adminId: ObjectId; // -> users._id (role="admin" | "super_admin")
+  action: PropertyReviewAction;
+  reason: string | null; // required for "rejected"/"removed", optional note for "approved"
+  at: Date;
+};
+
+export type PropertyReviewEventView = {
+  id: string;
+  adminId: string;
+  adminName: string;
+  action: PropertyReviewAction;
+  reason: string | null;
+  at: string;
 };

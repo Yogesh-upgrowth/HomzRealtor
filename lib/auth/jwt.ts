@@ -14,7 +14,13 @@ function getSecretKey(): Uint8Array {
 export type SessionPayload = PublicUser;
 
 export async function signSessionToken(user: PublicUser): Promise<string> {
-  return new SignJWT({ name: user.name, email: user.email, role: user.role })
+  return new SignJWT({
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    city: user.city,
+    role: user.role,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()
@@ -30,6 +36,8 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
       id: payload.sub,
       name: String(payload.name ?? ""),
       email: String(payload.email),
+      phone: String(payload.phone ?? ""),
+      city: String(payload.city ?? ""),
       role: payload.role as PublicUser["role"],
     };
   } catch {

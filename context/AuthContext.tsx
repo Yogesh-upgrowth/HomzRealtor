@@ -6,7 +6,9 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  role: "customer" | "agent";
+  phone: string;
+  city: string;
+  role: "customer" | "agent" | "admin" | "super_admin";
 };
 
 type AuthContextType = {

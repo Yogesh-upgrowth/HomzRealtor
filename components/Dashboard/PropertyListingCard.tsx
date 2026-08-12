@@ -5,8 +5,10 @@ import { Home, MapPin } from "lucide-react";
 import type { AgentPropertyListItem } from "@/lib/properties/types";
 
 const STATUS_BADGE: Record<AgentPropertyListItem["status"], string> = {
+  pending: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   active: "bg-green-500/15 text-green-400 border-green-500/30",
   inactive: "bg-gray-500/15 text-gray-400 border-gray-500/30",
+  rejected: "bg-red-500/15 text-red-400 border-red-500/30",
   archived: "bg-white/10 text-gray-500 border-white/10",
 };
 
@@ -67,12 +69,20 @@ export default function PropertyListingCard({
         <p className="text-lg font-bold text-[#D9B268]">
           ₹{property.price.amount.toLocaleString("en-IN")} <span className="text-sm font-normal text-gray-400">{property.price.unit}</span>
         </p>
+        {property.status === "rejected" && property.rejectionReason ? (
+          <p className="rounded-lg border border-red-500/20 bg-red-500/5 px-2.5 py-1.5 text-[12px] text-red-300">
+            <span className="font-semibold">Rejected:</span> {property.rejectionReason}
+          </p>
+        ) : null}
+        {property.status === "pending" ? (
+          <p className="text-[12px] text-amber-400/80">Awaiting admin review</p>
+        ) : null}
       </div>
 
       <div className="flex gap-2 p-3 border-t border-white/[0.08]">
         <button
           type="button"
-          disabled={isUpdating || property.status === "archived"}
+          disabled={isUpdating || property.status !== "active" && property.status !== "inactive"}
           onClick={() => onToggleStatus(property.id, nextStatus)}
           className="flex-1 rounded-xl border border-white/10 py-2 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
         >

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/dashboard/list-property", label: "List Property" },
   { href: "/dashboard/my-property", label: "My Property" },
+  { href: "/dashboard/profile", label: "Profile" },
 ];
 
 export default function DashboardTabs() {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAgent } from "@/lib/properties/access";
+import { requireAgent } from "@/lib/auth/guards";
 import { createAgentPropertySchema } from "@/lib/properties/validation";
 import { createProperty, listPropertiesForOwner } from "@/lib/properties/queries";
 import { toPropertyListItem } from "@/lib/properties/serialize";

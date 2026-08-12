@@ -20,26 +20,33 @@ export async function POST(req: Request) {
     );
   }
 
-  const { name, email, password, role } = parsed.data;
+  const { name, email, phone, city, password, role } = parsed.data;
 
   try {
     const users = await getUsersCollection();
 
-    const existing = await users.findOne({ email });
+    const existing = await users.findOne({ $or: [{ email }, { phone }] });
     if (existing) {
+      const conflictField = existing.email === email ? "email" : "phone number";
       return NextResponse.json(
-        { error: "An account with this email already exists" },
+        { error: `An account with this ${conflictField} already exists` },
         { status: 409 }
       );
     }
 
     const passwordHash = await hashPassword(password);
+    const now = new Date();
     const doc = {
       name,
       email,
+      phone,
+      city,
       passwordHash,
       role,
-      createdAt: new Date(),
+      grantedAdminBy: null,
+      grantedAdminAt: null,
+      createdAt: now,
+      updatedAt: now,
     };
 
     const { insertedId } = await users.insertOne(doc);

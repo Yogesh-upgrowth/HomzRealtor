@@ -46,6 +46,7 @@ const Navbar: React.FC = () => {
   };
 
   const isTransparentPage = transparentPaths.includes(pathname);
+  const isAdminPortal = pathname.startsWith("/admin");
 
   // Scroll behavior
   useEffect(() => {
@@ -83,6 +84,10 @@ const Navbar: React.FC = () => {
       : isScrolledPastTop
       ? "bg-white/10 backdrop-blur-md"
       : "bg-transparent";
+
+  // The /admin portal renders its own minimal AdminTopBar instead — an
+  // internal tool doesn't need the public marketing nav.
+  if (isAdminPortal) return null;
 
   return (
     // id used by components/Project/listing/StickyMiniHeader.tsx to measure
@@ -130,9 +135,17 @@ const Navbar: React.FC = () => {
             <Link href="/developer">Developers</Link>
             {user ? (
               <div className="flex items-center gap-4">
-                {user.role === "agent" && (
+                {user.role === "admin" || user.role === "super_admin" ? (
+                  <Link href="/admin" className="text-sm hover:text-[#B77D2B]">
+                    Admin
+                  </Link>
+                ) : user.role === "agent" ? (
                   <Link href="/dashboard" className="text-sm hover:text-[#B77D2B]">
                     Dashboard
+                  </Link>
+                ) : (
+                  <Link href="/account" className="text-sm hover:text-[#B77D2B]">
+                    Account
                   </Link>
                 )}
                 <span className="text-sm text-gray-300">Hi, {user.name}</span>
@@ -203,9 +216,17 @@ const Navbar: React.FC = () => {
           <div className="border-t border-gray-700 pt-6">
             {user ? (
               <div className="flex flex-col gap-4">
-                {user.role === "agent" && (
+                {user.role === "admin" || user.role === "super_admin" ? (
+                  <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                    Admin
+                  </Link>
+                ) : user.role === "agent" ? (
                   <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                     Dashboard
+                  </Link>
+                ) : (
+                  <Link href="/account" onClick={() => setIsMobileMenuOpen(false)}>
+                    Account
                   </Link>
                 )}
                 <span className="text-gray-400 text-base">Hi, {user.name}</span>

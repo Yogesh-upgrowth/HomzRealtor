@@ -35,6 +35,9 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
   const pathname = usePathname();
   const isHome = pathname === "/";
 
+  // The /admin portal renders its own minimal chrome — no public footer.
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <footer
       className={`bg-black text-gray-300 ${

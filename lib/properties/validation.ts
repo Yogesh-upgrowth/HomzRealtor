@@ -175,3 +175,26 @@ export type CreateAgentPropertyInput = z.infer<typeof createAgentPropertySchema>
 export const updatePropertyStatusSchema = z.object({
   status: z.enum(["active", "inactive", "archived"]),
 });
+
+// Admin review of a pending/rejected listing.
+export const reviewActionSchema = z
+  .object({
+    action: z.enum(["approve", "reject"]),
+    reason: z.string().trim().min(1).max(1000).optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.action === "reject" && !v.reason) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reason"],
+        message: "A reason is required to reject a listing",
+      });
+    }
+  });
+
+export type ReviewActionInput = z.infer<typeof reviewActionSchema>;
+
+// Admin taking down an already-live listing.
+export const takedownSchema = z.object({
+  reason: z.string().trim().min(1, "A reason is required to take down a listing").max(1000),
+});

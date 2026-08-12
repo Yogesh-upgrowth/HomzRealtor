@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAgent } from "@/lib/properties/access";
+import { requireAgent } from "@/lib/auth/guards";
 import { updatePropertyStatusSchema } from "@/lib/properties/validation";
 import { setPropertyStatus } from "@/lib/properties/queries";
 
