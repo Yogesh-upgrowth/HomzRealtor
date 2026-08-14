@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { signupSchema } from "@/lib/auth/validation";
-import { getUsersCollection, toPublicUser } from "@/lib/auth/user";
+import { applyForAdminSchema } from "@/lib/auth/validation";
+import { getUsersCollection } from "@/lib/auth/user";
 import { hashPassword } from "@/lib/auth/password";
-import { createSessionCookie } from "@/lib/auth/session";
 
+// Public — no auth guard. This is the only way a non-existing person can
+// become admin-eligible: sign up here, then a super_admin approves the
+// request from Manage Admins. No session is created on success; the
+// applicant isn't admin yet and has nothing to log into.
 export async function POST(req: Request) {
   let body: unknown;
   try {
@@ -12,7 +15,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const parsed = signupSchema.safeParse(body);
+  const parsed = applyForAdminSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message || "Invalid input" },
@@ -20,7 +23,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { name, email, phone, city, password, role } = parsed.data;
+  const { name, email, phone, city, password } = parsed.data;
 
   try {
     const users = await getUsersCollection();
@@ -36,28 +39,23 @@ export async function POST(req: Request) {
 
     const passwordHash = await hashPassword(password);
     const now = new Date();
-    const doc = {
+    await users.insertOne({
       name,
       email,
       phone,
       city,
       passwordHash,
-      role,
+      role: "customer",
       grantedAdminBy: null,
       grantedAdminAt: null,
-      adminRequestedAt: null,
+      adminRequestedAt: now,
       createdAt: now,
       updatedAt: now,
-    };
+    });
 
-    const { insertedId } = await users.insertOne(doc);
-    const publicUser = toPublicUser({ ...doc, _id: insertedId });
-
-    await createSessionCookie(publicUser);
-
-    return NextResponse.json({ user: publicUser }, { status: 201 });
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
-    console.error("Signup failed:", error);
+    console.error("Admin application failed:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

@@ -141,6 +141,7 @@ async function main() {
         role,
         grantedAdminBy: null,
         grantedAdminAt: null,
+        adminRequestedAt: null,
         createdAt: now,
         updatedAt: now,
       };
@@ -176,6 +177,7 @@ async function main() {
           role,
           grantedAdminBy: null,
           grantedAdminAt: null,
+          adminRequestedAt: null,
           updatedAt: new Date(),
         },
       }

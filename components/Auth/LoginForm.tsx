@@ -21,14 +21,14 @@ const LoginForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    const asAdmin = submitter?.value === "admin";
+    const loginAs = submitter?.value === "agent" ? "agent" : "customer";
 
     setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, loginAs }),
       });
       const data = await res.json();
 
@@ -37,20 +37,7 @@ const LoginForm = () => {
         return;
       }
 
-      // A valid login is a valid login either way — "Login as Admin" is a
-      // navigation shortcut, not a security boundary. requireAdmin() on the
-      // /admin routes is what actually enforces access.
-      if (asAdmin && (data.user.role === "admin" || data.user.role === "super_admin")) {
-        await refresh();
-        close();
-        router.push("/admin");
-        return;
-      }
-      if (asAdmin) {
-        toast.error("This account doesn't have admin access");
-      } else {
-        toast.success(`Welcome back, ${data.user.name}!`);
-      }
+      toast.success(`Welcome back, ${data.user.name}!`);
       await refresh();
       close();
       router.refresh();
@@ -92,20 +79,20 @@ const LoginForm = () => {
           <button
             type="submit"
             name="intent"
-            value="login"
+            value="customer"
             disabled={loading}
             className="flex-1 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 font-bold text-[#1c1608] hover:brightness-105 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? "Logging in..." : "Login as Customer"}
           </button>
           <button
             type="submit"
             name="intent"
-            value="admin"
+            value="agent"
             disabled={loading}
             className="flex-1 rounded-xl border border-[#D9B268]/40 px-4 py-3.5 font-bold text-[#D9B268] hover:bg-[#D9B268]/10 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
-            Login as Admin
+            Login as Agent
           </button>
         </div>
       </form>

@@ -22,6 +22,11 @@ export type UserDocument = {
   // and for super_admins themselves (they're bootstrapped, not granted).
   grantedAdminBy: ObjectId | null;
   grantedAdminAt: Date | null;
+  // Set when someone applies for admin access via /admin (POST /api/admin/apply);
+  // cleared on approval (grantedAdminBy/At then tell that story instead). A
+  // rejected application deletes the whole document rather than persisting a
+  // "rejected" state, so this field only ever means "pending" when non-null.
+  adminRequestedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };

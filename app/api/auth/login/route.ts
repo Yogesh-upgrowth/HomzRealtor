@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { email, password } = parsed.data;
+  const { email, password, loginAs } = parsed.data;
 
   try {
     const users = await getUsersCollection();
@@ -29,6 +29,19 @@ export async function POST(req: Request) {
     const passwordMatches = user ? await verifyPassword(password, user.passwordHash) : false;
     if (!user || !passwordMatches) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+
+    // A hard gate, not a redirect hint — a role mismatch means no session is
+    // issued at all, matching every login surface (customer/agent split on
+    // the public site, "Login as Admin" on /admin).
+    const roleMatches =
+      loginAs === "admin" ? user.role === "admin" || user.role === "super_admin" : user.role === loginAs;
+    if (!roleMatches) {
+      const article = user.role === "admin" || user.role === "agent" ? "an" : "a";
+      return NextResponse.json(
+        { error: `This account is registered as ${article} ${user.role}.` },
+        { status: 403 }
+      );
     }
 
     const publicUser = toPublicUser(user);
