@@ -7,6 +7,7 @@ import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import { formatInr } from "@/lib/intelligence/normalize";
 import { clean, validImages } from "@/lib/intelligence/view-model";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
+import SaveToggleButton from "@/components/Common/SaveToggleButton";
 
 type CurrentProject = { city_key: string; slug: string };
 
@@ -74,6 +75,19 @@ function ProjectCard({
               {category}
             </span>
           )}
+          <div className="absolute top-2 right-2 z-10">
+            <SaveToggleButton
+              item={{
+                itemType: "project",
+                citySegment: project.city_key,
+                slug: project.slug,
+                title: project.project_name,
+                imageUrl: img || null,
+                priceText: price,
+                locationText: [clean(project.sector), clean(project.city_name)].filter(Boolean).join(", ") || null,
+              }}
+            />
+          </div>
         </div>
 
         {/* Info */}

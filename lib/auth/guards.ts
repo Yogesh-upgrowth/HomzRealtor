@@ -32,6 +32,20 @@ export async function requireAgent(): Promise<
   return auth;
 }
 
+export async function requireCustomer(): Promise<
+  { ok: true; user: SessionPayload } | { ok: false; response: NextResponse }
+> {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth;
+  if (auth.user.role !== "customer") {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: "Customers only" }, { status: 403 }),
+    };
+  }
+  return auth;
+}
+
 // Both admin tiers can review/take down listings.
 export async function requireAdmin(): Promise<
   { ok: true; user: SessionPayload } | { ok: false; response: NextResponse }

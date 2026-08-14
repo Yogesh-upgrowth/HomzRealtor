@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { NewLaunchProject } from "@/lib/intelligence/homepage";
+import { CITY_PARAM_MAP } from "@/lib/intelligence/projects";
 import SafeProjectImage from "./SafeProjectImage";
+import SaveToggleButton from "@/components/Common/SaveToggleButton";
+
+// NewLaunchProject.citySlug is already the canonical display slug (e.g.
+// "gurgaon") — the wishlist keys Projects by the raw feed city_key (e.g.
+// "ggn"), matching lib/status's convention, so it needs converting back.
+function toCityKey(citySlug: string): string {
+  return CITY_PARAM_MAP[citySlug.toLowerCase()] || citySlug;
+}
 
 type Props = {
   projects: NewLaunchProject[];
@@ -46,6 +55,19 @@ const LatestLaunches = ({ projects }: Props) => {
             <span className="absolute left-4 top-4 rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-3 py-1 text-[10.5px] font-bold uppercase tracking-wide text-[#1c1608]">
               New Launch
             </span>
+            <div className="absolute right-4 top-4 z-10">
+              <SaveToggleButton
+                item={{
+                  itemType: "project",
+                  citySegment: toCityKey(feature.citySlug),
+                  slug: feature.slug,
+                  title: feature.name,
+                  imageUrl: feature.image,
+                  priceText: feature.priceText,
+                  locationText: feature.locationLine,
+                }}
+              />
+            </div>
           </div>
           <div className="flex flex-1 flex-col p-6">
             <h3 className="mb-1.5 text-[19px] font-bold text-white">{feature.name}</h3>
@@ -66,15 +88,28 @@ const LatestLaunches = ({ projects }: Props) => {
             <Link
               key={`${p.citySlug}-${p.slug}`}
               href={`/project-listing/${p.citySlug}/${p.slug}`}
-              className="flex flex-1 items-center gap-3.5 rounded-[18px] border border-white/[0.08] bg-[#141416] p-3.5 hover:border-[#D9B268]/35 transition-colors"
+              className="relative flex flex-1 items-center gap-3.5 rounded-[18px] border border-white/[0.08] bg-[#141416] p-3.5 hover:border-[#D9B268]/35 transition-colors"
             >
               <div className="relative h-[70px] w-[70px] shrink-0 overflow-hidden rounded-xl">
                 {p.image && <SafeProjectImage src={p.image} alt={p.name} sizes="70px" />}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h4 className="truncate text-[14.5px] font-bold text-white">{p.name}</h4>
                 <p className="mt-1 truncate text-[12px] text-gray-500">{p.locationLine}</p>
                 <span className="mt-1 block font-display text-[15px] text-[#D9B268]">{p.priceText}</span>
+              </div>
+              <div className="shrink-0 self-start">
+                <SaveToggleButton
+                  item={{
+                    itemType: "project",
+                    citySegment: toCityKey(p.citySlug),
+                    slug: p.slug,
+                    title: p.name,
+                    imageUrl: p.image,
+                    priceText: p.priceText,
+                    locationText: p.locationLine,
+                  }}
+                />
               </div>
             </Link>
           ))}

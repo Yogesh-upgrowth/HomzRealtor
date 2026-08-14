@@ -16,6 +16,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import LoadError from "@/components/Common/LoadError";
+import SaveToggleButton from "@/components/Common/SaveToggleButton";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
@@ -491,9 +492,26 @@ function PropertyListingInner({
             [...Array(isMobile ? 4 : 8)].map((_, i) => <CardSkeleton key={i} />)
           ) : currentProperties.length > 0 ? (
             currentProperties.map((property) => (
-              <Link key={property.id || property.listingUrl} href={`/${routeBase}/${citySlug}/${slugFor(property)}`}>
-                <HomesCard {...formatProperty(property)} />
-              </Link>
+              <div key={property.id || property.listingUrl} className="relative">
+                <Link href={`/${routeBase}/${citySlug}/${slugFor(property)}`}>
+                  <HomesCard {...formatProperty(property)} />
+                </Link>
+                <div className="absolute top-3 right-3 z-10">
+                  <SaveToggleButton
+                    item={{
+                      itemType: "property",
+                      citySegment: citySlug,
+                      slug: slugFor(property),
+                      propertyId: property.id || null,
+                      category,
+                      title: property.title || "Untitled Listing",
+                      imageUrl: getValidImage(property.images) || null,
+                      priceText: property.price || null,
+                      locationText: property.location || null,
+                    }}
+                  />
+                </div>
+              </div>
             ))
           ) : (
             <div className="text-center col-span-2 py-16">

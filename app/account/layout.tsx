@@ -19,10 +19,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
     <div
       className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen bg-[#0B0B0C] text-white pt-28 pb-16`}
     >
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="font-display text-3xl mb-6">My Account</h1>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

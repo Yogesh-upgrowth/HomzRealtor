@@ -241,6 +241,8 @@ const ProjectPage = async ({ params }: PageParams) => {
         <ProjectHero
           name={view.name}
           builder={view.builder}
+          cityKey={project.city_key}
+          slug={slug}
           cityName={view.cityName}
           citySlug={view.citySlug}
           sectorLabel={project.sector}

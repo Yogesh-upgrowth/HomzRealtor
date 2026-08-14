@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { MapPin, Building2, BadgeCheck, ChevronRight, Images } from "lucide-react";
 import ProjectCtas from "./ProjectCtas";
+import SaveToggleButton from "@/components/Common/SaveToggleButton";
 
 type Props = {
   name: string;
   builder: string;
+  cityKey: string;
+  slug: string;
   cityName: string;
   citySlug: string;
   sectorLabel?: string | null;
@@ -32,6 +35,8 @@ type Props = {
 const ProjectHero = ({
   name,
   builder,
+  cityKey,
+  slug,
   cityName,
   citySlug,
   sectorLabel,
@@ -41,6 +46,7 @@ const ProjectHero = ({
   propertyType,
   status,
   rera,
+  priceText,
   images,
   enquireHref,
 }: Props) => {
@@ -138,14 +144,27 @@ const ProjectHero = ({
           <div className="max-w-md flex-1">
             <ProjectCtas name={name} enquireHref={enquireHref} variant="hero" />
           </div>
-          {images.length > 0 && (
-            <a
-              href="#gallery"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-[#D9B268] transition-colors"
-            >
-              <Images size={15} /> View Gallery
-            </a>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            <SaveToggleButton
+              item={{
+                itemType: "project",
+                citySegment: cityKey,
+                slug,
+                title: name,
+                imageUrl: images[0] || null,
+                priceText,
+                locationText: locationLine,
+              }}
+            />
+            {images.length > 0 && (
+              <a
+                href="#gallery"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-[#D9B268] transition-colors"
+              >
+                <Images size={15} /> View Gallery
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>

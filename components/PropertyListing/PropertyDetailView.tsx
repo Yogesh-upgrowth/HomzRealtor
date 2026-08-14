@@ -8,6 +8,7 @@ import ScoreRing from "@/components/Project/listing/ScoreRing";
 import Faq from "@/components/Project/intelligence/Faq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import type { PropertyView } from "@/lib/intelligence/property-view";
+import SaveToggleButton from "@/components/Common/SaveToggleButton";
 
 const ROUTE_BASE: Record<PropertyView["category"], string> = {
   Sale: "buy-property",
@@ -54,9 +55,24 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
               </span>
             )}
           </div>
-          <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-white max-w-4xl">
-            {view.title}
-          </h1>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-white max-w-4xl">
+              {view.title}
+            </h1>
+            <SaveToggleButton
+              item={{
+                itemType: "property",
+                citySegment: view.citySlug,
+                slug: view.slug,
+                propertyId: view.id,
+                category: view.category,
+                title: view.title,
+                imageUrl: view.heroImage,
+                priceText: view.priceText,
+                locationText: view.location,
+              }}
+            />
+          </div>
           <p className="flex items-center gap-1.5 text-gray-300 mt-2">
             <MapPin size={16} /> {view.location}
           </p>

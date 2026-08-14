@@ -144,9 +144,14 @@ const Navbar: React.FC = () => {
                     Dashboard
                   </Link>
                 ) : (
-                  <Link href="/account" className="text-sm hover:text-[#B77D2B]">
-                    Account
-                  </Link>
+                  <>
+                    <Link href="/account" className="text-sm hover:text-[#B77D2B]">
+                      Account
+                    </Link>
+                    <Link href="/account/wishlist" className="text-sm hover:text-[#B77D2B]">
+                      Wishlist
+                    </Link>
+                  </>
                 )}
                 <span className="text-sm text-gray-300">Hi, {user.name}</span>
                 <button onClick={handleLogout} className="text-sm hover:text-[#B77D2B] cursor-pointer">
@@ -225,9 +230,14 @@ const Navbar: React.FC = () => {
                     Dashboard
                   </Link>
                 ) : (
-                  <Link href="/account" onClick={() => setIsMobileMenuOpen(false)}>
-                    Account
-                  </Link>
+                  <>
+                    <Link href="/account" onClick={() => setIsMobileMenuOpen(false)}>
+                      Account
+                    </Link>
+                    <Link href="/account/wishlist" onClick={() => setIsMobileMenuOpen(false)}>
+                      Wishlist
+                    </Link>
+                  </>
                 )}
                 <span className="text-gray-400 text-base">Hi, {user.name}</span>
                 <button

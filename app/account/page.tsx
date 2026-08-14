@@ -6,5 +6,10 @@ export const metadata: Metadata = {
 };
 
 export default function AccountPage() {
-  return <CustomerProfileForm />;
+  return (
+    <div className="max-w-2xl mx-auto px-4">
+      <h1 className="font-display text-3xl mb-6">My Account</h1>
+      <CustomerProfileForm />
+    </div>
+  );
 }

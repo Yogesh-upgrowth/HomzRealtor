@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { FormProvider } from "@/context/FormContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { AuthModalProvider } from "@/context/AuthModalContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import { Suspense } from "react";
@@ -129,18 +130,20 @@ export default async function RootLayout({
           }}
         />
         <AuthProvider>
-          <AuthModalProvider>
-            <FormProvider>
-              <Header />
-              <FormComponent />
-              <AuthModal />
-              {children}
-              <Footer topSectors={topSectors} topDevelopers={topDevelopers} />
-              <Suspense fallback={null}>
-                <GoogleAnalyticsTracker />
-              </Suspense>
-            </FormProvider>
-          </AuthModalProvider>
+          <WishlistProvider>
+            <AuthModalProvider>
+              <FormProvider>
+                <Header />
+                <FormComponent />
+                <AuthModal />
+                {children}
+                <Footer topSectors={topSectors} topDevelopers={topDevelopers} />
+                <Suspense fallback={null}>
+                  <GoogleAnalyticsTracker />
+                </Suspense>
+              </FormProvider>
+            </AuthModalProvider>
+          </WishlistProvider>
         </AuthProvider>
         <Toaster richColors position="top-right" />
       </body>
