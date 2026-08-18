@@ -2,14 +2,12 @@
 
 // Shared listing page for the four individual-listing categories (Sale/Rent/
 // Pg/Commercial) — one component parametrized by `category` instead of four
-// near-identical page files. Mirrors app/project-listing/page.tsx's
-// architecture (URL-param-driven filters, one useMemo filter pipeline,
-// client-side pagination) but is simpler in one respect: the backend already
-// provides clean structured fields (propertyType, bedrooms, listingType,
-// investmentScore) directly, so — unlike Projects — there's no need to
-// regex-extract sector/builder/status from free text.
+// near-identical page files. Filtering and pagination are server-side, via
+// /api/listings (see lib/listings/filters.ts, app/api/listings/route.ts) —
+// this component just turns URL search params into a filters object and
+// renders whatever page of results comes back.
 
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -24,12 +22,13 @@ import devImg from "@/public/totalUnit.svg";
 import customer from "@/assets/images/customer.png";
 import { slugify } from "@/components/utils/slugify";
 import { instrumentSerif, manrope } from "@/lib/fonts";
-import { useHomzProperties } from "@/hooks/useHomzProperties";
+import { useListingsPage } from "@/hooks/useListingsPage";
 import {
   propertySegment,
   type PropertyCategory,
   type RawHomzProperty,
 } from "@/lib/scraping/homzbackend";
+import { PROPERTY_TYPE_LABELS, type ListingFilters } from "@/lib/listings/filters";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
 import { validImages } from "@/lib/intelligence/view-model";
 
@@ -64,33 +63,6 @@ const CardSkeleton = () => (
   </div>
 );
 
-// Same budget keys as app/project-listing/page.tsx's BUDGET_RANGES, in rupees.
-// Sale/Commercial listings are priced via priceValue (crore scale — Commercial
-// has zero rentMonthly records in the feed, confirmed against live data: every
-// priced commercial listing carries priceValue, none carry rentMonthly).
-const BUDGET_RANGES_SALE: Record<string, { min: number; max: number | null }> = {
-  "under-50l": { min: 0, max: 50_00_000 },
-  "50l-1cr": { min: 50_00_000, max: 1_00_00_000 },
-  "1cr-2cr": { min: 1_00_00_000, max: 2_00_00_000 },
-  "above-2cr": { min: 2_00_00_000, max: null },
-  "under-1cr": { min: 0, max: 1_00_00_000 },
-  "under-2cr": { min: 0, max: 2_00_00_000 },
-};
-
-// Rent/PG listings are priced via rentMonthly (rupee scale, confirmed range
-// ~6,000-8,30,000/month in the live feed) — filtering these against the
-// crore-scale ranges above meant a "value >= min" check against e.g.
-// 2,00,00,000 could never pass for any real monthly rent, so every budget
-// filter on /rent-property silently returned zero results no matter what
-// else was searched.
-const BUDGET_RANGES_RENT: Record<string, { min: number; max: number | null }> = {
-  "under-25k": { min: 0, max: 25_000 },
-  "25k-50k": { min: 25_000, max: 50_000 },
-  "50k-1l": { min: 50_000, max: 1_00_000 },
-  "1l-3l": { min: 1_00_000, max: 3_00_000 },
-  "above-3l": { min: 3_00_000, max: null },
-};
-
 const ROUTE_BASE: Record<PropertyCategory, string> = {
   Sale: "buy-property",
   Rent: "rent-property",
@@ -105,32 +77,7 @@ const CATEGORY_HEADING: Record<PropertyCategory, string> = {
   Commercial: "Commercial Properties in Gurgaon",
 };
 
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  apartment: "Apartment",
-  builder_floor: "Builder Floor",
-  independent_house: "Independent House",
-  villa: "Villa",
-  plot: "Plot",
-  penthouse: "Penthouse",
-  studio: "Studio",
-  office: "Office",
-  retail_shop: "Retail Shop",
-  showroom: "Showroom",
-  warehouse: "Warehouse",
-  co_working: "Co-working Space",
-  farmhouse: "Farmhouse",
-  serviced_apartment: "Serviced Apartment",
-  other: "Other",
-};
-
-// investmentScore is 0-100 from the backend's real enrichment pipeline
-// (homz enrich scores) — not a heuristic. 60 is a reasonable "worth a closer
-// look" bar; revisit once there's usage data on the actual score distribution.
-const INVESTMENT_GRADE_THRESHOLD = 60;
-
 const getValidImage = (images: string[] = []) => validImages(images)[0];
-
-const hasValidImage = (images: string[] = []) => validImages(images).length > 0;
 
 // Individual listings don't have unique titles the way projects do (many
 // units share "3 BHK Flat for Sale in Sector 60"), so the slug must include
@@ -153,17 +100,8 @@ function PropertyListingInner({
   const routeBase = ROUTE_BASE[category];
   const citySlug = canonicalCitySlug(cityKey);
   const isRentScale = category === "Rent" || category === "Pg";
-  const budgetRanges = isRentScale ? BUDGET_RANGES_RENT : BUDGET_RANGES_SALE;
 
-  // limit=10000: this segment is exported in full by the backend (no 500-cap
-  // truncation — that was a real bug fixed earlier), so this must ask for
-  // more than any segment's real size rather than silently re-truncating it
-  // client-side.
-  const SOURCES = useMemo(
-    () => [{ segment: propertySegment(cityKey, category), limit: 10_000 }],
-    [cityKey, category]
-  );
-  const { data, loading, error, retry } = useHomzProperties(SOURCES);
+  const segment = propertySegment(cityKey, category);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -193,98 +131,7 @@ function PropertyListingInner({
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
 
-  const properties = useMemo(() => {
-    const flat = data.flat();
-    // Images first, same as Projects — a card with no photo reads as broken.
-    return [...flat].sort(
-      (a, b) => Number(hasValidImage(b.images)) - Number(hasValidImage(a.images))
-    );
-  }, [data]);
-
-  const propertyTypeOptions = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const p of properties) {
-      if (!p.propertyType) continue;
-      counts.set(p.propertyType, (counts.get(p.propertyType) || 0) + 1);
-    }
-    return Array.from(counts.entries())
-      .map(([value, count]) => ({ value, count, label: PROPERTY_TYPE_LABELS[value] || value }))
-      .sort((a, b) => b.count - a.count);
-  }, [properties]);
-
-  const bedroomOptions = useMemo(() => {
-    const values = new Set<number>();
-    for (const p of properties) {
-      if (typeof p.bedrooms === "number" && p.bedrooms > 0) values.add(p.bedrooms);
-    }
-    return Array.from(values).sort((a, b) => a - b);
-  }, [properties]);
-
-  const visibleProperties = useMemo(() => {
-    let list = properties;
-
-    if (q) {
-      const needle = q.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.title?.toLowerCase().includes(needle) || p.location?.toLowerCase().includes(needle)
-      );
-    }
-
-    if (propertyType) list = list.filter((p) => p.propertyType === propertyType);
-    if (bedrooms) {
-      // "4+" (the homepage search's top BHK option) means "4 or more" — an
-      // exact string match against bedrooms would never match a listing with
-      // 5 bedrooms, silently hiding real inventory from that search.
-      if (bedrooms.endsWith("+")) {
-        const min = parseInt(bedrooms, 10);
-        list = list.filter((p) => typeof p.bedrooms === "number" && p.bedrooms >= min);
-      } else {
-        list = list.filter((p) => String(p.bedrooms ?? "") === bedrooms);
-      }
-    }
-
-    if (budget && budgetRanges[budget]) {
-      const { min, max } = budgetRanges[budget];
-      list = list.filter((p) => {
-        const value = p.priceValue ?? p.rentMonthly;
-        if (value == null) return false;
-        return value >= min && (max == null || value < max);
-      });
-    }
-
-    if (possession) {
-      const target =
-        possession === "ready-to-move"
-          ? "Ready to Move"
-          : possession === "under-construction"
-          ? "Under Construction"
-          : possession === "new-launch"
-          ? "New Launch"
-          : null;
-      if (target) list = list.filter((p) => p.projectStatus === target);
-    }
-
-    // Resale vs. New Launch is a sub-filter within Sale, not a separate
-    // top-level category — Sale pools sale/resale/new_launch/project together
-    // by design (see docs/listings-feed-contract.md).
-    if (category === "Sale" && saleType) {
-      list = list.filter((p) => p.listingType === saleType);
-    }
-
-    if (golf) {
-      list = list.filter((p) =>
-        `${p.location || ""} ${(p.aboutProject || []).join(" ")}`.toLowerCase().includes("golf")
-      );
-    }
-
-    if (category === "Commercial" && investmentGrade) {
-      list = list.filter((p) => (p.investmentScore ?? 0) >= INVESTMENT_GRADE_THRESHOLD);
-    }
-
-    return list;
-  }, [
-    properties,
+  const filters: ListingFilters = {
     q,
     propertyType,
     bedrooms,
@@ -293,13 +140,18 @@ function PropertyListingInner({
     saleType,
     golf,
     investmentGrade,
-    category,
-  ]);
+  };
 
-  const startIndex = (currentPage - 1) * cardsPerPage;
-  const endIndex = startIndex + cardsPerPage;
-  const currentProperties = visibleProperties.slice(startIndex, endIndex);
-  const totalPages = Math.max(1, Math.ceil(visibleProperties.length / cardsPerPage));
+  const {
+    results: currentProperties,
+    total,
+    facets,
+    loading,
+    error,
+    retry,
+  } = useListingsPage(segment, category, filters, currentPage, cardsPerPage);
+
+  const totalPages = Math.max(1, Math.ceil(total / cardsPerPage));
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(1);
@@ -335,7 +187,10 @@ function PropertyListingInner({
     q && { key: "q", label: `"${q}"` },
     propertyType && { key: "type", label: PROPERTY_TYPE_LABELS[propertyType] || propertyType },
     budget && { key: "budget", label: budget.replace(/-/g, " ") },
-    bedrooms && { key: "bedrooms", label: `${bedrooms} BHK` },
+    bedrooms && {
+      key: "bedrooms",
+      label: bedrooms.endsWith("rk") ? `${bedrooms.slice(0, -2)} RK` : `${bedrooms} BHK`,
+    },
     possession && { key: "possession", label: possession.replace(/-/g, " ") },
     saleType && { key: "saleType", label: saleType === "new_launch" ? "New Launch" : "Resale" },
     golf && { key: "golf", label: "Near Golf Course" },
@@ -385,14 +240,14 @@ function PropertyListingInner({
 
           {/* Filters */}
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {propertyTypeOptions.length > 0 && (
+            {facets.propertyTypes.length > 0 && (
               <select
                 value={propertyType}
                 onChange={(e) => setParam("type", e.target.value || null)}
                 className={selectClass}
               >
                 <option value="">All Property Types</option>
-                {propertyTypeOptions.map((o) => (
+                {facets.propertyTypes.map((o) => (
                   <option key={o.value} value={o.value}>
                     {o.label} ({o.count})
                   </option>
@@ -400,18 +255,24 @@ function PropertyListingInner({
               </select>
             )}
 
-            {bedroomOptions.length > 0 && (
+            {(facets.bedrooms.length > 0 || facets.rk.length > 0) && (
               <select
                 value={bedrooms}
                 onChange={(e) => setParam("bedrooms", e.target.value || null)}
                 className={selectClass}
               >
                 <option value="">Any BHK</option>
-                {bedroomOptions.map((b) => (
-                  <option key={b} value={b}>
-                    {b} BHK
-                  </option>
-                ))}
+                {Array.from(new Set([...facets.bedrooms, ...facets.rk]))
+                  .sort((a, b) => a - b)
+                  .map((b) => (
+                    <React.Fragment key={b}>
+                      {facets.bedrooms.includes(b) && <option value={b}>{b} BHK</option>}
+                      {/* Distinct chip for the same bedroom count's RK listings — see
+                          isRkConfiguration() in lib/listings/filters.ts. Selecting "1 BHK"
+                          still includes 1 RK units; this just adds an RK-only option too. */}
+                      {facets.rk.includes(b) && <option value={`${b}rk`}>{b} RK</option>}
+                    </React.Fragment>
+                  ))}
               </select>
             )}
 
