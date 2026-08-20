@@ -94,6 +94,7 @@ export default function DiscoverProject() {
               src={projects[currentIndex].img}
               alt={projects[currentIndex].title}
               fill
+              unoptimized
               sizes="90vw"
               className="object-cover"
             />
@@ -178,6 +179,7 @@ export default function DiscoverProject() {
                 src={p.img}
                 alt={p.title}
                 fill
+                unoptimized
                 sizes="450px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />

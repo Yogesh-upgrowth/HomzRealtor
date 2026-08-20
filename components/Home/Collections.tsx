@@ -1,3 +1,14 @@
+// These discoverImageN assets are also used by DiscoverProjects.tsx, WhyHomz.tsx,
+// PropertyInsights.tsx and the /property-insights/[slug] guide pages — every
+// <Image> rendering one of them passes `unoptimized`. Without it, each distinct
+// (source, width, quality) combination Next's Image Optimizer generates counts
+// against Vercel's metered image-optimization quota; five sizeable bundled photos
+// each requested at 8 responsive breakpoints exhausted the account's monthly quota
+// and every *new* variant started 402ing (`OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`)
+// in production while local dev (no Vercel quota involved) kept working fine —
+// exactly the "broken in prod, fine locally" symptom that surfaced this. These are
+// static bundled assets we fully control, already pre-sized to a sane max width, so
+// serving them as-is costs nothing and needs no runtime transformation anyway.
 import Image from "next/image";
 import Link from "next/link";
 import golfImg from "@/assets/images/discoverImage1.jpg";
@@ -94,6 +105,7 @@ const Collections = async () => {
                 src={c.img}
                 alt={c.title}
                 fill
+                unoptimized
                 sizes={
                   i === 0
                     ? "(min-width: 1024px) 50vw, (min-width: 640px) 50vw, 100vw"

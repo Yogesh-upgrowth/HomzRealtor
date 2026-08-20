@@ -89,7 +89,7 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         </h1>
 
         <div className="relative mt-6 w-full aspect-video overflow-hidden rounded-2xl border border-gray-200 bg-gray-100">
-          <Image src={guide.img} alt={guide.title} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
+          <Image src={guide.img} alt={guide.title} fill unoptimized sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
         </div>
 
         <div className="mt-6 space-y-5 text-[15.5px] leading-relaxed text-gray-700">

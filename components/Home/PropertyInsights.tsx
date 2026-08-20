@@ -22,7 +22,7 @@ const PropertyInsights = () => {
             className="group flex gap-4 border-b border-white/[0.08] py-4.5"
           >
             <div className="relative h-[76px] w-[100px] shrink-0 overflow-hidden rounded-xl">
-              <Image src={g.img} alt={g.title} fill sizes="100px" className="object-cover" />
+              <Image src={g.img} alt={g.title} fill unoptimized sizes="100px" className="object-cover" />
             </div>
             <div>
               <h3 className="mb-1.5 text-[14.5px] font-bold leading-snug text-white group-hover:text-[#D9B268] transition-colors">

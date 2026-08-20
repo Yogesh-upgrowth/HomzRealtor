@@ -53,6 +53,7 @@ const WhyHomz = () => {
                 src={discoverImage2}
                 alt="Modern kitchen interior"
                 fill
+                unoptimized
                 sizes="(min-width: 1024px) 22vw, 40vw"
                 className="object-cover"
               />
@@ -62,6 +63,7 @@ const WhyHomz = () => {
                 src={discoverImage3}
                 alt="Master bedroom interior"
                 fill
+                unoptimized
                 sizes="(min-width: 1024px) 22vw, 40vw"
                 className="object-cover"
               />
