@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
 
 type Specification = {
@@ -24,14 +25,19 @@ const HomesCard: React.FC<HomeCardProps> = ({
   specifications,
   btntag,
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
+  const src = imgFailed ? "/dummy.svg" : imgUrl || "/dummy.svg";
+
   return (
     <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#141416] text-white hover:border-[#D9B268]/35 hover:-translate-y-1 transition">
       {/* Image */}
       <div className="relative w-full h-[230px] md:h-[304px]">
         <Image
-          src={imgUrl || "/dummy.svg"}
+          src={src}
           alt={title}
           fill
+          unoptimized={src !== "/dummy.svg"}
+          onError={() => setImgFailed(true)}
           className="object-cover"
         />
       </div>
