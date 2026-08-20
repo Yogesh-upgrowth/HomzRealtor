@@ -63,6 +63,7 @@ export default function ImageCarousel({
                 : `Property photo ${current + 1} of ${images.length}`
             }
             fill
+            unoptimized
             priority={current === 0}
             onError={() => setFailed((prev) => new Set(prev).add(current))}
             className="object-cover transition-transform duration-700 group-hover:scale-105"

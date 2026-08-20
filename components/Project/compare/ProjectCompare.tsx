@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ProjectView } from "@/lib/intelligence/view-model";
@@ -38,14 +41,17 @@ function buildRows(a: ProjectView, b: ProjectView): Row[] {
 }
 
 function ProjectMiniCard({ view }: { view: ProjectView }) {
+  const [imgFailed, setImgFailed] = useState(false);
   return (
     <div className="bg-black border border-gray-700 rounded-xl overflow-hidden">
       <div className="relative h-48 w-full bg-gray-800">
-        {view.heroImage ? (
+        {view.heroImage && !imgFailed ? (
           <Image
             src={view.heroImage}
             alt={view.name}
             fill
+            unoptimized
+            onError={() => setImgFailed(true)}
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
           />

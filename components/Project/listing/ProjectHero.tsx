@@ -51,6 +51,7 @@ const ProjectHero = ({
   enquireHref,
 }: Props) => {
   const pills = [propertyCategory, propertyType, status].filter(Boolean) as string[];
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
   const heroImage = images[0] || null;
 
   // Measured from the real navbar (#site-navbar) rather than a hardcoded
@@ -72,12 +73,14 @@ const ProjectHero = ({
   return (
     <section id="top" className="relative">
       <div className="absolute inset-0 overflow-hidden">
-        {heroImage ? (
+        {heroImage && !heroImageFailed ? (
           <Image
             src={heroImage}
             alt={name}
             fill
             priority
+            unoptimized
+            onError={() => setHeroImageFailed(true)}
             className="object-cover"
             sizes="100vw"
           />

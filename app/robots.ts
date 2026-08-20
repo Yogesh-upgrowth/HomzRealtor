@@ -13,6 +13,21 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = "https://www.homzrealtor.com";
 
+  const blockedAiAgents = [
+    "GPTBot",
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "Google-Extended",
+    "PerplexityBot",
+    "Perplexity-User",
+    "ClaudeBot",
+    "anthropic-ai",
+    "Claude-Web",
+    "CCBot",
+    "Applebot-Extended",
+    "cohere-ai",
+  ];
+
   return {
     rules: [
       {
@@ -20,6 +35,10 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/api/", "/*?*"],
       },
+      ...blockedAiAgents.map((userAgent) => ({
+        userAgent,
+        disallow: "/",
+      })),
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
     host: baseUrl,
