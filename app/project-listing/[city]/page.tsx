@@ -145,7 +145,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div className="pb-16">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
@@ -195,12 +195,16 @@ const CityLandingPage = async ({ params }: PageParams) => {
         </div>
       </section>
 
-      {/* Project grid (reuses the shared card component) */}
+      {/* Project grid (reuses the shared card component) — capped preview,
+          not the full city list (which can run into the hundreds); the real,
+          filterable, paginated grid lives at /project-listing. */}
       {withImages.length > 0 ? (
         <SimilarProjects
           title={name}
-          projects={withImages}
+          projects={withImages.slice(0, 9)}
           heading={`Projects in ${name}`}
+          viewAllHref="/project-listing"
+          viewAllLabel={`View all ${withImages.length} →`}
         />
       ) : (
         <div className="w-full max-w-7xl mx-auto px-4 my-12 text-gray-500">

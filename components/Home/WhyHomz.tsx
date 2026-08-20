@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ShieldCheck, Users, IndianRupee, FileCheck2, Heart } from "lucide-react";
 import aboutHomz from "@/assets/images/aboutHomz.jpg";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
-import discoverImage3 from "@/assets/images/discoverImage3.png";
+import discoverImage3 from "@/assets/images/discoverImage3.jpg";
 
 const FEATURES = [
   { icon: ShieldCheck, title: "Verified Listings", text: "Every listing verified by our compliance team." },

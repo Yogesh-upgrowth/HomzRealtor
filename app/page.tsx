@@ -23,17 +23,19 @@ import FloatingWhatsApp from "@/components/Home/FloatingWhatsApp";
 import MobileBottomNav from "@/components/Home/MobileBottomNav";
 import { getAllBuilders, getSectorsForCity, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { getNewLaunchProjects, getFeaturedProjects } from "@/lib/intelligence/homepage";
+import { getGurgaonRealEstateNews } from "@/lib/intelligence/news";
 import { HOME_FAQS } from "@/lib/content/homeFaq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 const GURGAON_CITY_KEY = "ggn";
 
 export default async function Home() {
-  const [builders, sectors, newLaunches, featured] = await Promise.all([
+  const [builders, sectors, newLaunches, featured, news] = await Promise.all([
     getAllBuilders().catch(() => []),
     getSectorsForCity(GURGAON_CITY_KEY).catch(() => []),
     getNewLaunchProjects(GURGAON_CITY_KEY, 6).catch(() => []),
     getFeaturedProjects(GURGAON_CITY_KEY, 4).catch(() => []),
+    getGurgaonRealEstateNews(5).catch(() => []),
   ]);
 
   const topBuilders = builders.slice(0, 6);
@@ -74,7 +76,7 @@ export default async function Home() {
         <HowItWorks />
         <ServicesGrid />
         <HomzIntelligence />
-        <LatestNews />
+        <LatestNews items={news} />
         <PropertyInsights />
         <Testimonials
           title="CUSTOMER TESTIMONIALS"

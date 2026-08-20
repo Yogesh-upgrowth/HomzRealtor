@@ -143,7 +143,7 @@ const FlatChildPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div className="pb-16 text-black">
+    <div className="text-black">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}

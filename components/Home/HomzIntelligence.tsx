@@ -52,11 +52,11 @@ const HomzIntelligence = () => {
               </span>
             </div>
 
-            <div className="flex h-[140px] items-end gap-2.5" role="img" aria-label="Illustrative price growth by year, 2020 to 2026, trending upward">
+            <div className="flex h-[140px] gap-2.5" role="img" aria-label="Illustrative price growth by year, 2020 to 2026, trending upward">
               {BARS.map((b, i) => {
                 const isLast = i === BARS.length - 1;
                 return (
-                  <div key={b.year} className="flex flex-1 flex-col items-center gap-2">
+                  <div key={b.year} className="flex flex-1 flex-col items-center justify-end gap-2">
                     {isLast && (
                       <span className="text-[11px] font-bold text-[#D9B268]">+62%</span>
                     )}

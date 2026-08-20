@@ -17,6 +17,12 @@ type Props = {
   heading?: string;
   currentProject?: CurrentProject;
   linkTo?: "project" | "flat";
+  /** Renders a "View all →" link next to the heading — for callers passing a
+   *  capped preview of a much larger set (see app/project-listing/[city]/page.tsx,
+   *  which used to pass every project in the city here uncapped: ~1,000 cards
+   *  on one page for Gurgaon, a multi-hundred-thousand-pixel-tall render). */
+  viewAllHref?: string;
+  viewAllLabel?: string;
 };
 
 function ProjectCard({
@@ -126,7 +132,7 @@ function ProjectCard({
   );
 }
 
-const SimilarProjects = ({ title, projects, heading, currentProject, linkTo = "project" }: Props) => {
+const SimilarProjects = ({ title, projects, heading, currentProject, linkTo = "project", viewAllHref, viewAllLabel }: Props) => {
   if (!projects || projects.length === 0) return null;
 
   const seen = new Set<string>();
@@ -139,9 +145,16 @@ const SimilarProjects = ({ title, projects, heading, currentProject, linkTo = "p
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">
-      <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-        {heading ?? `Similar Projects – ${title}`}
-      </h2>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent">
+          {heading ?? `Similar Projects – ${title}`}
+        </h2>
+        {viewAllHref && (
+          <Link href={viewAllHref} className="text-sm font-medium text-[#CEA44E] hover:underline whitespace-nowrap">
+            {viewAllLabel ?? "View all →"}
+          </Link>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {unique.map((p) => (

@@ -4,11 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import discoverImage1 from "@/assets/images/discoverImage1.png";
+import discoverImage1 from "@/assets/images/discoverImage1.jpg";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
-import discoverImage3 from "@/assets/images/discoverImage3.png";
-import discoverImage4 from "@/assets/images/discoverImage4.png";
-import discoverImage5 from "@/assets/images/discoverImage5.png";
+import discoverImage3 from "@/assets/images/discoverImage3.jpg";
+import discoverImage4 from "@/assets/images/discoverImage4.jpg";
+import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 import arrow from "@/assets/images/arrow.png";
 
 const projects = [

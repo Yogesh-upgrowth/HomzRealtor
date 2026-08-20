@@ -172,10 +172,45 @@ const IMG_RE = /\.(jpg|jpeg|png|webp)(\?|$)/i;
 // different projects ("tn-pyramid-spring-valley...", "tn-santur-azalea...").
 // These aren't chrome (real photo extension, not a site asset) but they are
 // never this listing's own photo, so they're excluded the same way.
-const CHROME_PATH_RE = /\/assets\/images\/|\/developerlogo\/|\/tn-projectflagship\/|\/connect\/profilepic\//i;
+const CHROME_PATH_RE = /\/assets\/images\/|\/ui-assets\/images\/|\/developerlogo\/|\/tn-projectflagship\/|\/connect\/profilepic\//i;
+
+// Cover-image ranking: SquareYards' scraped filenames encode a category
+// (…-project-location-image1-…, …-project-tower-view1-…, …-project-floor-plans2-…),
+// and the feed near-universally puts the location map first — never an actual
+// building photo — with floor-plan/site-plan/spec-sheet drawings mixed in
+// right after. Since index 0 of this array is used everywhere as the card
+// cover / hero image (heroImage, ProjectHero, listing-card thumbnails), real
+// building photos are boosted to the front here and map/plan/spec drawings
+// are sunk to the back — they stay in the array (still browsable in the full
+// gallery), just never chosen as the cover.
+// No trailing anchor after the category phrase — filenames come in two eras,
+// "…-tower-view1-4666.jpg" (id suffix) and "…-tower-view5.jpg" / "…-thumb.jpg"
+// (no id), so digits/dashes/"-thumb" may or may not follow.
+const COVER_BOOST_RE = [
+  /-tower-view/i,
+  /-apartment-exteriors/i,
+  /-villa-view/i,
+  /-commercial-exteriors/i,
+  /-project-large-image/i,
+  /-entrance-view/i,
+  /-clubhouse-external-image/i,
+];
+const COVER_DEMOTE_RE = /-location-image|-floor-plans?|-specification|-site-plan|-master-plan-image/i;
+
+function coverRank(url: string): number {
+  for (let i = 0; i < COVER_BOOST_RE.length; i++) {
+    if (COVER_BOOST_RE[i].test(url)) return i;
+  }
+  if (COVER_DEMOTE_RE.test(url)) return 100;
+  return 50;
+}
+
 export function validImages(images: string[]): string[] {
   return (images || [])
     .filter((u) => typeof u === "string" && IMG_RE.test(u) && !CHROME_PATH_RE.test(u))
+    .map((url, i) => ({ url, i, rank: coverRank(url) }))
+    .sort((a, b) => a.rank - b.rank || a.i - b.i)
+    .map((x) => x.url)
     .slice(0, 10);
 }
 

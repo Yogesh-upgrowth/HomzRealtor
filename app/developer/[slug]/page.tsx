@@ -127,7 +127,7 @@ const DeveloperPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div className="pb-16">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
@@ -182,12 +182,15 @@ const DeveloperPage = async ({ params }: PageParams) => {
         )}
       </section>
 
-      {/* Project grid (reuses the shared card component) */}
+      {/* Project grid (reuses the shared card component) — capped preview;
+          the real, filterable, paginated grid lives at /project-listing. */}
       {withImages.length > 0 ? (
         <SimilarProjects
           title={summary.name}
-          projects={withImages}
+          projects={withImages.slice(0, 9)}
           heading={`Projects by ${summary.name}`}
+          viewAllHref={`/project-listing?builder=${summary.slug}`}
+          viewAllLabel={`View all ${withImages.length} →`}
         />
       ) : (
         <div className="w-full max-w-7xl mx-auto px-4 my-12 text-gray-500">

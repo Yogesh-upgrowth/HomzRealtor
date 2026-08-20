@@ -135,7 +135,7 @@ const CitySectorsPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div className="pb-16">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}

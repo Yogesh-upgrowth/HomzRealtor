@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import golfImg from "@/assets/images/discoverImage1.png";
+import golfImg from "@/assets/images/discoverImage1.jpg";
 import readyImg from "@/assets/images/discoverImage2.jpg";
-import underConstructionImg from "@/assets/images/discoverImage3.png";
-import brandedImg from "@/assets/images/discoverImage4.png";
-import commercialImg from "@/assets/images/discoverImage5.png";
+import underConstructionImg from "@/assets/images/discoverImage3.jpg";
+import brandedImg from "@/assets/images/discoverImage4.jpg";
+import commercialImg from "@/assets/images/discoverImage5.jpg";
 import { getProjectsForCity } from "@/lib/intelligence/projects";
 import { deriveStatus } from "@/lib/intelligence/view-model";
 import { slugify } from "@/lib/intelligence/normalize";

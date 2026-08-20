@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { NewLaunchProject } from "@/lib/intelligence/homepage";
 import SafeProjectImage from "./Home/SafeProjectImage";
+import QuickLocationFilters from "./Home/QuickLocationFilters";
 
 type Props = {
   projects: NewLaunchProject[];
@@ -28,6 +29,8 @@ export default function HotSelling({ projects }: Props) {
           </Link>
         </div>
       </div>
+
+      <QuickLocationFilters />
 
       {/* Project cards — responsive grid, no horizontal scroll */}
       {projects.length > 0 ? (
