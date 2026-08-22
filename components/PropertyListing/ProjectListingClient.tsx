@@ -161,13 +161,16 @@ function ProjectListingInner() {
       if (!p?._sector) continue;
       counts.set(p._sector, (counts.get(p._sector) || 0) + 1);
     }
+    // Natural sector-number order only breaks ties — highest project count
+    // first, matching every other sector listing on the site (see
+    // getSectorsForCity in lib/intelligence/projects.ts).
     const sortKey = (s: string) => {
       const m = s.match(/(\d+)/);
       return m ? parseInt(m[1], 10) : 9999;
     };
     return Array.from(counts.entries())
       .map(([sector, count]) => ({ sector, count }))
-      .sort((a, b) => sortKey(a.sector) - sortKey(b.sector));
+      .sort((a, b) => b.count - a.count || sortKey(a.sector) - sortKey(b.sector));
   }, [projects]);
 
   // Apply the sector filter, then the search filters (q / type / budget / bhk),

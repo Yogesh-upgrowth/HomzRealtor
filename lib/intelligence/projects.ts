@@ -124,8 +124,12 @@ export async function getSectorsForCity(cityKey: string): Promise<SectorSummary[
     else entry.residential += 1;
   }
 
+  // Highest-inventory sectors first — this is the single source every sector
+  // listing (homepage, city hub, /sectors index, footer) renders in as-is, so
+  // sorting here is what makes the order consistent everywhere at once. Ties
+  // fall back to natural sector-number order for a stable secondary sort.
   return Array.from(map.values()).sort(
-    (a, b) => sectorSortKey(a.sector) - sectorSortKey(b.sector)
+    (a, b) => b.count - a.count || sectorSortKey(a.sector) - sectorSortKey(b.sector)
   );
 }
 

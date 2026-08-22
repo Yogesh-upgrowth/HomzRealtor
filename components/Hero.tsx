@@ -41,6 +41,11 @@ export default function Hero({
               priority
               sizes="100vw"
               className="object-cover"
+              // The top ~1/3 of this photo is empty wall/gallery-frame space
+              // above the family. Anchored at 68%, nudged up 200px, then back
+              // down 60px — net shift keeps their heads with headroom while
+              // pulling the crop a bit further down the source photo again.
+              style={{ objectPosition: "center calc(68% - 140px)" }}
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0C]/60 via-[#0B0B0C]/20 to-[#0B0B0C]" />
