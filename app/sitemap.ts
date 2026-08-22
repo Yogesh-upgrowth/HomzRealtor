@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await Promise.all(
     Object.entries(CITY_ENDPOINT_MAP).map(async ([cityKey, citySegment]) => {
       try {
-        const res = await fetch(homzDataUrl(cityKey, 1, 200), {
+        const res = await fetch(homzDataUrl(cityKey, 1, 500), {
           next: { revalidate: 3600 },
         })
         const json = await res.json()
@@ -96,6 +96,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const citySegment = canonicalCitySlug(cityKey)
       try {
         const sectors = await getSectorsForCity(cityKey)
+        // A city with no derived sectors yet has nothing to hub — advertising
+        // its empty /sectors index page just to have Google index a "being
+        // updated" placeholder is exactly the sitemap/reality mismatch this
+        // was flagged for.
+        if (sectors.length === 0) return [] as MetadataRoute.Sitemap
         const urls: MetadataRoute.Sitemap = [
           {
             url: `${baseUrl}/project-listing/${citySegment}/sectors`,
@@ -148,7 +153,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     (Object.entries(PROPERTY_ROUTE_BASE) as [PropertyCategory, string][]).map(
       async ([category, routeBase]) => {
         try {
-          const res = await fetch(homzDataUrl(propertySegment('ggn', category), 1, 200), {
+          const res = await fetch(homzDataUrl(propertySegment('ggn', category), 1, 500), {
             next: { revalidate: 3600 },
           })
           const json = await res.json()

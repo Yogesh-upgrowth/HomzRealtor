@@ -32,14 +32,14 @@ export default function HotSelling({ projects }: Props) {
 
       <QuickLocationFilters />
 
-      {/* Project cards — responsive grid, no horizontal scroll */}
+      {/* Project cards — horizontal scroll on mobile, responsive grid from sm up */}
       {projects.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:pb-0 sm:snap-none lg:grid-cols-4">
           {projects.map((p) => (
             <Link
               key={`${p.citySlug}-${p.slug}`}
               href={`/project-listing/${p.citySlug}/${p.slug}`}
-              className="group overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition"
+              className="group w-[78%] max-w-[300px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 hover:-translate-y-1 transition sm:w-auto sm:max-w-none sm:shrink"
             >
               <div className="relative h-52 w-full overflow-hidden">
                 {p.image ? (

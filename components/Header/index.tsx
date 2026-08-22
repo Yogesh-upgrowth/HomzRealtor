@@ -82,7 +82,7 @@ const Navbar: React.FC = () => {
     !isTransparentPage || isScrolled || isMobileMenuOpen
       ? "bg-black"
       : isScrolledPastTop
-      ? "bg-white/10 backdrop-blur-md"
+      ? "bg-white/10 backdrop-blur-md max-md:bg-black max-md:backdrop-blur-none"
       : "bg-transparent";
 
   // The /admin portal renders its own minimal AdminTopBar instead — an
@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
           <button
             onClick={dismissPromoBar}
             aria-label="Dismiss announcement"
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors"
           >
             <IoClose size={16} />
           </button>

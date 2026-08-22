@@ -37,9 +37,15 @@ export async function generateMetadata({
   const resolved = resolveCity(city);
   if (!resolved) return {};
 
-  const { name, slug } = resolved;
+  const { cityKey, name, slug } = resolved;
   const title = `Property by Sector in ${name} — Browse Projects Sector-wise`;
   const description = `Browse residential and commercial property projects in ${name} by sector. Pick a sector to see verified projects, prices, floor plans and availability, then enquire directly with HomzRealtor.`;
+
+  // Same reasoning as the city landing page's generateMetadata: a city with
+  // no derived sectors yet renders an empty "being updated" hub, which
+  // shouldn't be indexed as a real sector directory.
+  const sectors = await getSectorsForCity(cityKey).catch(() => []);
+  const hasSectors = sectors.length > 0;
 
   return {
     title,
@@ -54,6 +60,7 @@ export async function generateMetadata({
     alternates: {
       canonical: `${SITE}/project-listing/${slug}/sectors`,
     },
+    ...(hasSectors ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       title,
       description,

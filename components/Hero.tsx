@@ -2,23 +2,9 @@
 
 import React, { useContext } from "react";
 import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
-import herobg from "@/assets/images/herobg.png";
+import heroFamily from "@/assets/images/heroFamily.jpg";
 import { FormContext } from "@/context/FormContext";
 import QuickSearchPanel from "@/components/Home/QuickSearchPanel";
-
-type Feature = {
-  label: string;
-  href: string;
-};
-
-const features: Feature[] = [
-  { label: "Buy Property", href: "/buy-property" },
-  { label: "Rent Property", href: "/rent-property" },
-  { label: "Plots & Land", href: "/plots-and-lands" },
-  { label: "Projects", href: "/project-listing" },
-  { label: "Commercial", href: "/commercial" },
-];
 
 const TRUST_STATS = [
   { value: "25,500+", label: "Happy Customers" },
@@ -49,8 +35,8 @@ export default function Hero({
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
             <Image
-              src={herobg}
-              alt="Luxury property in Gurgaon"
+              src={heroFamily}
+              alt="A happy family at home in Gurgaon"
               fill
               priority
               sizes="100vw"
@@ -78,19 +64,10 @@ export default function Hero({
 
             <QuickSearchPanel />
 
-            <div className="mt-7 flex flex-wrap gap-2.5">
-              {features.map((f) => (
-                <Link
-                  key={f.label}
-                  href={f.href}
-                  className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition-colors"
-                >
-                  {f.label}
-                </Link>
-              ))}
+            <div className="mt-7">
               <button
                 onClick={openForm}
-                className="rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 py-2 text-[13px] font-bold text-[#1c1608] hover:brightness-105 transition cursor-pointer"
+                className="w-full rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 py-2.5 text-[13px] font-bold text-[#1c1608] hover:brightness-105 transition cursor-pointer md:w-auto md:py-2"
               >
                 Talk to a Local Expert
               </button>

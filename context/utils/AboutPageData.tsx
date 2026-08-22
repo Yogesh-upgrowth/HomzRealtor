@@ -1,13 +1,18 @@
 import dummy from "../../public/dummy.svg";
 import aboutHomz from "../../assets/images/aboutHomz.jpg";
 import type { TestimonialsType } from "@/components/Common/Testimonial";
+import { initialsAvatar } from "@/lib/initialsAvatar";
 import { PropertyItem } from "@/models/types";
+
+// Real client photos aren't available yet — generated initials avatars are
+// an honest stand-in (distinct per person) rather than reusing one identical
+// placeholder icon across every testimonial, which reads as fake.
 export const testimonials: TestimonialsType[] = [
   {
     id: 1,
     name: "Arush Deshmukh",
     role: "Marketing Manager, Happy Living Realty",
-    image: dummy,
+    image: initialsAvatar("Arush Deshmukh"),
     text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
     rating: 5,
   },
@@ -15,7 +20,7 @@ export const testimonials: TestimonialsType[] = [
     id: 2,
     name: "Pooja Jain",
     role: "Marketing Manager, Green Spaces Realty",
-    image: dummy,
+    image: initialsAvatar("Pooja Jain"),
     text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
     rating: 5,
   },
@@ -23,7 +28,7 @@ export const testimonials: TestimonialsType[] = [
     id: 3,
     name: "Dr. Narayan Deshmukh",
     role: "Financial Advisor, Urban Elite Residences",
-    image: dummy,
+    image: initialsAvatar("Dr. Narayan Deshmukh"),
     text: "From initial consultation to closing, the journey was smooth and transparent. Their commitment to understanding my needs and providing tailored solutions was exceptional.",
     rating: 5,
   },

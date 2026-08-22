@@ -13,14 +13,14 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = "https://www.homzrealtor.com";
 
+  // Bulk AI-training scrapers stay blocked. Retrieval/citation agents that
+  // fetch pages live on behalf of a user's assistant query — OAI-SearchBot,
+  // ChatGPT-User, Perplexity-User, ClaudeBot, and Google-Extended (which
+  // also gates eligibility for Google AI Overviews grounding) — are
+  // deliberately allowed so the site can be cited in AI answers.
   const blockedAiAgents = [
     "GPTBot",
-    "OAI-SearchBot",
-    "ChatGPT-User",
-    "Google-Extended",
     "PerplexityBot",
-    "Perplexity-User",
-    "ClaudeBot",
     "anthropic-ai",
     "Claude-Web",
     "CCBot",
@@ -33,7 +33,11 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/*?*"],
+        // "/*?*" used to blanket-disallow every query-string URL, including
+        // the homepage's own "Trending Searches" links and every filtered
+        // listing state. Comparison pages are the one genuinely unbounded
+        // URL space (city × project-pair), so those stay disallowed instead.
+        disallow: ["/api/", "/project-listing/compare/"],
       },
       ...blockedAiAgents.map((userAgent) => ({
         userAgent,
@@ -41,6 +45,5 @@ export default function robots(): MetadataRoute.Robots {
       })),
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   };
 }

@@ -21,23 +21,16 @@ const FOOTER_CITY_KEY = "ggn";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.homzrealtor.com"),
   title: {
+    // Gurgaon is the only market with real listings today — the other NCR
+    // cities render live but empty "being updated" pages (see
+    // app/project-listing/[city]/page.tsx), so claiming full coverage here
+    // overclaims what a visitor (and a crawler) actually finds on the site.
     default:
-      "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+      "HomzRealtor — Residential & Commercial Property in Gurgaon",
     template: "%s | HomzRealtor",
   },
   description:
-    "Find verified residential and commercial projects across Gurgaon, Noida, Greater Noida, Delhi and Faridabad. Compare prices, explore amenities and get expert advice with HomzRealtor.",
-  keywords: [
-    "property in Delhi NCR",
-    "residential projects in Gurgaon",
-    "commercial projects in Gurgaon",
-    "property in Noida",
-    "new launch projects Delhi NCR",
-    "ready to move flats",
-    "real estate Gurgaon Noida",
-    "buy property Delhi NCR",
-    "HomzRealtor",
-  ],
+    "Find verified residential and commercial projects in Gurgaon, with Noida, Greater Noida, Delhi and Faridabad coverage expanding soon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
   alternates: {
     canonical: "/",
   },
@@ -46,9 +39,9 @@ export const metadata: Metadata = {
     siteName: "HomzRealtor",
     url: "https://www.homzrealtor.com",
     title:
-      "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+      "HomzRealtor — Residential & Commercial Property in Gurgaon",
     description:
-      "Find verified residential and commercial projects across Delhi NCR. Compare prices, explore amenities and get expert advice with HomzRealtor.",
+      "Find verified residential and commercial projects in Gurgaon, with Delhi NCR coverage expanding soon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
     locale: "en_IN",
     images: [
       {

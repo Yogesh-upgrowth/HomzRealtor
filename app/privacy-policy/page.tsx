@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const title = "Privacy Policy";
+const description =
+  "How HomzRealtor collects, uses and protects the personal information you share through enquiry forms and site usage.";
+
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "How HomzRealtor collects, uses and protects the personal information you share through enquiry forms and site usage.",
+  title,
+  description,
   alternates: { canonical: "/privacy-policy" },
   robots: { index: true, follow: true },
+  openGraph: { title, description },
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (

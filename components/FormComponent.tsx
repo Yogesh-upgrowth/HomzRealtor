@@ -101,7 +101,7 @@ export default function FormComponent({
         <button
           onClick={closeForm}
           aria-label="Close"
-          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors cursor-pointer"
         >
           <X size={16} />
         </button>

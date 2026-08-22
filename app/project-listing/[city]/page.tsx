@@ -47,9 +47,16 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const resolved = resolveCity(city);
   if (!resolved) return {};
 
-  const { name, slug } = resolved;
+  const { cityKey, name, slug } = resolved;
   const title = `Property in ${name} — Residential & Commercial Projects`;
   const description = `Explore verified residential and commercial property projects in ${name}. Compare prices, floor plans, amenities and locations, and enquire directly with HomzRealtor.`;
+
+  // A city with no live inventory yet still renders (as a "being updated"
+  // placeholder) but shouldn't be indexed as if it were a real listings hub —
+  // that mismatch between what's promised and what's on the page is exactly
+  // what erodes trust with both crawlers and buyers.
+  const projects = await getProjectsForCity(cityKey).catch(() => []);
+  const hasInventory = projects.length > 0;
 
   return {
     title,
@@ -65,6 +72,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     alternates: {
       canonical: `${SITE}/project-listing/${slug}`,
     },
+    ...(hasInventory ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       title,
       description,

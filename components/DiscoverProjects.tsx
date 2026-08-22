@@ -89,12 +89,14 @@ export default function DiscoverProject() {
 
         {/* ✅ MOBILE SLIDER */}
         <div className="block md:hidden relative">
-          <div className="relative w-[90%] mx-auto h-[420px] overflow-hidden rounded-xl border border-white/[0.08] bg-[#141416] shadow-xl">
+          <Link
+            href={projects[currentIndex].href}
+            className="relative block w-[90%] mx-auto h-[420px] overflow-hidden rounded-xl border border-white/[0.08] bg-[#141416] shadow-xl"
+          >
             <Image
               src={projects[currentIndex].img}
               alt={projects[currentIndex].title}
               fill
-              unoptimized
               sizes="90vw"
               className="object-cover"
             />
@@ -110,14 +112,11 @@ export default function DiscoverProject() {
                 {projects[currentIndex].desc}
               </p>
 
-              <Link
-                href={projects[currentIndex].href}
-                className="inline-block mt-3 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold rounded"
-              >
+              <span className="inline-block mt-3 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold rounded">
                 View More
-              </Link>
+              </span>
             </div>
-          </div>
+          </Link>
 
           {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-4 px-2">
@@ -167,10 +166,11 @@ export default function DiscoverProject() {
         {/* ✅ DESKTOP EXPANDING CARDS */}
         <div className="hidden md:flex flex-row gap-6">
           {projects.map((p) => (
-            <div
+            <Link
               key={p.id}
+              href={p.href}
               onMouseMove={() => setActive(p.id)}
-              className={`relative cursor-pointer transition-all duration-500 ease-in-out overflow-hidden rounded-lg shadow-md group 
+              className={`relative block cursor-pointer transition-all duration-500 ease-in-out overflow-hidden rounded-lg shadow-md group
               ${
                 active === p.id ? "w-[450px]" : "w-[200px]"
               } h-[420px]`}
@@ -179,7 +179,6 @@ export default function DiscoverProject() {
                 src={p.img}
                 alt={p.title}
                 fill
-                unoptimized
                 sizes="450px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -196,12 +195,9 @@ export default function DiscoverProject() {
                     {p.desc}
                   </p>
 
-                  <Link
-                    href={p.href}
-                    className="inline-block mt-4 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] hover:brightness-105 text-[#1c1608] font-semibold rounded"
-                  >
+                  <span className="inline-block mt-4 px-4 py-2 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] group-hover:brightness-105 text-[#1c1608] font-semibold rounded">
                     View More
-                  </Link>
+                  </span>
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-end -mr-10">
@@ -210,7 +206,7 @@ export default function DiscoverProject() {
                   </h2>
                 </div>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -19,15 +19,15 @@ const LOCATIONS = [
 // homepage block.
 export default function QuickLocationFilters() {
   return (
-    <div className="mb-8 flex flex-wrap items-center gap-2.5">
-      <span className="mr-1 text-[13px] font-semibold text-gray-500">
+    <div className="mb-8 flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-hide sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <span className="mr-1 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-500">
         Explore by location:
       </span>
       {LOCATIONS.map((l) => (
         <Link
           key={l.label}
           href={l.href}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#141416] px-4.5 py-2.5 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition"
+          className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-[#141416] px-4.5 py-2.5 text-[13px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition"
         >
           <MapPin size={13} className="text-[#D9B268]" />
           {l.label}

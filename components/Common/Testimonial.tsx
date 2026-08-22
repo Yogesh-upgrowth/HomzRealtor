@@ -145,13 +145,27 @@ export default function Testimonials({
                   {/* User */}
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        width={48}
-                        height={48}
-                        className="object-cover"
-                      />
+                      {typeof item.image === "string" ? (
+                        // Generated data-URI avatars (see lib/initialsAvatar.ts)
+                        // gain nothing from next/image's optimizer and aren't
+                        // one of its supported remote/static sources.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          width={48}
+                          height={48}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={48}
+                          height={48}
+                          className="object-cover"
+                        />
+                      )}
                     </div>
 
                     <div>

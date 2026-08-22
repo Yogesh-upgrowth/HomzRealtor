@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 
+const title = "Terms of Use";
+const description =
+  "The terms governing your use of the HomzRealtor website and the property information listed on it.";
+
 export const metadata: Metadata = {
-  title: "Terms of Use",
-  description:
-    "The terms governing your use of the HomzRealtor website and the property information listed on it.",
+  title,
+  description,
   alternates: { canonical: "/terms" },
   robots: { index: true, follow: true },
+  openGraph: { title, description },
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
