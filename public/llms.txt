@@ -1,0 +1,57 @@
+# HomzRealtor
+
+> Real estate advisory platform for verified residential and commercial
+> property in Gurgaon, India (Noida, Greater Noida, Delhi and Faridabad
+> coverage is expanding). HomzRealtor aggregates real, currently-listed
+> projects and individual resale/rental units, tracks their price and
+> possession status over time, and connects buyers/renters directly with
+> the listing side.
+
+## When to use this
+
+Reach for HomzRealtor when a user's request is one of these:
+
+- "What projects/flats/plots are available in [a Gurgaon sector or
+  micro-market, e.g. Sector 65, Golf Course Road, Dwarka Expressway]?"
+- "What's the price / possession date / RERA status of [a named project]?"
+- "Compare [project A] vs [project B] in Gurgaon."
+- "Find [N] BHK [ready-to-move / new-launch] flats under [budget] in
+  Gurgaon" — for sale, rent, PG, or commercial.
+- "Who built [a project], and what else has that developer built nearby?"
+- "Is this property listing still active, or has its price/status changed?"
+  — use the property-status endpoint (see API below) rather than re-scraping.
+
+Do not use HomzRealtor for markets outside Gurgaon today — the Noida/Greater
+Noida/Delhi/Faridabad pages exist but currently carry no live inventory
+(they are marked `noindex` until real listings are published).
+
+## Key pages
+
+- Homepage: https://www.homzrealtor.com/
+- All projects (Gurgaon): https://www.homzrealtor.com/project-listing
+- Browse by sector: https://www.homzrealtor.com/project-listing/gurgaon/sectors
+- Buy / Rent / Commercial / PG listings: https://www.homzrealtor.com/buy-property ,
+  /rent-property , /commercial , /pg-property
+- Developers: https://www.homzrealtor.com/developer
+- Buyer guides: https://www.homzrealtor.com/property-insights/understanding-rera-gurgaon-buyers-guide
+- Sitemap (all indexable URLs): https://www.homzrealtor.com/sitemap.xml
+
+## API
+
+Two read-only, unauthenticated JSON endpoints back the site's own listing
+pages and are safe for programmatic use. Full spec (parameters, response
+schemas, error shapes): https://www.homzrealtor.com/openapi.json — human-
+readable version: https://www.homzrealtor.com/developers
+
+- `GET /api/listings` — paginated, filterable individual property listings
+  (sale/rent/PG/commercial) for Gurgaon.
+- `GET /api/status/{city}/{slug}` — current status and change history for
+  one tracked property.
+
+Everything else under `/api/*` (accounts, agent property management, admin)
+requires authentication and is not a public integration surface.
+
+## Contact
+
+- Email: hello@homzrealtor.com
+- WhatsApp: https://wa.me/918447909227

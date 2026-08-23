@@ -104,9 +104,11 @@ export default function DiscoverProject() {
             <div className="absolute inset-0 bg-black/30"></div>
 
             <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-lg font-semibold text-[#D9B268]">
+              {/* Sub-item of this section's own h2 ("Discover The Latest
+                  Projects") — h3, not a sibling h2. */}
+              <h3 className="text-lg font-semibold text-[#D9B268]">
                 {projects[currentIndex].title}
-              </h2>
+              </h3>
 
               <p className="text-sm mt-1">
                 {projects[currentIndex].desc}
@@ -187,9 +189,9 @@ export default function DiscoverProject() {
 
               {active === p.id ? (
                 <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                  <h2 className="text-[24px] font-semibold text-[#D9B268]">
+                  <h3 className="text-[24px] font-semibold text-[#D9B268]">
                     {p.title}
-                  </h2>
+                  </h3>
 
                   <p className="mt-2 text-sm leading-relaxed">
                     {p.desc}
@@ -201,9 +203,9 @@ export default function DiscoverProject() {
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-end -mr-10">
-                  <h2 className="text-[24px] font-semibold text-white rotate-90 whitespace-nowrap tracking-wider">
+                  <h3 className="text-[24px] font-semibold text-white rotate-90 whitespace-nowrap tracking-wider">
                     {p.title}
-                  </h2>
+                  </h3>
                 </div>
               )}
             </Link>

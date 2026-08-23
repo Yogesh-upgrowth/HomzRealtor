@@ -36,6 +36,18 @@ export default function NotFound() {
           Browse by Sector
         </Link>
       </div>
+
+      {/* Plain-text recovery links for crawlers/agents, not just human CTAs. */}
+      <p className="mt-8 text-xs text-gray-500">
+        Looking for something specific?{" "}
+        <Link href="/sitemap.xml" className="underline hover:text-[#D9B268]">
+          Sitemap
+        </Link>{" "}
+        ·{" "}
+        <Link href="/llms.txt" className="underline hover:text-[#D9B268]">
+          llms.txt
+        </Link>
+      </p>
     </div>
   );
 }

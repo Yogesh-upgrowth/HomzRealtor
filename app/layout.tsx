@@ -71,13 +71,32 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "RealEstateAgent",
+      // RealEstateAgent is the schema.org-correct, more specific type (it's a
+      // LocalBusiness subtype), but tools that only recognize a fixed
+      // "identity type" allowlist (Organization/Product/Person/Article/
+      // SoftwareApplication) won't detect it under that name alone — declaring
+      // both is valid multi-typing per schema.org, not a workaround.
+      "@type": ["RealEstateAgent", "Organization"],
       "@id": "https://www.homzrealtor.com/#organization",
       name: "HomzRealtor",
       url: "https://www.homzrealtor.com",
       logo: "https://www.homzrealtor.com/android-icon-192x192.png",
+      description:
+        "HomzRealtor is a real estate advisory platform for verified residential and commercial property in Gurgaon, India.",
       slogan: "Where Your Property Journey Begins.",
       areaServed: ["Gurgaon", "Noida", "Greater Noida", "Delhi", "Faridabad"],
+      // Both values are already public elsewhere on the site (the WhatsApp
+      // CTA and the homepage contact section) — no invented contact details.
+      // No `address` here: a real registered-office PostalAddress isn't
+      // available yet: see components/Footer/index.tsx's COMPANY_INFO.
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        telephone: "+91-8447909227",
+        email: "hello@homzrealtor.com",
+        areaServed: "IN",
+        availableLanguage: ["en", "hi"],
+      },
     },
     {
       "@type": "WebSite",

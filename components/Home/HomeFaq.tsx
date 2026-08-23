@@ -15,7 +15,7 @@ const HomeFaq = () => {
         {HOME_FAQS.map((item, i) => (
           <details key={i} className="group rounded-xl border border-white/[0.08] bg-[#141416] px-5 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white">
-              <span>{item.q}</span>
+              <h3 className="text-inherit font-medium">{item.q}</h3>
               <span className="shrink-0 text-xl text-[#D9B268] transition-transform group-open:rotate-45">+</span>
             </summary>
             <p className="mt-3 text-[15px] leading-relaxed text-gray-400">{item.a}</p>

@@ -8,7 +8,8 @@
     "start": "next start -p 3000 -H 0.0.0.0",
     "lint": "eslint",
     "ingest": "node scripts/ingest.mjs",
-    "set-user-role": "node scripts/set-user-role.mjs"
+    "set-user-role": "node scripts/set-user-role.mjs",
+    "verify:agent-readiness": "node scripts/verify-agent-readiness.mjs"
   },
   "dependencies": {
     "@types/pg": "^8.20.0",
