@@ -91,16 +91,16 @@ const Collections = async () => {
         Collections
       </h2>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 lg:h-[456px]">
+      <div className="grid grid-cols-2 gap-[18px] lg:grid-cols-4 lg:grid-rows-2 lg:h-[458px]">
         {collections.map((c, i) => (
           <Link
             key={c.title}
             href={c.href}
-            className={`group relative overflow-hidden rounded-[20px] border border-white/[0.08] ${
-              i === 0 ? "lg:col-span-2 lg:row-span-2" : ""
+            className={`group relative overflow-hidden rounded-[24px] border border-white/[0.07] ${
+              i === 0 ? "col-span-2 lg:row-span-2" : ""
             }`}
           >
-            <div className="relative aspect-[4/3] lg:aspect-auto lg:h-full">
+            <div className={`relative sm:h-[200px] lg:aspect-auto lg:h-full ${i === 0 ? "h-[196px]" : "h-[148px]"}`}>
               <Image
                 src={c.img}
                 alt={c.title}
@@ -113,10 +113,13 @@ const Collections = async () => {
                 }
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+              <div
+                className="absolute inset-0"
+                style={{ backgroundImage: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.82) 100%)" }}
+              />
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <h3 className="text-lg font-bold text-white">{c.title}</h3>
-                <p className="mt-1 text-[12.5px] text-gray-300">{c.note}</p>
+                <h3 className="text-lg font-bold text-[#F5F4F2]">{c.title}</h3>
+                <p className="mt-1 text-[12.5px] text-[#b7b6b3]">{c.note}</p>
               </div>
             </div>
           </Link>

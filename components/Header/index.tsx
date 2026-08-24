@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { IoMenu, IoClose } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import logo from "@/assets/companylogo/logo.png";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
@@ -171,89 +171,139 @@ const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Toggle */}
+          {/* Mobile Toggle — custom 3-bar hamburger that morphs into an X,
+              matching the reference exactly (not a swapped icon pair). */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white p-2"
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            className="md:hidden flex h-11 w-11 flex-col items-center justify-center gap-1 rounded-full border border-white/10"
           >
-            {isMobileMenuOpen ? <IoClose size={26} /> : <IoMenu size={26} />}
+            <span
+              className={`h-[2px] w-[18px] rounded-full bg-[#ececea] transition-transform duration-[250ms] ${
+                isMobileMenuOpen ? "translate-y-[6px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`h-[2px] w-[18px] rounded-full bg-[#ececea] transition-opacity duration-[250ms] ${
+                isMobileMenuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`h-[2px] w-[18px] rounded-full bg-[#ececea] transition-transform duration-[250ms] ${
+                isMobileMenuOpen ? "-translate-y-[6px] -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </div>
 
-      {/* 🔥 Mobile Fullscreen Menu */}
+      {/* Mobile nav drawer — a right-side panel under the header (not a
+          full-screen overlay), matching the reference's `.mobile-nav-drawer`
+          exactly: fixed, width min(320px,84vw), surface-2 background,
+          left border, slide-in from the right. The fixed header (z-50)
+          renders on top of the drawer's own top edge, which is what visually
+          keeps the drawer's content clear of the promo bar + navbar without
+          needing to measure their live height. */}
+      {/* Tap-outside-to-close backdrop — a sibling of the drawer (not
+          nested inside it), so its z-index is compared directly against the
+          drawer's within the same stacking context instead of being scoped
+          inside the drawer's own. */}
+      {isMobileMenuOpen && (
+        <button
+          aria-label="Close menu"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 z-30 bg-black/60"
+        />
+      )}
+
       <div
-        className={`fixed inset-0 bg-black text-white z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 bottom-0 z-40 w-[min(320px,84vw)] overflow-y-auto border-l border-white/10 bg-[#131315] pt-28 shadow-[0_30px_90px_rgba(0,0,0,0.6)] transition-transform duration-[350ms] ${
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Top Bar inside menu */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-700">
-          <span className="text-lg font-semibold">Menu</span>
-
-          {/* ✅ Close Button */}
-          <button
+        <div className="flex flex-col gap-1 px-6 pb-8">
+          <Link
+            href="/"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="text-white"
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
-            <IoClose size={28} />
-          </button>
-        </div>
-
-        {/* Menu Links */}
-        <div className="flex flex-col px-6 py-6 space-y-6 text-lg">
-          <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             Home
           </Link>
-          <Link href="/about-us" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            href="/about-us"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
             About Us
           </Link>
           <Link
             href="/project-listing"
             onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
             Properties
           </Link>
-          <Link href="/developer" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            href="/developer"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
             Developers
           </Link>
 
-          <div className="border-t border-gray-700 pt-6">
+          <div className="mt-2 pt-2">
             {user ? (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
                 {user.role === "admin" || user.role === "super_admin" ? (
-                  <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+                  >
                     Admin
                   </Link>
                 ) : user.role === "agent" ? (
-                  <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+                  >
                     Dashboard
                   </Link>
                 ) : (
                   <>
-                    <Link href="/account" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                      href="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+                    >
                       Account
                     </Link>
-                    <Link href="/account/wishlist" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                      href="/account/wishlist"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+                    >
                       Wishlist
                     </Link>
                   </>
                 )}
-                <span className="text-gray-400 text-base">Hi, {user.name}</span>
+                <span className="py-2 text-sm text-gray-400">Hi, {user.name}</span>
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     handleLogout();
                   }}
-                  className="text-left cursor-pointer"
+                  className="flex min-h-[48px] cursor-pointer items-center text-left text-[16px] font-bold text-[#ececea]"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
                 <button
-                  className="text-left cursor-pointer"
+                  className="flex min-h-[48px] cursor-pointer items-center text-left text-[16px] font-bold text-[#ececea]"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     openLogin();
@@ -262,7 +312,7 @@ const Navbar: React.FC = () => {
                   Login
                 </button>
                 <button
-                  className="text-left cursor-pointer"
+                  className="flex min-h-[48px] cursor-pointer items-center text-left text-[16px] font-bold text-[#ececea]"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     openSignup();

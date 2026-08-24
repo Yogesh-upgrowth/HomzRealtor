@@ -16,13 +16,28 @@ const HowItWorks = () => {
       </h2>
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        {STEPS.map((s) => (
-          <div key={s.num}>
-            <div className="mb-4.5 flex h-[46px] w-[46px] items-center justify-center rounded-full border border-[#D9B268]/30 bg-[#131315] font-display text-[19px] text-[#D9B268]">
+        {STEPS.map((s, i) => (
+          // Mobile ("vertical rail"): number in a fixed 46px left column
+          // spanning both text rows, title+text in the column beside it, plus
+          // a faint connecting line down to the next step. sm: and up revert
+          // to the original stacked block layout — untouched.
+          <div
+            key={s.num}
+            className={`grid grid-cols-[46px_1fr] items-start gap-x-[14px] pb-[22px] sm:block sm:pb-0 ${
+              i !== STEPS.length - 1
+                ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent)] bg-no-repeat [background-position:22px_52px] [background-size:1px_calc(100%-60px)] sm:bg-none"
+                : ""
+            }`}
+          >
+            <div className="row-span-2 flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full border border-[#D9B268]/30 bg-[#131315] font-display text-[19px] text-[#D9B268] sm:mb-4.5">
               {s.num}
             </div>
-            <h3 className="mb-2 text-[16px] font-bold text-white">{s.title}</h3>
-            <p className="text-[14px] leading-relaxed text-gray-400">{s.text}</p>
+            <h3 className="col-start-2 mb-1 self-center text-[15.5px] font-bold text-white sm:col-start-1 sm:mb-2 sm:self-auto sm:text-[16px]">
+              {s.title}
+            </h3>
+            <p className="col-start-2 text-[14px] leading-relaxed text-gray-400 sm:col-start-1">
+              {s.text}
+            </p>
           </div>
         ))}
       </div>

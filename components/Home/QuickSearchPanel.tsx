@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Building2, IndianRupee, BedDouble, Search, X, ChevronDown } from "lucide-react";
+import { MapPin, Building2, IndianRupee, BedDouble, Search, X } from "lucide-react";
 
 const TABS = ["Buy", "Rent", "Commercial", "Plots"];
 
@@ -108,25 +108,40 @@ const QuickSearchPanel = () => {
   };
 
   const fieldCls =
-    "flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1d] px-4 h-[44px] md:h-[52px] text-[14px] text-white";
+    "flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1d] px-4 h-[50px] md:h-[52px] text-[14px] text-white";
+
+  // Custom corner-arrow chevron for `appearance-none` selects — same shape as
+  // the reference's `.select-wrap::after` (and the mobile CTA's own chevron):
+  // an 8x8px rotated corner, not a lucide icon.
+  const arrowCls =
+    "h-2 w-2 shrink-0 rotate-45 border-b-[1.5px] border-r-[1.5px] border-[#8a8986]";
 
   return (
     <>
-      {/* Mobile-only CTA — opens the search panel in a modal. Desktop keeps the panel inline below. */}
-      <button
-        type="button"
-        onClick={() => setMobileOpen(true)}
-        className="flex w-full items-center gap-3 rounded-[20px] border border-white/10 bg-[#121214]/72 backdrop-blur-xl px-4 py-3.5 text-left shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition hover:border-[#D9B268]/30 md:hidden"
-      >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B]">
-          <Search size={20} className="text-[#1c1608]" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[15px] font-bold text-white">Search properties in Gurgaon</span>
-          <span className="block text-[12.5px] text-gray-500">Sector · budget · BHK</span>
-        </span>
-        <ChevronDown size={20} className="shrink-0 text-gray-400" />
-      </button>
+      {/* Mobile-only CTA — opens the search panel in a modal. Desktop keeps the panel inline below.
+          Values below (radius, padding, colors, font sizes) are lifted exactly from the reference
+          build's css/sections.css `.hero-search` / `.hero-search-trigger` / `.hss-*` rules, not
+          eyeballed — see design tokens in css/base.css (--r-card-lg:24px, --r-pill:999px,
+          --surface-input:#1a1a1d, --text-2/-7/-8, --accent-2/-deep). */}
+      <div className="rounded-[22px] border border-white/10 bg-[#121214]/72 p-2.5 backdrop-blur-[20px] md:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="flex min-h-[56px] w-full items-center gap-3 rounded-full border border-white/10 bg-[#1a1a1d] px-2.5 py-2 text-left transition hover:border-[#D9B268]/30"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B]">
+            <Search size={18} className="text-[#1c1608]" />
+          </span>
+          <span className="min-w-0 flex-1 leading-[1.35]">
+            <span className="block truncate text-[14px] font-bold text-[#ececea]">Search properties in Gurgaon</span>
+            <span className="block truncate text-[11.5px] text-[#7d7c79]">Sector · budget · BHK</span>
+          </span>
+          <span
+            aria-hidden="true"
+            className="mr-2.5 h-2 w-2 shrink-0 rotate-45 border-b-[1.5px] border-r-[1.5px] border-[#8a8986] transition-transform duration-200"
+          />
+        </button>
+      </div>
 
       <div
         className={`${
@@ -188,6 +203,7 @@ const QuickSearchPanel = () => {
                   </option>
                 ))}
               </select>
+              <span aria-hidden="true" className={arrowCls} />
             </label>
 
             <label className={fieldCls}>
@@ -203,6 +219,7 @@ const QuickSearchPanel = () => {
                   </option>
                 ))}
               </select>
+              <span aria-hidden="true" className={arrowCls} />
             </label>
 
             <label className={fieldCls}>
@@ -218,11 +235,12 @@ const QuickSearchPanel = () => {
                   </option>
                 ))}
               </select>
+              <span aria-hidden="true" className={arrowCls} />
             </label>
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 h-[44px] md:h-[52px] text-[14px] font-bold text-[#1c1608] hover:brightness-105 transition sm:col-span-2 lg:col-span-5"
+              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 h-[50px] md:h-[52px] text-[14px] font-bold text-[#1c1608] hover:brightness-105 transition sm:col-span-2 lg:col-span-5"
             >
               <Search size={17} /> Search
             </button>
