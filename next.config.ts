@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ["*.replit.dev", "*.sisko.replit.dev", "*.repl.co"],
+  allowedDevOrigins: [
+    "*.replit.dev",
+    "*.sisko.replit.dev",
+    "*.repl.co",
+    "127.0.0.1",
+  ],
   images: {
     // static.squareyards.com/loangateway.urbanmoney.com were the only hosts
     // Projects images ever used. The Sale/Rent/PG/Commercial listing feed
