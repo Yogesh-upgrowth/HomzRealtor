@@ -53,12 +53,29 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: guide.title,
-    image: [guide.img.src],
-    author: { "@type": "Organization", name: "HomzRealtor" },
-    publisher: { "@type": "Organization", name: "HomzRealtor" },
-    mainEntityOfPage: pageUrl,
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Property Insights",
+            item: `${SITE}/property-insights`,
+          },
+          { "@type": "ListItem", position: 3, name: guide.title, item: pageUrl },
+        ],
+      },
+      {
+        "@type": "Article",
+        headline: guide.title,
+        image: [guide.img.src],
+        author: { "@type": "Organization", name: "HomzRealtor" },
+        publisher: { "@type": "Organization", name: "HomzRealtor" },
+        mainEntityOfPage: pageUrl,
+      },
+    ],
   };
   const safeJson = (g: unknown) =>
     JSON.stringify(g)
@@ -77,7 +94,9 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
           <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">Property Insights</span>
+          <Link href="/property-insights" className="hover:text-[#B77D2B]">Property Insights</Link>
+          <ChevronRight size={12} />
+          <span className="text-gray-800 font-medium">{guide.title}</span>
         </nav>
 
         <span className="inline-block mb-3 rounded-full bg-[#B77D2B]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#B77D2B]">
@@ -103,6 +122,34 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
               ))}
             </div>
           ))}
+        </div>
+
+        {guide.relatedSectors && guide.relatedSectors.length > 0 && (
+          <div className="mt-8 border-t border-gray-200 pt-6">
+            <p className="mb-3 text-sm font-semibold text-gray-900">
+              Sectors mentioned in this guide
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {guide.relatedSectors.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/project-listing/gurgaon/sectors/${s.slug}`}
+                  className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+                >
+                  {s.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6">
+          <Link
+            href="/project-listing/gurgaon/sectors"
+            className="text-sm font-medium text-[#B77D2B] hover:underline"
+          >
+            Browse all Gurgaon sectors →
+          </Link>
         </div>
       </article>
 

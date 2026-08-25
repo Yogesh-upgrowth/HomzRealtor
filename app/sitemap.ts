@@ -8,6 +8,7 @@ import {
   type RawHomzProperty,
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
+import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 
 export const dynamic = 'force-dynamic'
 
@@ -207,6 +208,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/terms`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/disclaimer`,      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/developers`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/property-insights`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    ...BUYER_GUIDES.map((g) => ({
+      url: `${baseUrl}/property-insights/${g.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.5,
+    })),
     ...cityUrls,
     ...pageUrls,
     ...sectorUrls,

@@ -133,6 +133,7 @@ const Navbar: React.FC = () => {
             <Link href="/about-us">About Us</Link>
             <Link href="/project-listing">Properties</Link>
             <Link href="/developer">Developers</Link>
+            <Link href="/property-insights">Insights</Link>
             {user ? (
               <div className="flex items-center gap-4">
                 {user.role === "admin" || user.role === "super_admin" ? (
@@ -250,6 +251,13 @@ const Navbar: React.FC = () => {
             className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
             Developers
+          </Link>
+          <Link
+            href="/property-insights"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Insights
           </Link>
 
           <div className="mt-2 pt-2">

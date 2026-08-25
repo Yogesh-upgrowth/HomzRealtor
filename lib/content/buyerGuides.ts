@@ -11,12 +11,18 @@ import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 
 export type GuideSection = { heading?: string; paragraphs: string[] };
 
+export type RelatedSector = { label: string; slug: string };
+
 export type BuyerGuide = {
   slug: string;
   title: string;
   read: string;
   img: StaticImageData;
   sections: GuideSection[];
+  // Real HomzRealtor sector pages this guide's own content names by name —
+  // only populated where the article text actually calls out a specific
+  // sector (see the micro-markets guide below), never a generic tack-on.
+  relatedSectors?: RelatedSector[];
 };
 
 export const BUYER_GUIDES: BuyerGuide[] = [
@@ -242,6 +248,15 @@ export const BUYER_GUIDES: BuyerGuide[] = [
           "Yield-focused buying is a different discipline from buying for appreciation: prioritise proximity to a real, established employment cluster over a marginally better address, check actual rented-out comparables in the specific micro-market rather than relying on a builder's projected rental figure, and factor in maintenance charges and vacancy periods when you calculate your real, net yield — not just the advertised gross number. HomzRealtor's advisors can pull comparable rental data for any of these corridors before you commit.",
         ],
       },
+    ],
+    // Sector 62/65 and the New Gurgaon range (81-95) are named directly in
+    // the sections above — real HomzRealtor sector pages, not a generic
+    // add-on.
+    relatedSectors: [
+      { label: "Sector 62", slug: "sector-62" },
+      { label: "Sector 65", slug: "sector-65" },
+      { label: "Sector 81", slug: "sector-81" },
+      { label: "Sector 95", slug: "sector-95" },
     ],
   },
 ];
