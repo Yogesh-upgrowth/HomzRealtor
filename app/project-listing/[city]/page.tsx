@@ -26,13 +26,16 @@ export const revalidate = 1800;
 
 type PageParams = { params: Promise<{ city: string }> };
 
-// Every other city, used for the "explore nearby markets" internal-link block.
-const ALL_CITIES: { slug: string; name: string }[] = [
-  { slug: "gurgaon", name: "Gurgaon" },
-  { slug: "noida", name: "Noida" },
-  { slug: "greaternoida", name: "Greater Noida" },
-  { slug: "delhi", name: "Delhi" },
-  { slug: "faridabad", name: "Faridabad" },
+// Every other city, used for the "explore nearby markets" internal-link
+// block. cityKey is what getProjectsForCity expects, to check inventory
+// per city before rendering — a city with zero live projects gets labeled
+// "Coming Soon" there rather than presented identically to Gurgaon.
+const ALL_CITIES: { slug: string; name: string; cityKey: string }[] = [
+  { slug: "gurgaon", name: "Gurgaon", cityKey: "ggn" },
+  { slug: "noida", name: "Noida", cityKey: "noida" },
+  { slug: "greaternoida", name: "Greater Noida", cityKey: "gNoida" },
+  { slug: "delhi", name: "Delhi", cityKey: "delhi" },
+  { slug: "faridabad", name: "Faridabad", cityKey: "faridabad" },
 ];
 
 function resolveCity(cityParam: string) {
@@ -103,6 +106,16 @@ const CityLandingPage = async ({ params }: PageParams) => {
   const projects = await getProjectsForCity(cityKey).catch(() => []);
   const withImages = projects.filter((p) => p.images.length > 0);
   const sectors = await getSectorsForCity(cityKey).catch(() => []);
+
+  // Inventory check for every other city in the "Explore Other Cities"
+  // block below — getProjectsForCity is cached (30-min in-memory TTL,
+  // shared across requests), so this doesn't add a real fetch per visit.
+  const otherCities = await Promise.all(
+    ALL_CITIES.filter((c) => c.slug !== slug).map(async (c) => {
+      const cityProjects = await getProjectsForCity(c.cityKey).catch(() => []);
+      return { ...c, hasInventory: cityProjects.length > 0 };
+    })
+  );
 
   const residential = projects.filter((p) => p.property_category === "Residential");
   const commercial = projects.filter((p) => p.property_category === "Commercial");
@@ -295,13 +308,18 @@ const CityLandingPage = async ({ params }: PageParams) => {
           Explore Property in Other Cities
         </h2>
         <div className="flex flex-wrap gap-2">
-          {ALL_CITIES.filter((c) => c.slug !== slug).map((c) => (
+          {otherCities.map((c) => (
             <Link
               key={c.slug}
               href={`/project-listing/${c.slug}`}
-              className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+              className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
             >
               Property in {c.name}
+              {!c.hasInventory && (
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                  Coming Soon
+                </span>
+              )}
             </Link>
           ))}
         </div>
