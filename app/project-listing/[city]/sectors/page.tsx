@@ -17,7 +17,15 @@ const SITE = "https://www.homzrealtor.com";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
 // this every crawl/visit re-executes the origin function uncached.
+// revalidate alone doesn't activate it for a dynamic segment — needs
+// generateStaticParams too, see app/project-listing/[city]/page.tsx's
+// comment for how this was verified.
 export const revalidate = 1800;
+
+export function generateStaticParams() {
+  const cityKeys = Array.from(new Set(Object.values(CITY_PARAM_MAP)));
+  return cityKeys.map((k) => ({ city: canonicalCitySlug(k) }));
+}
 
 type PageParams = { params: Promise<{ city: string }> };
 

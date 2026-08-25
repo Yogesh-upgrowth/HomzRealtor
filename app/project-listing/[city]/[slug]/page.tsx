@@ -17,7 +17,17 @@ import { instrumentSerif, manrope } from "@/lib/fonts";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
 // this every crawl/visit re-executes the origin function uncached.
+// revalidate alone doesn't activate it for a dynamic segment — needs
+// generateStaticParams too (verified — see app/project-listing/[city]/
+// page.tsx's comment). Returning [] rather than the ~1000 real project
+// slugs: an empty list still activates on-demand ISR for every param, not
+// just pre-rendered ones (also verified), without slowing the build by
+// pre-rendering the whole catalogue up front.
 export const revalidate = 1800;
+
+export function generateStaticParams() {
+  return [];
+}
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
 

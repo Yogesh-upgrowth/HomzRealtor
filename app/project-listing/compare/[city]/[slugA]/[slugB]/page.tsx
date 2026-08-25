@@ -9,9 +9,19 @@ import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
-// this every visit re-executes the origin function uncached (robots.txt
-// still disallows crawling these, so this is a real-user TTFB win only).
+// this every visit re-executes the origin function uncached. robots.txt no
+// longer disallows these (see app/robots.ts) — a stale 404 needs to be
+// crawlable to deindex, so this is a real crawl-hit win too now, not just
+// a real-user TTFB one.
+// revalidate alone doesn't activate it for a dynamic segment — needs
+// generateStaticParams too (verified — see app/project-listing/[city]/
+// page.tsx's comment). [] rather than enumerating the combinatorial
+// city x project-pair space: still activates on-demand ISR for every param.
 export const revalidate = 1800;
+
+export function generateStaticParams() {
+  return [];
+}
 
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };
 

@@ -22,6 +22,12 @@ const SITE = "https://www.homzrealtor.com";
 // edge cache never serves HTML staler than the underlying data already
 // could be. Without this, every crawl hit/visit executes the origin
 // function (Cache-Control: private, no-cache, no-store).
+//
+// revalidate alone is NOT enough for a dynamic segment — verified live,
+// Next only actually stamps the s-maxage/HIT-MISS ISR headers once
+// generateStaticParams also exists on the route (confirmed empirically:
+// even generateStaticParams returning [] activates it for every param,
+// listed or not — this isn't optional plumbing on top of revalidate).
 export const revalidate = 1800;
 
 type PageParams = { params: Promise<{ city: string }> };
@@ -37,6 +43,10 @@ const ALL_CITIES: { slug: string; name: string; cityKey: string }[] = [
   { slug: "delhi", name: "Delhi", cityKey: "delhi" },
   { slug: "faridabad", name: "Faridabad", cityKey: "faridabad" },
 ];
+
+export function generateStaticParams() {
+  return ALL_CITIES.map((c) => ({ city: c.slug }));
+}
 
 function resolveCity(cityParam: string) {
   const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()];

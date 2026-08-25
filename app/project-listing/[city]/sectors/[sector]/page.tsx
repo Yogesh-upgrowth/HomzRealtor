@@ -21,7 +21,22 @@ const SITE = "https://www.homzrealtor.com";
 // this every crawl/visit re-executes the origin function uncached (this
 // route's own private/no-store issue is what got it flagged in the first
 // place, alongside the same fix on every other catalogue page below).
+// revalidate alone doesn't activate it for a dynamic segment — needs
+// generateStaticParams too, see app/project-listing/[city]/page.tsx's
+// comment for how this was verified.
 export const revalidate = 1800;
+
+export async function generateStaticParams() {
+  const cityKeys = Array.from(new Set(Object.values(CITY_PARAM_MAP)));
+  const results = await Promise.all(
+    cityKeys.map(async (cityKey) => {
+      const sectors = await getSectorsForCity(cityKey).catch(() => []);
+      const citySlug = canonicalCitySlug(cityKey);
+      return sectors.map((s) => ({ city: citySlug, sector: s.slug }));
+    })
+  );
+  return results.flat();
+}
 
 type PageParams = { params: Promise<{ city: string; sector: string }> };
 

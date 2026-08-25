@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+// No metadata export here previously meant this page fell back to the root
+// layout's default title ("HomzRealtor — Residential & Commercial Property
+// in Gurgaon") — every 404 claimed to be the homepage. noindex is also
+// correct here regardless: a 404 should never be indexed.
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  robots: { index: false, follow: true },
+};
 
 // Rendered for any unmatched route, and by any page that calls notFound()
 // (e.g. an unknown project/property slug) — Next.js serves this with a real

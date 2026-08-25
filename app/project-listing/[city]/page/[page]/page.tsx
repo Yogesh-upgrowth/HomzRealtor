@@ -19,7 +19,26 @@ const PAGE_SIZE = 24;
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
 // this every crawl/visit re-executes the origin function uncached.
+// revalidate alone doesn't activate it for a dynamic segment — needs
+// generateStaticParams too, see app/project-listing/[city]/page.tsx's
+// comment for how this was verified.
 export const revalidate = 1800;
+
+export async function generateStaticParams() {
+  const cityKeys = Array.from(new Set(Object.values(CITY_PARAM_MAP)));
+  const results = await Promise.all(
+    cityKeys.map(async (cityKey) => {
+      const projects = await getProjectsForCity(cityKey).catch(() => []);
+      const citySlug = canonicalCitySlug(cityKey);
+      const totalPages = Math.max(1, Math.ceil(projects.length / PAGE_SIZE));
+      return Array.from({ length: totalPages }, (_, i) => ({
+        city: citySlug,
+        page: String(i + 1),
+      }));
+    })
+  );
+  return results.flat();
+}
 
 type PageParams = { params: Promise<{ city: string; page: string }> };
 
