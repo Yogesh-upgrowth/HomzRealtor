@@ -207,7 +207,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/privacy-policy`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/terms`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/disclaimer`,      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${baseUrl}/developers`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+    // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
+    // it has nothing to earn from a sitemap entry.
     { url: `${baseUrl}/property-insights`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     ...BUYER_GUIDES.map((g) => ({
       url: `${baseUrl}/property-insights/${g.slug}`,

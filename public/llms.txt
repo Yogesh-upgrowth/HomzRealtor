@@ -41,7 +41,7 @@ Noida/Delhi/Faridabad pages exist but currently carry no live inventory
 Two read-only, unauthenticated JSON endpoints back the site's own listing
 pages and are safe for programmatic use. Full spec (parameters, response
 schemas, error shapes): https://www.homzrealtor.com/openapi.json — human-
-readable version: https://www.homzrealtor.com/developers
+readable version: https://www.homzrealtor.com/api-docs
 
 - `GET /api/listings` — paginated, filterable individual property listings
   (sale/rent/PG/commercial) for Gurgaon.

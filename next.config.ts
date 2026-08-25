@@ -93,6 +93,16 @@ const nextConfig = {
         destination: "/contact",
         permanent: true,
       },
+      // /developers (public API docs, for third-party integrators) was one
+      // character away from /developer (the real-estate developer
+      // directory, 254 builders) — a sitemap audit found the near-miss
+      // confusing enough to flag on its own. Renamed to /api-docs; this
+      // catches any external link/bookmark still using the old path.
+      {
+        source: "/developers",
+        destination: "/api-docs",
+        permanent: true,
+      },
       // The project "enquire" page was renamed to "flat" — keep old links working.
       {
         source: "/project-listing/:city/:slug/enquire",

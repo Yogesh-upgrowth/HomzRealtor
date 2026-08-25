@@ -107,10 +107,10 @@ async function main() {
     check('/llms.txt has a "When to use" section', body.includes("When to use"));
   }
   {
-    const res = await fetch(`${BASE_URL}/developers`);
+    const res = await fetch(`${BASE_URL}/api-docs`);
     const body = await res.text();
-    check("/developers returns 200", res.status === 200, `got ${res.status}`);
-    check("/developers mentions HomzRealtor in its title", /<title>[^<]*HomzRealtor/.test(body));
+    check("/api-docs returns 200", res.status === 200, `got ${res.status}`);
+    check("/api-docs mentions HomzRealtor in its title", /<title>[^<]*HomzRealtor/.test(body));
   }
 
   // 12/13. Organization identity + contact point in JSON-LD.

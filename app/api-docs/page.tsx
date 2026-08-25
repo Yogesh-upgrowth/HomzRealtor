@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-const title = "HomzRealtor Developers — Public API";
+const title = "HomzRealtor API Docs";
 const description =
   "HomzRealtor's public, unauthenticated API for Gurgaon property listings and status tracking — OpenAPI spec, endpoints, and usage.";
 
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/developers" },
+  alternates: { canonical: "/api-docs" },
   openGraph: { title, description },
+  // A niche technical page for third-party integrators, not a page anyone
+  // is searching for by keyword — kept crawlable (so the /openapi.json and
+  // /llms.txt links it carries still get discovered) but excluded from
+  // search results so it stops competing with /developer (the real-estate
+  // developer directory) for the "developer(s)" keyword. That name
+  // collision is also why this route was renamed from /developers.
+  robots: { index: false, follow: true },
 };
 
 const codeCls =
   "block overflow-x-auto rounded-lg border border-white/10 bg-[#141416] px-4 py-3 text-[13px] text-gray-300";
 
-export default function DevelopersPage() {
+export default function ApiDocsPage() {
   return (
     <div className="min-h-screen bg-[#0B0B0C] text-white">
       <div className="mx-auto max-w-3xl px-4 pt-32 pb-20">
