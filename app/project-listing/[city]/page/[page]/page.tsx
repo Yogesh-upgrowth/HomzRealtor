@@ -130,8 +130,13 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
           <span className="text-gray-800 font-medium">Page {pageNum}</span>
         </nav>
 
+        {/* Single template-string expression, not text/{expr} JSX children —
+            see the identical fix + explanation on the city template's H1
+            (app/project-listing/[city]/page.tsx): a space immediately
+            before an em-dash on a text node adjacent to an expression gets
+            silently dropped by React's SSR output otherwise. */}
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
-          Property Projects in {name} — Page {pageNum} of {totalPages}
+          {`Property Projects in ${name} — Page ${pageNum} of ${totalPages}`}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
           Showing {pageProjects.length} of {allProjects.length} verified projects in {name}.

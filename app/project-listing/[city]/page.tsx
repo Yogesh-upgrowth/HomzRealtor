@@ -188,8 +188,14 @@ const CityLandingPage = async ({ params }: PageParams) => {
           <span className="text-gray-800 font-medium">{name}</span>
         </nav>
 
+        {/* A JSX child text node starting with a space right after {name} on
+            this line quietly loses that leading space in React's SSR output
+            (confirmed — od -c on the rendered HTML shows "Gurgaon—", no
+            space, despite the source clearly having one). Building the
+            whole string in JS and rendering it as a single expression
+            sidesteps whatever JSX text-node splitting causes that. */}
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
-          Property in {name} — Residential &amp; Commercial Projects
+          {`Property in ${name} — Residential & Commercial Projects`}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">{intro}</p>
 
