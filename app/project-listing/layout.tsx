@@ -4,7 +4,12 @@ import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 export const metadata: Metadata = {
   title: {
     default: "All Projects — Residential & Commercial Properties in Gurgaon",
-    template: "%s | HomzRealtor",
+    // No "| HomzRealtor" suffix — same reasoning as the root layout's
+    // template. This nested template overrides the root's for every route
+    // under /project-listing/* (city, sector, project detail, ...), which
+    // is exactly why those pages still carried the suffix after only
+    // changing app/layout.tsx.
+    template: "%s",
   },
   description:
     "Browse verified residential and commercial projects in Gurgaon. Filter by sector, compare prices and enquire directly on HomzRealtor.",

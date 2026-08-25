@@ -12,7 +12,7 @@ import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
-import { truncateAtWord, slugify } from "@/lib/intelligence/normalize";
+import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
@@ -42,28 +42,36 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     : project.micro_market || cityName;
 
   // Rich, keyword-led title built from real data (never just the bare name).
-  // e.g. "M3M Route 65, Sector 65 Gurgaon: Price, Payment Plan & Location"
-  // Deliberately doesn't promise "Floor Plan" or "Reviews" — this page has
-  // neither section, and a title that over-promises just teaches search
-  // engines the page bounces.
-  const title = `${project.project_name}, ${locationLabel}: Price, Payment Plan & Location`;
+  // e.g. "M3M Route 65, Sector 65 Gurgaon: Price & Location" — kept to
+  // "Price & Location" (not also "Payment Plan") specifically to stay under
+  // the ~60-char SERP truncation point once the longest real project names
+  // are substituted in; "Payment Plan" was the lowest-intent of the three
+  // keywords anyway. Deliberately doesn't promise "Floor Plan" or "Reviews"
+  // — this page has neither section, and a title that over-promises just
+  // teaches search engines the page bounces.
+  const title = `${project.project_name}, ${locationLabel}: Price & Location`;
   // The root layout's title.template ("%s | HomzRealtor") appends the brand
   // suffix to the real <title> tag automatically, but openGraph/twitter
   // titles bypass that template — so they need the suffix added explicitly.
   const socialTitle = `${title} | HomzRealtor`;
 
-  // Prefer the project's own narrative when it is substantial; otherwise fall
-  // back to a unique, data-driven template so no two pages share a description.
-  const priceBit =
-    project.min_price_inr || project.price_text ? "latest price, " : "";
-  const templatedDescription =
-    `Explore ${project.project_name} in ${locationLabel}. Check ${priceBit}payment plans, ` +
-    `amenities, ${project.property_category.toLowerCase()} configurations, location ` +
-    `advantages and nearby projects on HomzRealtor.`;
-  const description =
-    project.about?.[0] && project.about[0].length >= 90
-      ? truncateAtWord(project.about[0])
-      : truncateAtWord(templatedDescription);
+  // Always a data-driven, complete-sentence description — never a slice of
+  // the scraped "about" narrative. Truncating raw prose mid-sentence (the
+  // previous behavior whenever about[0] ran long, which is most real
+  // projects) reads as machine output in the SERP; every value below
+  // (name, sector, starting price, configuration) is already shown
+  // elsewhere on this same page, so nothing here is invented.
+  const configBit = project.property_type
+    ? `${project.property_type} configurations`
+    : `${project.property_category} configurations`;
+  const priceBit = project.min_price_inr
+    ? `from ${formatInr(project.min_price_inr)}`
+    : project.price_text
+    ? `from ${project.price_text}`
+    : "with the latest pricing";
+  const description = truncateAtWord(
+    `${project.project_name}, ${locationLabel} — ${configBit} ${priceBit}. Enquire now with HomzRealtor.`
+  );
 
   const keywords = [
     project.project_name,

@@ -28,10 +28,21 @@ export const metadata: Metadata = {
     // overclaims what a visitor (and a crawler) actually finds on the site.
     default:
       "HomzRealtor — Residential & Commercial Property in Gurgaon",
-    template: "%s | HomzRealtor",
+    // No "| HomzRealtor" suffix — every inner-page title is already
+    // keyword-led and close to the ~60-char SERP truncation point; the 14
+    // extra characters pushed nearly all of them past it, cutting off the
+    // part that actually differentiates the result. A 12-month-old,
+    // low-authority domain gets more from the keywords surviving intact
+    // than from repeating a brand name searchers don't recognize yet.
+    template: "%s",
   },
+  // Kept to ~135 chars, safely under Google's ~155-160 display budget as a
+  // complete sentence — the 207-char original wasn't sliced with a
+  // hard-coded ellipsis, but at that length Google's own SERP rendering
+  // would very likely clip it anyway. The "expanding soon" NCR-coverage
+  // caveat this drops is still covered in the page's own visible copy.
   description:
-    "Find verified residential and commercial projects in Gurgaon, with Noida, Greater Noida, Delhi and Faridabad coverage expanding soon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
+    "Find verified residential and commercial projects in Gurgaon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
   alternates: {
     canonical: "/",
   },
@@ -42,7 +53,7 @@ export const metadata: Metadata = {
     title:
       "HomzRealtor — Residential & Commercial Property in Gurgaon",
     description:
-      "Find verified residential and commercial projects in Gurgaon, with Delhi NCR coverage expanding soon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
+      "Find verified residential and commercial projects in Gurgaon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
     locale: "en_IN",
     images: [
       {
