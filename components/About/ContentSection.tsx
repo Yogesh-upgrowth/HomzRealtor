@@ -73,6 +73,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
               alt={cardData.imageAlt || "Image"}
               fill
               priority
+              sizes="(min-width: 768px) 50vw, 100vw"
             />
           </div>
 
@@ -186,6 +187,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
                 src={cardData.imageSrc}
                 alt={cardData.imageAlt}
                 fill
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
               />
             </div>
@@ -229,6 +231,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
               src={cardData.imageSrc}
               alt={cardData.imageAlt}
               fill
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="rounded-xs object-cover"
             />
           </div>
