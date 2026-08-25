@@ -34,6 +34,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       description,
       url,
       type: "article",
+      publishedTime: guide.publishedAt,
+      modifiedTime: guide.updatedAt,
       images: [{ url: guide.img.src, width: guide.img.width, height: guide.img.height }],
     },
     twitter: {
@@ -41,6 +43,17 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       images: [guide.img.src],
     },
   };
+}
+
+// en-IN, long form — "20 August 2026", not the region-ambiguous 08/20 vs
+// 20/08 numeric formats.
+function formatGuideDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 const PropertyInsightPage = async ({ params }: PageParams) => {
@@ -71,8 +84,14 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         "@type": "Article",
         headline: guide.title,
         image: [guide.img.src],
+        // No named individual author — see the code comment on
+        // BuyerGuide.publishedAt in lib/content/buyerGuides.ts. Organization
+        // is a real, non-fabricated, schema.org-valid author value; it's
+        // just a weaker E-E-A-T signal than a named person would be.
         author: { "@type": "Organization", name: "HomzRealtor" },
         publisher: { "@type": "Organization", name: "HomzRealtor" },
+        datePublished: guide.publishedAt,
+        dateModified: guide.updatedAt,
         mainEntityOfPage: pageUrl,
       },
     ],
@@ -106,6 +125,17 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 leading-tight">
           {guide.title}
         </h1>
+
+        <p className="mt-3 text-sm text-gray-500">
+          By the HomzRealtor Team · Published{" "}
+          <time dateTime={guide.publishedAt}>{formatGuideDate(guide.publishedAt)}</time>
+          {guide.updatedAt !== guide.publishedAt && (
+            <>
+              {" "}
+              · Updated <time dateTime={guide.updatedAt}>{formatGuideDate(guide.updatedAt)}</time>
+            </>
+          )}
+        </p>
 
         <div className="relative mt-6 w-full aspect-video overflow-hidden rounded-2xl border border-gray-200 bg-gray-100">
           <Image src={guide.img} alt={guide.title} fill unoptimized sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />

@@ -23,6 +23,16 @@ export type BuyerGuide = {
   // only populated where the article text actually calls out a specific
   // sector (see the micro-markets guide below), never a generic tack-on.
   relatedSectors?: RelatedSector[];
+  // Real dates, not placeholders — sourced from git history (`git log
+  // --follow -- lib/content/buyerGuides.ts`), which shows this content was
+  // first added 2026-08-20 and hasn't had a genuine prose edit since (a
+  // later commit only added the relatedSectors field above, not new
+  // content). publishedAt/updatedAt are equal for that reason; bump
+  // updatedAt only when a guide's actual text changes — inflating it
+  // without a real edit is the "fake freshness" pattern search engines
+  // specifically distrust.
+  publishedAt: string;
+  updatedAt: string;
 };
 
 export const BUYER_GUIDES: BuyerGuide[] = [
@@ -30,6 +40,8 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     slug: "under-construction-property-buying-guide",
     title: "A Complete Guide to Buying Under-Construction Property",
     read: "6 min read",
+    publishedAt: "2026-08-20",
+    updatedAt: "2026-08-20",
     img: discoverImage2,
     sections: [
       {
@@ -85,6 +97,8 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     slug: "understanding-rera-gurgaon-buyers-guide",
     title: "Understanding RERA: What Every Gurgaon Buyer Should Know",
     read: "5 min read",
+    publishedAt: "2026-08-20",
+    updatedAt: "2026-08-20",
     img: discoverImage3,
     sections: [
       {
@@ -139,6 +153,8 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     slug: "home-loan-documentation-checklist",
     title: "Home Loan Documentation Checklist for First-Time Buyers",
     read: "4 min read",
+    publishedAt: "2026-08-20",
+    updatedAt: "2026-08-20",
     img: discoverImage4,
     sections: [
       {
@@ -199,6 +215,8 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     slug: "gurgaon-micro-markets-best-rental-yields-2026",
     title: "5 Micro-Markets Delivering the Best Rental Yields in 2026",
     read: "7 min read",
+    publishedAt: "2026-08-20",
+    updatedAt: "2026-08-20",
     img: discoverImage5,
     sections: [
       {
