@@ -421,7 +421,7 @@ function PropertyListingInner({
           heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
           text="Step into homes that resonate with your aspirations."
           buttonText="CONTACT NOW"
-          buttonLink="/#consult"
+          buttonLink="/contact"
           imageSrc={customer}
         />
       </div>

@@ -9,7 +9,6 @@ import {
   canonicalCitySlug,
   getProjectsForSector,
   getSectorsForCity,
-  sectorLabelFromSlug,
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
@@ -17,6 +16,12 @@ import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
+
+// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
+// this every crawl/visit re-executes the origin function uncached (this
+// route's own private/no-store issue is what got it flagged in the first
+// place, alongside the same fix on every other catalogue page below).
+export const revalidate = 1800;
 
 type PageParams = { params: Promise<{ city: string; sector: string }> };
 
@@ -40,13 +45,18 @@ export async function generateMetadata({
   const resolved = resolveCity(city);
   if (!resolved) return {};
 
-  const { name, slug } = resolved;
-  const projects = await getProjectsForSector(city, sector).catch(() => []);
-  const sectorLabel = projects[0]?.sector || sectorLabelFromSlug(sector);
+  const { name, slug, cityKey } = resolved;
+  const sectors = await getSectorsForCity(cityKey).catch(() => []);
+  const matchedSector = sectors.find((s) => s.slug === sector.toLowerCase());
+  // No metadata for an unknown sector — the page itself calls notFound(),
+  // exactly like the [city] route does for an unknown city.
+  if (!matchedSector) return {};
+
+  const sectorLabel = matchedSector.sector;
 
   const title = `Property in ${sectorLabel} ${name}: Projects, Price & Floor Plans`;
   const description = `Explore ${
-    projects.length > 0 ? `${projects.length}+ ` : ""
+    matchedSector.count > 0 ? `${matchedSector.count}+ ` : ""
   }verified property projects in ${sectorLabel}, ${name}. Compare prices, floor plans, amenities and possession timelines, then enquire directly with HomzRealtor.`;
 
   return {
@@ -82,8 +92,18 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   if (!resolved) notFound();
 
   const { cityKey, slug, name, state } = resolved;
+
+  // Validate the sector param against the known-sectors list, exactly like
+  // the [city] route validates its own param — otherwise any arbitrary
+  // string renders a 200, self-canonicalising "no projects found" page
+  // (unbounded, indexable crawl space).
+  const allSectors = await getSectorsForCity(cityKey).catch(() => []);
+  const sectorSlug = sector.toLowerCase();
+  const matchedSector = allSectors.find((s) => s.slug === sectorSlug);
+  if (!matchedSector) notFound();
+
   const projects = await getProjectsForSector(city, sector).catch(() => []);
-  const sectorLabel = projects[0]?.sector || sectorLabelFromSlug(sector);
+  const sectorLabel = matchedSector.sector;
 
   const withImages = projects.filter((p) => p.images.length > 0);
   const residential = projects.filter(
@@ -99,9 +119,8 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   ).slice(0, 8);
 
   // Sibling sectors for internal linking (excludes the current one).
-  const allSectors = await getSectorsForCity(cityKey).catch(() => []);
   const otherSectors = allSectors
-    .filter((s) => s.slug !== sector.toLowerCase())
+    .filter((s) => s.slug !== sectorSlug)
     .slice(0, 10);
 
   const pageUrl = `${SITE}/project-listing/${slug}/sectors/${sector.toLowerCase()}`;
@@ -163,6 +182,24 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
           },
         },
       },
+      // CollectionPage alone doesn't enumerate what's in the collection —
+      // ItemList does, matching exactly what SimilarProjects renders below
+      // (withImages if any exist, else the unfiltered list; never more).
+      ...((withImages.length > 0 ? withImages : projects).length > 0
+        ? [
+            {
+              "@type": "ItemList",
+              itemListElement: (withImages.length > 0 ? withImages : projects).map(
+                (p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: p.project_name,
+                  url: `${SITE}/project-listing/${slug}/${p.slug}`,
+                })
+              ),
+            },
+          ]
+        : []),
     ],
   };
 

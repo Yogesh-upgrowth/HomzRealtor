@@ -18,9 +18,17 @@ export default function robots(): MetadataRoute.Robots {
   // ChatGPT-User, Perplexity-User, ClaudeBot, and Google-Extended (which
   // also gates eligibility for Google AI Overviews grounding) — are
   // deliberately allowed so the site can be cited in AI answers.
+  //
+  // PerplexityBot is NOT in this list, unlike GPTBot/anthropic-ai/
+  // Applebot-Extended: those companies split "training crawler" from
+  // "live per-query retrieval crawler" into separate user-agents, so
+  // blocking the training one costs zero citation visibility. Perplexity
+  // doesn't split cleanly — PerplexityBot also feeds the standing index
+  // their answers draw from, not just Perplexity-User's live fetches — so
+  // blocking it would plausibly cost real citations in a research-heavy
+  // category like real estate.
   const blockedAiAgents = [
     "GPTBot",
-    "PerplexityBot",
     "anthropic-ai",
     "Claude-Web",
     "CCBot",

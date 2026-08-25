@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
 import ogImage from "@/assets/images/herobg.png";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { COMPANY_INFO } from "@/lib/seo/companyInfo";
 
 const FOOTER_CITY_KEY = "ggn";
 
@@ -85,18 +86,42 @@ const organizationSchema = {
         "HomzRealtor is a real estate advisory platform for verified residential and commercial property in Gurgaon, India.",
       slogan: "Where Your Property Journey Begins.",
       areaServed: ["Gurgaon", "Noida", "Greater Noida", "Delhi", "Faridabad"],
-      // Both values are already public elsewhere on the site (the WhatsApp
+      // Phone/email are already public elsewhere on the site (the WhatsApp
       // CTA and the homepage contact section) — no invented contact details.
-      // No `address` here: a real registered-office PostalAddress isn't
-      // available yet: see components/Footer/index.tsx's COMPANY_INFO.
+      // address/identifier (RERA)/sameAs (social) come from the same
+      // lib/seo/companyInfo.ts COMPANY_INFO the footer and /contact page
+      // use, and are omitted here too until those fields are filled in.
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
-        telephone: "+91-8447909227",
-        email: "hello@homzrealtor.com",
+        telephone: COMPANY_INFO.phone,
+        email: COMPANY_INFO.email,
         areaServed: "IN",
         availableLanguage: ["en", "hi"],
       },
+      ...(COMPANY_INFO.officeAddress
+        ? {
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: COMPANY_INFO.officeAddress,
+              addressLocality: COMPANY_INFO.city,
+              addressRegion: COMPANY_INFO.state,
+              addressCountry: COMPANY_INFO.country,
+            },
+          }
+        : {}),
+      ...(COMPANY_INFO.hararaAgentNumber
+        ? {
+            identifier: {
+              "@type": "PropertyValue",
+              propertyID: "HARERA",
+              value: COMPANY_INFO.hararaAgentNumber,
+            },
+          }
+        : {}),
+      ...(Object.values(COMPANY_INFO.social).some(Boolean)
+        ? { sameAs: Object.values(COMPANY_INFO.social).filter(Boolean) }
+        : {}),
     },
     {
       "@type": "WebSite",

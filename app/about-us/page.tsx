@@ -90,7 +90,7 @@ const About = () => {
           heading="SPACES CRAFTED FOR YOUR NEXT CHAPTER"
           text="Step into homes that resonate with your aspirations. From timeless architecture to thoughtfully designed interiors, discover properties that elevate everyday living. Your perfect match is just a call away."
           buttonText="CONTACT NOW"
-          buttonLink="/#consult"
+          buttonLink="/contact"
           imageSrc={customer}
         />
       </div>

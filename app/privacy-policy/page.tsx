@@ -77,8 +77,8 @@ const PrivacyPolicyPage = () => {
           <p>
             You may request access to, correction of, or deletion of your personal information
             at any time by contacting us using the details on our{" "}
-            <Link href="/#consult" className="text-[#D9B268] underline underline-offset-2">
-              contact section
+            <Link href="/contact" className="text-[#D9B268] underline underline-offset-2">
+              contact page
             </Link>
             .
           </p>

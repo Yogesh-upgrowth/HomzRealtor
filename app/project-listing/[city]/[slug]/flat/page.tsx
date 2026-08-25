@@ -14,6 +14,10 @@ import { validImages } from "@/lib/intelligence/view-model";
 
 const SITE = "https://www.homzrealtor.com";
 
+// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
+// this every crawl/visit re-executes the origin function uncached.
+export const revalidate = 1800;
+
 type PageParams = { params: Promise<{ city: string; slug: string }> };
 
 // A "flat" child page is only genuinely useful (and thus indexable) for

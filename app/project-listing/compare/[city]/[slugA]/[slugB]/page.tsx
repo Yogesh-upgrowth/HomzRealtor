@@ -8,6 +8,11 @@ import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 
+// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
+// this every visit re-executes the origin function uncached (robots.txt
+// still disallows crawling these, so this is a real-user TTFB win only).
+export const revalidate = 1800;
+
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };
 
 function sortedSlugs(slugA: string, slugB: string): [string, string] {

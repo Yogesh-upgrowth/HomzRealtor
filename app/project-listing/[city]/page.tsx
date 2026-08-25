@@ -18,6 +18,12 @@ import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
 
+// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL, so the
+// edge cache never serves HTML staler than the underlying data already
+// could be. Without this, every crawl hit/visit executes the origin
+// function (Cache-Control: private, no-cache, no-store).
+export const revalidate = 1800;
+
 type PageParams = { params: Promise<{ city: string }> };
 
 // Every other city, used for the "explore nearby markets" internal-link block.
@@ -204,14 +210,16 @@ const CityLandingPage = async ({ params }: PageParams) => {
       </section>
 
       {/* Project grid (reuses the shared card component) — capped preview,
-          not the full city list (which can run into the hundreds); the real,
-          filterable, paginated grid lives at /project-listing. */}
+          not the full city list (which can run into the hundreds). "View
+          all" goes to the server-rendered, paginated /page/1 sequence (real
+          anchors, no JS required), not the client-filtered /project-listing
+          hub, which renders zero project links in its initial HTML. */}
       {withImages.length > 0 ? (
         <SimilarProjects
           title={name}
           projects={withImages.slice(0, 9)}
           heading={`Projects in ${name}`}
-          viewAllHref="/project-listing"
+          viewAllHref={`/project-listing/${slug}/page/1`}
           viewAllLabel={`View all ${withImages.length} →`}
         />
       ) : (

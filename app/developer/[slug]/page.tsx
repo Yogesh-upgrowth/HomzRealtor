@@ -3,13 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { getBuilderBySlug, getAllBuilders } from "@/lib/intelligence/projects";
+import { getBuilderBySlug, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
+
+// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
+// this every crawl/visit re-executes the origin function uncached.
+export const revalidate = 1800;
 
 type PageParams = { params: Promise<{ slug: string }> };
 
@@ -117,6 +121,22 @@ const DeveloperPage = async ({ params }: PageParams) => {
         description: intro,
         url: pageUrl,
       },
+      // CollectionPage alone doesn't enumerate the developer's projects —
+      // ItemList does, matching exactly the capped preview grid rendered
+      // below (withImages.slice(0, 9)), never more than what's on screen.
+      ...(withImages.length > 0
+        ? [
+            {
+              "@type": "ItemList",
+              itemListElement: withImages.slice(0, 9).map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: p.project_name,
+                url: `${SITE}/project-listing/${canonicalCitySlug(p.city_key)}/${p.slug}`,
+              })),
+            },
+          ]
+        : []),
     ],
   };
 

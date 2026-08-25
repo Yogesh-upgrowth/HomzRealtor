@@ -1,5 +1,24 @@
+// Every external host the browser itself is ever allowed to fetch an image
+// from directly — either through next/image's remotePatterns below, or via
+// a raw <img src> that bypasses it (WishlistList, AvatarUploader,
+// ImageUploader, PropertyDetailView's hero image all do). Single source so
+// the images config and the img-src CSP directive can't drift apart.
+const IMAGE_HOSTS = [
+  "static.squareyards.com",
+  "img.squareyards.com",
+  "www.squareyards.com",
+  "img.staticmb.com",
+  "loangateway.urbanmoney.com",
+  // Agent-uploaded property photos (Vercel Blob public URLs) — store-id
+  // subdomain varies per Blob store, hence the wildcard.
+  "*.public.blob.vercel-storage.com",
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Stop advertising "X-Powered-By: Next.js" — a free fingerprint for
+  // anyone scripting version-specific exploits against the framework.
+  poweredByHeader: false,
   allowedDevOrigins: [
     "*.replit.dev",
     "*.sisko.replit.dev",
@@ -15,43 +34,65 @@ const nextConfig = {
     // site-logo assets under /assets/ — filtered at the source in
     // lib/intelligence/property-view.ts's validImages() instead of blocked
     // here, since blocking the host would also drop any genuine photo on it).
-    remotePatterns: [
+    remotePatterns: IMAGE_HOSTS.map((hostname) => ({
+      protocol: "https",
+      hostname,
+      pathname: "/**",
+    })),
+  },
+  async headers() {
+    // Content-Security-Policy ships Report-Only for now, per the standard
+    // rollout order (ship it observing before it can ever block a real
+    // request) — script-src needs 'unsafe-inline' because every page emits
+    // inline JSON-LD <script> tags (BreadcrumbList/CollectionPage/etc.);
+    // tightening that to per-request nonces is a separate, bigger change.
+    // Once this has run for a while with no unexpected violations in the
+    // browser console, promote it to a real `Content-Security-Policy`
+    // header (drop "-Report-Only").
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      `img-src 'self' blob: data: ${IMAGE_HOSTS.map((h) => `https://${h}`).join(" ")}`,
+      "font-src 'self'",
+      "connect-src 'self'",
+      // Google Maps embed on /contact, once COMPANY_INFO.mapEmbedUrl is set.
+      "frame-src 'self' https://www.google.com",
+      "frame-ancestors 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
+    return [
       {
-        protocol: "https",
-        hostname: "static.squareyards.com",
-        pathname: "/**",
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+          { key: "Content-Security-Policy-Report-Only", value: csp },
+        ],
       },
-      {
-        protocol: "https",
-        hostname: "img.squareyards.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "www.squareyards.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "img.staticmb.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "loangateway.urbanmoney.com",
-        pathname: "/**",
-      },
-      {
-        // Agent-uploaded property photos (Vercel Blob public URLs) —
-        // store-id subdomain varies per Blob store, hence the wildcard.
-        protocol: "https",
-        hostname: "*.public.blob.vercel-storage.com",
-        pathname: "/**",
-      },
-    ],
+    ];
   },
   async redirects() {
     return [
+      // /contact-us 404'd outright; /contact is the one real contact page.
+      {
+        source: "/contact-us",
+        destination: "/contact",
+        permanent: true,
+      },
       // The project "enquire" page was renamed to "flat" — keep old links working.
       {
         source: "/project-listing/:city/:slug/enquire",

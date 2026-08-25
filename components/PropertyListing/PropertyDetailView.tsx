@@ -251,7 +251,7 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
           <h2 className="font-display text-2xl md:text-3xl text-white mb-3">Interested in this listing?</h2>
           <p className="text-gray-400 mb-6">Get in touch and we&apos;ll help you take the next step.</p>
           <Link
-            href="/#consult"
+            href="/contact"
             className="inline-block rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-8 py-3 font-bold text-[#1c1608]"
           >
             Contact Now

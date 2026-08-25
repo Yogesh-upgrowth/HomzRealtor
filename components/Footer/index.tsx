@@ -4,17 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import logo from "@/assets/companylogo/logo.png";
-
-// Real-estate is a YMYL (Your Money or Your Life) category — Google and
-// buyers both weight demonstrable trust signals heavily here. Fill these in
-// with the company's actual registered details before relying on this for
-// compliance; each line only renders when non-empty, so leaving one blank
-// simply omits it rather than showing a fake value.
-const COMPANY_INFO = {
-  officeAddress: "",
-  gstNumber: "",
-  hararaAgentNumber: "", // HARERA channel-partner/agent registration number
-};
+import { Instagram, Facebook, Linkedin, Youtube } from "lucide-react";
+import { COMPANY_INFO, hasSocialLinks } from "@/lib/seo/companyInfo";
 
 type FooterLink = { label: string; href: string };
 
@@ -24,9 +15,6 @@ type FooterProps = {
 };
 
 export default function Footer({ topSectors = [], topDevelopers = [] }: FooterProps) {
-  const hasCompanyInfo =
-    COMPANY_INFO.officeAddress || COMPANY_INFO.gstNumber || COMPANY_INFO.hararaAgentNumber;
-
   // MobileBottomNav (components/Home/MobileBottomNav.tsx) only renders on the
   // home page, not globally — so the extra bottom padding that keeps this
   // footer's content clear of it must only apply there too. Everywhere else
@@ -64,12 +52,44 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
             dream home, investment property, or a space that suits your
             lifestyle.
           </p>
-          {hasCompanyInfo && (
-            <div className="mt-4 space-y-1 text-[13px] text-[#6E6D6A]">
-              {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
-              {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
-              {COMPANY_INFO.hararaAgentNumber && (
-                <p>HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}</p>
+          <div className="mt-4 space-y-1 text-[13px] text-[#6E6D6A]">
+            <p>
+              <a href={`tel:${COMPANY_INFO.phone}`} className="hover:text-[#D9B268]">
+                {COMPANY_INFO.phoneDisplay}
+              </a>
+            </p>
+            <p>
+              <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-[#D9B268]">
+                {COMPANY_INFO.email}
+              </a>
+            </p>
+            {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
+            {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
+            {COMPANY_INFO.hararaAgentNumber && (
+              <p>HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}</p>
+            )}
+          </div>
+          {hasSocialLinks() && (
+            <div className="mt-4 flex gap-3">
+              {COMPANY_INFO.social.instagram && (
+                <a href={COMPANY_INFO.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-[#9b9a97] hover:text-[#D9B268]">
+                  <Instagram size={18} />
+                </a>
+              )}
+              {COMPANY_INFO.social.facebook && (
+                <a href={COMPANY_INFO.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-[#9b9a97] hover:text-[#D9B268]">
+                  <Facebook size={18} />
+                </a>
+              )}
+              {COMPANY_INFO.social.linkedin && (
+                <a href={COMPANY_INFO.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-[#9b9a97] hover:text-[#D9B268]">
+                  <Linkedin size={18} />
+                </a>
+              )}
+              {COMPANY_INFO.social.youtube && (
+                <a href={COMPANY_INFO.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-[#9b9a97] hover:text-[#D9B268]">
+                  <Youtube size={18} />
+                </a>
               )}
             </div>
           )}
@@ -94,7 +114,7 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
               </Link>
             </li>
             <li>
-              <Link href="/#consult" className={colLinkCls}>
+              <Link href="/contact" className={colLinkCls}>
                 Contact
               </Link>
             </li>

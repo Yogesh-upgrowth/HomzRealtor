@@ -90,6 +90,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  // Server-rendered paginated project pages (app/project-listing/[city]/page/[page]/page.tsx)
+  // — a real crawl path to every project independent of the client-fetched
+  // /project-listing hub. Same page size as that route (PAGE_SIZE = 24).
+  const PROJECT_PAGE_SIZE = 24
+  const pageUrls: MetadataRoute.Sitemap = Array.from(
+    entries.reduce((counts, e) => counts.set(e.city, (counts.get(e.city) || 0) + 1), new Map<string, number>())
+  ).flatMap(([city, count]) => {
+    const totalPages = Math.max(1, Math.ceil(count / PROJECT_PAGE_SIZE))
+    return Array.from({ length: totalPages }, (_, i) => ({
+      url: `${baseUrl}/project-listing/${city}/page/${i + 1}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+  })
+
   // Sector hub pages: /sectors index + one page per derived sector, per city.
   const sectorEntries = await Promise.all(
     CITY_KEYS.map(async (cityKey) => {
@@ -185,12 +201,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
     { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${baseUrl}/contact`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/about-us`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/privacy-policy`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/terms`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/disclaimer`,      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${baseUrl}/developers`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
     ...cityUrls,
+    ...pageUrls,
     ...sectorUrls,
     ...developerUrls,
     ...projectUrls,
