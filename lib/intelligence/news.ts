@@ -41,6 +41,13 @@ const REAL_ESTATE_RE =
 // are still ranked first.
 const NOISE_RE = /ein presswire|prnewswire|globenewswire|business ?wire/i;
 
+// The Gurgaon-specific query above is already geo-scoped by definition —
+// this only gates the second, unscoped '"real estate"' backfill query
+// below, which otherwise happily pads out to `limit` with any real-estate
+// story regardless of geography: a Karnataka assembly bill, a US
+// Zillow/FTC story, confirmed live via audit. Delhi NCR core only.
+const NCR_RE = /\b(gurgaon|gurugram|noida|greater noida|faridabad|delhi|ncr)\b/i;
+
 type RawArticle = {
   title?: unknown;
   link?: unknown;
@@ -127,9 +134,12 @@ export async function getGurgaonRealEstateNews(limit = 5): Promise<NewsItem[]> {
       fetchRaw('"real estate"'),
     ]);
 
+    const ncrOnly = (items: NewsItem[]) =>
+      items.filter((i) => NCR_RE.test(`${i.title} ${i.description || ""}`));
+
     const seen = new Set<string>();
     const items: NewsItem[] = [];
-    for (const item of [...relevantItems(gurgaonRaw), ...relevantItems(marketRaw)]) {
+    for (const item of [...relevantItems(gurgaonRaw), ...ncrOnly(relevantItems(marketRaw))]) {
       if (seen.has(item.title)) continue;
       seen.add(item.title);
       items.push(item);

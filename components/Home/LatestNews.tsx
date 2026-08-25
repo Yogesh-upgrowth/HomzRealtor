@@ -33,7 +33,7 @@ const LatestNews = ({ items }: Props) => {
         <a
           href={lead.link}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow"
           className="group overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#141416] hover:border-[#D9B268]/35 transition"
         >
           <div className="relative aspect-video bg-[#1a1a1d]">
@@ -79,7 +79,7 @@ const LatestNews = ({ items }: Props) => {
                 key={n.link}
                 href={n.link}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="group flex gap-4 overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#141416] p-3 hover:border-[#D9B268]/35 transition"
               >
                 <div className="relative h-[92px] w-[120px] shrink-0 overflow-hidden rounded-xl bg-[#1a1a1d]">
