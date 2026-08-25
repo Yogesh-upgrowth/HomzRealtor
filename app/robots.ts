@@ -43,9 +43,20 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         // "/*?*" used to blanket-disallow every query-string URL, including
         // the homepage's own "Trending Searches" links and every filtered
-        // listing state. Comparison pages are the one genuinely unbounded
-        // URL space (city × project-pair), so those stay disallowed instead.
-        disallow: ["/api/", "/project-listing/compare/"],
+        // listing state.
+        //
+        // /project-listing/compare/ used to be disallowed here too, as a
+        // guard against its combinatorial (city x project-pair) URL space.
+        // That backfired: a retired pair 404s correctly (confirmed live —
+        // a real 404, not a soft one), but a robots.txt block stops Google
+        // from ever re-crawling a URL it already indexed, so a stale
+        // compare URL just sits in the index forever as "Indexed, though
+        // blocked by robots.txt" instead of getting dropped. Compare pages
+        // are still a real, actively-linked feature (SimilarProjects,
+        // SectorCompareTeaser) between real projects, and an invalid guess
+        // is a cheap, fast 404 rather than an expensive render — allowing
+        // the crawl is worth it for letting stale URLs actually deindex.
+        disallow: ["/api/"],
       },
       ...blockedAiAgents.map((userAgent) => ({
         userAgent,
