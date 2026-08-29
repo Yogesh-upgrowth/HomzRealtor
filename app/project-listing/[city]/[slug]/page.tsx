@@ -15,15 +15,14 @@ import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
-// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
-// this every crawl/visit re-executes the origin function uncached.
+// ISR — 14-day cache to reduce API calls from crawler traffic.
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment). Returning [] rather than the ~1000 real project
 // slugs: an empty list still activates on-demand ISR for every param, not
 // just pre-rendered ones (also verified), without slowing the build by
 // pre-rendering the whole catalogue up front.
-export const revalidate = 1800;
+export const revalidate = 1209600;
 
 export function generateStaticParams() {
   return [];

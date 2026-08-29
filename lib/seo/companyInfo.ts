@@ -10,7 +10,7 @@
 // (omitted, not faked) wherever it's blank, so leaving one empty degrades
 // gracefully instead of shipping a placeholder value.
 export const COMPANY_INFO = {
-  name: "Homz Realtor",
+  name: "HomzRealtor",
   legalName: "",
   phone: "+91-8447909227",
   phoneDisplay: "+91 84479 09227",

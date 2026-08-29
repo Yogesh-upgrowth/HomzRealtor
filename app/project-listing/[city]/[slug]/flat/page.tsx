@@ -14,12 +14,12 @@ import { validImages } from "@/lib/intelligence/view-model";
 
 const SITE = "https://www.homzrealtor.com";
 
-// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
+// ISR — 14-day cache to reduce API calls from crawler traffic; without
 // this every crawl/visit re-executes the origin function uncached.
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment); [] still activates on-demand ISR for every param.
-export const revalidate = 1800;
+export const revalidate = 1209600;
 
 export function generateStaticParams() {
   return [];

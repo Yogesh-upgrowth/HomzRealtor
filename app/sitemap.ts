@@ -9,6 +9,7 @@ import {
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
+import { BLOG_POSTS } from '@/lib/content/blogPosts'
 
 export const dynamic = 'force-dynamic'
 
@@ -215,6 +216,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.5,
+    })),
+    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    ...BLOG_POSTS.map((p) => ({
+      url: `${baseUrl}/blog/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
     })),
     ...cityUrls,
     ...pageUrls,

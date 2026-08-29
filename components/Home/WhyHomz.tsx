@@ -20,7 +20,7 @@ const WhyHomz = () => {
             Why choose us
           </p>
           <h2 className="mb-7 text-[clamp(26px,3.6vw,38px)] font-bold tracking-tight text-white">
-            Why Choose Homz Realtor?
+            Why Choose HomzRealtor?
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {FEATURES.map((f) => (

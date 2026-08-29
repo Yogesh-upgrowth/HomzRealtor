@@ -3,7 +3,7 @@ import discoverImage3 from "@/assets/images/discoverImage3.jpg";
 
 const title = "Plots & Lands — Coming Soon";
 const description =
-  "Plots & Lands listings are coming soon to Homz. Find the perfect plot or land for your dream project, investment, or development plan.";
+  "Plots & Lands listings are coming soon to HomzRealtor. Find the perfect plot or land for your dream project, investment, or development plan.";
 
 export const metadata = {
   title,

@@ -27,7 +27,7 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     if (!view) return {};
     const description = view.keyHighlights[0] || `${view.title} in ${view.location}.`;
     return {
-      title: `${view.title} | Homz`,
+      title: view.title,
       description,
       alternates: { canonical: `/${routeBase}/${city}/${slug}` },
       openGraph: {

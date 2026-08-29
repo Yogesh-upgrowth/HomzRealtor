@@ -64,7 +64,7 @@ const SignupForm = () => {
   return (
     <div className="w-full max-w-md">
       <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268] text-center">
-        Join Homz Realtor
+        Join HomzRealtor
       </p>
       <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
         Create Your Account

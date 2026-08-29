@@ -184,7 +184,7 @@ const AboutSections = () => {
         <SectionHeading title="Who We Are" />
         <div className="max-w-4xl mx-auto space-y-5 text-gray-700 leading-relaxed text-center md:text-left">
           <p>
-            Homz is a customer-focused real estate advisory and property
+            HomzRealtor is a customer-focused real estate advisory and property
             solutions platform dedicated to helping individuals and businesses
             navigate the property market with confidence.
           </p>
@@ -215,7 +215,7 @@ const AboutSections = () => {
 
       {/* SECTION 4: WHY CHOOSE HOMZ */}
       <section className="max-w-[1444px] w-full mx-auto px-6">
-        <SectionHeading title="Why Choose Homz" />
+        <SectionHeading title="Why Choose HomzRealtor" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {whyChooseHomz.map((item) => (
             <FeatureCard key={item.title} {...item} />
@@ -279,7 +279,7 @@ const AboutSections = () => {
 
           <div className="max-w-3xl mx-auto space-y-5 text-gray-300 leading-relaxed">
             <p>
-              At Homz, we understand that real estate decisions are among the most
+              At HomzRealtor, we understand that real estate decisions are among the most
               important choices people make. Whether you are purchasing your dream
               home, expanding your investment portfolio, or exploring new
               opportunities, our team is committed to helping you move forward with
@@ -293,7 +293,7 @@ const AboutSections = () => {
           </div>
 
           <p className="mt-10 text-2xl md:text-3xl font-semibold font-corbert bg-gradient-to-b from-[#FDF094] to-[#B77D2B] text-transparent bg-clip-text inline-block">
-            &ldquo;Homz — Where Your Property Journey Begins.&rdquo;
+            &ldquo;HomzRealtor — Where Your Property Journey Begins.&rdquo;
           </p>
         </div>
       </section>

@@ -9,7 +9,7 @@ import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 export const metadata = {
   title: "About Us — Trusted Real Estate Advisory & Property Solutions",
   description:
-    "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
+    "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
   keywords: [
     "about HomzRealtor",
     "real estate advisory Delhi NCR",
@@ -23,7 +23,7 @@ export const metadata = {
   openGraph: {
     title: "About Us — Trusted Real Estate Advisory & Property Solutions",
     description:
-      "Learn about Homz, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
+      "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
     url: "https://www.homzrealtor.com/about-us",
     type: "website",
     images: [DEFAULT_OG_IMAGE],
@@ -37,12 +37,12 @@ export const metadata = {
 const aboutSchema = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
-  name: "About Homz",
+  name: "About HomzRealtor",
   description:
-    "Homz is a customer-focused real estate advisory and property solutions platform helping individuals and businesses discover verified residential and commercial opportunities with confidence.",
+    "HomzRealtor is a customer-focused real estate advisory and property solutions platform helping individuals and businesses discover verified residential and commercial opportunities with confidence.",
   publisher: {
     "@type": "Organization",
-    name: "Homz",
+    name: "HomzRealtor",
     slogan: "Where Your Property Journey Begins.",
   },
 };

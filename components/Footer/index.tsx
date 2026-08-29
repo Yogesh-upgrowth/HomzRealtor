@@ -45,7 +45,7 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
       <div className="max-w-[1397px] mx-auto px-6 pt-10 pb-10 grid grid-cols-1 gap-8 border-b border-[rgba(255,255,255,0.06)] sm:grid-cols-2 md:pt-[clamp(48px,6vw,80px)] lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-4">
-            <Image src={logo} alt="Homz Realtor Logo" width={90} height={90} />
+            <Image src={logo} alt="HomzRealtor Logo" width={90} height={90} />
           </div>
           <p className="text-[14px] text-[#9b9a97] max-w-lg">
             Explore a curated selection of properties across the city. Find your
@@ -170,7 +170,7 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
       </div>
 
       <div className="max-w-[1397px] mx-auto px-6 py-[18px] text-left text-[12.5px] text-[#6E6D6A] md:py-[22px]">
-        © {new Date().getFullYear()} Homz Realtor. All rights reserved.
+        © {new Date().getFullYear()} HomzRealtor. All rights reserved.
       </div>
     </footer>
   );

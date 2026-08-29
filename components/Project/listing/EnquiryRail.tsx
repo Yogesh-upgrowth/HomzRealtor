@@ -111,7 +111,7 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
                 Talk to a property expert
               </p>
               <p className="mb-5 text-[13.5px] leading-relaxed text-gray-400">
-                Exclusive access to new launches &amp; developer deals — only for Homz clients.
+                Exclusive access to new launches &amp; developer deals — only for HomzRealtor clients.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -164,7 +164,7 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
               </form>
 
               <p className="mt-3 text-center text-[11px] leading-relaxed text-gray-500">
-                By continuing you agree to be contacted by Homz Realtor.
+                By continuing you agree to be contacted by HomzRealtor.
               </p>
 
               <div className="my-4 flex items-center gap-3">
