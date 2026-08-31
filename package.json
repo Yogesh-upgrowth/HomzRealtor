@@ -7,12 +7,10 @@
     "build": "next build",
     "start": "next start -p ${PORT:-5000} -H 0.0.0.0",
     "lint": "eslint",
-    "ingest": "node scripts/ingest.mjs",
     "set-user-role": "node scripts/set-user-role.mjs",
     "verify:agent-readiness": "node scripts/verify-agent-readiness.mjs"
   },
   "dependencies": {
-    "@types/pg": "^8.20.0",
     "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "drizzle-zod": "^0.8.3",
@@ -24,7 +22,6 @@
     "openai": "^6.41.0",
     "p-limit": "^7.3.0",
     "p-retry": "^7.1.1",
-    "pg": "^8.21.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.6.0",

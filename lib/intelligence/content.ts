@@ -17,13 +17,13 @@ import { reraPortalFor } from "./rera";
 let openaiClient: OpenAI | null = null;
 function getOpenAI(): OpenAI {
   openaiClient ??= new OpenAI({
-    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-    baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    apiKey: process.env.AI_INTEGRATIONS_GROQ_API_KEY,
+    baseURL: process.env.AI_INTEGRATIONS_GROQ_BASE_URL,
   });
   return openaiClient;
 }
 
-const MODEL = process.env.AI_INTEGRATIONS_OPENAI_MODEL ?? "gpt-4o-mini";
+const MODEL = process.env.AI_INTEGRATIONS_GROQ_MODEL ?? "openai/gpt-oss-20b";
 
 // Bump this to invalidate previously cached AI content (e.g. after model/prompt changes).
 const CONTENT_CACHE_VERSION = "v2";
@@ -57,6 +57,9 @@ function buildFacts(
     property_category: project.property_category,
     property_type: project.property_type,
     rera_id: project.rera_id,
+    // "active" | "lapsed" | "unverified" | "not_registered" — passed so the
+    // model doesn't write "RERA registered" for a lapsed/unverified number.
+    rera_status: project.rera_status,
     possession: project.possession_text,
     price_range:
       project.min_price_inr != null
@@ -85,6 +88,11 @@ Rules:
 - Content must be unique to THIS project — no generic boilerplate that fits any project.
 - Confident, informative tone for Indian home buyers and investors.
 - Use Indian number formats (Cr, Lakh) for money.
+- rera_status matters: only say a project "is RERA registered"/"government-verified"
+  when rera_status is "active". If it is "lapsed", say the registration on file has
+  lapsed and buyers should verify current status. If "unverified" or "not_registered",
+  do not claim active RERA registration — mention the number as on-file/unverified,
+  or omit the claim entirely if there is no rera_id.
 Return STRICT JSON only — no markdown fences around it.`;
 
 async function callOpenAI(
@@ -170,12 +178,18 @@ export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
 
   if (reraId) {
     const portal = reraPortalFor(project.state);
-    faqs.push({
-      q: `Is ${name} RERA registered?`,
-      a: portal
-        ? `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this on the official ${portal.name} portal at ${portal.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}.`
-        : `Yes, ${name} is registered under RERA with ID ${reraId}. You can verify this with your state's RERA authority.`,
-    });
+    const portalLine = portal
+      ? ` You can verify this on the official ${portal.name} portal at ${portal.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}.`
+      : " You can verify this with your state's RERA authority.";
+    // A real, correctly-shaped rera_id is not the same as an active
+    // registration — only claim "Yes, registered" when confirmed active.
+    const answer =
+      project.rera_status === "lapsed"
+        ? `A RERA registration (${reraId}) is on file for ${name}, but it has lapsed.${portalLine}`
+        : project.rera_status === "active"
+          ? `Yes, ${name} is registered under RERA with ID ${reraId}.${portalLine}`
+          : `RERA ID ${reraId} is on file for ${name} (not independently verified).${portalLine}`;
+    faqs.push({ q: `Is ${name} RERA registered?`, a: answer });
   }
 
   faqs.push({

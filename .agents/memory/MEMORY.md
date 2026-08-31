@@ -1,3 +1,3 @@
-- [AI content generation quirks](ai-content-generation.md) — Replit OpenAI gateway needs a real OpenAI model (not llama); unstable_cache will cache empty/failed AI payloads unless you throw + version the cache key.
+- [AI content generation quirks](ai-content-generation.md) — Groq's API needs a model it still serves (not llama, since removed); unstable_cache will cache empty/failed AI payloads unless you throw + version the cache key.
 - [Project listing Missing Data Engine](project-listing-engine.md) — every user-visible string must pass through `clean()` (view-model.ts); canonical city URLs use slug map, never internal city_key.
 - [Preview workflow ports](workflow-port-conventions.md) — webview expects port 5000; keep npm start scripts aligned with the workflow configuration.

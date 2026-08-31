@@ -136,6 +136,13 @@ export type NormalizedProject = {
   property_type: string | null;
   project_status: string | null;
   rera_id: string | null;
+  /** "active" | "lapsed" | "unverified" | "not_registered" — a correctly
+   *  shaped rera_id is not the same as an active registration (see
+   *  ReraBadge). Absent on older cached feed responses; treat as unknown. */
+  rera_status: string | null;
+  rera_valid_upto: string | null;
+  rera_registered_with: string | null;
+  rera_certificate_url: string | null;
   sector: string | null;
   micro_market: string | null;
   city_name: string;
@@ -173,6 +180,10 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     property_type: raw.BHKType || null,
     project_status: raw.projectStatus || null,
     rera_id: raw.reraId || null,
+    rera_status: raw.reraStatus || null,
+    rera_valid_upto: raw.reraValidUpto || null,
+    rera_registered_with: raw.reraRegisteredWith || null,
+    rera_certificate_url: raw.reraCertificateUrl || null,
     sector: extractSector(name, raw.aboutProject, raw.location),
     micro_market: extractMicroMarket(name, raw.aboutProject, raw.location),
     city_name: meta.name,

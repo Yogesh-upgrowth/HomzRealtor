@@ -12,6 +12,7 @@ import {
   TreePine,
   TrendingUp,
   ShieldCheck,
+  AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
 import type { Badge } from "@/lib/intelligence/view-model";
@@ -30,6 +31,7 @@ const ICONS: Record<string, LucideIcon> = {
   TreePine,
   TrendingUp,
   ShieldCheck,
+  AlertTriangle,
 };
 
 type Props = { title: string; badges: Badge[]; heading?: string };

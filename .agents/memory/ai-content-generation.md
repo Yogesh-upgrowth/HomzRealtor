@@ -1,14 +1,14 @@
 ---
 name: AI content generation quirks
-description: Gotchas for lib/intelligence/content.ts AI narrative generation via the Replit OpenAI gateway.
+description: Gotchas for lib/intelligence/content.ts AI narrative generation via Groq's OpenAI-compatible API.
 ---
 
 # AI content generation (project intelligence)
 
-## Model must be an OpenAI model, not llama
-The app talks to OpenAI through the Replit AI gateway (base URL `AI_INTEGRATIONS_OPENAI_BASE_URL`, a local proxy). The gateway rejects `llama-3.1-8b-instant` with `400 Model ... is not supported`. Supported models tested working: `gpt-4o-mini`, `gpt-4o`, `gpt-5`, `gpt-4.1-mini`. Default is `gpt-4o-mini` (cheap/fast). `AI_INTEGRATIONS_OPENAI_MODEL` env overrides it.
-**Why:** an earlier default of a llama model silently failed, so all AI narrative sections hid themselves.
-**How to apply:** if AI sections vanish, check logs for a model-not-supported 400 before assuming a data problem.
+## Model must be one Groq currently serves
+The app talks to Groq's OpenAI-compatible API directly (base URL `AI_INTEGRATIONS_GROQ_BASE_URL` = `https://api.groq.com/openai/v1`, key `AI_INTEGRATIONS_GROQ_API_KEY`). Renamed from `AI_INTEGRATIONS_OPENAI_*` on 2026-08-31 — the vars were always pointed at Groq, the OpenAI naming was leftover from an earlier provider. `llama-3.1-8b-instant` was removed from Groq's lineup entirely and 400s. Default/tested-working model: `openai/gpt-oss-20b` (free tier, supports JSON mode). `AI_INTEGRATIONS_GROQ_MODEL` env overrides it.
+**Why:** an earlier default of a since-removed llama model silently failed, so all AI narrative sections hid themselves.
+**How to apply:** if AI sections vanish, check logs for a model-not-supported 400 before assuming a data problem; check `GET https://api.groq.com/openai/v1/models` for what's currently available.
 
 ## unstable_cache caches empty/failed AI results for 30 days
 `generateProjectContent` wraps `callOpenAI` in `unstable_cache` (revalidate 30d). If `callOpenAI` swallows an error and returns empty strings, that empty payload gets cached and suppresses sections until the cache expires.

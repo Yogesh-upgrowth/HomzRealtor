@@ -273,6 +273,7 @@ const ProjectPage = async ({ params }: PageParams) => {
           propertyType={view.propertyType}
           status={view.status}
           rera={view.rera}
+          reraStatus={view.reraStatus}
           priceText={view.priceText}
           priceSubtext={view.priceSubtext}
           possession={view.possession}

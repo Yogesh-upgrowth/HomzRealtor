@@ -165,6 +165,7 @@ function PropertyListingInner({
     imgUrl: getValidImage(property.images) || "/dummy.svg",
     location: property.location || "N/A",
     reranumber: property.reraId || "N/A",
+    rerastatus: property.reraStatus,
     title: property.title || "Untitled Listing",
     btntag: property.price || "View Details",
     specifications: [

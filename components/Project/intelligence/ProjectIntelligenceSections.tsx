@@ -133,7 +133,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   ].filter(Boolean) as { label: string; value: string }[];
   const builderBadges = [
     isKnownBuilder(project.builder) && "Established Developer",
-    project.rera_id && "RERA Registered",
+    project.rera_status === "active" && "RERA Registered",
   ].filter(Boolean) as string[];
 
   const landmarksForTable: Record<string, { name: string; distance: string }[]> = {};

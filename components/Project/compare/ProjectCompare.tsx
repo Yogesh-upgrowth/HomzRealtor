@@ -7,6 +7,12 @@ import type { ProjectView } from "@/lib/intelligence/view-model";
 
 type Row = { label: string; a: string | null; b: string | null };
 
+function reraCell(view: ProjectView): string | null {
+  if (!view.rera) return null;
+  const suffix = view.reraStatus === "lapsed" ? " (Lapsed)" : view.reraStatus === "unverified" ? " (Unverified)" : "";
+  return `${view.rera}${suffix}`;
+}
+
 function buildRows(a: ProjectView, b: ProjectView): Row[] {
   const rows: Row[] = [
     { label: "Starting Price", a: a.priceText, b: b.priceText },
@@ -24,7 +30,7 @@ function buildRows(a: ProjectView, b: ProjectView): Row[] {
       a: a.builder !== "the developer" ? a.builder : null,
       b: b.builder !== "the developer" ? b.builder : null,
     },
-    { label: "RERA ID", a: a.rera, b: b.rera },
+    { label: "RERA ID", a: reraCell(a), b: reraCell(b) },
     {
       label: "Unit Options",
       a: a.units.length > 0 ? `${a.units.length} configurations` : null,

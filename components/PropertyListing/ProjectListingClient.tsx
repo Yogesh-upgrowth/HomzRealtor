@@ -279,6 +279,7 @@ function ProjectListingInner() {
     imgUrl: getValidImage(project.images) || "/dummy.svg",
     location: project.location || "N/A",
     reranumber: project.reraId || "N/A",
+    rerastatus: project.reraStatus,
     title: project.projectTitle || "Untitled Project",
     btntag: project.price || "View Details",
     specifications: [
@@ -295,7 +296,16 @@ function ProjectListingInner() {
       {
         icon: statusImg,
         label: "RERA",
-        value: project.reraId || "N/A",
+        // Status suffix so a lapsed/unverified id isn't shown as if it were
+        // a plain, currently-active registration — see ReraBadge for why a
+        // real, correctly-shaped id alone doesn't mean "verified".
+        value: project.reraId
+          ? project.reraStatus === "lapsed"
+            ? `${project.reraId} (Lapsed)`
+            : project.reraStatus === "unverified"
+              ? `${project.reraId} (Unverified)`
+              : project.reraId
+          : "N/A",
       },
       {
         icon: devImg,

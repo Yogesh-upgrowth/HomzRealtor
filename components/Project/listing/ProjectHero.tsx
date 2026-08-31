@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
-import { MapPin, Building2, BadgeCheck, ChevronRight, Images } from "lucide-react";
+import { MapPin, Building2, ChevronRight, Images } from "lucide-react";
 import ProjectCtas from "./ProjectCtas";
 import SaveToggleButton from "@/components/Common/SaveToggleButton";
+import ReraBadge from "@/components/Common/ReraBadge";
 
 type Props = {
   name: string;
@@ -21,6 +22,7 @@ type Props = {
   propertyType: string | null;
   status: string;
   rera: string | null;
+  reraStatus?: string | null;
   priceText: string;
   priceSubtext: string | null;
   possession?: string | null;
@@ -46,6 +48,7 @@ const ProjectHero = ({
   propertyType,
   status,
   rera,
+  reraStatus,
   priceText,
   images,
   enquireHref,
@@ -121,11 +124,7 @@ const ProjectHero = ({
                 {p}
               </span>
             ))}
-            {rera && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-[#63C08D]/30 bg-[#63C08D]/14 px-3 py-1.5 text-xs font-bold text-[#7fd3a5]">
-                <BadgeCheck size={13} /> RERA Registered
-              </span>
-            )}
+            {rera && <ReraBadge reraId={rera} status={reraStatus} variant="full" />}
           </div>
         )}
 

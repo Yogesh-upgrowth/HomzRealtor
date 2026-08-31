@@ -35,6 +35,14 @@ export type RawHomzProject = {
   size?: string;
   BHKType?: string;
   reraId?: string;
+  /** "active" | "lapsed" | "unverified" | "not_registered" — see
+   *  components/Common/ReraBadge.tsx. A real, correctly-shaped reraId can
+   *  still be "lapsed": HRERA's own registry is the source of truth, not
+   *  the shape of the id string alone. */
+  reraStatus?: string;
+  reraValidUpto?: string | null;
+  reraRegisteredWith?: string | null;
+  reraCertificateUrl?: string | null;
   projectStatus?: string;
   possession?: string;
   aboutProject?: string[];
@@ -75,6 +83,11 @@ export type RawHomzProperty = {
   listingType?: string;
   isCommercial?: boolean;
   reraId?: string;
+  /** See the matching comment on RawHomzProject — same badge semantics. */
+  reraStatus?: string;
+  reraValidUpto?: string | null;
+  reraRegisteredWith?: string | null;
+  reraCertificateUrl?: string | null;
   projectStatus?: string;
   possession?: string;
   builderDescription?: string;

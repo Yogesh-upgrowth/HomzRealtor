@@ -52,6 +52,8 @@ export type ProjectView = {
   status: string;
   possession: string | null;
   rera: string | null;
+  /** "active" | "lapsed" | "unverified" | "not_registered" — see ReraBadge. */
+  reraStatus: string | null;
   // pricing
   hasPrice: boolean;
   priceText: string;
@@ -277,7 +279,9 @@ function buildSnapshot(project: NormalizedProject, view: {
   const reraId = clean(project.rera_id);
   if (reraId) {
     const portal = reraPortalFor(project.state);
-    chips.push({ label: "RERA", value: reraId, href: portal?.url });
+    const suffix =
+      project.rera_status === "lapsed" ? " (Lapsed)" : project.rera_status === "unverified" ? " (Unverified)" : "";
+    chips.push({ label: "RERA", value: `${reraId}${suffix}`, href: portal?.url });
   }
   if (view.unitCount > 0) push("Unit Options", `${view.unitCount} configurations`);
   if (view.amenityCount > 0) push("Amenities", `${view.amenityCount}+ amenities`);
@@ -300,7 +304,12 @@ function buildWhyThisProject(
     badges.push({ icon, label, note });
   };
 
-  if (project.rera_id) add("BadgeCheck", "RERA Registered", "Government-verified project");
+  // A real, correctly-shaped rera_id is not the same as an active
+  // registration (see components/Common/ReraBadge.tsx) — only claim
+  // "Government-verified" when confirmed active against the official
+  // registry; a lapsed one gets its own honest badge instead.
+  if (project.rera_status === "active") add("BadgeCheck", "RERA Registered", "Government-verified project");
+  else if (project.rera_status === "lapsed") add("AlertTriangle", "RERA Lapsed", "Registration on file has expired");
   if (isKnownBuilder(project.builder)) add("Building2", "Trusted Developer", `Built by ${project.builder}`);
   if (status === "Ready to Move") add("KeyRound", "Ready to Move", "No construction wait");
   else if (status === "New Launch") add("Sparkles", "New Launch", "Early-bird pricing");
@@ -340,7 +349,11 @@ function buildKeyHighlights(
   if (project.property_type) out.push(`Offers ${project.property_type} configurations to suit different needs.`);
   if (hasPrice && priceText !== "Price on Request") out.push(`Pricing starts at ${priceText}.`);
   if (status !== "Status on request") out.push(`${status}${project.possession_text ? ` — possession ${project.possession_text}` : ""}.`);
-  if (project.rera_id) out.push(`RERA registered (${project.rera_id}) for buyer protection.`);
+  if (project.rera_id) {
+    if (project.rera_status === "lapsed") out.push(`RERA registration (${project.rera_id}) on file has lapsed — verify current status before booking.`);
+    else if (project.rera_status === "active") out.push(`RERA registered (${project.rera_id}) for buyer protection.`);
+    else out.push(`RERA number on file: ${project.rera_id} (not independently verified).`);
+  }
   if (c.metro && clean(c.metro.travel_time)) out.push(`Nearest metro is about ${c.metro.travel_time} away.`);
   if (c.airport && clean(c.airport.travel_time)) out.push(`${c.airport.label} is roughly ${c.airport.travel_time} by road.`);
   if (amenityCount > 0) out.push(`Loaded with ${amenityCount}+ lifestyle and community amenities.`);
@@ -407,12 +420,15 @@ function buildInvestmentScore(
   if (amenityCount >= 20) product += 8;
   else if (amenityCount >= 10) product += 5;
   else if (amenityCount > 0) product += 3;
-  if (project.rera_id) product += 4;
+  // A lapsed registration is a compliance concern, not a credit — only an
+  // actually-active one earns the score bump and the "RERA registered" note.
+  const reraActive = project.rera_status === "active";
+  if (reraActive) product += 4;
   factors.push({
     label: "Product & Compliance",
     earned: Math.min(product, 20),
     max: 20,
-    note: `${amenityCount > 0 ? `${amenityCount}+ amenities` : "Standard amenities"}${project.rera_id ? " • RERA registered" : ""}.`,
+    note: `${amenityCount > 0 ? `${amenityCount}+ amenities` : "Standard amenities"}${reraActive ? " • RERA registered" : ""}.`,
   });
 
   // Timing / possession — 15
@@ -562,8 +578,10 @@ function buildPersonaReasons(
       ? `Backed by ${project.builder}, a developer with a delivery track record.`
       : `Early access with ${project.builder}, an emerging developer in ${project.city_name}.`,
   });
-  if (project.rera_id) {
+  if (project.rera_status === "active") {
     investor.push({ icon: "BadgeCheck", label: "RERA Registered", note: "Government-verified project." });
+  } else if (project.rera_status === "lapsed") {
+    investor.push({ icon: "AlertTriangle", label: "RERA Lapsed", note: "Registration on file has expired." });
   }
 
   const endUser: Badge[] = [
@@ -671,6 +689,7 @@ export function resolveProjectView(
     status,
     possession: clean(project.possession_text),
     rera: clean(project.rera_id),
+    reraStatus: project.rera_status || null,
     hasPrice,
     priceText,
     priceSubtext,

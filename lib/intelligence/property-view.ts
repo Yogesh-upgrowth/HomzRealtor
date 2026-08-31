@@ -52,6 +52,8 @@ export type PropertyView = {
   status: string;
   possession: string | null;
   rera: string | null;
+  /** "active" | "lapsed" | "unverified" | "not_registered" — see ReraBadge. */
+  reraStatus: string | null;
   hasPrice: boolean;
   priceText: string;
   configuration: string | null;
@@ -179,7 +181,11 @@ function buildSnapshot(property: RawHomzProperty, status: string, amenityCount: 
   push("Possession", property.possession);
   push("Location", property.location);
   const rera = clean(property.reraId);
-  if (rera) chips.push({ label: "RERA", value: rera });
+  if (rera) {
+    const suffix =
+      property.reraStatus === "lapsed" ? " (Lapsed)" : property.reraStatus === "unverified" ? " (Unverified)" : "";
+    chips.push({ label: "RERA", value: `${rera}${suffix}` });
+  }
   if (amenityCount > 0) push("Amenities", `${amenityCount}+ amenities`);
   return chips.slice(0, 8);
 }
@@ -199,7 +205,13 @@ function buildWhyThisListing(
     badges.push({ icon, label, note });
   };
 
-  if (property.reraId) add("BadgeCheck", "RERA Registered", "Government-verified listing");
+  // A real, correctly-shaped reraId is not the same as an active
+  // registration (see components/Common/ReraBadge.tsx) — only claim
+  // "Government-verified" when the backend has actually confirmed it active
+  // against the official registry; a lapsed one gets its own honest badge
+  // instead of silently claiming nothing or, worse, claiming it's fine.
+  if (property.reraStatus === "active") add("BadgeCheck", "RERA Registered", "Government-verified listing");
+  else if (property.reraStatus === "lapsed") add("AlertTriangle", "RERA Lapsed", "Registration on file has expired");
   if (status === "Ready to Move") add("KeyRound", "Ready to Move", "No construction wait");
   else if (status === "New Launch") add("Sparkles", "New Launch", "Early-bird pricing");
   else if (status === "Under Construction") add("HardHat", "Under Construction", "Capital-appreciation potential");
@@ -228,7 +240,11 @@ function buildKeyHighlights(
   const { hasPrice, priceText: pt } = priceText(property);
   if (hasPrice) out.push(`${property.listingType === "rent" ? "Rent" : "Price"}: ${pt}.`);
   if (status !== "Status on request") out.push(`${status}${property.possession ? ` — ${property.possession}` : ""}.`);
-  if (property.reraId) out.push(`RERA registered (${property.reraId}) for buyer protection.`);
+  if (property.reraId) {
+    if (property.reraStatus === "lapsed") out.push(`RERA registration (${property.reraId}) on file has lapsed — verify current status before booking.`);
+    else if (property.reraStatus === "active") out.push(`RERA registered (${property.reraId}) for buyer protection.`);
+    else out.push(`RERA number on file: ${property.reraId} (not independently verified).`);
+  }
   if (nearest) out.push(`${nearest.name} (${nearest.category}) is ${nearest.distance} away.`);
   if (amenityCount > 0) out.push(`${amenityCount}+ amenities available.`);
   return Array.from(new Set(out)).slice(0, 8);
@@ -278,7 +294,11 @@ function buildPersonaReasons(
       note: `Scores ${score.score}/100 on our fundamentals.`,
     });
   }
-  if (property.reraId) investor.push({ icon: "BadgeCheck", label: "RERA Registered", note: "Government-verified listing." });
+  if (property.reraStatus === "active") {
+    investor.push({ icon: "BadgeCheck", label: "RERA Registered", note: "Government-verified listing." });
+  } else if (property.reraStatus === "lapsed") {
+    investor.push({ icon: "AlertTriangle", label: "RERA Lapsed", note: "Registration on file has expired." });
+  }
 
   const endUser: Badge[] = [{ icon: "MapPin", label: "Prime Location", note: loc }];
   if (amenityCount > 0) endUser.push({ icon: "Sparkles", label: "Lifestyle", note: `${amenityCount}+ amenities.` });
@@ -303,7 +323,13 @@ function buildFaq(property: RawHomzProperty, status: string, category: PropertyC
     faqs.push({ q: "When is possession available?", a: `${status}${property.possession ? ` — ${property.possession}` : ""}.` });
   }
   if (property.reraId) {
-    faqs.push({ q: "Is this listing RERA registered?", a: `Yes, RERA number ${property.reraId}.` });
+    const answer =
+      property.reraStatus === "lapsed"
+        ? `A RERA registration (${property.reraId}) is on file, but it has lapsed — please verify current status with the developer before booking.`
+        : property.reraStatus === "active"
+          ? `Yes, RERA number ${property.reraId}.`
+          : `RERA number ${property.reraId} is on file (not independently verified against the official registry).`;
+    faqs.push({ q: "Is this listing RERA registered?", a: answer });
   }
   if (property.amenities && property.amenities.length > 0) {
     const names = property.amenities.flatMap((a) => a.amenities).slice(0, 5);
@@ -369,6 +395,7 @@ export function resolvePropertyView(
     status,
     possession: clean(property.possession),
     rera: clean(property.reraId),
+    reraStatus: property.reraStatus || null,
     hasPrice,
     priceText: pt,
     configuration: clean(property.configuration),

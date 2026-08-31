@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import ReraBadge from "@/components/Common/ReraBadge";
 
 type Specification = {
   icon?: any;
@@ -12,6 +13,7 @@ interface HomeCardProps {
   imgUrl: string;
   location: string;
   reranumber: string;
+  rerastatus?: string | null;
   title: string;
   specifications: Specification[];
   btntag: string;
@@ -21,6 +23,7 @@ const HomesCard: React.FC<HomeCardProps> = ({
   imgUrl,
   location,
   reranumber,
+  rerastatus,
   title,
   specifications,
   btntag,
@@ -44,9 +47,7 @@ const HomesCard: React.FC<HomeCardProps> = ({
 
       {/* Location */}
       <div className="flex py-2 pl-2 gap-2">
-        <div className="bg-white/[0.06] border border-white/10 text-gray-300 text-xs px-2 py-1 rounded-full">
-          RERA: {reranumber}
-        </div>
+        <ReraBadge reraId={reranumber === "N/A" ? null : reranumber} status={rerastatus} />
       </div>
 
       {/* Title */}

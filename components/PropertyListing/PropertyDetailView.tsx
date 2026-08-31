@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BadgeCheck, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import ReraBadge from "@/components/Common/ReraBadge";
 import ImageCarousel from "@/components/Carousel";
 import AmenitiesShowcase from "@/components/Project/listing/AmenitiesShowcase";
 import SpecificationsAccordion from "@/components/Project/intelligence/SpecificationsAccordion";
@@ -49,11 +50,7 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
             <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold">
               {view.status}
             </span>
-            {view.rera && (
-              <span className="flex items-center gap-1 rounded-full border border-[#D9B268]/40 bg-[#D9B268]/10 px-3 py-1 text-xs font-semibold text-[#D9B268]">
-                <BadgeCheck size={12} /> RERA
-              </span>
-            )}
+            {view.rera && <ReraBadge reraId={view.rera} status={view.reraStatus} variant="full" />}
           </div>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-white max-w-4xl">
