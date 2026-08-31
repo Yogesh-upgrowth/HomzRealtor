@@ -1,9 +1,13 @@
+import { reraTextClass } from "@/components/Common/ReraBadge";
+
 type Props = {
   priceText: string;
   priceSubtext: string | null;
   possession: string | null;
   status: string;
   unitCount: number;
+  rera?: string | null;
+  reraStatus?: string | null;
 };
 
 // Floating glass "key facts" ribbon overlapping the hero's bottom edge. Only
@@ -23,9 +27,21 @@ const KeyFactsRibbon = ({
   possession,
   status,
   unitCount,
+  rera,
+  reraStatus,
 }: Props) => {
   const items = [
     { label: "Starting Price", value: priceText, note: priceSubtext },
+    // Right before Possession/status — on a solid glass panel, not the
+    // hero's photo background, so it's actually legible. A real,
+    // correctly-shaped RERA number can still be lapsed (see ReraBadge); the
+    // colored value here carries that, not just the bare number.
+    rera && {
+      label: "RERA",
+      value: rera,
+      note: reraStatus === "lapsed" ? "Lapsed" : reraStatus === "unverified" ? "Unverified" : reraStatus === "active" ? "Verified" : null,
+      valueClassName: reraTextClass(rera, reraStatus),
+    },
     (possession || status) && {
       label: "Possession",
       value: possession || status,
@@ -36,7 +52,7 @@ const KeyFactsRibbon = ({
       value: `${unitCount}`,
       note: "configurations",
     },
-  ].filter(Boolean) as { label: string; value: string; note?: string | null }[];
+  ].filter(Boolean) as { label: string; value: string; note?: string | null; valueClassName?: string }[];
 
   if (items.length === 0) return null;
 
@@ -49,7 +65,7 @@ const KeyFactsRibbon = ({
               <p className="mb-1.5 truncate text-[10.5px] uppercase tracking-[0.14em] text-gray-500">
                 {it.label}
               </p>
-              <p className="truncate font-display text-2xl leading-none text-white">{it.value}</p>
+              <p className={`truncate font-display text-2xl leading-none ${it.valueClassName || "text-white"}`}>{it.value}</p>
               {it.note && <p className="mt-1 truncate text-xs text-gray-500">{it.note}</p>}
             </div>
           ))}

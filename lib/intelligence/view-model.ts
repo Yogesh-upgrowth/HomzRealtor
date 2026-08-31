@@ -14,7 +14,11 @@ import { formatInr, KNOWN_BUILDERS, type NormalizedProject } from "./normalize";
 import type { ConnectivityItem, LandmarksMap } from "./geo";
 import { reraPortalFor } from "./rera";
 
-export type Chip = { label: string; value: string; href?: string };
+/** `status` is only set on the RERA chip (active/lapsed/unverified/
+ *  not_registered) — see components/Common/ReraBadge.tsx — so it can be
+ *  colored consistently with the badge instead of rendering as plain text
+ *  indistinguishable from every other fact. */
+export type Chip = { label: string; value: string; href?: string; status?: string };
 export type Badge = { icon: string; label: string; note?: string };
 export type ScoreFactor = { label: string; earned: number; max: number; note: string };
 export type InvestmentScore = {
@@ -272,17 +276,20 @@ function buildSnapshot(project: NormalizedProject, view: {
   push("Configurations", project.property_type);
   push("Property Type", project.property_category);
   push("Status", view.status === "Status on request" ? null : view.status);
-  push("Possession", project.possession_text);
-  push("Location", project.sector || project.micro_market);
-  push("City", project.city_name);
-  push("Developer", project.builder && project.builder !== "Unknown" ? project.builder : null);
+  // Right after Status/before Possession — RERA status is exactly the kind
+  // of thing a buyer should see next to "Ready to Move", not buried after
+  // Location/City/Developer.
   const reraId = clean(project.rera_id);
   if (reraId) {
     const portal = reraPortalFor(project.state);
     const suffix =
       project.rera_status === "lapsed" ? " (Lapsed)" : project.rera_status === "unverified" ? " (Unverified)" : "";
-    chips.push({ label: "RERA", value: `${reraId}${suffix}`, href: portal?.url });
+    chips.push({ label: "RERA", value: `${reraId}${suffix}`, href: portal?.url, status: project.rera_status || undefined });
   }
+  push("Possession", project.possession_text);
+  push("Location", project.sector || project.micro_market);
+  push("City", project.city_name);
+  push("Developer", project.builder && project.builder !== "Unknown" ? project.builder : null);
   if (view.unitCount > 0) push("Unit Options", `${view.unitCount} configurations`);
   if (view.amenityCount > 0) push("Amenities", `${view.amenityCount}+ amenities`);
   return chips.slice(0, 8);

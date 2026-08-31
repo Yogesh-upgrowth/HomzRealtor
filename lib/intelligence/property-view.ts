@@ -178,14 +178,17 @@ function buildSnapshot(property: RawHomzProperty, status: string, amenityCount: 
   push("Property Type", PROPERTY_TYPE_LABELS[property.propertyType || ""] || null);
   push("Area", property.size);
   push("Status", status === "Status on request" ? null : status);
-  push("Possession", property.possession);
-  push("Location", property.location);
+  // Right after Status/before Possession — same reasoning as
+  // view-model.ts's buildChips: RERA status belongs next to "Ready to
+  // Move", not buried after Location.
   const rera = clean(property.reraId);
   if (rera) {
     const suffix =
       property.reraStatus === "lapsed" ? " (Lapsed)" : property.reraStatus === "unverified" ? " (Unverified)" : "";
-    chips.push({ label: "RERA", value: `${rera}${suffix}` });
+    chips.push({ label: "RERA", value: `${rera}${suffix}`, status: property.reraStatus || undefined });
   }
+  push("Possession", property.possession);
+  push("Location", property.location);
   if (amenityCount > 0) push("Amenities", `${amenityCount}+ amenities`);
   return chips.slice(0, 8);
 }

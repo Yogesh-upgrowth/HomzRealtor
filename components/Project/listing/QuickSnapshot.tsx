@@ -1,4 +1,5 @@
 import type { Chip } from "@/lib/intelligence/view-model";
+import { reraTextClass } from "@/components/Common/ReraBadge";
 
 const QuickSnapshot = ({ chips }: { chips: Chip[] }) => {
   if (!chips || chips.length === 0) return null;
@@ -16,10 +17,14 @@ const QuickSnapshot = ({ chips }: { chips: Chip[] }) => {
                 href={chip.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-sm md:text-base font-semibold text-[#D9B268] hover:text-[#e8c88a] mt-0.5 line-clamp-2 underline decoration-[#D9B268]/40 underline-offset-2"
+                className={`block text-sm md:text-base font-semibold mt-0.5 line-clamp-2 underline decoration-current/40 underline-offset-2 hover:opacity-80 ${reraTextClass(chip.value, chip.status)}`}
               >
                 {chip.value} — verify ↗
               </a>
+            ) : chip.label === "RERA" ? (
+              <p className={`text-sm md:text-base font-semibold mt-0.5 line-clamp-2 ${reraTextClass(chip.value, chip.status)}`}>
+                {chip.value}
+              </p>
             ) : (
               <p className="text-sm md:text-base font-semibold text-[#ececea] mt-0.5 line-clamp-2">
                 {chip.value}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import ReraBadge from "@/components/Common/ReraBadge";
+import ReraBadge, { reraTextClass } from "@/components/Common/ReraBadge";
 import ImageCarousel from "@/components/Carousel";
 import AmenitiesShowcase from "@/components/Project/listing/AmenitiesShowcase";
 import SpecificationsAccordion from "@/components/Project/intelligence/SpecificationsAccordion";
@@ -91,7 +91,9 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
             {view.snapshot.map((chip) => (
               <div key={chip.label} className="rounded-xl border border-white/[0.08] bg-[#141416] p-4">
                 <p className="text-xs text-gray-500 mb-1">{chip.label}</p>
-                <p className="text-sm font-semibold text-white">{chip.value}</p>
+                <p className={`text-sm font-semibold ${chip.label === "RERA" ? reraTextClass(chip.value, chip.status) : "text-white"}`}>
+                  {chip.value}
+                </p>
               </div>
             ))}
           </section>

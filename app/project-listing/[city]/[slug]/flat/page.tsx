@@ -193,15 +193,15 @@ const FlatChildPage = async ({ params }: PageParams) => {
               {project.property_type}
             </span>
           )}
-          {project.possession_text && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
-              Possession: {project.possession_text}
-            </span>
-          )}
           {project.rera_id && (
             <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
               RERA: {project.rera_id}
               {project.rera_status === "lapsed" ? " (Lapsed)" : project.rera_status === "unverified" ? " (Unverified)" : ""}
+            </span>
+          )}
+          {project.possession_text && (
+            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+              Possession: {project.possession_text}
             </span>
           )}
         </div>

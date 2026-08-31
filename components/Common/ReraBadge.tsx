@@ -36,10 +36,21 @@ const STYLES: Record<
   },
 };
 
+// Unknown/missing status (e.g. older data this pipeline hasn't touched)
+// degrades to a plain neutral display rather than a false "verified" claim.
+function resolveStatus(reraId: string | null | undefined, status: string | null | undefined): string {
+  return status && STYLES[status] ? status : reraId ? "unverified" : "not_registered";
+}
+
+/** Just the text color for callers rendering RERA as a plain value inside
+ *  their own layout (e.g. a facts-strip or a chips grid) rather than a
+ *  standalone badge — same status semantics as this component. */
+export function reraTextClass(reraId: string | null | undefined, status: string | null | undefined): string {
+  return STYLES[resolveStatus(reraId, status)].className.split(" ").pop() || "text-white";
+}
+
 export default function ReraBadge({ reraId, status, variant = "compact" }: Props) {
-  // Unknown/missing status (e.g. older data this pipeline hasn't touched)
-  // degrades to a plain neutral display rather than a false "verified" claim.
-  const resolved = status && STYLES[status] ? status : reraId ? "unverified" : "not_registered";
+  const resolved = resolveStatus(reraId, status);
   const { label, className } = STYLES[resolved];
 
   if (variant === "full") {

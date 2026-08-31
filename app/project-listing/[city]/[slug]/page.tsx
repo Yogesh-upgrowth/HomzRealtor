@@ -288,6 +288,8 @@ const ProjectPage = async ({ params }: PageParams) => {
           possession={view.possession}
           status={view.status}
           unitCount={view.units.length}
+          rera={view.rera}
+          reraStatus={view.reraStatus}
         />
 
         {/* Live listing status (tracked in MongoDB) — streams in after the
