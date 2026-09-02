@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Image, { StaticImageData } from "next/image";
 import heroFamilyDesktop from "@/assets/images/heroFamilyDesktop.jpg";
 import heroFamilyMobile from "@/assets/images/heroFamilyMobile.jpg";
@@ -98,15 +98,6 @@ export default function Hero({
         </p>
 
         <QuickSearchPanel />
-
-        <div className="mt-7">
-          <button
-            onClick={openForm}
-            className="w-full rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 py-2.5 text-[13px] font-bold text-[#1c1608] transition cursor-pointer hover:brightness-105 md:w-auto md:py-2"
-          >
-            Talk to a Local Expert
-          </button>
-        </div>
 
         {/* Trust stats — overlaid on the hero photo like the rest of this
             content, not a separate section below it. 2 rows of 2 on
