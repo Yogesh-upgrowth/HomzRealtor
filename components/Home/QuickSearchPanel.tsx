@@ -245,13 +245,13 @@ const QuickSearchPanel = () => {
         </button>
       </form>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-3 md:mt-4 md:gap-2 md:pt-4">
-        <span className="mr-1 text-[11px] font-bold uppercase tracking-widest text-gray-500">Trending</span>
+      <div className="mt-3 flex flex-nowrap items-center gap-1.5 overflow-x-auto border-t border-white/10 pb-1 pt-3 scrollbar-hide md:mt-4 md:flex-wrap md:overflow-visible md:pb-0 md:pt-4">
+        <span className="mr-1 shrink-0 text-[11px] font-bold uppercase tracking-widest text-gray-500">Trending</span>
         {TRENDING.map((t) => (
           <Link
             key={t.label}
             href={t.href}
-            className="rounded-full border border-white/[0.08] bg-[#D9B268]/[0.06] px-2.5 py-1 text-[11px] font-semibold text-gray-300 transition hover:border-[#D9B268]/40 hover:text-[#D9B268] md:px-3.5 md:py-1.5 md:text-[12.5px]"
+            className="shrink-0 whitespace-nowrap rounded-full border border-white/[0.08] bg-[#D9B268]/[0.06] px-2.5 py-1 text-[11px] font-semibold text-gray-300 transition hover:border-[#D9B268]/40 hover:text-[#D9B268] md:px-3.5 md:py-1.5 md:text-[12.5px]"
           >
             {t.label}
           </Link>
