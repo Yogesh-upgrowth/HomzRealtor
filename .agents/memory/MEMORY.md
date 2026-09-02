@@ -2,3 +2,4 @@
 - [Project listing Missing Data Engine](project-listing-engine.md) — every user-visible string must pass through `clean()` (view-model.ts); canonical city URLs use slug map, never internal city_key.
 - [Preview workflow ports](workflow-port-conventions.md) — webview expects port 5000; keep npm start scripts aligned with the workflow configuration.
 - [Mobile overlay layering](mobile-overlay-layering.md) — full-screen mobile sheets inside the hero must portal to `body` to outrank fixed site navigation.
+- [Floating WhatsApp behavior](floating-whatsapp.md) — homepage WhatsApp action stays hidden initially/downward, appears on upward scroll, and uses the official logo.
