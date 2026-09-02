@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { X, ShieldCheck, Sparkles, Leaf } from "lucide-react";
 import { FormContext } from "@/context/FormContext";
@@ -29,6 +30,7 @@ export default function FormComponent({
   initial?: Partial<FormState>;
 }) {
   const { isOpen, closeForm } = useContext(FormContext);
+  const [portalReady, setPortalReady] = useState(false);
 
   const [form, setForm] = useState<FormState>({
     name: initial?.name ?? "",
@@ -38,6 +40,27 @@ export default function FormComponent({
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeForm();
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [closeForm, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -91,27 +114,40 @@ export default function FormComponent({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !portalReady) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-2 sm:px-4">
-      <div className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto rounded-[24px] border border-white/10 bg-[#141416] text-white shadow-[0_30px_90px_rgba(0,0,0,0.6)] flex flex-col md:flex-row gap-8 md:gap-10 p-6 sm:p-8 md:p-12">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 pt-6 md:items-center md:px-4 md:py-8"
+      onClick={closeForm}
+      role="presentation"
+    >
+      <div
+        className="relative flex max-h-[calc(100dvh-24px)] w-full flex-col gap-4 overflow-y-auto overscroll-contain rounded-t-[28px] border border-b-0 border-white/10 bg-[#141416] px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-10 text-white shadow-[0_-24px_80px_rgba(0,0,0,0.65)] scrollbar-hide md:max-h-[95vh] md:max-w-4xl md:flex-row md:gap-10 md:rounded-[24px] md:border-b md:p-12 md:shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="expert-form-title"
+      >
+        <div className="absolute left-1/2 top-3 h-1.5 w-16 -translate-x-1/2 rounded-full bg-white/15 md:hidden" aria-hidden="true" />
 
         {/* Close Button */}
         <button
+          type="button"
           onClick={closeForm}
           aria-label="Close"
-          className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors cursor-pointer"
+          data-testid="button-close-expert-sheet"
+          className="absolute right-4 top-4 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-gray-300 transition-colors hover:border-[#D9B268] hover:text-[#D9B268]"
         >
-          <X size={16} />
+          <X size={18} />
         </button>
 
         {/* LEFT SIDE */}
-        <div className="flex-1 flex flex-col mt-2 md:mt-6">
+        <div className="flex flex-1 flex-col md:mt-6">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268]">
             Talk to an expert
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
+          <h2 id="expert-form-title" className="mb-3 max-w-[17ch] bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-2xl font-bold text-transparent md:mb-6 md:max-w-none md:text-3xl">
             Get a Personalised Property &amp; Loan Estimate
           </h2>
 
@@ -201,6 +237,7 @@ export default function FormComponent({
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

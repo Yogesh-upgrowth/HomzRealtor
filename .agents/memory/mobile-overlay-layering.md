@@ -14,3 +14,9 @@ Public-facing dialogs should default to a bottom sheet below the desktop breakpo
 **Why:** The mobile bottom-sheet interaction is the confirmed product convention, including authentication flows.
 
 **How to apply:** Use a rounded top edge, drag handle, dimmed backdrop, internal overflow, safe-area bottom padding, background scroll lock, and backdrop/Escape dismissal.
+
+Compact mobile dialog content should fit without sheet scrolling at a standard phone viewport. Longer content may use a tall internally scrollable sheet; navigation drawers and media lightboxes keep their specialized presentation.
+
+**Why:** The site-wide rule is content-sensitive, not a blanket replacement of every overlay.
+
+**How to apply:** Audit content length before choosing the variant. Keep compact forms tightly spaced, but preserve internal overflow as a small-screen safety fallback.
