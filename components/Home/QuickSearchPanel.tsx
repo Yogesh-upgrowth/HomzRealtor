@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Building2, IndianRupee, BedDouble, Search, X } from "lucide-react";
@@ -68,12 +69,34 @@ const PROPERTY_TYPE_KEY: Record<string, string> = {
 const QuickSearchPanel = () => {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
   const [tab, setTab] = useState("Buy");
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
   const [budget, setBudget] = useState("");
   const [bhk, setBhk] = useState(BHKS[0]);
   const budgets = tab === "Rent" ? BUDGETS_RENT : BUDGETS_SALE;
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileOpen]);
 
   // The two budget scales use disjoint value sets (e.g. "above-2cr" vs
   // "above-3l") — switching tabs without resetting could carry a crore-scale
@@ -116,9 +139,130 @@ const QuickSearchPanel = () => {
   const arrowCls =
     "h-2 w-2 shrink-0 rotate-45 border-b-[1.5px] border-r-[1.5px] border-[#8a8986]";
 
+  const renderSearchControls = (showMobileHeader: boolean) => (
+    <>
+      {showMobileHeader && (
+        <div className="mb-5 md:hidden">
+          <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-white/15" aria-hidden="true" />
+          <div className="flex items-center justify-between gap-4">
+            <h2 id="mobile-search-title" className="text-[22px] font-bold tracking-[-0.02em] text-white">
+              Search properties
+            </h2>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close search"
+              data-testid="button-close-property-search"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 text-gray-200 transition-colors hover:border-[#D9B268] hover:text-[#D9B268]"
+            >
+              <X size={21} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="mb-5 grid grid-cols-4 gap-1.5 md:mb-4 md:flex md:flex-wrap md:gap-2">
+        {TABS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => handleTabChange(t)}
+            className={`min-h-11 rounded-full px-2 py-2 text-[13px] font-bold transition md:min-h-0 md:px-5 md:py-2.5 md:text-[13.5px] ${
+              tab === t
+                ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
+        <label className={`${fieldCls} lg:col-span-2`}>
+          <MapPin size={17} className="shrink-0 text-gray-500" />
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Location or Sector"
+            className="w-full bg-transparent text-white placeholder:text-gray-500 outline-none"
+          />
+        </label>
+
+        <label className={fieldCls}>
+          <Building2 size={17} className="shrink-0 text-gray-500" />
+          <select
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {PROPERTY_TYPES.map((t) => (
+              <option key={t} className="bg-[#1a1a1d]">
+                {t}
+              </option>
+            ))}
+          </select>
+          <span aria-hidden="true" className={arrowCls} />
+        </label>
+
+        <label className={fieldCls}>
+          <IndianRupee size={16} className="shrink-0 text-gray-500" />
+          <select
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {budgets.map((b) => (
+              <option key={b.value} value={b.value} className="bg-[#1a1a1d]">
+                {b.label}
+              </option>
+            ))}
+          </select>
+          <span aria-hidden="true" className={arrowCls} />
+        </label>
+
+        <label className={fieldCls}>
+          <BedDouble size={17} className="shrink-0 text-gray-500" />
+          <select
+            value={bhk}
+            onChange={(e) => setBhk(e.target.value)}
+            className="w-full appearance-none bg-transparent text-white outline-none"
+          >
+            {BHKS.map((b) => (
+              <option key={b} className="bg-[#1a1a1d]">
+                {b}
+              </option>
+            ))}
+          </select>
+          <span aria-hidden="true" className={arrowCls} />
+        </label>
+
+        <button
+          type="submit"
+          className="flex h-14 items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 text-[15px] font-bold text-[#1c1608] transition hover:brightness-105 md:col-span-2 md:h-[52px] md:text-[14px] lg:col-span-5"
+        >
+          <Search size={17} /> Search
+        </button>
+      </form>
+
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-3 md:mt-4 md:gap-2 md:pt-4">
+        <span className="mr-1 text-[11px] font-bold uppercase tracking-widest text-gray-500">Trending</span>
+        {TRENDING.map((t) => (
+          <Link
+            key={t.label}
+            href={t.href}
+            className="rounded-full border border-white/[0.08] bg-[#D9B268]/[0.06] px-2.5 py-1 text-[11px] font-semibold text-gray-300 transition hover:border-[#D9B268]/40 hover:text-[#D9B268] md:px-3.5 md:py-1.5 md:text-[12.5px]"
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+    </>
+  );
+
   return (
     <>
-      {/* Mobile-only CTA — opens the search panel in a modal. Desktop keeps the panel inline below.
+      {/* Mobile-only CTA — opens the search panel in a bottom sheet. Desktop keeps the panel inline below.
           Values below (radius, padding, colors, font sizes) are lifted exactly from the reference
           build's css/sections.css `.hero-search` / `.hero-search-trigger` / `.hss-*` rules, not
           eyeballed — see design tokens in css/base.css (--r-card-lg:24px, --r-pill:999px,
@@ -127,6 +271,7 @@ const QuickSearchPanel = () => {
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
+          data-testid="button-open-property-search"
           className="flex min-h-[56px] w-full items-center gap-3 rounded-full border border-white/10 bg-[#1a1a1d] px-2.5 py-2 text-left transition hover:border-[#D9B268]/30"
         >
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B]">
@@ -143,122 +288,34 @@ const QuickSearchPanel = () => {
         </button>
       </div>
 
-      <div
-        className={`${
-          mobileOpen
-            ? "fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-            : "hidden"
-        } md:static md:z-auto md:bg-transparent md:p-0 md:block`}
-      >
-        <div className="relative w-full max-h-[92vh] overflow-y-auto scrollbar-hide rounded-[24px] border border-white/10 bg-[#121214] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.6)] md:max-h-none md:overflow-visible md:bg-[#121214]/72 md:backdrop-blur-xl md:p-6">
-          {mobileOpen && (
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close search"
-              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-gray-300 hover:border-[#D9B268] hover:text-[#D9B268] transition-colors md:hidden"
+      {portalReady &&
+        createPortal(
+          <div
+            role="presentation"
+            onClick={() => setMobileOpen(false)}
+            className={`fixed inset-0 z-[100] flex items-end justify-center bg-black/70 pt-6 transition-[opacity,visibility] duration-300 md:hidden ${
+              mobileOpen
+                ? "visible pointer-events-auto opacity-100"
+                : "invisible pointer-events-none opacity-0"
+            }`}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mobile-search-title"
+              onClick={(event) => event.stopPropagation()}
+              className={`relative max-h-[calc(100dvh-24px)] w-full overflow-y-auto overscroll-contain rounded-t-[28px] border border-b-0 border-white/10 bg-[#121214] px-4 pb-[max(24px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-24px_80px_rgba(0,0,0,0.65)] transition-transform duration-300 ease-out scrollbar-hide ${
+                mobileOpen ? "translate-y-0" : "translate-y-full"
+              }`}
             >
-              <X size={16} />
-            </button>
-          )}
+              {renderSearchControls(true)}
+            </div>
+          </div>,
+          document.body,
+        )}
 
-          <div className="mb-3 flex flex-wrap gap-1.5 md:mb-4 md:gap-2">
-            {TABS.map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => handleTabChange(t)}
-                className={`rounded-full px-3.5 py-1.5 text-[12px] font-bold transition md:px-5 md:py-2.5 md:text-[13.5px] ${
-                  tab === t
-                    ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-5">
-            <label className={`${fieldCls} lg:col-span-2`}>
-              <MapPin size={17} className="shrink-0 text-gray-500" />
-              <input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Location or Sector"
-                className="w-full bg-transparent text-white placeholder:text-gray-500 outline-none"
-              />
-            </label>
-
-            <label className={fieldCls}>
-              <Building2 size={17} className="shrink-0 text-gray-500" />
-              <select
-                value={propertyType}
-                onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full appearance-none bg-transparent text-white outline-none"
-              >
-                {PROPERTY_TYPES.map((t) => (
-                  <option key={t} className="bg-[#1a1a1d]">
-                    {t}
-                  </option>
-                ))}
-              </select>
-              <span aria-hidden="true" className={arrowCls} />
-            </label>
-
-            <label className={fieldCls}>
-              <IndianRupee size={16} className="shrink-0 text-gray-500" />
-              <select
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                className="w-full appearance-none bg-transparent text-white outline-none"
-              >
-                {budgets.map((b) => (
-                  <option key={b.value} value={b.value} className="bg-[#1a1a1d]">
-                    {b.label}
-                  </option>
-                ))}
-              </select>
-              <span aria-hidden="true" className={arrowCls} />
-            </label>
-
-            <label className={fieldCls}>
-              <BedDouble size={17} className="shrink-0 text-gray-500" />
-              <select
-                value={bhk}
-                onChange={(e) => setBhk(e.target.value)}
-                className="w-full appearance-none bg-transparent text-white outline-none"
-              >
-                {BHKS.map((b) => (
-                  <option key={b} className="bg-[#1a1a1d]">
-                    {b}
-                  </option>
-                ))}
-              </select>
-              <span aria-hidden="true" className={arrowCls} />
-            </label>
-
-            <button
-              type="submit"
-              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 h-[50px] md:h-[52px] text-[14px] font-bold text-[#1c1608] hover:brightness-105 transition sm:col-span-2 lg:col-span-5"
-            >
-              <Search size={17} /> Search
-            </button>
-          </form>
-
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-3 md:mt-4 md:gap-2 md:pt-4">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mr-1">Trending</span>
-            {TRENDING.map((t) => (
-              <Link
-                key={t.label}
-                href={t.href}
-                className="rounded-full border border-white/[0.08] bg-[#D9B268]/[0.06] px-2.5 py-1 text-[11px] font-semibold text-gray-300 hover:border-[#D9B268]/40 hover:text-[#D9B268] transition md:px-3.5 md:py-1.5 md:text-[12.5px]"
-              >
-                {t.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+      <div className="relative hidden w-full rounded-[24px] border border-white/10 bg-[#121214]/72 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.6)] backdrop-blur-xl md:block">
+        {renderSearchControls(false)}
       </div>
     </>
   );
