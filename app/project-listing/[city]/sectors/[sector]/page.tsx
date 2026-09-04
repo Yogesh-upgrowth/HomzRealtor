@@ -225,53 +225,53 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div>
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         {/* Breadcrumb */}
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">
+          <Link href="/" className="hover:text-[#CEA44E]">
             Home
           </Link>
           <ChevronRight size={12} />
-          <Link href="/project-listing" className="hover:text-[#B77D2B]">
+          <Link href="/project-listing" className="hover:text-[#CEA44E]">
             Projects
           </Link>
           <ChevronRight size={12} />
           <Link
             href={`/project-listing/${slug}`}
-            className="hover:text-[#B77D2B]"
+            className="hover:text-[#CEA44E]"
           >
             {name}
           </Link>
           <ChevronRight size={12} />
           <Link
             href={`/project-listing/${slug}/sectors`}
-            className="hover:text-[#B77D2B]"
+            className="hover:text-[#CEA44E]"
           >
             Sectors
           </Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">{sectorLabel}</span>
+          <span className="text-gray-300 font-medium">{sectorLabel}</span>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           Property in {sectorLabel}, {name}
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">{intro}</p>
+        <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{intro}</p>
 
         <div className="mt-6 flex flex-wrap gap-2">
           {residential.length > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {residential.length} Residential
             </span>
           )}
           {commercial.length > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {commercial.length} Commercial
             </span>
           )}
@@ -314,14 +314,14 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
       {/* Builders in this sector */}
       {builders.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Developers in {sectorLabel}, {name}
           </h2>
           <div className="flex flex-wrap gap-2">
             {builders.map((b) => (
               <span
                 key={b}
-                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700"
+                className="rounded-full bg-black border border-gray-700 px-4 py-1.5 text-sm font-medium text-gray-300"
               >
                 {b}
               </span>
@@ -333,7 +333,7 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
       {/* Other sectors — internal linking */}
       {otherSectors.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Explore Other Sectors in {name}
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -341,14 +341,14 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
               <Link
                 key={s.slug}
                 href={`/project-listing/${slug}/sectors/${s.slug}`}
-                className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+                className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
               >
                 {s.sector}
               </Link>
             ))}
             <Link
               href={`/project-listing/${slug}/sectors`}
-              className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B] transition"
+              className="rounded-full border border-[#B77D2B] bg-black px-4 py-1.5 text-sm font-medium text-[#CEA44E] transition"
             >
               View all sectors →
             </Link>

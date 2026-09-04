@@ -154,37 +154,37 @@ const CitySectorsPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div>
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         {/* Breadcrumb */}
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">
+          <Link href="/" className="hover:text-[#CEA44E]">
             Home
           </Link>
           <ChevronRight size={12} />
-          <Link href="/project-listing" className="hover:text-[#B77D2B]">
+          <Link href="/project-listing" className="hover:text-[#CEA44E]">
             Projects
           </Link>
           <ChevronRight size={12} />
           <Link
             href={`/project-listing/${slug}`}
-            className="hover:text-[#B77D2B]"
+            className="hover:text-[#CEA44E]"
           >
             {name}
           </Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">Sectors</span>
+          <span className="text-gray-300 font-medium">Sectors</span>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           Property by Sector in {name}
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">{intro}</p>
+        <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{intro}</p>
       </section>
 
       {/* Sector grid */}
@@ -195,14 +195,14 @@ const CitySectorsPage = async ({ params }: PageParams) => {
               <Link
                 key={s.slug}
                 href={`/project-listing/${slug}/sectors/${s.slug}`}
-                className="group rounded-xl border border-gray-200 bg-white p-4 hover:border-[#B77D2B] hover:shadow-sm transition"
+                className="group rounded-xl border border-gray-700 bg-black p-4 hover:border-[#B77D2B] transition"
               >
-                <div className="flex items-center gap-2 text-gray-900 font-semibold">
+                <div className="flex items-center gap-2 text-white font-semibold">
                   <MapPin
                     size={16}
-                    className="text-[#B77D2B] shrink-0"
+                    className="text-[#CEA44E] shrink-0"
                   />
-                  <span className="group-hover:text-[#B77D2B] transition">
+                  <span className="group-hover:text-[#CEA44E] transition">
                     {s.sector}
                   </span>
                 </div>
@@ -211,12 +211,12 @@ const CitySectorsPage = async ({ params }: PageParams) => {
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {s.residential > 0 && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-600">
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-gray-300">
                       {s.residential} Residential
                     </span>
                   )}
                   {s.commercial > 0 && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-600">
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-gray-300">
                       {s.commercial} Commercial
                     </span>
                   )}
@@ -230,7 +230,7 @@ const CitySectorsPage = async ({ params }: PageParams) => {
           Sector-wise listings for {name} are being updated. Please{" "}
           <Link
             href={`/project-listing/${slug}`}
-            className="text-[#B77D2B] underline"
+            className="text-[#CEA44E] underline"
           >
             browse all projects in {name}
           </Link>{" "}
