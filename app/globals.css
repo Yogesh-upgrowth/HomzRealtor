@@ -39,3 +39,11 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Blog reading-progress bar (components/Blog/ReadingProgressBar.tsx) —
+   driven entirely by CSS scroll-timeline, no JS. */
+@keyframes blog-reading-progress {
+  to {
+    transform: scaleX(1);
+  }
+}

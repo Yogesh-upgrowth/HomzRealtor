@@ -1,237 +1,153 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { BLOG_POSTS, getBlogPost } from "@/lib/content/blogPosts";
-import AppointmentCard from "@/components/Common/Appointment";
-import bgImg from "@/public/appointmentBG.jpg";
-
-const SITE = "https://www.homzrealtor.com";
+import { BLOG_CATEGORIES, type BlogCategory } from "@/lib/content/blogPostSchema";
+import { BLOG_POSTS_V27, getBlogPostV27BySlug, getBlogPostsV27ByCategory } from "@/lib/content/blogRegistry";
+import BlogPostV27Article from "@/components/Blog/BlogPostV27Article";
+import BlogImageOrFallback from "@/components/Blog/BlogImageOrFallback";
 
 type PageParams = { params: Promise<{ slug: string }> };
 
-// A small, fixed set of hand-written posts — safe to fully pre-render.
+function isCategory(slug: string): slug is BlogCategory {
+  return (BLOG_CATEGORIES as readonly string[]).includes(slug);
+}
+
+const CATEGORY_LABELS: Record<BlogCategory, string> = {
+  "buying-guides": "Buying Guides",
+  "selling-guides": "Selling Guides",
+  "renting-guides": "Renting Guides",
+  "locality-guides": "Locality Guides",
+  "property-investment": "Property Investment",
+  "home-loans-and-finance": "Home Loans & Finance",
+  "legal-and-documents": "Legal & Documents",
+  "property-pricing": "Property Pricing",
+  "market-trends": "Market Trends",
+  comparisons: "Comparisons",
+  "tools-and-tips": "Tools & Tips",
+};
+
+// Every real /blog/[slug] path this route serves: the fixed category list
+// (/blog/buying-guides etc.) and every v2.7 article slug — both
+// single-segment, which is why category and article share one dynamic
+// route instead of colliding as [category] vs [slug] (Next.js doesn't
+// allow two dynamic names at the same path level).
 export function generateStaticParams() {
-  return BLOG_POSTS.map((p) => ({ slug: p.slug }));
+  return [
+    ...BLOG_CATEGORIES.map((c) => ({ slug: c })),
+    ...BLOG_POSTS_V27.map((p) => ({ slug: p.meta.slug })),
+  ];
 }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
-  if (!post) return {};
+  const SITE = "https://www.homzrealtor.com";
 
-  const description = post.sections[0]?.paragraphs[0]?.slice(0, 155) || post.title;
-  const url = `${SITE}/blog/${post.slug}`;
+  if (isCategory(slug)) {
+    const label = CATEGORY_LABELS[slug];
+    const url = `${SITE}/blog/${slug}`;
+    return {
+      title: `${label} — HomzRealtor Blog`,
+      description: `Gurgaon ${label.toLowerCase()} from HomzRealtor — real listing data, not generic advice.`,
+      alternates: { canonical: url },
+    };
+  }
 
+  const v27 = getBlogPostV27BySlug(slug);
+  if (!v27) return {};
+
+  const url = `${SITE}/blog/${v27.meta.slug}`;
   return {
-    title: post.title,
-    description,
+    title: v27.meta.title,
+    description: v27.meta.metaDescription,
     alternates: { canonical: url },
     openGraph: {
-      title: post.title,
-      description,
+      title: v27.social.ogTitle,
+      description: v27.social.ogDescription,
       url,
       type: "article",
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      images: [{ url: post.img.src, width: post.img.width, height: post.img.height }],
+      publishedTime: v27.meta.publishedAt,
+      modifiedTime: v27.meta.updatedAt,
+      images: [{ url: v27.social.ogImage, alt: v27.social.ogImageAlt }],
     },
     twitter: {
       card: "summary_large_image",
-      images: [post.img.src],
+      images: [v27.social.ogImage],
     },
+    robots: v27.head.robots,
   };
 }
 
-// en-IN, long form — "29 August 2026", not the region-ambiguous 08/29 vs
-// 29/08 numeric formats.
-function formatPostDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-const BlogPostPage = async ({ params }: PageParams) => {
-  const { slug } = await params;
-  const post = getBlogPost(slug);
-  if (!post) notFound();
-
-  const others = BLOG_POSTS.filter((p) => p.slug !== post.slug);
-  const pageUrl = `${SITE}/blog/${post.slug}`;
-
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE}/blog` },
-          { "@type": "ListItem", position: 3, name: post.title, item: pageUrl },
-        ],
-      },
-      {
-        "@type": "Article",
-        headline: post.title,
-        image: [post.img.src],
-        // No named individual author — same reasoning as
-        // lib/content/buyerGuides.ts. Organization is a real,
-        // non-fabricated, schema.org-valid author value.
-        author: { "@type": "Organization", name: "HomzRealtor" },
-        publisher: { "@type": "Organization", name: "HomzRealtor" },
-        datePublished: post.publishedAt,
-        dateModified: post.updatedAt,
-        mainEntityOfPage: pageUrl,
-      },
-    ],
-  };
-  const safeJson = (g: unknown) =>
-    JSON.stringify(g)
-      .replace(/</g, "\\u003c")
-      .replace(/>/g, "\\u003e")
-      .replace(/&/g, "\\u0026");
+const CategoryArchive = ({ category }: { category: BlogCategory }) => {
+  const posts = getBlogPostsV27ByCategory(category);
+  const label = CATEGORY_LABELS[category];
 
   return (
-    <div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
-      />
-
-      <article className="w-full max-w-3xl mx-auto px-4 mt-28 md:mt-32">
-        <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+    <div className="min-h-screen bg-[#0B0B0C] text-white">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-32 pb-16">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
+          <Link href="/" className="hover:text-[#CEA44E]">Home</Link>
           <ChevronRight size={12} />
-          <Link href="/blog" className="hover:text-[#B77D2B]">Blog</Link>
+          <Link href="/blog" className="hover:text-[#CEA44E]">Blog</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">{post.title}</span>
+          <span className="text-gray-300 font-medium">{label}</span>
         </nav>
 
-        <span className="inline-block mb-3 rounded-full bg-[#B77D2B]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#B77D2B]">
-          {post.read}
-        </span>
-
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 leading-tight">
-          {post.title}
-        </h1>
-
-        <p className="mt-3 text-sm text-gray-500">
-          By the HomzRealtor Team · Published{" "}
-          <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
-          {post.updatedAt !== post.publishedAt && (
-            <>
-              {" "}
-              · Updated <time dateTime={post.updatedAt}>{formatPostDate(post.updatedAt)}</time>
-            </>
-          )}
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{label}</h1>
+        <p className="mt-3 max-w-2xl text-gray-400">
+          {posts.length > 0
+            ? `${posts.length} ${posts.length === 1 ? "guide" : "guides"} in this category, built from HomzRealtor's live Gurgaon catalogue.`
+            : "No guides published in this category yet — check back soon."}
         </p>
 
-        <div className="relative mt-6 w-full aspect-video overflow-hidden rounded-2xl border border-gray-200 bg-gray-100">
-          <Image src={post.img} alt={post.title} fill unoptimized sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
-        </div>
-
-        <div className="mt-6 space-y-5 text-[15.5px] leading-relaxed text-gray-700">
-          {post.sections.map((s, i) => (
-            <div key={i}>
-              {s.heading && (
-                <h2 className="mb-2 text-lg font-bold text-gray-900">{s.heading}</h2>
-              )}
-              {s.paragraphs.map((p, j) => (
-                <p key={j} className="mb-3 last:mb-0">{p}</p>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {post.relatedSectors && post.relatedSectors.length > 0 && (
-          <div className="mt-8 border-t border-gray-200 pt-6">
-            <p className="mb-3 text-sm font-semibold text-gray-900">
-              Sectors mentioned in this post
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {post.relatedSectors.map((s) => (
-                <Link
-                  key={s.slug}
-                  href={`/project-listing/gurgaon/sectors/${s.slug}`}
-                  className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
-                >
-                  {s.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {post.relatedDevelopers && post.relatedDevelopers.length > 0 && (
-          <div className="mt-6 border-t border-gray-200 pt-6">
-            <p className="mb-3 text-sm font-semibold text-gray-900">
-              Developers mentioned in this post
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {post.relatedDevelopers.map((d) => (
-                <Link
-                  key={d.slug}
-                  href={`/developer/${d.slug}`}
-                  className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
-                >
-                  {d.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-          <Link
-            href="/project-listing/gurgaon/sectors"
-            className="text-sm font-medium text-[#B77D2B] hover:underline"
-          >
-            Browse all Gurgaon sectors →
-          </Link>
-          <Link
-            href="/developer"
-            className="text-sm font-medium text-[#B77D2B] hover:underline"
-          >
-            Browse all developers →
-          </Link>
-        </div>
-      </article>
-
-      {others.length > 0 && (
-        <section className="w-full max-w-3xl mx-auto px-4 mt-12">
-          <h2 className="mb-4 text-xl font-bold text-gray-900">More from the Blog</h2>
-          <div className="flex flex-col divide-y divide-gray-200 border-y border-gray-200">
-            {others.map((p) => (
+        {posts.length > 0 && (
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((p) => (
               <Link
-                key={p.slug}
-                href={`/blog/${p.slug}`}
-                className="flex items-center justify-between gap-4 py-4 group"
+                key={p.meta.slug}
+                href={`/blog/${p.meta.slug}`}
+                className="group overflow-hidden rounded-2xl border border-gray-700 bg-black transition hover:border-[#B77D2B]"
               >
-                <span className="font-medium text-gray-800 group-hover:text-[#B77D2B] transition-colors">
-                  {p.title}
-                </span>
-                <span className="shrink-0 text-xs text-gray-500">{p.read}</span>
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <BlogImageOrFallback
+                    src={p.hero.imageUrl}
+                    alt={p.hero.alt}
+                    categoryLabel={label}
+                    sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+                  />
+                </div>
+                <div className="p-5">
+                  <h2 className="mb-2 text-base font-bold leading-snug text-white group-hover:text-[#CEA44E]">
+                    {p.meta.h1}
+                  </h2>
+                  <p className="mb-3 text-sm text-gray-400 line-clamp-2">{p.meta.standfirst}</p>
+                  <span className="text-[11.5px] font-semibold uppercase tracking-wide text-gray-500">
+                    {p.meta.readingTimeMinutes} min read
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
-        </section>
-      )}
-
-      <div className="mt-14">
-        <AppointmentCard
-          bgImage={bgImg}
-          heading="TALK TO A GURGAON REAL ESTATE EXPERT"
-          para="Have questions about your own buying or investment plans? HomzRealtor's advisors can walk you through the details."
-          btnTxt="Talk to an Expert"
-        />
+        )}
       </div>
     </div>
   );
+};
+
+const BlogPostPage = async ({ params }: PageParams) => {
+  const { slug } = await params;
+
+  if (isCategory(slug)) {
+    return <CategoryArchive category={slug} />;
+  }
+
+  const v27 = getBlogPostV27BySlug(slug);
+  if (v27) {
+    return <BlogPostV27Article post={v27} />;
+  }
+
+  notFound();
 };
 
 export default BlogPostPage;

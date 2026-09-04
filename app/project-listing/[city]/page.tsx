@@ -182,20 +182,20 @@ const CityLandingPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div>
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         {/* Breadcrumb */}
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+          <Link href="/" className="hover:text-[#CEA44E]">Home</Link>
           <ChevronRight size={12} />
-          <Link href="/project-listing" className="hover:text-[#B77D2B]">Projects</Link>
+          <Link href="/project-listing" className="hover:text-[#CEA44E]">Projects</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">{name}</span>
+          <span className="text-gray-300 font-medium">{name}</span>
         </nav>
 
         {/* A JSX child text node starting with a space right after {name} on
@@ -204,34 +204,34 @@ const CityLandingPage = async ({ params }: PageParams) => {
             space, despite the source clearly having one). Building the
             whole string in JS and rendering it as a single expression
             sidesteps whatever JSX text-node splitting causes that. */}
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           {`Property in ${name} — Residential & Commercial Projects`}
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">{intro}</p>
+        <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{intro}</p>
 
         {/* Category quick links */}
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
             href="/project-listing"
-            className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+            className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
           >
             All Projects in {name}
           </Link>
           {sectors.length > 0 && (
             <Link
               href={`/project-listing/${slug}/sectors`}
-              className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B] transition"
+              className="rounded-full border border-[#B77D2B] bg-black px-4 py-1.5 text-sm font-medium text-[#CEA44E] transition"
             >
               Browse by Sector ({sectors.length})
             </Link>
           )}
           {residential.length > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {residential.length} Residential
             </span>
           )}
           {commercial.length > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {commercial.length} Commercial
             </span>
           )}
@@ -254,7 +254,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
       ) : (
         <div className="w-full max-w-7xl mx-auto px-4 my-12 text-gray-500">
           Project listings for {name} are being updated. Please{" "}
-          <Link href="/project-listing" className="text-[#B77D2B] underline">
+          <Link href="/project-listing" className="text-[#CEA44E] underline">
             browse all projects
           </Link>{" "}
           in the meantime.
@@ -265,12 +265,12 @@ const CityLandingPage = async ({ params }: PageParams) => {
       {sectors.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-white">
               Browse Property in {name} by Sector
             </h2>
             <Link
               href={`/project-listing/${slug}/sectors`}
-              className="text-sm font-medium text-[#B77D2B] hover:underline whitespace-nowrap"
+              className="text-sm font-medium text-[#CEA44E] hover:underline whitespace-nowrap"
             >
               View all {sectors.length} sectors →
             </Link>
@@ -280,10 +280,10 @@ const CityLandingPage = async ({ params }: PageParams) => {
               <Link
                 key={s.slug}
                 href={`/project-listing/${slug}/sectors/${s.slug}`}
-                className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+                className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
               >
                 {s.sector}{" "}
-                <span className="text-gray-400">({s.count})</span>
+                <span className="text-gray-500">({s.count})</span>
               </Link>
             ))}
           </div>
@@ -294,12 +294,12 @@ const CityLandingPage = async ({ params }: PageParams) => {
       {builders.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-white">
               Top Developers in {name}
             </h2>
             <Link
               href="/developer"
-              className="text-sm font-medium text-[#B77D2B] hover:underline whitespace-nowrap"
+              className="text-sm font-medium text-[#CEA44E] hover:underline whitespace-nowrap"
             >
               View all developers →
             </Link>
@@ -309,7 +309,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
               <Link
                 key={b as string}
                 href={`/developer/${slugify(b as string)}`}
-                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-white hover:text-[#B77D2B] border border-transparent hover:border-[#B77D2B] transition"
+                className="rounded-full bg-black px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-[#CEA44E] border border-transparent hover:border-[#B77D2B] transition"
               >
                 {b}
               </Link>
@@ -320,7 +320,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
 
       {/* Explore other cities — internal linking (doc §7) */}
       <section className="w-full max-w-7xl mx-auto px-4 my-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-white mb-4">
           Explore Property in Other Cities
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -328,11 +328,11 @@ const CityLandingPage = async ({ params }: PageParams) => {
             <Link
               key={c.slug}
               href={`/project-listing/${c.slug}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+              className="inline-flex items-center gap-1.5 rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
             >
               Property in {c.name}
               {!c.hasInventory && (
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">
                   Coming Soon
                 </span>
               )}
