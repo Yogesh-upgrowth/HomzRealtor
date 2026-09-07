@@ -2,16 +2,14 @@ import { MapPin } from "lucide-react";
 
 type Props = {
   title: string;
-  address: string;
   lat: number;
   lng: number;
-  apiKey: string;
 };
 
-const MapEmbed = ({ title, address, lat, lng, apiKey }: Props) => {
-  const embedUrl = apiKey
-    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(address)}&zoom=15`
-    : `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+// No API key needed: this is the plain, unauthenticated maps.google.com
+// embed URL, not the billed Maps Embed API — free, no GOOGLE_MAPS_API_KEY.
+const MapEmbed = ({ title, lat, lng }: Props) => {
+  const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
 
   const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
 

@@ -6,7 +6,7 @@
 // matching the RichText renderer in LocationIntelligence/InvestmentAnalysis/etc.
 
 import { formatInr, type NormalizedProject } from "./normalize";
-import type { ConnectivityItem, LandmarksMap } from "./geo";
+import type { ConnectivityItem, LandmarksMap } from "./osmPlaces";
 import type { PriceInsightsData } from "./projects";
 import type { ProjectView } from "./view-model";
 

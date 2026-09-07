@@ -11,7 +11,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { formatInr, KNOWN_BUILDERS, type NormalizedProject } from "./normalize";
-import type { ConnectivityItem, LandmarksMap } from "./geo";
+import type { ConnectivityItem, LandmarksMap } from "./osmPlaces";
 import { reraPortalFor } from "./rera";
 
 /** `status` is only set on the RERA chip (active/lapsed/unverified/

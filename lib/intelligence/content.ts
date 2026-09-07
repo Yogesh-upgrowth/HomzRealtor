@@ -7,7 +7,7 @@ import OpenAI from "openai";
 import type { NormalizedProject, } from "./normalize";
 import { formatInr } from "./normalize";
 import { clean } from "./view-model";
-import type { LandmarksMap, ConnectivityItem } from "./geo";
+import type { LandmarksMap, ConnectivityItem } from "./osmPlaces";
 import { reraPortalFor } from "./rera";
 
 // Constructed lazily on first use — the SDK constructor throws when no API key

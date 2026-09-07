@@ -1,6 +1,6 @@
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import type { FaqItem } from "@/lib/intelligence/content";
-import type { ConnectivityItem } from "@/lib/intelligence/geo";
+import type { ConnectivityItem } from "@/lib/intelligence/osmPlaces";
 
 // FAQPage schema only. BreadcrumbList + RealEstateListing are emitted once, in
 // the project page itself (app/project-listing/[city]/[slug]/page.tsx), so no

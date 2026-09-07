@@ -1,5 +1,5 @@
 import { Plane, TrainFront, Milestone, Building2, MapPin } from "lucide-react";
-import type { ConnectivityItem } from "@/lib/intelligence/geo";
+import type { ConnectivityItem } from "@/lib/intelligence/osmPlaces";
 
 const iconFor = (category: string | null) => {
   switch ((category || "").toLowerCase()) {

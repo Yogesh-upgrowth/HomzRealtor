@@ -16,7 +16,8 @@ import {
   getSectorAverages,
 } from "@/lib/intelligence/projects";
 import { slugify } from "@/lib/intelligence/normalize";
-import { geocodeProject, fetchNearbyLandmarks, buildConnectivity } from "@/lib/intelligence/geo";
+import { resolveCoordinate } from "@/lib/intelligence/resolveLocation";
+import { nearbyLandmarks, nearbyConnectivity } from "@/lib/intelligence/osmPlaces";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
 import { resolveProjectView, isKnownBuilder } from "@/lib/intelligence/view-model";
 import { buildLocationSummary, buildMarketSummary, buildInvestmentSummary } from "@/lib/intelligence/summaries";
@@ -55,25 +56,9 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   const project = await getProjectBySlug(cityParam, slug);
   if (!project) return null;
 
-  const address = [
-    project.project_name,
-    project.sector,
-    project.micro_market,
-    project.city_name,
-    project.state,
-    "India",
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  const coords = await geocodeProject(address).catch(() => null);
-
-  const [landmarks, connectivity] = coords
-    ? await Promise.all([
-        fetchNearbyLandmarks(coords.lat, coords.lng).catch(() => ({})),
-        buildConnectivity(cityKey, coords.lat, coords.lng).catch(() => []),
-      ])
-    : [{}, []];
+  const coords = resolveCoordinate(cityKey, project.sector, project.micro_market);
+  const landmarks = nearbyLandmarks(coords.lat, coords.lng);
+  const connectivity = nearbyConnectivity(cityKey, coords.lat, coords.lng);
 
   const content = await generateProjectContent(project, landmarks, connectivity).catch(() => ({
     location_intelligence: "",
@@ -219,17 +204,13 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
             <LandmarksTable title={project.project_name} data={landmarksForTable} />
           </div>
         )}
-        {coords && (
-          <div className="mt-4">
-            <MapEmbed
-              title={project.project_name}
-              address={address}
-              lat={coords.lat}
-              lng={coords.lng}
-              apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
-            />
-          </div>
-        )}
+        <div className="mt-4">
+          <MapEmbed
+            title={project.project_name}
+            lat={coords.lat}
+            lng={coords.lng}
+          />
+        </div>
       </section>
 
       {/* Amenities */}
