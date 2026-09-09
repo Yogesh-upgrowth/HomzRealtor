@@ -17,7 +17,8 @@ import { truncateAtWord } from "@/lib/intelligence/normalize";
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment). [] rather than enumerating the combinatorial
 // city x project-pair space: still activates on-demand ISR for every param.
-export const revalidate = 1800;
+// 6h, not 30min — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
+export const revalidate = 21600;
 
 export function generateStaticParams() {
   return [];

@@ -5,7 +5,8 @@ import { makePropertyDetailPage } from "@/components/PropertyListing/propertyDet
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment); [] still activates on-demand ISR for every param.
-export const revalidate = 1800;
+// 6h, not 30min — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
+export const revalidate = 21600;
 export function generateStaticParams() {
   return [];
 }

@@ -2,12 +2,22 @@ import type { Metadata } from "next";
 import { makePropertyDetailPage } from "@/components/PropertyListing/propertyDetailRoute";
 import FacetedListingPage, { BUY_FACETS } from "@/components/PropertyListing/FacetedListingPage";
 
-// ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
-// this every crawl/visit re-executes the origin function uncached.
-// revalidate alone doesn't activate it for a dynamic segment — needs
-// generateStaticParams too (verified — see app/project-listing/[city]/
+// ISR — without this every crawl/visit re-executes the origin function
+// uncached. revalidate alone doesn't activate it for a dynamic segment —
+// needs generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment); [] still activates on-demand ISR for every param.
-export const revalidate = 1800;
+//
+// 6h, not the 30min this used to be — Vercel paused the whole project
+// (2026-09-09) after this route alone (~20,957 real Sale listings, each
+// its own ISR-backed page) blew through the Hobby plan's ISR-write,
+// origin-transfer and CPU budgets. lib/listings/segmentCache.ts's own
+// comment says the underlying feed "only actually changes once a day" —
+// every 30-minute regeneration was needless churn against data that
+// hadn't moved. 6h keeps listings meaningfully fresh within a day while
+// cutting regeneration frequency (and therefore all three budgets) ~12x.
+// Same reasoning applied to every other high-volume route (rent/commercial/
+// pg detail, all pagination, developer/sector/compare pages).
+export const revalidate = 21600;
 
 // Content audit B-04 (2026-09-08): faceted landing pages (3-bhk,
 // under-1-crore, ...) live at this exact [city]/[slug] shape, not a

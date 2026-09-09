@@ -5,7 +5,7 @@ import { MAX_STATIC_PAGES } from "@/components/PropertyListing/PaginatedListingP
 
 const SITE = "https://www.homzrealtor.com";
 
-export const revalidate = 1800;
+export const revalidate = 21600;
 
 // Only real for city="gurgaon" + a known facet slug — no actual property
 // ever has a /page/N sub-path (nothing links to one), so this route is
