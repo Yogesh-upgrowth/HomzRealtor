@@ -17,23 +17,40 @@ export default function robots(): MetadataRoute.Robots {
   // fetch pages live on behalf of a user's assistant query — OAI-SearchBot,
   // ChatGPT-User, Perplexity-User, ClaudeBot, and Google-Extended (which
   // also gates eligibility for Google AI Overviews grounding) — are
-  // deliberately allowed so the site can be cited in AI answers.
+  // deliberately allowed so the site can be cited in AI answers. These get
+  // their own explicit `allow` rules below rather than relying on the
+  // wildcard `User-Agent: *` fallback — SEO audit (C-01, 2026-09-08) flagged
+  // that as fragile: a future edit to the wildcard rule for an unrelated
+  // reason could silently kill AI-citation visibility with nothing in the
+  // file to catch it.
   //
-  // PerplexityBot is NOT in this list, unlike GPTBot/anthropic-ai/
-  // Applebot-Extended: those companies split "training crawler" from
-  // "live per-query retrieval crawler" into separate user-agents, so
-  // blocking the training one costs zero citation visibility. Perplexity
-  // doesn't split cleanly — PerplexityBot also feeds the standing index
-  // their answers draw from, not just Perplexity-User's live fetches — so
-  // blocking it would plausibly cost real citations in a research-heavy
-  // category like real estate.
-  const blockedAiAgents = [
-    "GPTBot",
-    "anthropic-ai",
-    "Claude-Web",
-    "CCBot",
-    "Applebot-Extended",
-    "cohere-ai",
+  // PerplexityBot is NOT treated like GPTBot/Applebot-Extended below (also
+  // blocked): those companies split "training crawler" from "live per-query
+  // retrieval crawler" into separate user-agents, so blocking the training
+  // one costs zero citation visibility. Perplexity doesn't split cleanly —
+  // PerplexityBot also feeds the standing index their answers draw from,
+  // not just Perplexity-User's live fetches — so blocking it would
+  // plausibly cost real citations in a research-heavy category like real
+  // estate. It gets an explicit allow rule alongside the retrieval agents.
+  //
+  // GPTBot deliberately stays blocked (2026-09-08 decision): it's OpenAI's
+  // training crawler, not the one that powers ChatGPT search citations
+  // (that's OAI-SearchBot, already allowed) — blocking it costs no citation
+  // visibility while avoiding unrestricted training-data use of the site's
+  // content. anthropic-ai and Claude-Web (previously blocked here) are
+  // retired agent names Anthropic no longer uses; ClaudeBot is the live one
+  // and is explicitly allowed below instead.
+  const blockedAiAgents = ["GPTBot", "CCBot", "Bytespider", "Applebot-Extended", "cohere-ai"];
+
+  // Live retrieval/citation agents — explicitly allowed, not just left to
+  // fall through the wildcard rule. See comment above for why each is here.
+  const allowedAiAgents = [
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "Perplexity-User",
+    "PerplexityBot",
+    "ClaudeBot",
+    "Google-Extended",
   ];
 
   return {
@@ -58,11 +75,29 @@ export default function robots(): MetadataRoute.Robots {
         // the crawl is worth it for letting stale URLs actually deindex.
         disallow: ["/api/"],
       },
+      ...allowedAiAgents.map((userAgent) => ({
+        userAgent,
+        allow: "/",
+      })),
       ...blockedAiAgents.map((userAgent) => ({
         userAgent,
         disallow: "/",
       })),
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    // SEO audit H-05 (2026-09-08): app/sitemap.ts now uses generateSitemaps()
+    // to split the 2,967-URL sitemap into 7 segments so Search Console can
+    // report indexation per segment. Next.js doesn't auto-build a
+    // <sitemapindex> for generateSitemaps() output, so all 7 are listed here
+    // directly — multiple Sitemap: lines is a Google-supported equivalent to
+    // a formal index file.
+    sitemap: [
+      `${baseUrl}/sitemap/projects.xml`,
+      `${baseUrl}/sitemap/sectors.xml`,
+      `${baseUrl}/sitemap/developers.xml`,
+      `${baseUrl}/sitemap/buy.xml`,
+      `${baseUrl}/sitemap/rent.xml`,
+      `${baseUrl}/sitemap/commercial.xml`,
+      `${baseUrl}/sitemap/content.xml`,
+    ],
   };
 }

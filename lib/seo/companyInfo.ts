@@ -30,6 +30,15 @@ export const COMPANY_INFO = {
     facebook: "",
     linkedin: "",
     youtube: "",
+    // Added for SEO audit C-05 (2026-09-08) — Organization.sameAs needs
+    // these plus a claimed Google Business Profile to disambiguate the
+    // brand from unrelated "Homz"-named entities (HOMZ Real Estate Mission
+    // Viejo CA, Houzz, the HOMZ ETF ticker, etc.). Claiming the actual
+    // profiles is an ops task, not a code one — see the memory note this
+    // session saved for the full list and what's still needed.
+    justdial: "",
+    crunchbase: "",
+    googleBusiness: "", // the profile's public g.page / Maps share URL, once claimed
   },
 };
 

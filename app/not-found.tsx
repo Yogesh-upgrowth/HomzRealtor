@@ -5,9 +5,19 @@ import Link from "next/link";
 // layout's default title ("HomzRealtor — Residential & Commercial Property
 // in Gurgaon") — every 404 claimed to be the homepage. noindex is also
 // correct here regardless: a 404 should never be indexed.
+//
+// alternates.canonical: undefined — SEO audit 2026-09-07 P1: the root
+// layout's own metadata sets alternates.canonical: "/", and Next.js's
+// metadata inheritance carries that down to any route that doesn't declare
+// its own `alternates` key, which this page didn't. Confirmed live: a 404
+// page rendered `<link rel="canonical" href=".../">`, telling crawlers the
+// error page and the homepage are the same URL. A noindex 404 doesn't need
+// a canonical at all; declaring the key here (even as undefined) is what
+// stops the parent's value from carrying through.
 export const metadata: Metadata = {
   title: "Page Not Found",
   robots: { index: false, follow: true },
+  alternates: { canonical: undefined },
 };
 
 // Rendered for any unmatched route, and by any page that calls notFound()

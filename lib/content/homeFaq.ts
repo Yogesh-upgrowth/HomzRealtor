@@ -8,8 +8,15 @@ export const HOME_FAQS: FaqItem[] = [
     a: "HomzRealtor is an authorized channel partner for leading developers such as M3M, DLF, Emaar, Godrej and Tata Realty, offering verified listings at the same price as the developer with no hidden markup.",
   },
   {
+    // SEO audit 2026-09-07 P0: this used to claim every listed project is
+    // RERA registered and verified — directly contradicted by the site's
+    // own project pages, which show a real per-project status (RERA
+    // Verified / Lapsed / Unverified / Not Registered — see
+    // components/Common/ReraBadge.tsx) sourced from the feed, not a
+    // uniformly "verified" state. The honest answer describes what the
+    // site actually does: display the real status, not guarantee one.
     q: "Are all listings on HomzRealtor RERA registered?",
-    a: "Yes, every project featured on HomzRealtor is RERA registered and verified by our compliance team before it is published.",
+    a: "Not automatically. Every project page on HomzRealtor shows that project's actual RERA status — registered, lapsed, unverified or not registered — as sourced from available records, so you can check it before proceeding. Always confirm the current registration on the official HARERA portal before making any payment.",
   },
   {
     q: "Does HomzRealtor charge buyers a brokerage fee?",

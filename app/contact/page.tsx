@@ -12,7 +12,7 @@ const SITE = "https://www.homzrealtor.com";
 const PAGE_URL = `${SITE}/contact`;
 
 export const metadata: Metadata = {
-  title: "Contact Us",
+  title: "Contact HomzRealtor — Gurgaon Property Advisors",
   description:
     "Get in touch with HomzRealtor — phone, email, WhatsApp and office details for verified residential and commercial property advice in Gurgaon.",
   alternates: { canonical: PAGE_URL },

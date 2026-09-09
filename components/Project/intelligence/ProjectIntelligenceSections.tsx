@@ -14,6 +14,7 @@ import {
   getBuilderProjects,
   getSectorProjects,
   getSectorAverages,
+  isLinkableBuilder,
 } from "@/lib/intelligence/projects";
 import { slugify } from "@/lib/intelligence/normalize";
 import { resolveCoordinate } from "@/lib/intelligence/resolveLocation";
@@ -225,9 +226,11 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
           builder={project.builder}
           text={content.builder_profile}
           slug={
-            project.builder && project.builder !== "Unknown"
-              ? slugify(project.builder)
-              : undefined
+            // SEO audit 2026-09-07 P1: a short fallback builder name (e.g.
+            // "MV", "SS") is real display text but not a real /developer/
+            // page — buildDeveloperIndex excludes it. isLinkableBuilder is
+            // the same gate that index uses.
+            isLinkableBuilder(project.builder) ? slugify(project.builder) : undefined
           }
           stats={builderStats}
           badges={builderBadges}

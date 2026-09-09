@@ -1,5 +1,3 @@
-import Testimonials from "@/components/Common/Testimonial";
-import { testimonials } from "@/context/utils/AboutPageData";
 import DiscoverProject from "@/components/DiscoverProjects";
 import Hero from "@/components/Hero";
 import HotSelling from "@/components/HotSelling";
@@ -13,7 +11,6 @@ import ServicesGrid from "@/components/Home/ServicesGrid";
 import HomzIntelligence from "@/components/Home/HomzIntelligence";
 import LatestNews from "@/components/Home/LatestNews";
 import PropertyInsights from "@/components/Home/PropertyInsights";
-import AwardsSection from "@/components/Home/AwardsSection";
 import HomeFaq from "@/components/Home/HomeFaq";
 import PopularSearches from "@/components/Home/PopularSearches";
 import GurgaonSectorsSection from "@/components/Home/GurgaonSectorsSection";
@@ -78,12 +75,15 @@ export default async function Home() {
         <HomzIntelligence />
         <LatestNews items={news} />
         <PropertyInsights />
-        <Testimonials
-          title="CUSTOMER TESTIMONIALS"
-          subtitle="Here’s what our clients have to say about their experience with us."
-          testimonialsData={testimonials}
-        />
-        <AwardsSection />
+        {/* SEO audit 2026-09-07 P1 ("Awards, scale claims and identical
+            testimonials are not visibly substantiated"): both sections
+            removed rather than left live. Testimonial text was word-for-word
+            identical across all three named "clients" with clearly invented
+            companies (see context/utils/AboutPageData.tsx); AwardsSection's
+            own source comment already called its four awards "illustrative
+            placeholder" — fabricated wins attributed to real bodies (NAR,
+            CREDAI). Restore both once real, consented customer stories and
+            real award evidence exist. */}
         <HomeFaq />
         <PopularSearches />
         <GurgaonSectorsSection citySlug={gurgaonSlug} sectors={sectors} />

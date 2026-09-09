@@ -7,16 +7,23 @@ import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
 // convention. meta.updatedAt must only change on a real content revision —
 // never bump it just to look "fresh." hero/social images are placeholders,
 // same open item as the pilot.
+//
+// Slug is deliberately evergreen ("...price-trends", no year) — content
+// audit B-02 (2026-09-08): this is one of the 8 price/trend posts meant to
+// be re-verified on a quarterly cadence, and a year-suffixed URL would need
+// a new slug (and lose its links) every single refresh. The year stays in
+// the title/H1 only, where it's a "how fresh is this" cue rather than part
+// of the address. Old -2026 URL 301s here — see next.config.ts.
 
 export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
   head: {
     lang: "en-IN",
-    canonicalUrl: "https://www.homzrealtor.com/blog/gurgaon-property-price-trends-2026",
+    canonicalUrl: "https://www.homzrealtor.com/blog/gurgaon-property-price-trends",
     robots: "index, follow, max-image-preview:large",
     viewport: "width=device-width, initial-scale=1",
   },
   meta: {
-    slug: "gurgaon-property-price-trends-2026",
+    slug: "gurgaon-property-price-trends",
     title: "Gurgaon Property Price Trends: September 2026 Snapshot",
     h1: "Gurgaon Property Price Trends — Live Snapshot, September 2026",
     metaDescription:

@@ -1,4 +1,5 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
+import { PropertyHubJsonLd } from "@/components/PropertyListing/PaginatedListingPage";
 
 const title = "PG Accommodation in Gurgaon";
 const description =
@@ -17,5 +18,10 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default function PgPropertyPage() {
-  return <PropertyListingPage category="Pg" />;
+  return (
+    <>
+      <PropertyHubJsonLd category="Pg" />
+      <PropertyListingPage category="Pg" />
+    </>
+  );
 }

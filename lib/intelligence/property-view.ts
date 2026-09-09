@@ -21,6 +21,7 @@
 import { clean, normalizeAmenities, validImages } from "./view-model";
 import type { Badge, Chip, HighlightStat, LinkItem, PersonaReasons } from "./view-model";
 import { slugify } from "@/components/utils/slugify";
+import { truncateAtWord } from "./normalize";
 import type { PropertyCategory, RawHomzProperty } from "@/lib/scraping/homzbackend";
 
 // Chrome-asset filtering (site logo, developer-logo thumbnail, amenity
@@ -431,6 +432,83 @@ export function resolvePropertyView(
 function buildLinksWrapper(category: PropertyCategory, citySlug: string) {
   const { similar, internal } = buildLinks(category, citySlug);
   return { similarSearches: similar, internalLinks: internal };
+}
+
+/** Meta description for a property detail page — SEO audit (C-03,
+ *  2026-09-08) found propertyDetailRoute.tsx was using keyHighlights[0] for
+ *  this, which is always "Located in {location}." (buildKeyHighlights()
+ *  pushes that unconditionally first) — 19-30 chars, no price, no BHK, no
+ *  differentiator, identical shape across thousands of pages.
+ *
+ *  Built from the same real fields the page itself already renders (price,
+ *  configuration, area, status/possession) — not a template referencing
+ *  fields this codebase doesn't have (furnishing, dealType, tenant profile
+ *  aren't on RawHomzProperty/PropertyView; a generic description built from
+ *  real fields beats a richer-looking one built from fields that don't
+ *  exist and would silently render "undefined"). */
+export function buildPropertyDescription(view: PropertyView): string {
+  const config = view.configuration || (view.bedrooms ? `${view.bedrooms} BHK` : null);
+  const type = (view.propertyType || "Property").toLowerCase();
+  const configType = config ? `${config} ${type}` : type;
+
+  // priceText is the feed's own raw price string verbatim (see priceText()
+  // above) — for Rent/Pg it already carries a "/month" suffix baked in
+  // (confirmed live: "60,000/month"), so appending one here doubled it.
+  const priceBit = view.hasPrice
+    ? `${view.category === "Rent" || view.category === "Pg" ? "at" : "from"} ${view.priceText}`
+    : "with pricing on request";
+
+  const areaBit = view.areaText ? `, ${view.areaText}` : "";
+  const statusBit = view.status !== "Status on request" ? ` — ${view.status}` : "";
+
+  const verb =
+    view.category === "Rent" || view.category === "Pg"
+      ? "for rent"
+      : view.category === "Commercial"
+        ? "for sale/lease"
+        : "for sale";
+
+  const cta =
+    view.category === "Rent" || view.category === "Pg"
+      ? "View photos, amenities and arrange a visit"
+      : view.category === "Commercial"
+        ? "Get specifications, amenities and site-visit support"
+        : "Compare amenities, floor plans and payment options";
+
+  const sentence =
+    `${configType} ${verb} in ${view.location}${areaBit} — ${priceBit}${statusBit}. ` +
+    `${cta} on HomzRealtor.`;
+
+  return truncateAtWord(sentence);
+}
+
+/** <title> tag for a property detail page — SEO audit (H-02, 2026-09-08)
+ *  found propertyDetailRoute.tsx used the feed's raw title verbatim, which
+ *  fails in both directions: verbose auto-generated titles run 90+ chars
+ *  (truncated mid-word in the SERP), while others are just a bare project
+ *  name at 14-17 chars (no location, no intent, nothing for a search result
+ *  to differentiate on). Built from the same structured fields as
+ *  buildPropertyDescription(), targeting the 52-58 char sweet spot.
+ *
+ *  Prefers the numeric bedroom count over the raw `configuration` string
+ *  (which can carry extra qualifiers like "4 BHK + Servant") — "4 BHK" is
+ *  what gets searched, the qualifier just eats budget that location needs
+ *  more. If it still doesn't fit, truncates the entity/location — never the
+ *  "Price & Floor Plan" suffix, so a title never ends mid-word. */
+export function buildPropertyTitle(view: PropertyView): string {
+  const type = view.propertyType || "Property";
+  const configType = view.bedrooms
+    ? `${view.bedrooms} BHK ${type}`
+    : view.configuration
+      ? `${view.configuration} ${type}`
+      : type;
+
+  const suffix = ": Price & Floor Plan";
+  const entity = `${configType}, ${view.location}`;
+  const budget = 58 - suffix.length;
+  const truncatedEntity = entity.length > budget ? truncateAtWord(entity, budget) : entity;
+
+  return `${truncatedEntity}${suffix}`;
 }
 
 export { landmarkCount };

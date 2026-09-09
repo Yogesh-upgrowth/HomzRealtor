@@ -29,6 +29,25 @@ function sortedSlugs(slugA: string, slugB: string): [string, string] {
   return [slugA, slugB].sort() as [string, string];
 }
 
+// SEO audit H-01 (2026-09-08): with 1,165 projects the reachable
+// city/slugA/slugB space is ~10^6 near-identical pages — every valid pair
+// was indexable by default, none in the sitemap, pure index bloat diluting
+// crawl budget. noindex,follow is now the default (still crawlable, so a
+// stale/retired pair still 404s and deindexes — see the ISR comment below);
+// `follow` keeps link equity flowing to the two real project pages either
+// side compares. A hand-picked set of genuinely-searched pairs (e.g. two
+// prominent builders in the same sector) can be promoted to indexable by
+// adding "city/sortedSlugA/sortedSlugB" here — each one then needs real,
+// unique intro copy (not just this template) and a sitemap entry to be a
+// real win rather than the same bloat on a shorter list.
+const INDEXABLE_COMPARE_PAIRS = new Set<string>([
+  // "gurgaon/dlf-the-camellias/m3m-golf-estate",
+]);
+
+function isIndexableCompare(city: string, sortedA: string, sortedB: string): boolean {
+  return INDEXABLE_COMPARE_PAIRS.has(`${city}/${sortedA}/${sortedB}`);
+}
+
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { city, slugA, slugB } = await params;
   const [sortedA, sortedB] = sortedSlugs(slugA, slugB);
@@ -42,6 +61,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     return {
       title: "Compare Projects",
       description: "Compare real estate projects side by side on HomzRealtor.",
+      robots: { index: false, follow: true },
     };
   }
 
@@ -68,6 +88,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const image = validImages(projectA.images || [])[0] || validImages(projectB.images || [])[0];
 
   const truncatedDescription = truncateAtWord(description);
+  const indexable = isIndexableCompare(canonicalCity, sortedA, sortedB);
 
   return {
     title,
@@ -76,6 +97,10 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     alternates: {
       canonical: canonicalUrl,
     },
+    // Default noindex,follow — see INDEXABLE_COMPARE_PAIRS above. `follow`
+    // is deliberate: even a noindex compare page should still pass link
+    // equity to the two real project pages it links to.
+    robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {
       title,
       description: truncatedDescription,

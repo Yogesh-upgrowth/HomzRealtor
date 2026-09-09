@@ -1,7 +1,8 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
+import { ListingPreviewSection, PropertyHubJsonLd } from "@/components/PropertyListing/PaginatedListingPage";
 import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 
-const title = "Commercial Properties in Gurgaon";
+const title = "Commercial Property in Gurgaon — Price, Photos & Plans";
 const description =
   "Shops, offices, showrooms, and commercial land for sale and rent in Gurgaon — filter by investment grade, property type, and budget.";
 
@@ -29,5 +30,11 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default function CommercialPage() {
-  return <PropertyListingPage category="Commercial" />;
+  return (
+    <>
+      <PropertyHubJsonLd category="Commercial" />
+      <PropertyListingPage category="Commercial" />
+      <ListingPreviewSection category="Commercial" />
+    </>
+  );
 }

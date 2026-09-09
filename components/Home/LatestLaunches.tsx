@@ -94,7 +94,13 @@ const LatestLaunches = ({ projects }: Props) => {
                 {p.image && <SafeProjectImage src={p.image} alt={p.name} sizes="70px" />}
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="truncate text-[14.5px] font-bold text-white">{p.name}</h4>
+                {/* h3, matching the featured card above — SEO audit M-03
+                    (2026-09-08): feature and these list items are all
+                    equal-status "Latest Launches" siblings under this
+                    section's own h2, just laid out as one hero card + a
+                    compact list; that's a visual choice, not a heading
+                    hierarchy. */}
+                <h3 className="truncate text-[14.5px] font-bold text-white">{p.name}</h3>
                 <p className="mt-1 truncate text-[12px] text-gray-500">{p.locationLine}</p>
                 <span className="mt-1 block font-display text-[15px] text-[#D9B268]">{p.priceText}</span>
               </div>

@@ -85,10 +85,15 @@ export default function Hero({
           #1 Trusted Property Platform in Gurgaon
         </span>
 
-        <h1 className="mb-4 max-w-[16ch] text-balance text-[clamp(27px,7.4vw,36px)] font-extrabold uppercase leading-[1.08] tracking-tight text-white md:text-wrap md:text-[clamp(34px,6.4vw,68px)] md:leading-[1.04]">
+        {/* SEO audit 2026-09-07 P1: this used to read "Homes you can trust,
+            in the city you love." — no location or topic, so a crawler (or
+            a screen-reader user landing here first) had nothing to anchor
+            on. "Gurgaon" is now explicit while keeping the same voice/split
+            layout. */}
+        <h1 className="mb-4 max-w-[18ch] text-balance text-[clamp(27px,7.4vw,36px)] font-extrabold uppercase leading-[1.08] tracking-tight text-white md:text-wrap md:text-[clamp(34px,6.4vw,68px)] md:leading-[1.04]">
           Homes you can trust,{" "}
           <span className="bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
-            in the city you love.
+            in Gurgaon — the city you love.
           </span>
         </h1>
 

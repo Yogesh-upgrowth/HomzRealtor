@@ -1,7 +1,8 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
+import { ListingPreviewSection, PropertyHubJsonLd } from "@/components/PropertyListing/PaginatedListingPage";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
 
-const title = "Rent Property in Gurgaon";
+const title = "Rent Property in Gurgaon — Price, Photos & Floor Plans";
 const description =
   "Browse verified rental listings in Gurgaon — apartments, builder floors, and more. Filter by property type, BHK, budget, and possession status.";
 
@@ -29,5 +30,11 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default function RentPropertyPage() {
-  return <PropertyListingPage category="Rent" />;
+  return (
+    <>
+      <PropertyHubJsonLd category="Rent" />
+      <PropertyListingPage category="Rent" />
+      <ListingPreviewSection category="Rent" />
+    </>
+  );
 }

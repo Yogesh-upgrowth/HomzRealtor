@@ -6,6 +6,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPropertyBySlug } from "@/lib/intelligence/get-property";
+import { buildPropertyDescription, buildPropertyTitle } from "@/lib/intelligence/property-view";
 import PropertyDetailView from "@/components/PropertyListing/PropertyDetailView";
 import type { PropertyCategory } from "@/lib/scraping/homzbackend";
 
@@ -25,13 +26,14 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     const { city, slug } = await params;
     const view = await getPropertyBySlug(category, city, slug);
     if (!view) return {};
-    const description = view.keyHighlights[0] || `${view.title} in ${view.location}.`;
+    const description = buildPropertyDescription(view);
+    const title = buildPropertyTitle(view);
     return {
-      title: view.title,
+      title,
       description,
       alternates: { canonical: `/${routeBase}/${city}/${slug}` },
       openGraph: {
-        title: view.title,
+        title,
         description,
         images: view.heroImage ? [view.heroImage] : undefined,
       },

@@ -9,6 +9,7 @@ import {
   canonicalCitySlug,
   getProjectsForCity,
   getSectorsForCity,
+  isLinkableBuilder,
 } from "@/lib/intelligence/projects";
 import { slugify } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
@@ -36,6 +37,10 @@ type PageParams = { params: Promise<{ city: string }> };
 // block. cityKey is what getProjectsForCity expects, to check inventory
 // per city before rendering — a city with zero live projects gets labeled
 // "Coming Soon" there rather than presented identically to Gurgaon.
+// Must match app/project-listing/[city]/page/[page]/page.tsx's own
+// PROJECT_PAGE_SIZE — see the "View all" link below.
+const PAGE_SIZE = 24;
+
 const ALL_CITIES: { slug: string; name: string; cityKey: string }[] = [
   { slug: "gurgaon", name: "Gurgaon", cityKey: "ggn" },
   { slug: "noida", name: "Noida", cityKey: "noida" },
@@ -129,12 +134,12 @@ const CityLandingPage = async ({ params }: PageParams) => {
 
   const residential = projects.filter((p) => p.property_category === "Residential");
   const commercial = projects.filter((p) => p.property_category === "Commercial");
+  // SEO audit 2026-09-07 P1: only link a builder chip when it clears the
+  // same eligibility gate /developer/[slug] itself uses (isLinkableBuilder) —
+  // otherwise a short fallback name like "MV" or "SS" rendered a link that
+  // 404'd, since getBuilderBySlug excludes those from its index.
   const builders = Array.from(
-    new Set(
-      projects
-        .map((p) => p.builder)
-        .filter((b) => b && b !== "Unknown")
-    )
+    new Set(projects.map((p) => p.builder).filter(isLinkableBuilder))
   ).slice(0, 8);
   const microMarkets = Array.from(
     new Set(projects.map((p) => p.micro_market).filter(Boolean) as string[])
@@ -240,15 +245,24 @@ const CityLandingPage = async ({ params }: PageParams) => {
 
       {/* Project grid (reuses the shared card component) — capped preview,
           not the full city list (which can run into the hundreds). "View
-          all" goes to the server-rendered, paginated /page/1 sequence (real
+          all" goes to the server-rendered, paginated /page/2 sequence (real
           anchors, no JS required), not the client-filtered /project-listing
-          hub, which renders zero project links in its initial HTML. */}
+          hub, which renders zero project links in its initial HTML.
+          SEO audit 2026-09-07 P1: /page/1 duplicated this hub (both
+          self-canonical) and now 404s — this hub IS page 1. The preview
+          size below matches PAGE_SIZE from
+          app/project-listing/[city]/page/[page]/page.tsx so "page 2" picks
+          up where this leaves off with minimal gap; withImages vs. that
+          route's unfiltered project order can still differ by a handful of
+          image-less projects at the boundary, which is an existing,
+          pre-existing tradeoff of preferring photogenic cards here, not a
+          new regression from this fix. */}
       {withImages.length > 0 ? (
         <SimilarProjects
           title={name}
-          projects={withImages.slice(0, 9)}
+          projects={withImages.slice(0, PAGE_SIZE)}
           heading={`Projects in ${name}`}
-          viewAllHref={`/project-listing/${slug}/page/1`}
+          viewAllHref={projects.length > PAGE_SIZE ? `/project-listing/${slug}/page/2` : undefined}
           viewAllLabel={`View all ${withImages.length} →`}
         />
       ) : (

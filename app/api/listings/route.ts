@@ -14,6 +14,7 @@ import {
   computeFacets,
   filterProperties,
   sortByImageFirst,
+  sortByReraFirst,
   type ListingFilters,
   type PropertyCategory,
 } from "@/lib/listings/filters";
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const sorted = sortByImageFirst(all);
+  const sorted = sortByReraFirst(sortByImageFirst(all));
 
   const filters: ListingFilters = {
     q: searchParams.get("q") || "",

@@ -128,13 +128,22 @@ const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8 text-white">
+          {/* SEO audit 2026-09-07 P1 ("Main navigation omits key
+              transaction/location journeys"): Buy/Rent/Commercial were
+              reachable only from the footer or deep links, never from the
+              header on any page — added here as the three real money
+              routes; "Properties" (project catalogue) is a distinct,
+              already-correct destination and stays as-is. */}
+          <div className="hidden lg:flex items-center space-x-6 text-white text-sm">
             <Link href="/">Home</Link>
-            <Link href="/about-us">About Us</Link>
+            <Link href="/buy-property">Buy</Link>
+            <Link href="/rent-property">Rent</Link>
+            <Link href="/commercial">Commercial</Link>
             <Link href="/project-listing">Properties</Link>
             <Link href="/developer">Developers</Link>
             <Link href="/property-insights">Insights</Link>
             <Link href="/blog">Blog</Link>
+            <Link href="/about-us">About Us</Link>
             {user ? (
               <div className="flex items-center gap-4">
                 {user.role === "admin" || user.role === "super_admin" ? (
@@ -174,12 +183,15 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile Toggle — custom 3-bar hamburger that morphs into an X,
-              matching the reference exactly (not a swapped icon pair). */}
+              matching the reference exactly (not a swapped icon pair).
+              lg:hidden, not md:hidden — matches the desktop menu's lg:flex
+              above (widened to fit the new Buy/Rent/Commercial links) so
+              there's no mid-width gap where neither menu shows. */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden flex h-11 w-11 flex-col items-center justify-center gap-1 rounded-full border border-white/10"
+            className="lg:hidden flex h-11 w-11 flex-col items-center justify-center gap-1 rounded-full border border-white/10"
           >
             <span
               className={`h-[2px] w-[18px] rounded-full bg-[#ececea] transition-transform duration-[250ms] ${
@@ -231,6 +243,27 @@ const Navbar: React.FC = () => {
             className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
             Home
+          </Link>
+          <Link
+            href="/buy-property"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Buy
+          </Link>
+          <Link
+            href="/rent-property"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Rent
+          </Link>
+          <Link
+            href="/commercial"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Commercial
           </Link>
           <Link
             href="/about-us"

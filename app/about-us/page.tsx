@@ -1,13 +1,12 @@
 import PromoBanner from "@/components/Common/PromoBanner";
 import ContentSection from "@/components/About/ContentSection";
 import AboutSections from "@/components/About/AboutSections";
-import aboutPageData, { testimonials } from "@/context/utils/AboutPageData";
-import Testimonials from "@/components/Common/Testimonial";
+import aboutPageData from "@/context/utils/AboutPageData";
 import customer from "@/assets/images/customer.png";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {
-  title: "About Us — Trusted Real Estate Advisory & Property Solutions",
+  title: "About HomzRealtor — Gurgaon Real Estate Advisory",
   description:
     "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
   keywords: [
@@ -21,7 +20,7 @@ export const metadata = {
     canonical: "/about-us",
   },
   openGraph: {
-    title: "About Us — Trusted Real Estate Advisory & Property Solutions",
+    title: "About HomzRealtor — Gurgaon Real Estate Advisory",
     description:
       "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
     url: "https://www.homzrealtor.com/about-us",
@@ -75,14 +74,11 @@ const About = () => {
       {/* EXPANDED ABOUT CONTENT */}
       <AboutSections />
 
-      {/* TESTIMONIALS */}
-      <div className="max-w-[1444px] w-full mx-auto mb-2">
-        <Testimonials
-          title="What Our Clients Say"
-          subtitle="Here’s what our clients have to say about their experience with us."
-          testimonialsData={testimonials}
-        />
-      </div>
+      {/* SEO audit 2026-09-07 P1: the testimonials previously here were
+          word-for-word identical across all three named "clients" with
+          invented companies — see context/utils/AboutPageData.tsx. Removed
+          rather than left live; restore once real, consented customer
+          stories exist. */}
 
       {/* PROMO BANNER */}
       <div className="max-w-[1444px] w-full mx-auto">

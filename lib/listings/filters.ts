@@ -100,6 +100,21 @@ export function sortByImageFirst(list: RawHomzProperty[]): RawHomzProperty[] {
   );
 }
 
+function hasRera(property: RawHomzProperty): boolean {
+  return Boolean(property.reraId && property.reraId.trim());
+}
+
+/** RERA-registered listings first (any status on file — active, lapsed or
+ *  unverified all still count as "has RERA" here; only a missing/empty
+ *  reraId sorts last), across every search/filter result. Array.sort is
+ *  stable, so applying this *after* sortByImageFirst makes RERA the primary
+ *  key while still preferring photo listings as the tiebreak within each
+ *  RERA group — call sortByReraFirst(sortByImageFirst(list)), not the
+ *  reverse. */
+export function sortByReraFirst(list: RawHomzProperty[]): RawHomzProperty[] {
+  return [...list].sort((a, b) => Number(hasRera(b)) - Number(hasRera(a)));
+}
+
 export function filterProperties(
   list: RawHomzProperty[],
   filters: ListingFilters,

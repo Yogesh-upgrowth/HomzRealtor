@@ -104,11 +104,17 @@ export default function DiscoverProject() {
             <div className="absolute inset-0 bg-black/30"></div>
 
             <div className="absolute bottom-0 p-4 text-white">
-              {/* Sub-item of this section's own h2 ("Discover The Latest
-                  Projects") — h3, not a sibling h2. */}
-              <h3 className="text-lg font-semibold text-[#D9B268]">
+              {/* h4, not h3 — SEO audit M-03 (2026-09-08): this mobile
+                  carousel and the desktop expanding-cards grid below both
+                  render live (Tailwind's block/hidden only toggles CSS
+                  display, not DOM presence), so at md+ widths both are in
+                  the same document. The desktop grid's h3 per card (all 5
+                  project types) is the more complete heading set; this one
+                  just needs to not literally duplicate it at the same
+                  level with the same text. */}
+              <h4 className="text-lg font-semibold text-[#D9B268]">
                 {projects[currentIndex].title}
-              </h3>
+              </h4>
 
               <p className="text-sm mt-1">
                 {projects[currentIndex].desc}

@@ -47,10 +47,17 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   if (isCategory(slug)) {
     const label = CATEGORY_LABELS[slug];
     const url = `${SITE}/blog/${slug}`;
+    const count = getBlogPostsV27ByCategory(slug).length;
+    // SEO audit content-strategy lens (2026-09-08): was ~82 chars, under
+    // the 120 floor — the only 6 URLs in the whole library that were.
+    const description =
+      `${count} ${count === 1 ? "guide" : "guides"} on ${label.toLowerCase()} for Gurgaon property, ` +
+      `built from HomzRealtor's live listing catalogue — real project counts and price data, not generic advice.`;
     return {
       title: `${label} — HomzRealtor Blog`,
-      description: `Gurgaon ${label.toLowerCase()} from HomzRealtor — real listing data, not generic advice.`,
+      description,
       alternates: { canonical: url },
+      openGraph: { title: `${label} — HomzRealtor Blog`, description, url, type: "website" },
     };
   }
 
@@ -79,12 +86,59 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
+const SITE = "https://www.homzrealtor.com";
+
+const safeJson = (g: unknown) =>
+  JSON.stringify(g)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+
 const CategoryArchive = ({ category }: { category: BlogCategory }) => {
   const posts = getBlogPostsV27ByCategory(category);
   const label = CATEGORY_LABELS[category];
+  const url = `${SITE}/blog/${category}`;
+
+  // SEO audit content-strategy lens (2026-09-08): these 6 archive pages had
+  // no JSON-LD at all — the only URLs in the library missing it — despite
+  // already rendering a real, visible breadcrumb in the UI just below.
+  // FAQPage is deliberately not added here: a listing page has no real Q&A
+  // content of its own to mark up.
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE}/blog` },
+          { "@type": "ListItem", position: 3, name: label, item: url },
+        ],
+      },
+      {
+        "@type": "CollectionPage",
+        name: `${label} — HomzRealtor Blog`,
+        url,
+      },
+      ...(posts.length > 0
+        ? [
+            {
+              "@type": "ItemList",
+              itemListElement: posts.map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: p.meta.h1,
+                url: `${SITE}/blog/${p.meta.slug}`,
+              })),
+            },
+          ]
+        : []),
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-[#0B0B0C] text-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }} />
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-32 pb-16">
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
           <Link href="/" className="hover:text-[#CEA44E]">Home</Link>

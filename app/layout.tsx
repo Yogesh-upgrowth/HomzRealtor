@@ -133,6 +133,11 @@ const organizationSchema = {
       ...(Object.values(COMPANY_INFO.social).some(Boolean)
         ? { sameAs: Object.values(COMPANY_INFO.social).filter(Boolean) }
         : {}),
+      // SEO audit H-06 (2026-09-08). Qualitative tier, not a literal figure —
+      // ₹₹₹ ("premium") matches the multi-crore listings this site actually
+      // carries. Easy to change; not tied to any live data, unlike the
+      // fields above.
+      priceRange: "₹₹₹",
     },
     {
       "@type": "WebSite",
@@ -141,6 +146,19 @@ const organizationSchema = {
       name: "HomzRealtor",
       publisher: { "@id": "https://www.homzrealtor.com/#organization" },
       inLanguage: "en-IN",
+      // SEO audit H-06 (2026-09-08) — sitelinks searchbox. Verified this
+      // target is a real, functioning search before adding it: ?q= is read
+      // and actually applied as a filter in ProjectListingClient.tsx (not
+      // just displayed as a chip label), so this describes real site
+      // behavior, not an aspirational one.
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://www.homzrealtor.com/project-listing?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
     },
   ],
 };
@@ -167,7 +185,9 @@ export default async function RootLayout({
     .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
 
   return (
-    <html lang="en">
+    // SEO audit M-04 (2026-09-08): was "en", mismatched against the
+    // Organization/WebSite schema's own inLanguage: "en-IN" a few lines up.
+    <html lang="en-IN">
       <body
         className="antialiased"
       >
@@ -184,7 +204,12 @@ export default async function RootLayout({
                 <Header />
                 <FormComponent />
                 <AuthModal />
-                {children}
+                {/* SEO audit M-04 (2026-09-08): no <main> landmark existed
+                    anywhere in the tree — screen readers and crawlers had no
+                    way to distinguish page content from the surrounding
+                    chrome. Header/Footer and the modal overlays stay outside
+                    it deliberately; they're chrome, not page content. */}
+                <main>{children}</main>
                 <Footer topSectors={topSectors} topDevelopers={topDevelopers} />
                 <Suspense fallback={null}>
                   <GoogleAnalyticsTracker />

@@ -7,7 +7,7 @@
 // this component just turns URL search params into a filters object and
 // renders whatever page of results comes back.
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -103,7 +103,13 @@ function PropertyListingInner({
 
   const segment = propertySegment(cityKey, category);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  // Derived straight from the URL, not local state — SEO audit (2026-09-08)
+  // flagged that paging through results (1 -> 2 -> 3) never changed the URL
+  // at all, so every page looked identical to a crawler and couldn't be
+  // bookmarked, shared, or survive a refresh. `page` is now a normal query
+  // param like every other filter, written via the same setParam() they use.
+  const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+  const currentPage = Number.isFinite(pageFromUrl) && pageFromUrl > 0 ? pageFromUrl : 1;
 
   const q = searchParams.get("q") || "";
   const propertyType = searchParams.get("type") || "";
@@ -118,13 +124,25 @@ function PropertyListingInner({
     q || propertyType || budget || bedrooms || possession || saleType || golf || investmentGrade
   );
 
-  const setParam = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
-    const query = params.toString();
-    router.push(query ? `/${routeBase}?${query}` : `/${routeBase}`);
-  };
+  const setParam = useCallback(
+    (key: string, value: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) params.set(key, value);
+      else params.delete(key);
+      // Any filter change invalidates the current page position — drop it
+      // so the next render lands back on page 1, same as changing a filter
+      // used to reset the old local currentPage state.
+      if (key !== "page") params.delete("page");
+      const query = params.toString();
+      router.push(query ? `/${routeBase}?${query}` : `/${routeBase}`);
+    },
+    [searchParams, routeBase, router]
+  );
+
+  const setPage = useCallback(
+    (page: number) => setParam("page", page > 1 ? String(page) : null),
+    [setParam]
+  );
 
   const clearFilter = (key: string) => setParam(key, null);
 
@@ -153,13 +171,14 @@ function PropertyListingInner({
 
   const totalPages = Math.max(1, Math.ceil(total / cardsPerPage));
 
+  // Guards a stale/hand-edited ?page= beyond what actually exists (e.g. a
+  // filter change server-side shrank total results out from under a
+  // bookmarked page N). Filter changes made through this component already
+  // reset page via setParam() above, so this is just the safety net for
+  // URLs arriving from outside it.
   useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(1);
-  }, [totalPages, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [q, propertyType, budget, bedrooms, possession, saleType, golf, investmentGrade]);
+    if (currentPage > totalPages) setPage(totalPages);
+  }, [totalPages, currentPage, setPage]);
 
   const formatProperty = (property: RawHomzProperty) => ({
     imgUrl: getValidImage(property.images) || "/dummy.svg",
@@ -395,10 +414,13 @@ function PropertyListingInner({
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-6 mb-2 text-sm sm:text-base">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              onClick={() => setPage(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
               aria-label="Previous page"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
+              // SEO audit M-07 (2026-09-08): was h-10 w-10 (40px) — below the
+              // 44x44px minimum tap-target recommendation for icon-only
+              // controls.
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronLeft size={16} />
             </button>
@@ -408,10 +430,13 @@ function PropertyListingInner({
             </span>
 
             <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              onClick={() => setPage(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
               aria-label="Next page"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
+              // SEO audit M-07 (2026-09-08): was h-10 w-10 (40px) — below the
+              // 44x44px minimum tap-target recommendation for icon-only
+              // controls.
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[#D9B268] hover:border-[#D9B268] disabled:opacity-30 disabled:hover:border-white/10 transition-colors"
             >
               <ChevronRight size={16} />
             </button>

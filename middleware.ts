@@ -6,8 +6,8 @@ import { getHomepageMarkdown } from "@/lib/seo/homepageMarkdown";
 // https/www hygiene — the primary enforcement should live in the hosting
 // provider's domain settings (e.g. Vercel's Domain redirect), which redirects
 // at the edge before a request even reaches this middleware. Only matches the
-// real production hosts, so localhost, Replit dev origins and Vercel preview
-// deployments (*.vercel.app) are never touched.
+// real production hosts, so localhost and Vercel preview deployments
+// (*.vercel.app) are never touched.
 const CANONICAL_HOST = "www.homzrealtor.com";
 const APEX_HOST = "homzrealtor.com";
 

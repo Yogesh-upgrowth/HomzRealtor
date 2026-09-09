@@ -255,13 +255,12 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
           >
             Contact Now
           </Link>
-          {view.listingUrl && (
-            <p className="mt-4 text-xs text-gray-500">
-              <a href={view.listingUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300">
-                View original listing
-              </a>
-            </p>
-          )}
+          {/* SEO audit 2026-09-07 P0 ("Some project copy and images are
+              derived from Square Yards... competitor leakage"): this used
+              to link out to the feed's source listing — for a meaningful
+              share of properties, squareyards.com — right underneath the
+              site's own "Contact Now" CTA, sending an interested visitor
+              straight to a competitor at the exact conversion moment. */}
         </section>
       </div>
     </div>

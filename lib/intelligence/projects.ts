@@ -295,6 +295,29 @@ export type DeveloperSummary = {
   cities: { slug: string; name: string }[]; // canonical city slug + display name
 };
 
+// Skip junk names the first-word builder heuristic (extractBuilder in
+// normalize.ts) can produce — a title starting with a lone "MV ..." or
+// "SS ..." that isn't the actual known "SS Group" — by requiring both the
+// raw name and its slug to clear 3 characters. Avoids thin, low-quality
+// developer pages/sitemap entries.
+//
+// SEO audit 2026-09-07 P1 (broken /developer/mv, /developer/ss links):
+// buildDeveloperIndex applied this gate, but every OTHER place that turned
+// a project's raw `builder` field into a /developer/{slug} link — the
+// Gurgaon hub's "Top Developers" chips (app/project-listing/[city]/page.tsx)
+// and a project page's own developer-profile link
+// (ProjectIntelligenceSections.tsx via BuilderProfile) — did not, so a
+// short fallback name could render a link to a developer page that
+// buildDeveloperIndex, and therefore getBuilderBySlug, would never serve.
+// Exporting this instead of duplicating the length check keeps every
+// builder-name-to-link decision behind one gate.
+export function isLinkableBuilder(builder: string | null | undefined): boolean {
+  if (!builder || builder === "Unknown") return false;
+  if (builder.trim().length < 3) return false;
+  const slug = slugify(builder);
+  return Boolean(slug && slug.length >= 3);
+}
+
 async function buildDeveloperIndex(): Promise<
   Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>
 > {
@@ -307,13 +330,8 @@ async function buildDeveloperIndex(): Promise<
   for (const projects of allCities) {
     for (const p of projects) {
       const builder = p.builder;
-      if (!builder || builder === "Unknown") continue;
-      // Skip junk names the first-word builder heuristic can produce (e.g. a
-      // title starting with a lone "A ..."). Avoids thin, low-quality developer
-      // pages/sitemap entries. Fuller eligibility gating is a later slice.
-      if (builder.trim().length < 3) continue;
+      if (!isLinkableBuilder(builder)) continue;
       const slug = slugify(builder);
-      if (!slug || slug.length < 3) continue;
 
       let entry = map.get(slug);
       if (!entry) {

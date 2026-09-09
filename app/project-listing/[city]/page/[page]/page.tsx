@@ -11,6 +11,7 @@ import {
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
+import { MAX_STATIC_PAGES } from "@/components/PropertyListing/PaginatedListingPage";
 
 const SITE = "https://www.homzrealtor.com";
 // Same size as a sector page's typical project count — keeps each page's
@@ -24,6 +25,14 @@ const PAGE_SIZE = 24;
 // comment for how this was verified.
 export const revalidate = 1800;
 
+// SEO audit 2026-09-07 P1 ("Base Gurgaon hub and /page/1 overlap"): page 1
+// was reachable both here (its own "— Page 1" title/canonical) and at the
+// base /project-listing/[city] hub — a real self-canonical duplicate pair.
+// Page 1 is only ever served at the base hub now; this route starts at page 2.
+// Capped at MAX_STATIC_PAGES per city (see that constant's comment on
+// PaginatedListingPage.tsx) — Gurgaon alone runs to ~87 pages at this
+// catalogue size, a real contributor alongside buy/rent/commercial to the
+// build-time OOM this cap was added to fix.
 export async function generateStaticParams() {
   const cityKeys = Array.from(new Set(Object.values(CITY_PARAM_MAP)));
   const results = await Promise.all(
@@ -31,9 +40,10 @@ export async function generateStaticParams() {
       const projects = await getProjectsForCity(cityKey).catch(() => []);
       const citySlug = canonicalCitySlug(cityKey);
       const totalPages = Math.max(1, Math.ceil(projects.length / PAGE_SIZE));
-      return Array.from({ length: totalPages }, (_, i) => ({
+      const staticCount = Math.max(0, Math.min(totalPages, MAX_STATIC_PAGES + 1) - 1);
+      return Array.from({ length: staticCount }, (_, i) => ({
         city: citySlug,
-        page: String(i + 1),
+        page: String(i + 2),
       }));
     })
   );
@@ -92,6 +102,7 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
   if (!resolved) notFound();
   const pageNum = parsePageNumber(page);
   if (!pageNum) notFound();
+  if (pageNum === 1) notFound(); // canonical URL for page 1 is the base hub
 
   const { slug, name } = resolved;
   const allProjects = await getProjectsForCity(resolved.cityKey).catch(() => []);
@@ -102,7 +113,11 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
   const pageProjects = allProjects.slice(start, start + PAGE_SIZE);
 
   const pageUrl = `${SITE}/project-listing/${slug}/page/${pageNum}`;
-  const prevHref = pageNum > 1 ? `/project-listing/${slug}/page/${pageNum - 1}` : null;
+  // page 1 of this pagination 404s (its content lives at the base city hub
+  // instead), so "back to the previous page" from page 2 must land there,
+  // not at /page/1.
+  const prevHref =
+    pageNum > 1 ? (pageNum === 2 ? `/project-listing/${slug}` : `/project-listing/${slug}/page/${pageNum - 1}`) : null;
   const nextHref = pageNum < totalPages ? `/project-listing/${slug}/page/${pageNum + 1}` : null;
 
   const structuredData = {

@@ -17,7 +17,12 @@
 import { homzDataUrl, type RawHomzProperty } from "@/lib/scraping/homzbackend";
 
 const TTL_MS = 60 * 60 * 1000; // 1h — well under the daily export cadence
-const UPSTREAM_LIMIT = 10_000;
+// 25000 covers the real max segment total seen live (ggnSaleProperties:
+// 20,957) with headroom for growth. Was 10,000 — silently capped Sale at
+// 47.7% of real inventory and Rent (12,945 real) at 77.3%, sitewide (this is
+// the shared server-side cache /api/listings and the buy/rent/commercial
+// pagination pages both read from). Found via SEO audit C-02 (2026-09-08).
+const UPSTREAM_LIMIT = 25_000;
 
 type CacheEntry = { data: RawHomzProperty[]; expiresAt: number };
 

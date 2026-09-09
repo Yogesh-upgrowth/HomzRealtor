@@ -4,11 +4,53 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { BUYER_GUIDES, getBuyerGuide } from "@/lib/content/buyerGuides";
+import { BUYER_GUIDES, getBuyerGuide, type BuyerGuide } from "@/lib/content/buyerGuides";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 
 const SITE = "https://www.homzrealtor.com";
+
+// Schema audit B-05 (2026-09-08): these 4 guides had @type Article (blog
+// posts use BlogPosting) and no articleSection at all. Real categories, not
+// placeholders — reuses the same slugs as BLOG_CATEGORIES
+// (lib/content/blogPostSchema.ts) so this actually corresponds to a real
+// /blog/{category} archive, which is the point of the field per the audit.
+const GUIDE_CATEGORY: Record<string, string> = {
+  "under-construction-property-buying-guide": "buying-guides",
+  "understanding-rera-gurgaon-buyers-guide": "legal-and-documents",
+  "home-loan-documentation-checklist": "home-loans-and-finance",
+  "gurgaon-micro-markets-best-rental-yields-2026": "property-investment",
+};
+
+function guideWordCount(guide: BuyerGuide): number {
+  return guide.sections
+    .flatMap((s) => s.paragraphs)
+    .reduce((n, p) => n + p.trim().split(/\s+/).filter(Boolean).length, 0);
+}
+
+// Only built where a guide's own H2s are genuinely question-shaped, not
+// forced onto every guide — 3 of these 4 guides use instructional headings
+// ("Verify RERA registration...", "Identity and address proof") that would
+// need rewriting to pass as real reader questions, which isn't something to
+// fabricate just to populate FAQPage. This one already asks and answers
+// real questions almost verbatim; the mapping below only relabels it into
+// schema.org's shape, using the guide's own real paragraph text unchanged.
+const RERA_GUIDE_FAQ: { q: string; heading: string }[] = [
+  { q: "What does RERA registration actually guarantee?", heading: "What RERA registration actually guarantees" },
+  { q: "What happens if possession is delayed?", heading: "What happens if possession is delayed" },
+  { q: "How do I actually use HRERA before I buy?", heading: "How to actually use HRERA before you buy" },
+  { q: "How do I file a complaint with HRERA?", heading: "Filing a complaint, if you ever need to" },
+  { q: "What doesn't RERA cover?", heading: "What RERA doesn't cover" },
+];
+
+function buildGuideFaq(guide: BuyerGuide): { q: string; a: string }[] {
+  if (guide.slug !== "understanding-rera-gurgaon-buyers-guide") return [];
+  return RERA_GUIDE_FAQ.map(({ q, heading }) => {
+    const section = guide.sections.find((s) => s.heading === heading);
+    const a = section?.paragraphs.join(" ");
+    return a ? { q, a } : null;
+  }).filter((f): f is { q: string; a: string } => f !== null);
+}
 
 type PageParams = { params: Promise<{ slug: string }> };
 
@@ -63,6 +105,7 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
 
   const others = BUYER_GUIDES.filter((g) => g.slug !== guide.slug);
   const pageUrl = `${SITE}/property-insights/${guide.slug}`;
+  const faq = buildGuideFaq(guide);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -81,19 +124,47 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         ],
       },
       {
-        "@type": "Article",
+        // BlogPosting, not Article — schema audit B-05 (2026-09-08): the
+        // library's 25 real blog posts already use BlogPosting
+        // (lib/seo/blogJsonLd.ts); these 4 guides were the odd ones out.
+        "@type": "BlogPosting",
         headline: guide.title,
         image: [guide.img.src],
+        wordCount: guideWordCount(guide),
+        articleSection: GUIDE_CATEGORY[guide.slug],
+        inLanguage: "en-IN",
         // No named individual author — see the code comment on
         // BuyerGuide.publishedAt in lib/content/buyerGuides.ts. Organization
         // is a real, non-fabricated, schema.org-valid author value; it's
         // just a weaker E-E-A-T signal than a named person would be.
-        author: { "@type": "Organization", name: "HomzRealtor" },
+        //
+        // "Homz Realtor Editorial Team" (not "HomzRealtor") — matches the
+        // blog's own author name exactly (lib/seo/blogJsonLd.ts); content
+        // strategy lens (2026-09-08) flagged 3 distinct author values across
+        // the library where there should be one. publisher stays
+        // "HomzRealtor" — that one already matched the blog and the
+        // sitewide Organization entity.
+        author: { "@type": "Organization", name: "Homz Realtor Editorial Team" },
         publisher: { "@type": "Organization", name: "HomzRealtor" },
         datePublished: guide.publishedAt,
         dateModified: guide.updatedAt,
         mainEntityOfPage: pageUrl,
       },
+      // Only this one guide's H2s are genuinely question-shaped — see
+      // buildGuideFaq()'s comment. The other 3 correctly emit nothing here
+      // rather than a fabricated FAQPage.
+      ...(faq.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
     ],
   };
   const safeJson = (g: unknown) =>

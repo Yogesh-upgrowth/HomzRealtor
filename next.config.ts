@@ -19,12 +19,7 @@ const nextConfig = {
   // Stop advertising "X-Powered-By: Next.js" — a free fingerprint for
   // anyone scripting version-specific exploits against the framework.
   poweredByHeader: false,
-  allowedDevOrigins: [
-    "*.replit.dev",
-    "*.sisko.replit.dev",
-    "*.repl.co",
-    "127.0.0.1",
-  ],
+  allowedDevOrigins: ["127.0.0.1"],
   images: {
     // static.squareyards.com/loangateway.urbanmoney.com were the only hosts
     // Projects images ever used. The Sale/Rent/PG/Commercial listing feed
@@ -93,20 +88,32 @@ const nextConfig = {
         destination: "/contact",
         permanent: true,
       },
-      // /developers (public API docs, for third-party integrators) was one
-      // character away from /developer (the real-estate developer
-      // directory, 254 builders) — a sitemap audit found the near-miss
-      // confusing enough to flag on its own. Renamed to /api-docs; this
-      // catches any external link/bookmark still using the old path.
+      // /developers (plural) used to redirect to /api-docs — a leftover from
+      // when /developers itself WAS the API docs page, before that content
+      // moved to /api-docs. SEO audit M-01 (2026-09-08): the plural is the
+      // far more natural guess for the developer *directory* (/developer,
+      // singular, 254 real-estate builders) than for API documentation, and
+      // an obvious backlink target — anyone linking "HomzRealtor developers"
+      // means the directory, not third-party API docs. Old bookmarks to the
+      // API docs under this path are the minority case and still land
+      // somewhere real (the developer directory), not a 404.
       {
         source: "/developers",
-        destination: "/api-docs",
+        destination: "/developer",
         permanent: true,
       },
       // The project "enquire" page was renamed to "flat" — keep old links working.
       {
         source: "/project-listing/:city/:slug/enquire",
         destination: "/project-listing/:city/:slug/flat",
+        permanent: true,
+      },
+      // Content audit B-02 (2026-09-08) — moved to an evergreen slug (no
+      // year) since this post is meant to survive a quarterly refresh
+      // without a new URL each time.
+      {
+        source: "/blog/gurgaon-property-price-trends-2026",
+        destination: "/blog/gurgaon-property-price-trends",
         permanent: true,
       },
       // Project routes accept both the raw API city key (e.g. "ggn") and the

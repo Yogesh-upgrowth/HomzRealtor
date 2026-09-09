@@ -123,7 +123,14 @@ export function propertySegment(cityKey: string, category: PropertyCategory): st
   return `${cityKey}${category}Properties`;
 }
 
-export function homzDataUrl(citySegment: string, page = 1, limit = 500): string {
+// 5000 covers the real max per-city-segment total seen live (ggn residential
+// projects: 1,463; commercial: 635) with headroom for growth. Was 500 —
+// silently truncated ~46% of Gurgaon's real project inventory (963 of 2,098)
+// everywhere this default applied (getProjectsForCity and every page built
+// on it — sector pages, developer pages — plus the old sitemap.ts, which had
+// its own separate hardcoded 500 fixed alongside this one). Found via SEO
+// audit C-02 (2026-09-08) while verifying a smaller, unrelated orphan-link fix.
+export function homzDataUrl(citySegment: string, page = 1, limit = 5000): string {
   return `${HOMZBACKEND_BASE}?city=${citySegment}&page=${page}&limit=${limit}`;
 }
 
@@ -198,7 +205,7 @@ async function fetchSegment<T>(
   citySegment: string,
   opts: FetchProjectsOptions
 ): Promise<T[]> {
-  const url = homzDataUrl(citySegment, opts.page ?? 1, opts.limit ?? 500);
+  const url = homzDataUrl(citySegment, opts.page ?? 1, opts.limit ?? 5000);
   const isBrowser = typeof window !== "undefined";
 
   // Server callers used to rely on Next's own caches (unstable_cache / fetch

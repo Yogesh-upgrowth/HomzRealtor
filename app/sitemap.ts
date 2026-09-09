@@ -8,25 +8,42 @@ import {
   type RawHomzProperty,
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
+import { filterProperties } from '@/lib/listings/filters'
+import { BUY_FACETS } from '@/components/PropertyListing/FacetedListingPage'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
 
 export const dynamic = 'force-dynamic'
 
+const BASE_URL = 'https://www.homzrealtor.com'
+
+// SEO audit H-05 (2026-09-08) split this single 2,967-URL sitemap into
+// segments via generateSitemaps() so Search Console can report indexation
+// per segment — the C-02 orphan problem becomes measurable per URL type
+// instead of buried in one aggregate number. Next.js's generateSitemaps
+// doesn't support arbitrary flat filenames (no "sitemap-projects.xml" —
+// see the file-conventions docs): the fixed URL shape is
+// /sitemap/[id].xml, so these serve at /sitemap/projects.xml,
+// /sitemap/sectors.xml, etc. Next also doesn't auto-build a <sitemapindex>
+// referencing them — they're registered individually in app/robots.ts's
+// sitemap field instead, which Google treats as equivalent for discovery.
+const SEGMENT_IDS = ['projects', 'sectors', 'developers', 'buy', 'rent', 'commercial', 'content'] as const
+type SegmentId = (typeof SEGMENT_IDS)[number]
+
+export async function generateSitemaps() {
+  return SEGMENT_IDS.map((id) => ({ id }))
+}
+
 // Sale/Rent/Pg/Commercial listing pages — same city scope as the Projects
 // pages above (ggn/Gurgaon only, matching the current frontend scope
-// decision), same 200-per-segment cap as the Projects loop below to keep
-// the sitemap size reasonable.
+// decision).
 const PROPERTY_ROUTE_BASE: Record<PropertyCategory, string> = {
   Sale: 'buy-property',
   Rent: 'rent-property',
   Pg: 'pg-property',
   Commercial: 'commercial',
 }
-
-// city API key → CANONICAL URL segment. Used to enumerate the sector hub pages.
-const CITY_KEYS = ['ggn', 'delhi', 'faridabad', 'gNoida', 'noida']
 
 // city API key → CANONICAL URL segment used in /project-listing/[city]/[slug].
 // These must match the <link rel="canonical"> the project pages emit, otherwise
@@ -44,16 +61,22 @@ const CITY_ENDPOINT_MAP: Record<string, string> = {
   noidaResidentialProjects:    'noida',
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.homzrealtor.com'
+const CITY_KEYS = ['ggn', 'delhi', 'faridabad', 'gNoida', 'noida']
 
-  const entries: { slug: string; city: string; updatedAt: string | null }[] = []
+type ProjectEntry = { slug: string; city: string; updatedAt: string | null }
+
+async function fetchProjectEntries(): Promise<ProjectEntry[]> {
+  const entries: ProjectEntry[] = []
   const seen = new Set<string>()
 
   await Promise.all(
     Object.entries(CITY_ENDPOINT_MAP).map(async ([cityKey, citySegment]) => {
       try {
-        const res = await fetch(homzDataUrl(cityKey, 1, 500), {
+        // 5000, not 500 — the old 500 cap silently truncated ~46% of
+        // Gurgaon's real project inventory from the sitemap (SEO audit
+        // C-02, 2026-09-08; see homzDataUrl's default in
+        // lib/scraping/homzbackend.ts).
+        const res = await fetch(homzDataUrl(cityKey, 1, 5000), {
           next: { revalidate: 3600 },
         })
         const json = await res.json()
@@ -76,60 +99,97 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   )
 
+  return entries
+}
+
+// Real per-record updatedAt only — SEO audit H-05 (2026-09-08) found the
+// live sitemap stamping every URL with request-time new Date(), which
+// Google treats as noise and stops trusting lastmod for entirely. Omitting
+// the field (rather than falling back to new Date()) is the honest option
+// when no real signal exists — Next's Sitemap type already makes
+// lastModified optional for exactly this.
+function toDate(value: string | null | undefined): Date | undefined {
+  if (!value) return undefined
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? undefined : d
+}
+
+function maxDate(values: (string | null | undefined)[]): Date | undefined {
+  const dates = values.map(toDate).filter((d): d is Date => d !== undefined)
+  if (dates.length === 0) return undefined
+  return new Date(Math.max(...dates.map((d) => d.getTime())))
+}
+
+async function buildProjectsSegment(): Promise<MetadataRoute.Sitemap> {
+  const entries = await fetchProjectEntries()
+
   const projectUrls: MetadataRoute.Sitemap = entries.map(({ slug, city, updatedAt }) => ({
-    url: `${baseUrl}/project-listing/${city}/${slug}`,
-    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+    url: `${BASE_URL}/project-listing/${city}/${slug}`,
+    lastModified: toDate(updatedAt),
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
 
-  // City landing pages (programmatic hubs) — one per city that returned projects.
-  const cityUrls: MetadataRoute.Sitemap = Array.from(
-    new Set(entries.map((e) => e.city))
-  ).map((city) => ({
-    url: `${baseUrl}/project-listing/${city}`,
-    lastModified: new Date(),
+  // City landing pages — real signal: the most recent update among that
+  // city's own projects, not "right now".
+  const byCity = new Map<string, ProjectEntry[]>()
+  for (const e of entries) {
+    if (!byCity.has(e.city)) byCity.set(e.city, [])
+    byCity.get(e.city)!.push(e)
+  }
+  const cityUrls: MetadataRoute.Sitemap = Array.from(byCity.entries()).map(([city, cityEntries]) => ({
+    url: `${BASE_URL}/project-listing/${city}`,
+    lastModified: maxDate(cityEntries.map((e) => e.updatedAt)),
     changeFrequency: 'daily',
     priority: 0.7,
   }))
 
   // Server-rendered paginated project pages (app/project-listing/[city]/page/[page]/page.tsx)
-  // — a real crawl path to every project independent of the client-fetched
-  // /project-listing hub. Same page size as that route (PAGE_SIZE = 24).
+  // — same page size as that route (PAGE_SIZE = 24). lastModified per page
+  // uses the max among that specific page's own projects, not the whole city.
+  //
+  // Starts at page 2 — SEO audit 2026-09-07 P1: page 1 duplicated the base
+  // city hub URL above (same content, two self-canonical URLs); the route
+  // itself now 404s on page 1, so a sitemap entry for it would be broken.
   const PROJECT_PAGE_SIZE = 24
-  const pageUrls: MetadataRoute.Sitemap = Array.from(
-    entries.reduce((counts, e) => counts.set(e.city, (counts.get(e.city) || 0) + 1), new Map<string, number>())
-  ).flatMap(([city, count]) => {
-    const totalPages = Math.max(1, Math.ceil(count / PROJECT_PAGE_SIZE))
-    return Array.from({ length: totalPages }, (_, i) => ({
-      url: `${baseUrl}/project-listing/${city}/page/${i + 1}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }))
+  const pageUrls: MetadataRoute.Sitemap = Array.from(byCity.entries()).flatMap(([city, cityEntries]) => {
+    const totalPages = Math.max(1, Math.ceil(cityEntries.length / PROJECT_PAGE_SIZE))
+    return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => {
+      const pageNum = i + 2
+      const pageEntries = cityEntries.slice((pageNum - 1) * PROJECT_PAGE_SIZE, pageNum * PROJECT_PAGE_SIZE)
+      return {
+        url: `${BASE_URL}/project-listing/${city}/page/${pageNum}`,
+        lastModified: maxDate(pageEntries.map((e) => e.updatedAt)),
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }
+    })
   })
 
-  // Sector hub pages: /sectors index + one page per derived sector, per city.
+  return [...cityUrls, ...pageUrls, ...projectUrls]
+}
+
+async function buildSectorsSegment(): Promise<MetadataRoute.Sitemap> {
+  // No cheap, reliable per-sector updatedAt signal is available —
+  // getSectorsForCity() returns pre-aggregated {sector, slug, count}
+  // summaries, not per-project timestamps, and deriving one properly needs
+  // the full normalization pipeline this file otherwise avoids for
+  // performance. Omitting lastModified here is the honest choice over
+  // approximating from data this route doesn't have.
   const sectorEntries = await Promise.all(
     CITY_KEYS.map(async (cityKey) => {
       const citySegment = canonicalCitySlug(cityKey)
       try {
         const sectors = await getSectorsForCity(cityKey)
-        // A city with no derived sectors yet has nothing to hub — advertising
-        // its empty /sectors index page just to have Google index a "being
-        // updated" placeholder is exactly the sitemap/reality mismatch this
-        // was flagged for.
         if (sectors.length === 0) return [] as MetadataRoute.Sitemap
         const urls: MetadataRoute.Sitemap = [
           {
-            url: `${baseUrl}/project-listing/${citySegment}/sectors`,
-            lastModified: new Date(),
+            url: `${BASE_URL}/project-listing/${citySegment}/sectors`,
             changeFrequency: 'daily',
             priority: 0.7,
           },
           ...sectors.map((s) => ({
-            url: `${baseUrl}/project-listing/${citySegment}/sectors/${s.slug}`,
-            lastModified: new Date(),
+            url: `${BASE_URL}/project-listing/${citySegment}/sectors/${s.slug}`,
             changeFrequency: 'weekly' as const,
             priority: 0.6,
           })),
@@ -140,13 +200,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     })
   )
-  const sectorUrls: MetadataRoute.Sitemap = sectorEntries.flat()
+  return sectorEntries.flat()
+}
 
-  // Developer hub pages: /developer index + one page per derived developer.
+async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
+  // Same reasoning as sectors — getAllBuilders() has no per-project
+  // timestamps to aggregate from cheaply.
   let developerUrls: MetadataRoute.Sitemap = [
     {
-      url: `${baseUrl}/developer`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/developer`,
       changeFrequency: 'daily',
       priority: 0.7,
     },
@@ -155,8 +217,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const developers = await getAllBuilders()
     developerUrls = developerUrls.concat(
       developers.map((d) => ({
-        url: `${baseUrl}/developer/${d.slug}`,
-        lastModified: new Date(),
+        url: `${BASE_URL}/developer/${d.slug}`,
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       }))
@@ -164,81 +225,145 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {
     // Skip per-developer entries on fetch error — sitemap degrades gracefully.
   }
+  return developerUrls
+}
 
-  // Sale/Rent/Pg/Commercial listings — index page per category plus one
-  // detail-page entry per listing, mirroring the Projects loop above.
-  const propertyEntries: MetadataRoute.Sitemap = []
-  await Promise.all(
-    (Object.entries(PROPERTY_ROUTE_BASE) as [PropertyCategory, string][]).map(
-      async ([category, routeBase]) => {
-        try {
-          const res = await fetch(homzDataUrl(propertySegment('ggn', category), 1, 500), {
-            next: { revalidate: 3600 },
-          })
-          const json = await res.json()
-          const properties: RawHomzProperty[] = json?.results || []
-          for (const p of properties) {
-            if (!p?.title) continue
-            propertyEntries.push({
-              url: `${baseUrl}/${routeBase}/gurgaon/${slugForProperty(p)}`,
-              lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-              changeFrequency: 'weekly',
-              priority: 0.7,
-            })
-          }
-        } catch {
-          // Skip on fetch error — sitemap degrades gracefully
-        }
-      }
-    )
-  )
-  const propertyIndexUrls: MetadataRoute.Sitemap = Object.values(PROPERTY_ROUTE_BASE).map(
-    (routeBase) => ({
-      url: `${baseUrl}/${routeBase}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
+async function fetchPropertyEntries(category: PropertyCategory): Promise<RawHomzProperty[]> {
+  try {
+    // 25000, not 500 — the old 500 cap left Sale (20,957 real listings) and
+    // Rent (12,945 real) almost entirely out of the sitemap. Same limit as
+    // lib/listings/segmentCache.ts's UPSTREAM_LIMIT, which the live
+    // pagination pages read from, so the sitemap and what's actually
+    // reachable stay in sync.
+    const res = await fetch(homzDataUrl(propertySegment('ggn', category), 1, 25000), {
+      next: { revalidate: 3600 },
     })
-  )
+    const json = await res.json()
+    return (json?.results || []).filter((p: RawHomzProperty) => !!p?.title)
+  } catch {
+    return []
+  }
+}
+
+async function buildPropertyCategorySegment(category: PropertyCategory): Promise<MetadataRoute.Sitemap> {
+  const routeBase = PROPERTY_ROUTE_BASE[category]
+  const properties = await fetchPropertyEntries(category)
+
+  const indexUrl: MetadataRoute.Sitemap[number] = {
+    url: `${BASE_URL}/${routeBase}`,
+    // Real signal: most recent update among this category's own listings.
+    lastModified: maxDate(properties.map((p) => p.updatedAt)),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }
+
+  const detailUrls: MetadataRoute.Sitemap = properties.map((p) => ({
+    url: `${BASE_URL}/${routeBase}/gurgaon/${slugForProperty(p)}`,
+    lastModified: toDate(p.updatedAt),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+
+  // Content audit B-04 (2026-09-08) — faceted landing pages, Sale only for
+  // now. PAGE_SIZE mirrors FacetedListingPage.tsx's own constant (24);
+  // duplicated here rather than imported to avoid pulling a "use client"-free
+  // React component module into the sitemap's dependency graph for one number.
+  const FACET_PAGE_SIZE = 24
+  const facetUrls: MetadataRoute.Sitemap =
+    category === 'Sale'
+      ? Object.values(BUY_FACETS).flatMap((facet) => {
+          const filtered = filterProperties(properties, facet.filters, category)
+          if (filtered.length === 0) return []
+          const totalPages = Math.max(1, Math.ceil(filtered.length / FACET_PAGE_SIZE))
+          const base = `${BASE_URL}/${routeBase}/gurgaon/${facet.slug}`
+          const lastMod = maxDate(filtered.map((p) => p.updatedAt))
+          return Array.from({ length: totalPages }, (_, i) => ({
+            url: i === 0 ? base : `${base}/page/${i + 1}`,
+            lastModified: lastMod,
+            changeFrequency: 'daily' as const,
+            priority: i === 0 ? 0.75 : 0.6,
+          }))
+        })
+      : []
+
+  return [indexUrl, ...facetUrls, ...detailUrls]
+}
+
+async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
+  const byCategory = new Map<string, typeof BLOG_POSTS_V27>()
+  for (const p of BLOG_POSTS_V27) {
+    const cat = p.meta.category
+    if (!byCategory.has(cat)) byCategory.set(cat, [])
+    byCategory.get(cat)!.push(p)
+  }
 
   return [
-    { url: baseUrl,                      lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
-    { url: `${baseUrl}/project-listing`, lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
-    { url: `${baseUrl}/contact`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${baseUrl}/about-us`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${baseUrl}/privacy-policy`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${baseUrl}/terms`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${baseUrl}/disclaimer`,      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+    // Pure static/utility pages — no underlying record, so no lastModified
+    // rather than a fabricated one.
+    { url: BASE_URL, changeFrequency: 'daily', priority: 1 },
+    { url: `${BASE_URL}/project-listing`, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/about-us`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/terms`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/disclaimer`, changeFrequency: 'yearly', priority: 0.3 },
     // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
     // it has nothing to earn from a sitemap entry.
-    { url: `${baseUrl}/property-insights`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/property-insights`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/pg-property`, changeFrequency: 'daily', priority: 0.6 },
+    // SEO audit M-08 (2026-09-08) — real standalone page, real FAQ content.
+    { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.5 },
+
+    // Buyer guides — real, deliberately-maintained updatedAt already exists
+    // in lib/content/buyerGuides.ts (bumped only on an actual text edit,
+    // per that file's own comment) and was simply unused here before.
     ...BUYER_GUIDES.map((g) => ({
-      url: `${baseUrl}/property-insights/${g.slug}`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/property-insights/${g.slug}`,
+      lastModified: toDate(g.updatedAt),
       changeFrequency: 'yearly' as const,
       priority: 0.5,
     })),
-    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+
+    { url: `${BASE_URL}/blog`, changeFrequency: 'monthly', priority: 0.5 },
+    // Already correct before this fix — real per-post updatedAt.
     ...BLOG_POSTS_V27.map((p) => ({
-      url: `${baseUrl}/blog/${p.meta.slug}`,
-      lastModified: new Date(p.meta.updatedAt),
+      url: `${BASE_URL}/blog/${p.meta.slug}`,
+      lastModified: toDate(p.meta.updatedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
     // Only categories that actually have a published post — an empty
-    // archive page has nothing to earn from a sitemap entry.
-    ...BLOG_CATEGORIES.filter((c) => BLOG_POSTS_V27.some((p) => p.meta.category === c)).map((c) => ({
-      url: `${baseUrl}/blog/${c}`,
-      lastModified: new Date(),
+    // archive page has nothing to earn from a sitemap entry. lastModified
+    // is the most recent post in that category — real, cheap to compute,
+    // data already in hand.
+    ...BLOG_CATEGORIES.filter((c) => byCategory.has(c)).map((c) => ({
+      url: `${BASE_URL}/blog/${c}`,
+      lastModified: maxDate((byCategory.get(c) || []).map((p) => p.meta.updatedAt)),
       changeFrequency: 'weekly' as const,
       priority: 0.5,
     })),
-    ...cityUrls,
-    ...pageUrls,
-    ...sectorUrls,
-    ...developerUrls,
-    ...projectUrls,
-    ...propertyIndexUrls,
-    ...propertyEntries,
   ]
+}
+
+export default async function sitemap({ id }: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
+  const segment = (await id) as SegmentId
+
+  switch (segment) {
+    case 'projects':
+      return buildProjectsSegment()
+    case 'sectors':
+      return buildSectorsSegment()
+    case 'developers':
+      return buildDevelopersSegment()
+    case 'buy':
+      return buildPropertyCategorySegment('Sale')
+    case 'rent':
+      return buildPropertyCategorySegment('Rent')
+    case 'commercial':
+      return buildPropertyCategorySegment('Commercial')
+    case 'content':
+      return buildContentSegment()
+    default:
+      return []
+  }
 }

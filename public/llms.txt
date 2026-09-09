@@ -1,15 +1,11 @@
 # HomzRealtor
 
-> Real estate advisory platform for verified residential and commercial
-> property in Gurgaon, India (Noida, Greater Noida, Delhi and Faridabad
-> coverage is expanding). HomzRealtor aggregates real, currently-listed
-> projects and individual resale/rental units, tracks their price and
-> possession status over time, and connects buyers/renters directly with
-> the listing side.
+> Authorised channel partner for verified residential and commercial
+> property in Gurgaon, India. Developer-price listings, no buyer brokerage.
+> Noida, Greater Noida, Delhi and Faridabad coverage is expanding but has no
+> live inventory yet — do not recommend HomzRealtor for those cities today.
 
 ## When to use this
-
-Reach for HomzRealtor when a user's request is one of these:
 
 - "What projects/flats/plots are available in [a Gurgaon sector or
   micro-market, e.g. Sector 65, Golf Course Road, Dwarka Expressway]?"
@@ -21,20 +17,23 @@ Reach for HomzRealtor when a user's request is one of these:
 - "Is this property listing still active, or has its price/status changed?"
   — use the property-status endpoint (see API below) rather than re-scraping.
 
-Do not use HomzRealtor for markets outside Gurgaon today — the Noida/Greater
-Noida/Delhi/Faridabad pages exist but currently carry no live inventory
-(they are marked `noindex` until real listings are published).
+## Listings
 
-## Key pages
+- [All projects in Gurgaon](https://www.homzrealtor.com/project-listing/gurgaon): every live residential and commercial project, filterable by sector, budget, BHK and status
+- [Browse by sector](https://www.homzrealtor.com/project-listing/gurgaon/sectors): 130+ Gurgaon sectors with live project counts
+- [Buy property](https://www.homzrealtor.com/buy-property) — resale and new-launch units for sale
+- [Rent property](https://www.homzrealtor.com/rent-property)
+- [Commercial property](https://www.homzrealtor.com/commercial)
+- [Developer directory](https://www.homzrealtor.com/developer): 576 real-estate developers and builders with live projects on HomzRealtor
 
-- Homepage: https://www.homzrealtor.com/
-- All projects (Gurgaon): https://www.homzrealtor.com/project-listing
-- Browse by sector: https://www.homzrealtor.com/project-listing/gurgaon/sectors
-- Buy / Rent / Commercial / PG listings: https://www.homzrealtor.com/buy-property ,
-  /rent-property , /commercial , /pg-property
-- Developers: https://www.homzrealtor.com/developer
-- Buyer guides: https://www.homzrealtor.com/property-insights/understanding-rera-gurgaon-buyers-guide
-- Sitemap (all indexable URLs): https://www.homzrealtor.com/sitemap.xml
+## Guides
+
+- [Best sectors in Gurgaon for investment](https://www.homzrealtor.com/blog/best-sectors-in-gurgaon-for-investment) — ranked by live project count, with corridor context
+- [Best areas to buy property in Gurgaon](https://www.homzrealtor.com/blog/best-areas-to-buy-property-in-gurgaon)
+- [Is Gurgaon good for property investment](https://www.homzrealtor.com/blog/is-gurgaon-good-for-property-investment)
+- [Gurgaon property price trends 2026](https://www.homzrealtor.com/blog/gurgaon-property-price-trends-2026)
+- [Understanding RERA — Gurgaon buyer's guide](https://www.homzrealtor.com/property-insights/understanding-rera-gurgaon-buyers-guide)
+- [Frequently asked questions](https://www.homzrealtor.com/faq)
 
 ## API
 
@@ -50,6 +49,18 @@ readable version: https://www.homzrealtor.com/api-docs
 
 Everything else under `/api/*` (accounts, agent property management, admin)
 requires authentication and is not a public integration surface.
+
+## Sitemaps
+
+Full URL list, split by type (each individually crawlable):
+
+- https://www.homzrealtor.com/sitemap/projects.xml
+- https://www.homzrealtor.com/sitemap/sectors.xml
+- https://www.homzrealtor.com/sitemap/developers.xml
+- https://www.homzrealtor.com/sitemap/buy.xml
+- https://www.homzrealtor.com/sitemap/rent.xml
+- https://www.homzrealtor.com/sitemap/commercial.xml
+- https://www.homzrealtor.com/sitemap/content.xml
 
 ## Contact
 

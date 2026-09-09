@@ -1,7 +1,8 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
+import { ListingPreviewSection, PropertyHubJsonLd } from "@/components/PropertyListing/PaginatedListingPage";
 import discoverImage1 from "@/assets/images/discoverImage1.jpg";
 
-const title = "Buy Property in Gurgaon";
+const title = "Buy Property in Gurgaon — Price, Photos & Floor Plans";
 const description =
   "Resale and new-launch properties for sale in Gurgaon — filter by property type, BHK, budget, and possession status.";
 
@@ -32,5 +33,11 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default function BuyPropertyPage() {
-  return <PropertyListingPage category="Sale" />;
+  return (
+    <>
+      <PropertyHubJsonLd category="Sale" />
+      <PropertyListingPage category="Sale" />
+      <ListingPreviewSection category="Sale" />
+    </>
+  );
 }

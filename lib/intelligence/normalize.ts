@@ -20,6 +20,20 @@ export const KNOWN_BUILDERS = [
   "Pyramid", "Ninex", "ROF", "Adore", "SS Group", "Brisk",
 ];
 
+// SEO audit 2026-09-07 P0 ("Some project copy... retains Square Yards
+// wording"): the feed's free-text fields (aboutProject, builderDescription)
+// sometimes include the provider's own disclosure sentence verbatim, e.g.
+// "*This data is derived by the Square Yards data intelligence team...*"
+// on Emaar Serenity Hills — confirmed live. Rather than editing/replacing
+// that copy (which would mean writing new marketing prose without a real
+// source), this drops only the offending sentence/paragraph, keeping
+// everything else the feed provided untouched.
+const SYNDICATION_MARKERS = [/square\s*yards/i];
+
+function stripSyndicatedText(paragraphs: string[]): string[] {
+  return paragraphs.filter((p) => !SYNDICATION_MARKERS.some((re) => re.test(p)));
+}
+
 export function extractBuilder(projectTitle: string): string {
   const title = (projectTitle || "").trim();
   for (const b of KNOWN_BUILDERS) {
@@ -197,15 +211,17 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     size_unit: raw.size ? "sq.ft" : null,
     images: Array.isArray(raw.images) ? raw.images : [],
     interior_images: Array.isArray(raw.interiorImages) ? raw.interiorImages : [],
-    about: Array.isArray(raw.aboutProject) ? raw.aboutProject : [],
+    about: stripSyndicatedText(Array.isArray(raw.aboutProject) ? raw.aboutProject : []),
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
     specifications: Array.isArray(raw.specifications) ? raw.specifications : [],
     price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
-    builder_description: Array.isArray(raw.builderDescription)
-      ? raw.builderDescription
-      : raw.builderDescription
-      ? [String(raw.builderDescription)]
-      : [],
+    builder_description: stripSyndicatedText(
+      Array.isArray(raw.builderDescription)
+        ? raw.builderDescription
+        : raw.builderDescription
+        ? [String(raw.builderDescription)]
+        : []
+    ),
     recent_updates: Array.isArray(raw.recentUpdates) ? raw.recentUpdates : [],
     master_plan:
       raw.masterPlan && (raw.masterPlan.image || raw.masterPlan.content)
