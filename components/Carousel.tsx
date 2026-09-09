@@ -19,6 +19,19 @@ export default function ImageCarousel({
   // image doesn't permanently hide every other (working) slide in the set.
   const [failed, setFailed] = useState<Set<number>>(new Set());
 
+  // Defensive clamp: if a caller ever swaps `images` for a shorter array
+  // without remounting this component (no `key` change), `current` can
+  // point past the new array's end — images[current] is then undefined,
+  // which next/image renders as a broken image. GalleryTabs.tsx now keys
+  // its Carousel per tab to avoid this in the one place it happened live,
+  // but this keeps any other caller safe too.
+  useEffect(() => {
+    if (current >= images.length && images.length > 0) {
+      setCurrent(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images.length]);
+
   // ✅ autoplay
   useEffect(() => {
     if (!images.length) return;

@@ -65,23 +65,25 @@ const safeJson = (g: unknown) =>
 
 const PropertyInsightsIndex = () => {
   return (
-    <div>
+    // SEO audit follow-up (2026-09-09): converted from the pre-dark-theme
+    // light styling, matching /project-listing and /developer.
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-5xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-5xl mx-auto px-4 pt-28 md:pt-32">
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+          <Link href="/" className="hover:text-[#CEA44E]">Home</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">Property Insights</span>
+          <span className="text-gray-300 font-medium">Property Insights</span>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           Property Insights — Buyer&apos;s Guides
         </h1>
-        <p className="mt-4 max-w-2xl text-gray-600 leading-relaxed">
+        <p className="mt-4 max-w-2xl text-gray-400 leading-relaxed">
           Practical, HomzRealtor-authored guides for buyers navigating RERA
           compliance, under-construction purchases, home loan paperwork and
           where rental yields are strongest right now.
@@ -92,13 +94,13 @@ const PropertyInsightsIndex = () => {
             <Link
               key={g.slug}
               href={`/property-insights/${g.slug}`}
-              className="group flex gap-4 rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-[#B77D2B]"
+              className="group flex gap-4 rounded-2xl border border-gray-700 bg-black p-4 transition hover:border-[#B77D2B]"
             >
               <div className="relative h-[84px] w-[110px] shrink-0 overflow-hidden rounded-xl">
                 <Image src={g.img} alt={g.title} fill unoptimized sizes="110px" className="object-cover" />
               </div>
               <div>
-                <h2 className="mb-1.5 text-[15px] font-bold leading-snug text-gray-900 group-hover:text-[#B77D2B] transition-colors">
+                <h2 className="mb-1.5 text-[15px] font-bold leading-snug text-white group-hover:text-[#CEA44E] transition-colors">
                   {g.title}
                 </h2>
                 <span className="text-[11.5px] font-semibold uppercase tracking-wide text-gray-500">

@@ -7,6 +7,7 @@ import { MapPin, Building2, ChevronRight, Images } from "lucide-react";
 import ProjectCtas from "./ProjectCtas";
 import SaveToggleButton from "@/components/Common/SaveToggleButton";
 import ReraBadge from "@/components/Common/ReraBadge";
+import { scrollToHash } from "@/lib/scrollToHash";
 
 type Props = {
   name: string;
@@ -161,7 +162,8 @@ const ProjectHero = ({
             {images.length > 0 && (
               <a
                 href="#gallery"
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-[#D9B268] transition-colors"
+                onClick={(e) => scrollToHash("#gallery", e)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:border-[#D9B268] transition-colors cursor-pointer"
               >
                 <Images size={15} /> View Gallery
               </a>

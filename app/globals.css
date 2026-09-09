@@ -31,6 +31,17 @@ body {
 }
 
 
+/* Browsers' default UA stylesheet gives <button> `cursor: default`, not
+   `cursor: pointer` — most of this codebase adds cursor-pointer per button
+   ad hoc, but plenty (e.g. QuickSearchPanel's Search button/tabs) didn't,
+   so those read as inert even though they work. One global rule instead of
+   auditing every button call site; disabled buttons keep the "not usable"
+   cursor. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

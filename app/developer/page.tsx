@@ -65,24 +65,27 @@ const DevelopersIndexPage = async () => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div>
+    // SEO audit follow-up (2026-09-09): this page still shipped the pre-dark-theme
+    // light styling after /project-listing's sector/detail pages were converted —
+    // a real visual mismatch a visitor hits crossing from one hub to the other.
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         {/* Breadcrumb */}
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+          <Link href="/" className="hover:text-[#CEA44E]">Home</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">Developers</span>
+          <span className="text-gray-300 font-medium">Developers</span>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           Property Developers in Delhi NCR
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
+        <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">
           Explore {developers.length > 0 ? `${developers.length} ` : ""}real estate developers
           with projects listed on HomzRealtor across Gurgaon, Noida, Greater Noida, Delhi and
           Faridabad. Select a developer to view their full portfolio, prices and developments.
@@ -96,7 +99,7 @@ const DevelopersIndexPage = async () => {
               <Link
                 key={d.slug}
                 href={`/developer/${d.slug}`}
-                className="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 hover:border-[#B77D2B] hover:shadow-sm transition"
+                className="group flex items-center gap-4 rounded-xl border border-gray-700 bg-black p-4 hover:border-[#B77D2B] transition"
               >
                 <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#FDF094] to-[#B77D2B] flex items-center justify-center shrink-0">
                   <span className="text-black font-bold text-lg">
@@ -104,7 +107,7 @@ const DevelopersIndexPage = async () => {
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 truncate group-hover:text-[#B77D2B]">
+                  <p className="font-semibold text-white truncate group-hover:text-[#CEA44E]">
                     {d.name}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">

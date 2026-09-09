@@ -658,6 +658,18 @@ export function resolveProjectView(
 
   const citySlug = extra.cityParam || CITY_PARAM_FROM_KEY[project.city_key] || project.city_key;
   const images = validImages(project.images);
+  // Master plan images come from the same raw feed and are just as prone to
+  // junk paths (site-chrome/logo/profile-pic assets, non-image extensions)
+  // as exterior/interior images — but previously bypassed validImages()
+  // entirely, so a bad master-plan URL rendered straight to "Image
+  // unavailable" instead of the section just hiding like every other
+  // gated-on-real-data section does.
+  const masterPlanImage = project.master_plan?.image
+    ? validImages([project.master_plan.image])[0]
+    : undefined;
+  const masterPlan = project.master_plan
+    ? { ...project.master_plan, image: masterPlanImage }
+    : null;
   const amenities = normalizeAmenities(project.amenities);
   const amenityCount = amenities.reduce((n, c) => n + c.amenities.length, 0);
   const units = normalizeUnits(project.price_list);
@@ -707,7 +719,7 @@ export function resolveProjectView(
     amenities,
     amenityCount,
     units,
-    masterPlan: project.master_plan,
+    masterPlan,
     recentUpdates: Array.isArray(project.recent_updates) ? project.recent_updates : [],
     snapshot,
     whyThisProject,
@@ -720,7 +732,7 @@ export function resolveProjectView(
     sections: {
       amenities: amenities.length > 0,
       units: units.length > 0,
-      masterPlan: !!project.master_plan,
+      masterPlan: !!(masterPlan?.image || masterPlan?.content),
       recentUpdates: (project.recent_updates?.length || 0) > 0,
       aiSummary: !!(aiSummary || about.length > 0),
     },

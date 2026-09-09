@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CalendarCheck, IndianRupee, Share2, Heart, Check } from "lucide-react";
+import { scrollToHash } from "@/lib/scrollToHash";
 
 type Props = {
   name: string;
@@ -56,6 +57,7 @@ const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
       <div className={isHero ? "grid grid-cols-2 gap-3" : "flex gap-2"}>
         <Link
           href={enquireHref}
+          onClick={(e) => scrollToHash(enquireHref, e)}
           className={
             isHero
               ? "flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-4 py-3.5 text-[15px] font-bold text-[#1c1608] shadow-[0_12px_34px_rgba(201,154,75,0.3)] hover:brightness-105 transition"
@@ -66,6 +68,7 @@ const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
         </Link>
         <Link
           href={enquireHref}
+          onClick={(e) => scrollToHash(enquireHref, e)}
           className={
             isHero
               ? "flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-3.5 text-[15px] font-semibold text-white hover:border-[#D9B268] transition-colors"

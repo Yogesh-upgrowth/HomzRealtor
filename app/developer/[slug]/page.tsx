@@ -155,39 +155,41 @@ const DeveloperPage = async ({ params }: PageParams) => {
       .replace(/&/g, "\\u0026");
 
   return (
-    <div>
+    // SEO audit follow-up (2026-09-09): converted from the pre-dark-theme
+    // light styling, matching /project-listing/[city]/sectors/[sector].
+    <div className="bg-[#0B0B0C] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJson(structuredData) }}
       />
 
-      <section className="w-full max-w-7xl mx-auto px-4 mt-28 md:mt-32">
+      <section className="w-full max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         {/* Breadcrumb */}
         <nav className="flex flex-wrap items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href="/" className="hover:text-[#B77D2B]">Home</Link>
+          <Link href="/" className="hover:text-[#CEA44E]">Home</Link>
           <ChevronRight size={12} />
-          <Link href="/developer" className="hover:text-[#B77D2B]">Developers</Link>
+          <Link href="/developer" className="hover:text-[#CEA44E]">Developers</Link>
           <ChevronRight size={12} />
-          <span className="text-gray-800 font-medium">{summary.name}</span>
+          <span className="text-gray-300 font-medium">{summary.name}</span>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
           {summary.name} Projects in {cityLabel}
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">{intro}</p>
+        <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{intro}</p>
 
         {/* Quick facts */}
         <div className="mt-6 flex flex-wrap gap-2">
-          <span className="rounded-full border border-[#B77D2B] bg-white px-4 py-1.5 text-sm font-medium text-[#B77D2B]">
+          <span className="rounded-full border border-[#B77D2B] bg-black px-4 py-1.5 text-sm font-medium text-[#CEA44E]">
             {summary.count} {summary.count === 1 ? "Project" : "Projects"}
           </span>
           {summary.residential > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {summary.residential} Residential
             </span>
           )}
           {summary.commercial > 0 && (
-            <span className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700">
+            <span className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300">
               {summary.commercial} Commercial
             </span>
           )}
@@ -195,13 +197,13 @@ const DeveloperPage = async ({ params }: PageParams) => {
 
         {/* Cities this developer builds in — internal linking */}
         {summary.cities.length > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-400">
             <span className="text-gray-500">Active in:</span>
             {summary.cities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/project-listing/${c.slug}`}
-                className="rounded-full border border-gray-300 bg-white px-3 py-1 text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+                className="rounded-full border border-gray-700 bg-black px-3 py-1 text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
               >
                 {c.name}
               </Link>
@@ -234,10 +236,10 @@ const DeveloperPage = async ({ params }: PageParams) => {
       {others.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Explore Other Developers</h2>
+            <h2 className="text-2xl font-bold text-white">Explore Other Developers</h2>
             <Link
               href="/developer"
-              className="text-sm font-medium text-[#B77D2B] hover:underline whitespace-nowrap"
+              className="text-sm font-medium text-[#CEA44E] hover:underline whitespace-nowrap"
             >
               View all developers →
             </Link>
@@ -247,9 +249,9 @@ const DeveloperPage = async ({ params }: PageParams) => {
               <Link
                 key={d.slug}
                 href={`/developer/${d.slug}`}
-                className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 hover:border-[#B77D2B] hover:text-[#B77D2B] transition"
+                className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
               >
-                {d.name} <span className="text-gray-400">({d.count})</span>
+                {d.name} <span className="text-gray-500">({d.count})</span>
               </Link>
             ))}
           </div>
