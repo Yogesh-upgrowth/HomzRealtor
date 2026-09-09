@@ -129,15 +129,14 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Menu */}
           {/* SEO audit 2026-09-07 P1 ("Main navigation omits key
-              transaction/location journeys"): Buy/Rent/Commercial were
-              reachable only from the footer or deep links, never from the
-              header on any page — added here as the three real money
-              routes; "Properties" (project catalogue) is a distinct,
-              already-correct destination and stays as-is. */}
+              transaction/location journeys"): Commercial was reachable
+              only from the footer or deep links, never from the header on
+              any page — added here; "Properties" (project catalogue) is a
+              distinct, already-correct destination and stays as-is. Buy
+              and Rent were added alongside it but removed per user
+              request (2026-09-09) — not ready to surface yet. */}
           <div className="hidden lg:flex items-center space-x-6 text-white text-sm">
             <Link href="/">Home</Link>
-            <Link href="/buy-property">Buy</Link>
-            <Link href="/rent-property">Rent</Link>
             <Link href="/commercial">Commercial</Link>
             <Link href="/project-listing">Properties</Link>
             <Link href="/developer">Developers</Link>
@@ -185,8 +184,7 @@ const Navbar: React.FC = () => {
           {/* Mobile Toggle — custom 3-bar hamburger that morphs into an X,
               matching the reference exactly (not a swapped icon pair).
               lg:hidden, not md:hidden — matches the desktop menu's lg:flex
-              above (widened to fit the new Buy/Rent/Commercial links) so
-              there's no mid-width gap where neither menu shows. */}
+              above so there's no mid-width gap where neither menu shows. */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
@@ -243,20 +241,6 @@ const Navbar: React.FC = () => {
             className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
             Home
-          </Link>
-          <Link
-            href="/buy-property"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
-          >
-            Buy
-          </Link>
-          <Link
-            href="/rent-property"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
-          >
-            Rent
           </Link>
           <Link
             href="/commercial"
