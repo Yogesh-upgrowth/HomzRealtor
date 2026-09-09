@@ -4,7 +4,7 @@ import PaginatedListingPage, { getPageCount, MAX_STATIC_PAGES } from "@/componen
 
 const SITE = "https://www.homzrealtor.com";
 
-export const revalidate = 21600;
+export const revalidate = 604800;
 
 // SEO audit 2026-09-07 P1: page 1 was reachable both here and at the base
 // /rent-property hub — a real self-canonical duplicate pair. Page 1 is

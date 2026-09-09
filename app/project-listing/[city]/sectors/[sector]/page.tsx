@@ -24,8 +24,8 @@ const SITE = "https://www.homzrealtor.com";
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too, see app/project-listing/[city]/page.tsx's
 // comment for how this was verified.
-// 6h, not 30min — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
-export const revalidate = 21600;
+// 1 week, not 30min or 6h — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
+export const revalidate = 604800;
 
 export async function generateStaticParams() {
   const cityKeys = Array.from(new Set(Object.values(CITY_PARAM_MAP)));

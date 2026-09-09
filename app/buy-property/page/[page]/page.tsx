@@ -6,8 +6,8 @@ const SITE = "https://www.homzrealtor.com";
 
 // Matches segmentCache.ts's 1h TTL — no point revalidating more often than
 // the underlying data actually changes.
-// 6h, not 30min — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
-export const revalidate = 21600;
+// 1 week, not 30min or 6h — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
+export const revalidate = 604800;
 
 // SEO audit 2026-09-07 P1: page 1 was reachable both here (its own,
 // slightly different "— Page 1" title/canonical) and at the base

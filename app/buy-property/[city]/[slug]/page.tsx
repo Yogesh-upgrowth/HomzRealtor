@@ -7,17 +7,22 @@ import FacetedListingPage, { BUY_FACETS } from "@/components/PropertyListing/Fac
 // needs generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment); [] still activates on-demand ISR for every param.
 //
-// 6h, not the 30min this used to be — Vercel paused the whole project
+// 1 week, not the 30min this used to be — Vercel paused the whole project
 // (2026-09-09) after this route alone (~20,957 real Sale listings, each
 // its own ISR-backed page) blew through the Hobby plan's ISR-write,
 // origin-transfer and CPU budgets. lib/listings/segmentCache.ts's own
 // comment says the underlying feed "only actually changes once a day" —
 // every 30-minute regeneration was needless churn against data that
-// hadn't moved. 6h keeps listings meaningfully fresh within a day while
-// cutting regeneration frequency (and therefore all three budgets) ~12x.
-// Same reasoning applied to every other high-volume route (rent/commercial/
-// pg detail, all pagination, developer/sector/compare pages).
-export const revalidate = 21600;
+// hadn't moved. First widened to 6h (~12x fewer regenerations); moved to
+// 1 week (2026-09-09, same day) once the plan was to also raise the
+// backend's (homz-scrape) own cache TTL to match — no point this frontend
+// checking for fresh data faster than the backend it calls could ever
+// actually provide it. Same reasoning applied to every other high-volume
+// route (rent/commercial/pg detail, all pagination, developer/sector/
+// compare pages). A stale-for-up-to-a-week listing is an acceptable
+// trade-off against getting the whole project paused again; the /flat and
+// project-detail routes already used 14 days for the same reason.
+export const revalidate = 604800;
 
 // Content audit B-04 (2026-09-08): faceted landing pages (3-bhk,
 // under-1-crore, ...) live at this exact [city]/[slug] shape, not a
