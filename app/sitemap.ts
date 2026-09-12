@@ -14,7 +14,16 @@ import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
 
-export const dynamic = 'force-dynamic'
+// Was `force-dynamic` — that recomputed every segment (full catalogue
+// fetch + JSON parse + facet filtering over tens of thousands of records)
+// on every single crawl hit, with zero caching benefit; Next's own
+// fetch-data-cache can't help here since it silently refuses to store
+// payloads over 2MB and these segments run 5-48MB live (see
+// lib/listings/segmentCache.ts's comment). `revalidate` instead caches the
+// whole computed sitemap output and regenerates it in the background at
+// most once an hour — same freshness (no redeploy needed to pick up new
+// listings), without paying the full compute cost per request.
+export const revalidate = 3600
 
 const BASE_URL = 'https://www.homzrealtor.com'
 
