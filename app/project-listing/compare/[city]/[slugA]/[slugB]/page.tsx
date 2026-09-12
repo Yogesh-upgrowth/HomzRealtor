@@ -9,10 +9,12 @@ import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
-// this every visit re-executes the origin function uncached. robots.txt no
-// longer disallows these (see app/robots.ts) — a stale 404 needs to be
-// crawlable to deindex, so this is a real crawl-hit win too now, not just
-// a real-user TTFB one.
+// this every visit re-executes the origin function uncached. robots.txt
+// disallows /project-listing/compare/ again as of 2026-09-12 (see that
+// file's comment) — the real n²/2 project-pair space made this the biggest
+// driver of the account's Fluid Active CPU / origin-transfer / ISR-write
+// overage, so direct/shared links still render and cache normally, but
+// bots no longer get to enumerate the full combinatorial space.
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment). [] rather than enumerating the combinatorial

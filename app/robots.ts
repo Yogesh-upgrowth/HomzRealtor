@@ -62,18 +62,21 @@ export default function robots(): MetadataRoute.Robots {
         // the homepage's own "Trending Searches" links and every filtered
         // listing state.
         //
-        // /project-listing/compare/ used to be disallowed here too, as a
-        // guard against its combinatorial (city x project-pair) URL space.
-        // That backfired: a retired pair 404s correctly (confirmed live —
-        // a real 404, not a soft one), but a robots.txt block stops Google
-        // from ever re-crawling a URL it already indexed, so a stale
-        // compare URL just sits in the index forever as "Indexed, though
-        // blocked by robots.txt" instead of getting dropped. Compare pages
-        // are still a real, actively-linked feature (SimilarProjects,
-        // SectorCompareTeaser) between real projects, and an invalid guess
-        // is a cheap, fast 404 rather than an expensive render — allowing
-        // the crawl is worth it for letting stale URLs actually deindex.
-        disallow: ["/api/"],
+        // /project-listing/compare/ was briefly left crawlable (SEO audit
+        // H-01, 2026-09-08) specifically so a stale indexed pair could 404
+        // and cleanly deindex, rather than sit as "Indexed, though blocked
+        // by robots.txt". Reversed 2026-09-12: with ~1,165+ real Gurgaon
+        // projects (all publicly listed in /sitemap/projects.xml) the valid
+        // city/slugA/slugB space is ~n²/2 — hundreds of thousands of real,
+        // renderable URLs, every guess a full function invocation + ISR
+        // write + origin transfer (dynamicParams defaults to true here by
+        // design, see that route's own comment). That combinatorial crawl
+        // surface was the single largest driver of the account blowing
+        // through its Fluid Active CPU, Fast Origin Transfer and ISR-write
+        // budgets. Compare pages are noindex,follow already (not earning
+        // rankings), so the cost of the occasional stale pair staying
+        // "indexed, though blocked" is worth it against that.
+        disallow: ["/api/", "/project-listing/compare/"],
       },
       ...allowedAiAgents.map((userAgent) => ({
         userAgent,
