@@ -11,7 +11,7 @@ import {
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
-import { MAX_STATIC_PAGES } from "@/components/PropertyListing/PaginatedListingPage";
+import { MAX_STATIC_PAGES, MAX_REASONABLE_PAGE } from "@/components/PropertyListing/PaginatedListingPage";
 
 const SITE = "https://www.homzrealtor.com";
 // Same size as a sector page's typical project count — keeps each page's
@@ -68,7 +68,10 @@ function resolveCity(cityParam: string) {
 
 function parsePageNumber(raw: string): number | null {
   if (!/^[1-9]\d*$/.test(raw)) return null; // no "0", no leading zeros, digits only
-  return parseInt(raw, 10);
+  const n = parseInt(raw, 10);
+  // Reject before any data fetch — see MAX_REASONABLE_PAGE's comment.
+  if (n > MAX_REASONABLE_PAGE) return null;
+  return n;
 }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {

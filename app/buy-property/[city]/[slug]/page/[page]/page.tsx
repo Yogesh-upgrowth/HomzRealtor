@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import FacetedListingPage, { BUY_FACETS, getFacetPageCount } from "@/components/PropertyListing/FacetedListingPage";
-import { MAX_STATIC_PAGES } from "@/components/PropertyListing/PaginatedListingPage";
+import { MAX_STATIC_PAGES, MAX_REASONABLE_PAGE } from "@/components/PropertyListing/PaginatedListingPage";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -34,7 +34,10 @@ export async function generateStaticParams() {
 
 function parsePageNumber(raw: string): number | null {
   if (!/^[1-9]\d*$/.test(raw)) return null;
-  return parseInt(raw, 10);
+  const n = parseInt(raw, 10);
+  // Reject before any data fetch — see MAX_REASONABLE_PAGE's comment.
+  if (n > MAX_REASONABLE_PAGE) return null;
+  return n;
 }
 
 type PageParams = { params: Promise<{ city: string; slug: string; page: string }> };

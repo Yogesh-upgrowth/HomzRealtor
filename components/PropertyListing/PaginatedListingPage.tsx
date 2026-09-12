@@ -46,6 +46,20 @@ export const PAGE_SIZE = 24;
 // anyway.
 export const MAX_STATIC_PAGES = 20;
 
+// Every route using this component (and the project-listing/[city] and
+// faceted pagination routes) validates its page-number param with a plain
+// "one or more digits" regex, then fetches the *entire* underlying segment
+// (up to ~48MB, per lib/listings/segmentCache.ts) just to compute
+// totalPages and compare it against the requested page. That means a
+// garbage page number a bot guesses (e.g. /buy-property/page/999999999)
+// paid the full fetch+parse cost before 404ing — and since these routes
+// are ISR-cached for a week, each distinct garbage number tried became its
+// own cached 404, in addition to the origin-transfer/CPU cost of computing
+// it. Real inventory tops out under 900 pages today (Sale, the largest
+// category, at PAGE_SIZE=24); this is a generous ceiling with headroom for
+// growth, checked in each route's parsePageNumber() before any fetch runs.
+export const MAX_REASONABLE_PAGE = 2000;
+
 export const ROUTE_BASE: Record<PropertyCategory, string> = {
   Sale: "buy-property",
   Rent: "rent-property",
