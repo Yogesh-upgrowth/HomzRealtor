@@ -47,6 +47,9 @@ export type PropertyView = {
   slug: string;
   citySlug: string;
   category: PropertyCategory;
+  /** Building/society name, when the feed actually names one — see
+   *  extractProjectName(). null, not a guess, when it doesn't. */
+  projectName: string | null;
   location: string;
   propertyType: string | null;
   listingType: string | null;
@@ -116,6 +119,31 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
 export function slugForProperty(property: RawHomzProperty): string {
   const idTail = (property.id || "").split(":").pop()?.slice(-8) || "";
   return `${slugify(property.title || "property")}-${idTail}`;
+}
+
+// DEV-05 (2026-09-16): confirmed live — 18 of 83 sampled transaction
+// details shared a title across 8 groups, because buildPropertyTitle only
+// ever used bedroom count + type + location (e.g. "3 BHK Apartment, Sector
+// 45 Gurgaon"), and many genuinely different listings in the same sector
+// share that exact combination. The building/society name is the real
+// differentiator and is often already present in the feed, just not
+// structured consistently: a "Project" specification row exists for only
+// ~2% of listings sampled, but ~25% of raw titles contain an extractable
+// "... in {Project}, {Sector}" phrase. Checks the structured field first
+// (more reliable when present), then the title text; returns null — never
+// a guess — when neither is found, so callers can omit the fact cleanly
+// per this codebase's own "never fabricate" discipline.
+const PROJECT_IN_TITLE_RE = /\bin\s+([A-Z][A-Za-z0-9&.' -]{2,40}?),\s*(?:Sector|[A-Z])/;
+
+export function extractProjectName(property: RawHomzProperty): string | null {
+  const specHit = (property.specifications || []).find(
+    (s) => s?.heading?.trim().toLowerCase() === "project"
+  );
+  const fromSpec = clean(specHit?.value);
+  if (fromSpec) return fromSpec;
+
+  const match = (property.title || "").match(PROJECT_IN_TITLE_RE);
+  return match ? clean(match[1]) : null;
 }
 
 // DEV-02 (2026-09-16): confirmed live — some scraped specification values
@@ -428,6 +456,7 @@ export function resolvePropertyView(
     slug: slugForProperty(property),
     citySlug: opts.citySlug,
     category: opts.category,
+    projectName: extractProjectName(property),
     location: clean(property.location) || "Gurgaon",
     propertyType: PROPERTY_TYPE_LABELS[property.propertyType || ""] || null,
     listingType: property.listingType || null,
@@ -514,8 +543,14 @@ export function buildPropertyDescription(view: PropertyView): string {
         ? "Get specifications, amenities and site-visit support"
         : "Compare amenities, floor plans and payment options";
 
+  // DEV-05 (2026-09-16): includes projectName (see extractProjectName())
+  // when the feed names one — same differentiator fix as buildPropertyTitle,
+  // for the same reason (many listings otherwise share identical
+  // config+location, producing duplicate descriptions too).
+  const locationBit = view.projectName ? `${view.projectName}, ${view.location}` : view.location;
+
   const sentence =
-    `${configType} ${verb} in ${view.location}${areaBit} — ${priceBit}${statusBit}. ` +
+    `${configType} ${verb} in ${locationBit}${areaBit} — ${priceBit}${statusBit}. ` +
     `${cta} on HomzRealtor.`;
 
   return truncateAtWord(sentence);
@@ -527,13 +562,25 @@ export function buildPropertyDescription(view: PropertyView): string {
  *  (truncated mid-word in the SERP), while others are just a bare project
  *  name at 14-17 chars (no location, no intent, nothing for a search result
  *  to differentiate on). Built from the same structured fields as
- *  buildPropertyDescription(), targeting the 52-58 char sweet spot.
+ *  buildPropertyDescription().
+ *
+ *  DEV-05 (2026-09-16): confirmed live — 18 of 83 sampled details shared a
+ *  title across 8 groups, because this used to omit the building/society
+ *  name entirely (bedroom count + type + location only) — many genuinely
+ *  different listings in the same sector share that combination. Now
+ *  includes `view.projectName` when the feed actually names one (see
+ *  extractProjectName()), matching the handoff's own suggested pattern
+ *  ("{config} for {Sale|Rent} in {Project}, {Sector} | Homz"); omits it
+ *  cleanly, falling back to the previous shape, when no project name is
+ *  available rather than fabricating one.
  *
  *  Prefers the numeric bedroom count over the raw `configuration` string
  *  (which can carry extra qualifiers like "4 BHK + Servant") — "4 BHK" is
  *  what gets searched, the qualifier just eats budget that location needs
- *  more. If it still doesn't fit, truncates the entity/location — never the
- *  "Price & Floor Plan" suffix, so a title never ends mid-word. */
+ *  more. Length is a soft cap here, not the old fixed 52-58 char build gate
+ *  (the handoff explicitly rejects "blind name truncation" against a rigid
+ *  threshold) — truncates the entity/location at a word boundary only when
+ *  it runs unusually long, never the trailing brand suffix. */
 export function buildPropertyTitle(view: PropertyView): string {
   const type = view.propertyType || "Property";
   const configType = view.bedrooms
@@ -542,9 +589,18 @@ export function buildPropertyTitle(view: PropertyView): string {
       ? `${view.configuration} ${type}`
       : type;
 
-  const suffix = ": Price & Floor Plan";
-  const entity = `${configType}, ${view.location}`;
-  const budget = 58 - suffix.length;
+  const verb =
+    view.category === "Rent" || view.category === "Pg"
+      ? "for Rent"
+      : view.category === "Commercial"
+        ? "for Sale/Lease"
+        : "for Sale";
+
+  const suffix = " | Homz";
+  const entity = view.projectName
+    ? `${configType} ${verb} in ${view.projectName}, ${view.location}`
+    : `${configType} ${verb} in ${view.location}`;
+  const budget = 72 - suffix.length;
   const truncatedEntity = entity.length > budget ? truncateAtWord(entity, budget) : entity;
 
   return `${truncatedEntity}${suffix}`;

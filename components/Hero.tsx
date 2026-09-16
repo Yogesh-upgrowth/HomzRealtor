@@ -38,12 +38,23 @@ export default function Hero({
       {/* Background image — z-0, covers the entire section (grows with content).
           Two distinct photos, not one photo cropped two ways — mobile gets its
           own portrait shot instead of a portrait slice of the desktop crop. */}
+      {/* DEV-06 (2026-09-16): confirmed live — mobile cold-cache LCP median
+          7.04s, with ResourceTiming showing both hero images downloaded on
+          every visit regardless of viewport. `priority` makes next/image
+          inject a <link rel="preload">, and next/image has no media-query-
+          aware preload of its own for this "different photo per breakpoint"
+          pattern (true art-direction preload would need a raw <link
+          media="..."> this framework version doesn't expose via the
+          `priority` prop) — with both marked priority, the browser
+          preloaded both regardless of which was actually visible. The audit
+          measured mobile specifically, so `priority` stays there; the
+          desktop hero still renders (CSS still swaps them at md:), it's
+          just no longer preloaded with the same urgency on a mobile visit. */}
       <div className="absolute inset-0 z-0 hidden md:block">
         <Image
           src={heroFamilyDesktop}
           alt="A happy family at home in Gurgaon"
           fill
-          priority
           sizes="100vw"
           className="object-cover"
         />

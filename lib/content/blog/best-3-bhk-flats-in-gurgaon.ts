@@ -162,7 +162,7 @@ export const best3BhkFlatsInGurgaon: BlogPostV27 = {
       id: "3bhk-vs-2bhk-vs-4bhk",
       h2: "3 BHK vs 2 BHK vs 4 BHK: Which Fits Your Budget?",
       contentMarkdown:
-        "The listings feed makes the budget gap between configurations explicit: 2 BHK listings have a median of roughly ₹1.3 Cr with 1,499 listings priced under ₹1 Cr; 3 BHK sits at a ₹2.7 Cr median with only 394 listings under ₹1 Cr; and 4 BHK jumps to a ₹4.78 Cr median with just 25 listings under ₹1 Cr. In practice, a strict sub-₹1 Cr budget in Gurgaon fits 2 BHK far more comfortably than 3 BHK — treat any 3 BHK listed well under ₹1 Cr as worth extra scrutiny on location, size and possession status before assuming it's a genuine bargain.\n\nThe jump from 3 BHK to 4 BHK is proportionally steeper than the jump from 2 BHK to 3 BHK — roughly a 77% increase in median price for one more room, against roughly a 108% increase from 2 BHK to 3 BHK. If budget is tight, it's worth asking honestly whether a 3 BHK with a flexible study nook covers the same need a 4 BHK would, before committing to that second jump.",
+        "The listings feed makes the budget gap between configurations explicit: 2 BHK listings have a median of roughly ₹1.3 Cr with 1,499 listings priced under ₹1 Cr; 3 BHK sits at a ₹2.7 Cr median with only 394 listings under ₹1 Cr; and 4 BHK jumps to a ₹4.78 Cr median with just 25 listings under ₹1 Cr. In practice, a strict sub-₹1 Cr budget in Gurgaon fits 2 BHK far more comfortably than 3 BHK — treat any 3 BHK listed well under ₹1 Cr as worth extra scrutiny on location, size and possession status before assuming it's a genuine bargain.\n\nThe jump from 2 BHK to 3 BHK is proportionally steeper than the jump from 3 BHK to 4 BHK — roughly a 108% increase in median price for one more room, against roughly a 77% increase from 3 BHK to 4 BHK. If budget is tight, it's worth asking honestly whether a 3 BHK with a flexible study nook covers the same need a 4 BHK would, before committing to that second jump.",
       media: [
         {
           type: "diagram",
@@ -195,7 +195,11 @@ export const best3BhkFlatsInGurgaon: BlogPostV27 = {
         {
           type: "product_cta",
           text: "Browse live 3 BHK listings on HomzRealtor",
-          url: "https://www.homzrealtor.com/buy-property",
+          // DEV-10 (2026-09-16): this anchor's own text says "3 BHK
+          // listings" but linked to the generic /buy-property hub instead
+          // of the real, working 3-BHK facet hub that already exists
+          // (/buy-property/gurgaon/3-bhk) — see that route's own history.
+          url: "https://www.homzrealtor.com/buy-property/gurgaon/3-bhk",
           variant: "banner",
         },
       ],
@@ -261,7 +265,9 @@ export const best3BhkFlatsInGurgaon: BlogPostV27 = {
     headline: "Find 3 BHK Flats That Fit Your Budget",
     body: "Filter HomzRealtor's live Gurgaon listings by configuration, corridor and price to see what's actually available today.",
     buttonText: "Browse 3 BHK Listings",
-    url: "https://www.homzrealtor.com/buy-property",
+    // DEV-10 (2026-09-16) — same fix as the product_cta above: this
+    // button's own text names 3 BHK specifically.
+    url: "https://www.homzrealtor.com/buy-property/gurgaon/3-bhk",
   },
   qualityGates: {
     wordCount: 1514,

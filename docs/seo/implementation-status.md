@@ -2,6 +2,26 @@
 
 Tracks work against `HOMZ-CLAUDE-CODE-HANDOFF-2026-09-13.md`. One row per ticket; updated as each is done, not written once at the end.
 
+## DEV-05 — Intent-aware metadata and truthful schema (2026-09-16)
+
+**Duplicate-title root cause found and fixed**: `buildPropertyTitle` only ever used bedroom count + type + location (e.g. "3 BHK Apartment, Sector 45 Gurgaon") — many genuinely different listings in the same sector/bedroom count share that exact combination, which is what produced the handoff's confirmed 18-of-83 duplicate-title groups. Added `extractProjectName()` (`lib/intelligence/property-view.ts`): checks a structured `"Project"` specification field first (present on ~2% of listings sampled), falls back to extracting "... in {Project}, {Sector}" from the raw title text (~25% of titles sampled), returns `null` — never a guess — when neither is found. `buildPropertyTitle`/`buildPropertyDescription` now include it when available, following the handoff's own suggested pattern ("{config} for {Sale/Rent} in {Project}, {Sector} | Homz"); the previous fixed 52-58 char truncation gate was relaxed to a soft cap per the handoff's explicit "reject fixed character build gate" guidance.
+
+**Missing listing-specific schema, confirmed and fixed**: `PropertyDetailView.tsx` had zero `<script type="application/ld+json">` output — confirmed by grep across the whole `components/` tree; hub-level `CollectionPage`/`ItemList` schema exists but nothing per-listing. Added `PropertyJsonLd.tsx` (`BreadcrumbList` + `RealEstateListing` + `FAQPage` when real FAQs exist), wired into `propertyDetailRoute.tsx`. No `Offer`/price block when the listing has no confirmed price — matches the handoff's explicit "Unknown price is not an Offer with zero price" guardrail. Verified live: `"@type":"RealEstateListing"` present in a real property page's rendered HTML.
+
+## DEV-06 — Mobile image delivery (2026-09-16, partial — logic only, not asset rights)
+
+**Dual hero fetch, confirmed and fixed**: `components/Hero.tsx` renders two `<Image priority>` elements (desktop + mobile, CSS-hidden per breakpoint) — `priority` injects a `<link rel="preload">` regardless of which is actually visible, so both were fetched on every device (matches the handoff's own measured evidence: "both mobile and desktop heroes downloaded"). next/image has no media-query-aware preload for this "different photo per breakpoint" pattern in this version. Since the audit specifically measured mobile LCP (7.04s), kept `priority` only on the mobile hero — the desktop one still renders via the same CSS swap, just no longer preloaded with the same urgency. Verified live: exactly 1 hero `<link rel="preload">` now present (was 2).
+
+**Not done**: asset-rights/licensing (the broken best-areas-guide image, competitor-sourced photos) — needs real licensed replacements or owner confirmation of usage rights, not a code fix. Below-fold carousel/discovery-image deferral was not audited this pass.
+
+## DEV-10 — Blog/content hygiene (2026-09-16, partial — the two confirmed items only)
+
+Both confirmed items from the handoff fixed directly in `lib/content/blog/best-3-bhk-flats-in-gurgaon.ts`:
+- **Math error**: the article claimed the 3→4 BHK price jump (77%) was "proportionally steeper" than the 2→3 BHK jump (108%) — backwards, since 108% > 77%. Corrected the claim to identify the 2→3 BHK jump as the steeper one (the underlying percentages were already computed correctly from the stated medians; only the comparative claim was wrong).
+- **Wrong internal link**: two CTAs whose own anchor text names "3 BHK" specifically ("Browse live 3 BHK listings", "Browse 3 BHK Listings") linked to the generic `/buy-property` hub instead of the real, already-working `/buy-property/gurgaon/3-bhk` facet hub. Fixed both; left the one genuinely-generic anchor ("Browse all Gurgaon property listings") pointing at the generic hub, since that one is correctly generic by its own wording.
+
+**Not investigated this pass**: the ₹2 Cr vs ₹2.92 Cr "median comparison" error the handoff cites — checked `best-property-investment-in-gurgaon-under-2-crore.ts` (the likely candidate) and found it already correctly frames Golf Course Extension Road's ₹2.92 Cr median as *above* the ₹2 Cr budget line, not contradicting it — this appears to have already been fixed in an earlier session, not a currently-live bug. Category-archive hygiene, freshness dates, and topic-overlap review (the rest of DEV-10's scope) not started.
+
 ## DEV-04 — Coherent server-rendered inventory (2026-09-16)
 
 **Duplicate-grid bug, confirmed and fixed** on all three of `/buy-property`, `/rent-property`, `/commercial`: `PropertyListingPage` (client component, fetches its own page-1 grid on mount — 8 desktop/4 mobile) rendered alongside `ListingPreviewSection` (server component, showed the first 24 results) — a real visitor with JS enabled saw the same top listings twice. Fixed by:
@@ -150,4 +170,10 @@ Ruled out: `lib/intelligence/news.ts` — small payload, already properly covere
 | DEV-02 | Done — see section above (3 evidence items + 1 related bug fixed) |
 | DEV-03 | Done — see section above (compare-page gate + crawler tokens; route-policy table and llms.txt deferred) |
 | DEV-04 | Done — see section above (duplicate grid, PG noindex, selector 500-cap; full orphan-graph crawl deferred) |
-| DEV-05–12 | In progress / not started |
+| DEV-05 | Done — see section above (duplicate titles, missing listing schema) |
+| DEV-06 | Partial — dual hero fetch fixed; asset rights not code-fixable |
+| DEV-07 | Blocked — needs real seller/landlord process, fee and inventory content from owner |
+| DEV-08 | Not started — form/validation logic is fixable; CRM delivery needs owner credentials |
+| DEV-09 | Not started — config wiring is fixable; real identity data needs owner input ([[company-info-pending]]) |
+| DEV-10 | Partial — the 2 confirmed items fixed; category/freshness/topic-overlap review not started |
+| DEV-11–12 | Not started |

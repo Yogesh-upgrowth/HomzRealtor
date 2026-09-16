@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { getPropertyBySlug } from "@/lib/intelligence/get-property";
 import { buildPropertyDescription, buildPropertyTitle } from "@/lib/intelligence/property-view";
 import PropertyDetailView from "@/components/PropertyListing/PropertyDetailView";
+import PropertyJsonLd from "@/components/PropertyListing/PropertyJsonLd";
 import type { PropertyCategory } from "@/lib/scraping/homzbackend";
 
 type PageParams = { params: Promise<{ city: string; slug: string }> };
@@ -44,7 +45,12 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     const { city, slug } = await params;
     const view = await getPropertyBySlug(category, city, slug);
     if (!view) notFound();
-    return <PropertyDetailView view={view} />;
+    return (
+      <>
+        <PropertyJsonLd view={view} />
+        <PropertyDetailView view={view} />
+      </>
+    );
   }
 
   return { generateMetadata, Page };
