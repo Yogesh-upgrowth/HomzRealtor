@@ -15,6 +15,7 @@
 // "best effort" cache for data that only actually changes once a day.
 
 import { homzDataUrl, type RawHomzProperty } from "@/lib/scraping/homzbackend";
+import { sortByImageFirst, sortByReraFirst, computeFacets, type ListingFacets } from "@/lib/listings/filters";
 
 const TTL_MS = 60 * 60 * 1000; // 1h — well under the daily export cadence
 // 25000 covers the real max segment total seen live (ggnSaleProperties:
@@ -24,14 +25,28 @@ const TTL_MS = 60 * 60 * 1000; // 1h — well under the daily export cadence
 // pagination pages both read from). Found via SEO audit C-02 (2026-09-08).
 const UPSTREAM_LIMIT = 25_000;
 
-type CacheEntry = { data: RawHomzProperty[]; expiresAt: number };
+type CacheEntry = {
+  data: RawHomzProperty[];
+  // sortByReraFirst(sortByImageFirst(data)) and computeFacets(sorted) are
+  // both deterministic for as long as `data` itself is cached, and neither
+  // depends on any per-request filter -- /api/listings and
+  // PaginatedListingPage's getAllSorted() both used to recompute these two
+  // full-array passes on every single call (every filter click / page view
+  // for the API route, running on real visitor traffic, not just crawlers).
+  // Computing them once here, alongside the raw fetch, and caching them for
+  // the same TTL removes that entirely -- 2026-09-16, see
+  // docs/seo/implementation-status.md's Active CPU baseline section.
+  sorted: RawHomzProperty[];
+  facets: ListingFacets;
+  expiresAt: number;
+};
 
 const cache = new Map<string, CacheEntry>();
-const inFlight = new Map<string, Promise<RawHomzProperty[]>>();
+const inFlight = new Map<string, Promise<CacheEntry>>();
 
-export async function getSegment(segment: string): Promise<RawHomzProperty[]> {
+async function loadSegment(segment: string): Promise<CacheEntry> {
   const hit = cache.get(segment);
-  if (hit && hit.expiresAt > Date.now()) return hit.data;
+  if (hit && hit.expiresAt > Date.now()) return hit;
 
   const pending = inFlight.get(segment);
   if (pending) return pending;
@@ -44,8 +59,11 @@ export async function getSegment(segment: string): Promise<RawHomzProperty[]> {
     if (!res.ok) throw new Error(`upstream ${res.status} for segment ${segment}`);
     const payload = await res.json();
     const data: RawHomzProperty[] = Array.isArray(payload?.results) ? payload.results : [];
-    cache.set(segment, { data, expiresAt: Date.now() + TTL_MS });
-    return data;
+    const sorted = sortByReraFirst(sortByImageFirst(data));
+    const facets = computeFacets(sorted);
+    const entry: CacheEntry = { data, sorted, facets, expiresAt: Date.now() + TTL_MS };
+    cache.set(segment, entry);
+    return entry;
   })();
 
   inFlight.set(segment, request);
@@ -54,4 +72,20 @@ export async function getSegment(segment: string): Promise<RawHomzProperty[]> {
   } finally {
     inFlight.delete(segment);
   }
+}
+
+export async function getSegment(segment: string): Promise<RawHomzProperty[]> {
+  return (await loadSegment(segment)).data;
+}
+
+/** Pre-sorted (RERA-first, then image-first) segment plus facets computed
+ *  over that same full unfiltered segment — both cached alongside the raw
+ *  fetch. Callers that used to sort/compute facets themselves on every call
+ *  (the interactive /api/listings route, and PaginatedListingPage's
+ *  getAllSorted) should read from here instead. */
+export async function getSortedSegment(
+  segment: string
+): Promise<{ sorted: RawHomzProperty[]; facets: ListingFacets }> {
+  const entry = await loadSegment(segment);
+  return { sorted: entry.sorted, facets: entry.facets };
 }

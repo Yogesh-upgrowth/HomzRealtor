@@ -16,8 +16,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import HomesCard from "@/components/HomeCards";
-import { getSegment } from "@/lib/listings/segmentCache";
-import { sortByImageFirst, sortByReraFirst, PROPERTY_TYPE_LABELS, type PropertyCategory } from "@/lib/listings/filters";
+import { getSortedSegment } from "@/lib/listings/segmentCache";
+import { PROPERTY_TYPE_LABELS, type PropertyCategory } from "@/lib/listings/filters";
 import { propertySegment, type RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { validImages } from "@/lib/intelligence/view-model";
 import { slugForProperty } from "@/lib/intelligence/property-view";
@@ -103,11 +103,17 @@ export function formatProperty(property: RawHomzProperty) {
 }
 
 export async function getAllSorted(category: PropertyCategory): Promise<RawHomzProperty[]> {
-  const all = await getSegment(propertySegment("ggn", category)).catch(() => []);
   // Same RERA-first ordering as /api/listings — kept consistent so the
   // server-rendered pagination sequence a crawler sees matches what the
-  // interactive filtered search shows.
-  return sortByReraFirst(sortByImageFirst(all));
+  // interactive filtered search shows. Pre-sorted and cached alongside the
+  // raw segment fetch (lib/listings/segmentCache.ts) rather than re-sorted
+  // on every call — this function runs multiple times per page render
+  // (generateStaticParams, the page component, JSON-LD) plus once per ISR
+  // regeneration across every buy/rent/commercial pagination page.
+  const { sorted } = await getSortedSegment(propertySegment("ggn", category)).catch(
+    () => ({ sorted: [] as RawHomzProperty[] })
+  );
+  return sorted;
 }
 
 export async function getPageCount(category: PropertyCategory): Promise<number> {

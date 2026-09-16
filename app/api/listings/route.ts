@@ -9,15 +9,8 @@
 // GET /api/listings?segment=ggnSaleProperties&category=Sale&bedrooms=3&budget=1cr-2cr&page=1&limit=8
 
 import { NextResponse } from "next/server";
-import { getSegment } from "@/lib/listings/segmentCache";
-import {
-  computeFacets,
-  filterProperties,
-  sortByImageFirst,
-  sortByReraFirst,
-  type ListingFilters,
-  type PropertyCategory,
-} from "@/lib/listings/filters";
+import { getSortedSegment } from "@/lib/listings/segmentCache";
+import { filterProperties, type ListingFilters, type PropertyCategory } from "@/lib/listings/filters";
 
 // Matches propertySegment()'s own output shape ("ggnSaleProperties", ...) —
 // rejects anything else before it's used to build an outbound URL.
@@ -45,17 +38,15 @@ export async function GET(req: Request) {
   const page = parsePositiveInt(searchParams.get("page"), 1);
   const limit = Math.min(parsePositiveInt(searchParams.get("limit"), 8), 100);
 
-  let all;
+  let sorted, facets;
   try {
-    all = await getSegment(segment);
+    ({ sorted, facets } = await getSortedSegment(segment));
   } catch {
     return NextResponse.json(
       { success: false, error: "Failed to load listings" },
       { status: 502 }
     );
   }
-
-  const sorted = sortByReraFirst(sortByImageFirst(all));
 
   const filters: ListingFilters = {
     q: searchParams.get("q") || "",
@@ -69,7 +60,6 @@ export async function GET(req: Request) {
   };
 
   const filtered = filterProperties(sorted, filters, category);
-  const facets = computeFacets(sorted);
 
   const start = (page - 1) * limit;
   const results = filtered.slice(start, start + limit);
