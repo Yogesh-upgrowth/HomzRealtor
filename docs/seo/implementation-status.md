@@ -2,6 +2,21 @@
 
 Tracks work against `HOMZ-CLAUDE-CODE-HANDOFF-2026-09-13.md`. One row per ticket; updated as each is done, not written once at the end.
 
+## DEV-04 — Coherent server-rendered inventory (2026-09-16)
+
+**Duplicate-grid bug, confirmed and fixed** on all three of `/buy-property`, `/rent-property`, `/commercial`: `PropertyListingPage` (client component, fetches its own page-1 grid on mount — 8 desktop/4 mobile) rendered alongside `ListingPreviewSection` (server component, showed the first 24 results) — a real visitor with JS enabled saw the same top listings twice. Fixed by:
+- `PropertyListingPage` now accepts `initialResults`/`initialTotal`/`initialFacets` props; `hooks/useListingsPage.ts` seeds its state from them and skips the one redundant client fetch when they still match the current (no-filter, page-1, desktop-default) key.
+- The three hub pages became `async` server components, fetching the first 8 results via the already-cached `getAllSorted()` and passing them in directly — so those 8 cards are now genuinely present in the server-rendered HTML, not just after a client fetch.
+- `ListingPreviewSection` gained a `skip` param; the hubs now pass `skip={8}` so it covers records 8–24 instead of 0–24 — together, still the exact same `PAGE_SIZE=24` "page 1" the `/page/2` route boundary already assumes, just with no record ever rendered twice.
+- Verified against a local prod build: each hub's server-rendered HTML now contains exactly 24 unique property-detail links (was 24 total but with real overlap between the two mechanisms once hydrated) — confirmed via a script parsing the actual HTML, not assumed.
+- Note: full client-side hydration/interaction behavior (filter clicks, pagination) was **not** verified in a real browser — only the server-rendered HTML and the (unit-testable) hook logic were checked. Flagging this explicitly per the "do not invent successful test results" guardrail.
+
+**PG hub — confirmed genuinely empty, not a one-session fluke**: fetched the live `Pg` segment directly; it has zero real records right now. Per the handoff's own guidance for this exact case, added a reversible, automatic (not manually-flagged) fix: `app/pg-property/page.tsx`'s `generateMetadata` now sets `noindex,follow` only while inventory is actually empty, and `app/sitemap.ts`'s `buildContentSegment` excludes `/pg-property` under the same condition — both revert to normal the moment real PG listings exist in the feed, no flag to remember to flip back. Verified live: `<meta name="robots" content="noindex, follow">` present; `pg-property` absent from `/sitemap/content.xml`.
+
+**Project selector 500-record cap, confirmed and fixed**: `components/PropertyListing/ProjectListingClient.tsx` (the interactive `/project-listing` city browser) still hardcoded `limit: 500` per category — the exact truncation bug SEO audit C-02 (2026-09-08) already fixed everywhere else in the codebase (`homzDataUrl`'s own default, `lib/intelligence/projects.ts`'s `fetchCityRaw`), just missed in this one client component. Its own comment claiming it "matches fetchCityRaw" was stale/wrong — `fetchCityRaw` hasn't capped at 500 since that same fix. Raised to 5000, matching the established convention. Given ~2,098 combined projects confirmed live for Gurgaon, this was silently truncating hundreds of real projects from the interactive selector specifically.
+
+**Not done / deferred:** a full graph report identifying orphaned eligible detail records (would need the full-site crawl `scripts/check-sitemap-404s.mjs` supports but wasn't run exhaustively — see DEV-01's own note on this); formal mobile filter/pagination interaction tests (no test framework yet — DEV-12 scope, and no browser available to verify by hand either).
+
 ## DEV-03 — Crawler, comparison and canonical rules (2026-09-16)
 
 **The core conflict**: this ticket asks for compare pages to be crawlable (so Google can see their `noindex` tag and cleanly deindex stale ones) with the pair-generation bounded first. The 2026-09-12 session had done the opposite — blocked `/project-listing/compare/` entirely in `robots.txt` — for real, measured cost reasons (see the CPU-baseline section below). Resolving this required an actual design, not just flipping the block back:
@@ -134,4 +149,5 @@ Ruled out: `lib/intelligence/news.ts` — small payload, already properly covere
 | DEV-01 | Done — see section above |
 | DEV-02 | Done — see section above (3 evidence items + 1 related bug fixed) |
 | DEV-03 | Done — see section above (compare-page gate + crawler tokens; route-policy table and llms.txt deferred) |
-| DEV-04–12 | In progress / not started |
+| DEV-04 | Done — see section above (duplicate grid, PG noindex, selector 500-cap; full orphan-graph crawl deferred) |
+| DEV-05–12 | In progress / not started |

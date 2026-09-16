@@ -130,22 +130,35 @@ export function PropertyCardLink({ property, routeBase }: { property: RawHomzPro
 }
 
 // Server-rendered preview block for each hub's own landing page
-// (app/buy-property/page.tsx etc.) — sits alongside the existing
-// client-rendered interactive filter grid, giving crawlers real listing
-// links plus an entry point into the full paginated sequence without
-// needing JS.
+// (app/buy-property/page.tsx etc.) — gives crawlers real listing links
+// plus an entry point into the full paginated sequence without needing JS.
 //
-// Renders the full first PAGE_SIZE page, not a smaller preview slice — SEO
-// audit 2026-09-07 P1 ("Base hub and /page/1 overlap") made /page/1 404
-// (its content duplicated this hub, both self-canonical) so this hub IS
-// page 1 now. A smaller preview here would have silently dropped whichever
-// listings used to sit between the old preview size and PAGE_SIZE from
-// every server-rendered crawl path on the site.
-export async function ListingPreviewSection({ category }: { category: PropertyCategory }) {
+// Covers the full first PAGE_SIZE page (records 0..PAGE_SIZE), not a
+// smaller preview slice — SEO audit 2026-09-07 P1 ("Base hub and /page/1
+// overlap") made /page/1 404 (its content duplicated this hub, both
+// self-canonical) so this hub IS page 1 now, and /page/2 starts at index
+// PAGE_SIZE; a smaller preview here would silently drop whichever listings
+// sit between the old preview size and PAGE_SIZE from every server-rendered
+// crawl path on the site.
+//
+// `skip` (DEV-04, 2026-09-16): the hub page also seeds PropertyListingPage's
+// own interactive grid with server-rendered data for records 0..skip (see
+// app/buy-property/page.tsx) — passing skip here keeps this section's
+// total PAGE_SIZE-wide "page 1" coverage and /page/2 boundary exactly as
+// before, just rendering only the remainder (skip..PAGE_SIZE) so nothing
+// appears twice on the page.
+export async function ListingPreviewSection({
+  category,
+  skip = 0,
+}: {
+  category: PropertyCategory;
+  skip?: number;
+}) {
   const routeBase = ROUTE_BASE[category];
   const all = await getAllSorted(category);
   if (all.length === 0) return null;
-  const preview = all.slice(0, PAGE_SIZE);
+  const preview = all.slice(skip, PAGE_SIZE);
+  if (preview.length === 0) return null;
   const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
 
   return (

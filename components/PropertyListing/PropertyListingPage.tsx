@@ -22,15 +22,33 @@ import devImg from "@/public/totalUnit.svg";
 import customer from "@/assets/images/customer.png";
 import { slugify } from "@/components/utils/slugify";
 import { instrumentSerif, manrope } from "@/lib/fonts";
-import { useListingsPage } from "@/hooks/useListingsPage";
+import { useListingsPage, type InitialListingsData } from "@/hooks/useListingsPage";
 import {
   propertySegment,
   type PropertyCategory,
   type RawHomzProperty,
 } from "@/lib/scraping/homzbackend";
-import { PROPERTY_TYPE_LABELS, type ListingFilters } from "@/lib/listings/filters";
+import { PROPERTY_TYPE_LABELS, type ListingFacets, type ListingFilters } from "@/lib/listings/filters";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
 import { validImages } from "@/lib/intelligence/view-model";
+
+// Must match this component's own filters object shape exactly (all empty/
+// false) and DEFAULT_LIMIT below (the desktop cardsPerPage default —
+// isMobile starts false on both server and first client render, only
+// flipping true after the viewport-detection effect runs) — this is the
+// one (filters, page, limit) combination a server-computed "initial" prop
+// can ever seed, see useListingsPage's InitialListingsData.
+const DEFAULT_FILTERS: ListingFilters = {
+  q: "",
+  propertyType: "",
+  bedrooms: "",
+  budget: "",
+  possession: "",
+  saleType: "",
+  golf: false,
+  investmentGrade: false,
+};
+const DEFAULT_LIMIT = 8;
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -91,9 +109,15 @@ function slugFor(property: RawHomzProperty): string {
 function PropertyListingInner({
   category,
   cityKey = "ggn",
+  initialResults,
+  initialTotal,
+  initialFacets,
 }: {
   category: PropertyCategory;
   cityKey?: string;
+  initialResults?: RawHomzProperty[];
+  initialTotal?: number;
+  initialFacets?: ListingFacets;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -160,6 +184,22 @@ function PropertyListingInner({
     investmentGrade,
   };
 
+  const initial: InitialListingsData | undefined =
+    initialResults !== undefined
+      ? {
+          key: JSON.stringify({
+            segment,
+            category,
+            filters: DEFAULT_FILTERS,
+            page: 1,
+            limit: DEFAULT_LIMIT,
+          }),
+          results: initialResults,
+          total: initialTotal ?? initialResults.length,
+          facets: initialFacets ?? { propertyTypes: [], bedrooms: [], rk: [] },
+        }
+      : undefined;
+
   const {
     results: currentProperties,
     total,
@@ -167,7 +207,7 @@ function PropertyListingInner({
     loading,
     error,
     retry,
-  } = useListingsPage(segment, category, filters, currentPage, cardsPerPage);
+  } = useListingsPage(segment, category, filters, currentPage, cardsPerPage, initial);
 
   const totalPages = Math.max(1, Math.ceil(total / cardsPerPage));
 
@@ -459,13 +499,29 @@ function PropertyListingInner({
 export default function PropertyListingPage({
   category,
   cityKey,
+  initialResults,
+  initialTotal,
+  initialFacets,
 }: {
   category: PropertyCategory;
   cityKey?: string;
+  /** Server-fetched first page (desktop default: no filters, 8 results) —
+   *  see DEFAULT_FILTERS/DEFAULT_LIMIT above. Passing this renders real
+   *  listing cards in the initial server-rendered HTML instead of an empty
+   *  shell, and skips the redundant client fetch for that exact case. */
+  initialResults?: RawHomzProperty[];
+  initialTotal?: number;
+  initialFacets?: ListingFacets;
 }) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#0B0B0C]" />}>
-      <PropertyListingInner category={category} cityKey={cityKey} />
+      <PropertyListingInner
+        category={category}
+        cityKey={cityKey}
+        initialResults={initialResults}
+        initialTotal={initialTotal}
+        initialFacets={initialFacets}
+      />
     </Suspense>
   );
 }

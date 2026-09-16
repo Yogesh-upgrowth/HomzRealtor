@@ -79,13 +79,20 @@ const hasValidImage = (images: string[] = []) => validImages(images).length > 0;
 
 // Gurgaon-only — the site's sole focus market. "ggn" is the raw API city key;
 // "gurgaon" is the canonical URL slug used in card links (must match
-// canonicalCitySlug() in lib/intelligence/projects.ts). limit=500 matches
-// lib/intelligence/projects.ts's fetchCityRaw — keeps this page's filtered
-// counts consistent with the homepage Collections tiles, which query the full
-// catalogue via getProjectsForCity. Order matters: index 0 is commercial.
+// canonicalCitySlug() in lib/intelligence/projects.ts).
+//
+// DEV-04 (2026-09-16): limit was 500 here, silently truncating hundreds of
+// real projects — Gurgaon alone runs ~2,098 combined (confirmed live) — out
+// of this interactive selector specifically. This is the same 500-cap bug
+// SEO audit C-02 (2026-09-08) already fixed everywhere else (homzDataUrl's
+// own default, lib/intelligence/projects.ts's fetchCityRaw): this client
+// component just wasn't updated to match at the time, and the stale
+// "matches fetchCityRaw" comment that used to be here was simply wrong —
+// fetchCityRaw hasn't capped at 500 since that same fix. 5000 now matches
+// the convention used everywhere else. Order matters: index 0 is commercial.
 const SOURCES = [
-  { segment: categorySegment("ggn", "Commercial"), limit: 500 },
-  { segment: categorySegment("ggn", "Residential"), limit: 500 },
+  { segment: categorySegment("ggn", "Commercial"), limit: 5000 },
+  { segment: categorySegment("ggn", "Residential"), limit: 5000 },
 ];
 
 function ProjectListingInner() {

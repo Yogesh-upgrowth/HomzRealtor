@@ -1,5 +1,6 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
-import { ListingPreviewSection, PropertyHubJsonLd } from "@/components/PropertyListing/PaginatedListingPage";
+import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
+import { computeFacets } from "@/lib/listings/filters";
 import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 
 const title = "Commercial Property in Gurgaon — Price, Photos & Plans";
@@ -29,12 +30,25 @@ export const metadata = {
 // See app/buy-property/page.tsx for why this is needed.
 export const dynamic = "force-dynamic";
 
-export default function CommercialPage() {
+// DEV-04 (2026-09-16) — see app/buy-property/page.tsx's comment on this
+// same change: seeds PropertyListingPage's own server-rendered HTML with
+// the first 8 results directly, and ListingPreviewSection covers the rest
+// of "page 1" (records 8..24) so nothing appears twice.
+export default async function CommercialPage() {
+  const all = await getAllSorted("Commercial");
+  const initialResults = all.slice(0, 8);
+  const initialFacets = computeFacets(all);
+
   return (
     <>
       <PropertyHubJsonLd category="Commercial" />
-      <PropertyListingPage category="Commercial" />
-      <ListingPreviewSection category="Commercial" />
+      <PropertyListingPage
+        category="Commercial"
+        initialResults={initialResults}
+        initialTotal={all.length}
+        initialFacets={initialFacets}
+      />
+      <ListingPreviewSection category="Commercial" skip={8} />
     </>
   );
 }

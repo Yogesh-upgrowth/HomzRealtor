@@ -9,6 +9,7 @@ import {
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { filterProperties } from '@/lib/listings/filters'
 import { BUY_FACETS } from '@/components/PropertyListing/FacetedListingPage'
+import { getAllSorted } from '@/components/PropertyListing/PaginatedListingPage'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
@@ -284,6 +285,14 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     byCategory.get(cat)!.push(p)
   }
 
+  // DEV-04 (2026-09-16): confirmed live — PG has zero real listings right
+  // now. /pg-property was unconditionally sitemapped despite rendering "No
+  // listings found" with no cards. Matches app/pg-property/page.tsx's own
+  // generateMetadata, which sets noindex,follow for the same reason — a
+  // noindex page has nothing to earn from a sitemap entry either. Both
+  // revert automatically the moment real PG inventory exists.
+  const pgHasInventory = (await getAllSorted('Pg').catch(() => [])).length > 0
+
   return [
     // Pure static/utility pages — no underlying record, so no lastModified
     // rather than a fabricated one.
@@ -297,7 +306,7 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
     // it has nothing to earn from a sitemap entry.
     { url: `${BASE_URL}/property-insights`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/pg-property`, changeFrequency: 'daily', priority: 0.6 },
+    ...(pgHasInventory ? [{ url: `${BASE_URL}/pg-property`, changeFrequency: 'daily' as const, priority: 0.6 }] : []),
     // SEO audit M-08 (2026-09-08) — real standalone page, real FAQ content.
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.5 },
 
