@@ -1,10 +1,9 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
+import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
 import {
   homzDataUrl,
   propertySegment,
   type PropertyCategory,
-  type RawHomzProject,
   type RawHomzProperty,
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
@@ -54,53 +53,32 @@ const PROPERTY_ROUTE_BASE: Record<PropertyCategory, string> = {
   Commercial: 'commercial',
 }
 
-// city API key → CANONICAL URL segment used in /project-listing/[city]/[slug].
-// These must match the <link rel="canonical"> the project pages emit, otherwise
-// the sitemap advertises non-canonical URLs (e.g. /ggn/ instead of /gurgaon/).
-const CITY_ENDPOINT_MAP: Record<string, string> = {
-  delhiCommercialProjects:     'delhi',
-  delhiResidentialProjects:    'delhi',
-  faridabadCommercialProjects: 'faridabad',
-  faridabadResidentialProjects:'faridabad',
-  ggnCommercialProjects:       'gurgaon',
-  ggnResidentialProjects:      'gurgaon',
-  gNoidaCommercialProjects:    'greaternoida',
-  gNoidaResidentialProjects:   'greaternoida',
-  noidaCommercialProjects:     'noida',
-  noidaResidentialProjects:    'noida',
-}
-
 const CITY_KEYS = ['ggn', 'delhi', 'faridabad', 'gNoida', 'noida']
 
 type ProjectEntry = { slug: string; city: string; updatedAt: string | null }
 
+// DEV-01 (2026-09-16): this used to independently fetch each city/category
+// segment raw and recompute its own slug via an inline regex copy of
+// lib/intelligence/normalize.ts's slugify() — a second, driftable
+// implementation of the exact slug route resolution (getProjectBySlug)
+// actually uses. Reading through getProjectsForCity() instead means the
+// sitemap and route resolution now share one eligibility/slug contract, and
+// it also picks up that function's own cache (lib/intelligence/projects.ts)
+// rather than re-fetching+re-parsing raw JSON here.
 async function fetchProjectEntries(): Promise<ProjectEntry[]> {
   const entries: ProjectEntry[] = []
   const seen = new Set<string>()
 
   await Promise.all(
-    Object.entries(CITY_ENDPOINT_MAP).map(async ([cityKey, citySegment]) => {
+    CITY_KEYS.map(async (cityKey) => {
       try {
-        // 5000, not 500 — the old 500 cap silently truncated ~46% of
-        // Gurgaon's real project inventory from the sitemap (SEO audit
-        // C-02, 2026-09-08; see homzDataUrl's default in
-        // lib/scraping/homzbackend.ts).
-        const res = await fetch(homzDataUrl(cityKey, 1, 5000), {
-          next: { revalidate: 3600 },
-        })
-        const json = await res.json()
-        const projects: RawHomzProject[] = json?.results || []
-
+        const citySlug = canonicalCitySlug(cityKey)
+        const projects = await getProjectsForCity(cityKey)
         for (const p of projects) {
-          if (!p?.projectTitle || typeof p.projectTitle !== 'string') continue
-          const slug = p.projectTitle
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-          const key = `${citySegment}/${slug}`
+          const key = `${citySlug}/${p.slug}`
           if (seen.has(key)) continue
           seen.add(key)
-          entries.push({ slug, city: citySegment, updatedAt: p.updatedAt || null })
+          entries.push({ slug: p.slug, city: citySlug, updatedAt: p.updated_at })
         }
       } catch {
         // Skip on fetch error — sitemap degrades gracefully

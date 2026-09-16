@@ -177,6 +177,10 @@ export type NormalizedProject = {
   builder_description: string[];
   recent_updates: any[];
   master_plan: { image?: string; content?: string } | null;
+  /** Raw feed updatedAt, carried through so callers (the sitemap) can use a
+   *  real per-record lastModified without re-fetching outside this shared
+   *  normalization pipeline — see DEV-01, docs/seo/implementation-status.md. */
+  updated_at: string | null;
 };
 
 export function normalizeProject(raw: any, cityKey: string, category: string): NormalizedProject {
@@ -227,5 +231,6 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
       raw.masterPlan && (raw.masterPlan.image || raw.masterPlan.content)
         ? { image: raw.masterPlan.image, content: raw.masterPlan.content }
         : null,
+    updated_at: raw.updatedAt || null,
   };
 }

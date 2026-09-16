@@ -90,10 +90,15 @@ export default function robots(): MetadataRoute.Robots {
     // SEO audit H-05 (2026-09-08): app/sitemap.ts now uses generateSitemaps()
     // to split the 2,967-URL sitemap into 7 segments so Search Console can
     // report indexation per segment. Next.js doesn't auto-build a
-    // <sitemapindex> for generateSitemaps() output, so all 7 are listed here
-    // directly — multiple Sitemap: lines is a Google-supported equivalent to
-    // a formal index file.
+    // <sitemapindex> for generateSitemaps() output, so all 7 stayed listed
+    // here directly — multiple Sitemap: lines is a Google-supported
+    // equivalent to a formal index file. DEV-01 (2026-09-16) added a real
+    // <sitemapindex> at /sitemap.xml (app/sitemap.xml/route.ts) for tools
+    // that only try the conventional path — listed first, in addition to
+    // (not instead of) the 7 direct entries, which stay for GSC's
+    // per-segment indexation reporting.
     sitemap: [
+      `${baseUrl}/sitemap.xml`,
       `${baseUrl}/sitemap/projects.xml`,
       `${baseUrl}/sitemap/sectors.xml`,
       `${baseUrl}/sitemap/developers.xml`,

@@ -2,6 +2,21 @@
 
 Tracks work against `HOMZ-CLAUDE-CODE-HANDOFF-2026-09-13.md`. One row per ticket; updated as each is done, not written once at the end.
 
+## DEV-01 — Sitemap publication, route resolution, record lifecycle (2026-09-16)
+
+**Root cause of the 39 known 404 URLs, found and fixed:** `lib/intelligence/get-property.ts` hardcoded `limit: 10_000` when fetching a property segment to resolve a detail-page slug. Live segments are now 20,957 (Sale) and 12,945 (Rent) records — every truncation-affected record is a real, correctly-slugged, still-live listing sitting past position 10,000 in feed order, silently excluded from ever matching. Verified against the live backend (now back online): fetched the real `ggnSaleProperties`/`ggnRentProperties` segments directly, confirmed every one of the 39 appendix URLs' underlying property IDs still exist with unchanged slugs at positions 9,644–19,639. Fixed by raising the limit to 25,000, matching the `UPSTREAM_LIMIT` convention already established in `lib/listings/segmentCache.ts` (SEO audit C-02, 2026-09-08) for the same reason. **Re-verified all 39 appendix URLs against a local prod build post-fix: 39/39 now return 200.**
+
+One apparent second category turned out to be a false read from my own quick diagnostic (not a real second bug): two Rent listings share an identical last-8-character id-tail purely by coincidence of how MagicBricks IDs hex-encode; checking by tail alone made one look "moved," but the actual lookup matches on the *full* slug (title-slug + tail together), which still correctly disambiguates them. Both resolve correctly. Worth flagging as a latent risk in the slug scheme (last-8-chars isn't provably unique, only empirically hasn't collided *with a matching title* yet) — not fixed, since there's no current observable bug to fix, just documented here as a risk for future data growth.
+
+**Other DEV-01 work:**
+- **Shared eligibility/slug contract**: `app/sitemap.ts`'s Projects segment used to independently re-fetch raw city/category data and recompute its own inline slug regex — a second, driftable copy of `lib/intelligence/normalize.ts`'s `slugify()`, the one `getProjectBySlug` (route resolution) actually uses. Refactored to read through `getProjectsForCity()` instead, so the sitemap and route resolution now share one pipeline. Properties already shared this correctly via `slugForProperty()` — no change needed there.
+  - Added `updated_at` to `NormalizedProject` (carrying the raw feed's `updatedAt` through the shared pipeline) so the sitemap's per-record `lastModified` didn't regress when it stopped reading the raw feed directly.
+- **Durable `/sitemap.xml` index**: added `app/sitemap.xml/route.ts` — a real `<sitemapindex>` at the canonical path (Next's `generateSitemaps()` only auto-serves that path for a single segment; this project has 7). `robots.txt` now lists it first, alongside (not instead of) the 7 direct segment entries GSC uses for per-segment indexation reporting.
+- **Reconciliation command**: `scripts/check-sitemap-404s.mjs` (`npm run check:sitemap [baseUrl] [maxUrls]`) — fetches all 7 live segments, dedupes/validates every `<loc>` is the canonical origin, then HEAD-checks each URL at concurrency 8 with retries, reporting redirects/404s/410s/other-errors/unverified separately. Confirmed it reproduces the handoff's own reported total (38,820 unique URLs) exactly. Supports checking a preview deployment's pages against the real canonical `<loc>` values (swaps origin, keeps the reported URL canonical) for DEV-12's release gate.
+- **lastmod determinism**: already real per-record dates from the shared pipeline (not request-time) — no change needed, verified via live output.
+
+**Not done / deferred:** the full 38,820-URL crawl (only sampled + the 39 known cases were checked here, per DEV-00's note that a full run is a DEV-12 release-gate step, not a per-ticket requirement); a formal "sold/let record" retention policy (distinguishing delisted-but-worth-a-historical-page from genuinely-gone) — no evidence yet of that case actually occurring, so nothing to build against.
+
 ## DEV-00 — Baseline (established 2026-09-16)
 
 ### Stack
@@ -88,5 +103,8 @@ Ruled out: `lib/intelligence/news.ts` — small payload, already properly covere
 | Ticket | Status |
 |---|---|
 | DEV-00 | Done — this document |
-| CPU fix: `/api/listings` + `getAllSorted` cache sort/facets | Done 2026-09-16 (ahead of DEV-01, per explicit request) |
-| DEV-01–12 | Not started |
+| CPU fix: `/api/listings` + `getAllSorted` cache sort/facets | Done 2026-09-16 |
+| CPU fix: `getProjectsForCity`/`buildDeveloperIndex` cache normalization | Done 2026-09-16 |
+| Backend redeploy: `Homz-Scrape`'s already-committed Cache-Control fix | Done 2026-09-16 |
+| DEV-01 | Done — see section above |
+| DEV-02–12 | In progress / not started |
