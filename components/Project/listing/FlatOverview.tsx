@@ -15,11 +15,17 @@ const FlatOverview = ({ title, propertyType, minSize, maxSize, sizeUnit }: Props
     ? propertyType.split(/[,/]/).map((c) => c.trim()).filter(Boolean)
     : [];
 
+  // DEV-02 (2026-09-16): used to fall back to a guessed "sq.ft" whenever the
+  // feed's size text didn't carry a unit this codebase could confirm — a
+  // project actually measured in Sq.Yd or acres would silently get
+  // mislabeled. Showing the number without any unit suffix is honest;
+  // showing the wrong unit isn't.
+  const unitSuffix = sizeUnit ? ` ${sizeUnit}` : "";
   const sizeText =
     minSize && maxSize
       ? minSize === maxSize
-        ? `${minSize.toLocaleString("en-IN")} ${sizeUnit || "sq.ft"}`
-        : `${minSize.toLocaleString("en-IN")} – ${maxSize.toLocaleString("en-IN")} ${sizeUnit || "sq.ft"}`
+        ? `${minSize.toLocaleString("en-IN")}${unitSuffix}`
+        : `${minSize.toLocaleString("en-IN")} – ${maxSize.toLocaleString("en-IN")}${unitSuffix}`
       : null;
 
   if (configs.length === 0 && !sizeText) return null;

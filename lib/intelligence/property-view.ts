@@ -21,7 +21,7 @@
 import { clean, normalizeAmenities, validImages } from "./view-model";
 import type { Badge, Chip, HighlightStat, LinkItem, PersonaReasons } from "./view-model";
 import { slugify } from "@/components/utils/slugify";
-import { truncateAtWord } from "./normalize";
+import { truncateAtWord, redactEmbeddedRegulatoryIds } from "./normalize";
 import type { PropertyCategory, RawHomzProperty } from "@/lib/scraping/homzbackend";
 
 // Chrome-asset filtering (site logo, developer-logo thumbnail, amenity
@@ -116,6 +116,41 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
 export function slugForProperty(property: RawHomzProperty): string {
   const idTail = (property.id || "").split(":").pop()?.slice(-8) || "";
   return `${slugify(property.title || "property")}-${idTail}`;
+}
+
+// DEV-02 (2026-09-16): confirmed live — some scraped specification values
+// (e.g. a "Super Built-up Area" row) carry an entire unit-selector
+// dropdown's option list concatenated onto the real value, e.g. "1350 sqft
+// sqft sqyrd sqm acre bigha hectare marla kanal biswa1 biswa2 ground
+// aankadam rood chatak kottah marla cent perch guntha are katha gaj killa
+// kuncham ₹ 56/sqft" instead of just "1350 sqft" (Ambience Creacions rental,
+// id ending 38373139). specifications was rendered verbatim with no
+// cleaning. Rather than guess which token is "correct" by trying to
+// re-parse a contaminated string, this only ever keeps a value already
+// confirmed clean (no known unit-selector tokens strung together); the
+// clean area is shown separately anyway via areaText/the snapshot chip, so
+// dropping a contaminated specs row loses no real information — matches
+// the handoff's own "prefer honest omission to a fabricated correction."
+const UNIT_SELECTOR_TOKENS = [
+  "sqft", "sqyd", "sqyrd", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
+  "biswa", "ground", "aankadam", "rood", "chatak", "kottah", "cent", "perch",
+  "guntha", "katha", "gaj", "killa", "kuncham",
+];
+
+function looksLikeUnitSelectorDump(value: string): boolean {
+  const lower = value.toLowerCase();
+  let hits = 0;
+  for (const token of UNIT_SELECTOR_TOKENS) {
+    if (lower.includes(token)) hits++;
+    if (hits >= 3) return true; // a real value never legitimately names 3+ different land/area units
+  }
+  return false;
+}
+
+function sanitizeSpecifications(
+  specs: { heading: string; value: string }[]
+): { heading: string; value: string }[] {
+  return specs.filter((s) => !looksLikeUnitSelectorDump(String(s?.value ?? "")));
 }
 
 function landmarkCount(landmarks: Record<string, { name: string; distance: string }[]>): number {
@@ -409,11 +444,15 @@ export function resolvePropertyView(
     heroImage: images[0] || null,
     interiorImages: propertyImages(property.interiorImages || []),
     masterPlan: property.masterPlan && Object.keys(property.masterPlan).length ? property.masterPlan : null,
-    about: (property.aboutProject || []).map((a) => clean(a)).filter(Boolean) as string[],
-    builderDescription: clean(property.builderDescription),
+    about: redactEmbeddedRegulatoryIds(property.aboutProject || [])
+      .map((a) => clean(a))
+      .filter(Boolean) as string[],
+    builderDescription: clean(
+      redactEmbeddedRegulatoryIds([property.builderDescription || ""])[0]
+    ),
     amenities,
     amenityCount,
-    specifications: property.specifications || [],
+    specifications: sanitizeSpecifications(property.specifications || []),
     landmarks,
     aiSummary: clean(property.aiSummary),
     investmentScore: score,

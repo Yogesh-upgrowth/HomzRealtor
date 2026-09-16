@@ -34,6 +34,28 @@ function stripSyndicatedText(paragraphs: string[]): string[] {
   return paragraphs.filter((p) => !SYNDICATION_MARKERS.some((re) => re.test(p)));
 }
 
+// DEV-02 (2026-09-16): confirmed live — ATS Triumph Villas' aboutProject
+// narrative states "...is registered under GGM/1051/783/2026/23" while the
+// same record's own structured rera_id field is a completely different
+// number ("RERA-GRG-2073-2025"), rendered separately with its own verified
+// rera_status handling. Which one is actually correct is a regulatory
+// lookup, not something a parser can decide (see the handoff's owner-input
+// queue) — so rather than guess, this strips only the embedded
+// registration-number clause from free text. The app already has one
+// dedicated, status-aware place to assert a registration number; prose
+// shouldn't assert a second, unverified one alongside it.
+const EMBEDDED_REGULATORY_ID_RE = /\s*(?:and\s+)?is registered under\s+[A-Z0-9/-]+\.?/gi;
+
+export function redactEmbeddedRegulatoryIds(paragraphs: string[]): string[] {
+  return paragraphs.map((p) =>
+    p
+      .replace(EMBEDDED_REGULATORY_ID_RE, ".")
+      .replace(/\.\s*\./g, ".")
+      .replace(/\s{2,}/g, " ")
+      .trim()
+  );
+}
+
 export function extractBuilder(projectTitle: string): string {
   const title = (projectTitle || "").trim();
   for (const b of KNOWN_BUILDERS) {
@@ -90,11 +112,33 @@ export function extractPriceRange(priceText?: string | null, priceList?: any[] |
   return { min: Math.min(...amounts), max: Math.max(...amounts) };
 }
 
-export function extractSizeRange(sizeText?: string | null) {
-  if (!sizeText) return { min: null, max: null };
-  const nums = (String(sizeText).match(/\d+(?:\.\d+)?/g) || []).map(Number);
-  if (nums.length === 0) return { min: null, max: null };
-  return { min: Math.min(...nums), max: Math.max(...nums) };
+// DEV-02 (2026-09-16): this used to only extract the numeric value from the
+// feed's free-text size field, and normalizeProject() then hardcoded
+// size_unit to "sq.ft" whenever any size text was present at all --
+// silently mislabeling a project actually measured in Sq.Yd (real property
+// listings in this same feed use that unit, e.g. "...-267-sqyd-apartment"),
+// Sq.M or acres. A basis this codebase can't confirm (no unit detected in
+// the text) now surfaces as size_unit: null rather than a guessed "sq.ft" --
+// "Area not confirmed" is the honest fallback, not a fabricated one.
+function detectAreaUnit(text: string): string | null {
+  if (/sq\.?\s*yd|sqyd|sq\.?\s*yard|square\s*yard/i.test(text)) return "sq.yd";
+  if (/sq\.?\s*m(?:eter|etre)?s?\b|sqm\b|square\s*met/i.test(text)) return "sq.m";
+  if (/sq\.?\s*ft|sqft|square\s*fee?t/i.test(text)) return "sq.ft";
+  if (/\bacres?\b/i.test(text)) return "acre";
+  return null;
+}
+
+export function extractSizeRange(sizeText?: string | null): {
+  min: number | null;
+  max: number | null;
+  unit: string | null;
+} {
+  if (!sizeText) return { min: null, max: null, unit: null };
+  const text = String(sizeText);
+  const unit = detectAreaUnit(text);
+  const nums = (text.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+  if (nums.length === 0) return { min: null, max: null, unit };
+  return { min: Math.min(...nums), max: Math.max(...nums), unit };
 }
 
 // Exact rupees with Indian grouping, e.g. 68543 → "₹68,543". Use for monthly /
@@ -183,18 +227,34 @@ export type NormalizedProject = {
   updated_at: string | null;
 };
 
+// DEV-02 (2026-09-16): confirmed live — M3M Latitude, SS Camasa and DLF The
+// Summit are all fetched from the ggnCommercialProjects segment (the
+// upstream source's own category bucket) despite every one of them being an
+// unambiguous residential apartment project ("3-4 BHK apartments", "512
+// spacious homes", "residential towers"). BHKType ("Bedroom Hall Kitchen")
+// is a configuration format that only ever describes a residential unit,
+// so its presence is a narrow, reliable signal the upstream bucket is
+// wrong — this only ever corrects Commercial -> Residential, never the
+// other direction, since a project merely mentioning "commercial" in
+// passing isn't remotely the same strength of evidence.
+function hasResidentialConfiguration(bhkType: unknown): boolean {
+  return typeof bhkType === "string" && /\bBHK\b/i.test(bhkType);
+}
+
 export function normalizeProject(raw: any, cityKey: string, category: string): NormalizedProject {
   const meta = CITY_META[cityKey] || { name: cityKey, state: "India" };
   const name = raw.projectTitle || "Untitled Project";
   const price = extractPriceRange(raw.price, raw.priceList);
   const size = extractSizeRange(raw.size);
+  const effectiveCategory =
+    category === "Commercial" && hasResidentialConfiguration(raw.BHKType) ? "Residential" : category;
 
   return {
     slug: slugify(name),
     city_key: cityKey,
     project_name: name,
     builder: extractBuilder(name),
-    property_category: category,
+    property_category: effectiveCategory,
     property_type: raw.BHKType || null,
     project_status: raw.projectStatus || null,
     rera_id: raw.reraId || null,
@@ -212,19 +272,23 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     max_price_inr: price.max,
     min_size: size.min,
     max_size: size.max,
-    size_unit: raw.size ? "sq.ft" : null,
+    size_unit: size.unit,
     images: Array.isArray(raw.images) ? raw.images : [],
     interior_images: Array.isArray(raw.interiorImages) ? raw.interiorImages : [],
-    about: stripSyndicatedText(Array.isArray(raw.aboutProject) ? raw.aboutProject : []),
+    about: stripSyndicatedText(
+      redactEmbeddedRegulatoryIds(Array.isArray(raw.aboutProject) ? raw.aboutProject : [])
+    ),
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
     specifications: Array.isArray(raw.specifications) ? raw.specifications : [],
     price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
     builder_description: stripSyndicatedText(
-      Array.isArray(raw.builderDescription)
-        ? raw.builderDescription
-        : raw.builderDescription
-        ? [String(raw.builderDescription)]
-        : []
+      redactEmbeddedRegulatoryIds(
+        Array.isArray(raw.builderDescription)
+          ? raw.builderDescription
+          : raw.builderDescription
+          ? [String(raw.builderDescription)]
+          : []
+      )
     ),
     recent_updates: Array.isArray(raw.recentUpdates) ? raw.recentUpdates : [],
     master_plan:
