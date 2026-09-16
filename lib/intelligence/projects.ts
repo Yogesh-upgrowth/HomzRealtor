@@ -52,15 +52,43 @@ async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
   ];
 }
 
-// NOT wrapped in unstable_cache, and no longer using `fetch`'s own
-// `next: { revalidate }` cache either: both throw/silently drop the entry
-// once a cached payload exceeds 2MB, and a real city segment routinely runs
-// 5-8MB (the backend used to truncate at 500 records — fixed this session —
-// so this used to fit only because the data was silently incomplete).
-// fetchProjects() (lib/scraping/homzbackend.ts) now does the caching instead,
-// via a plain in-memory Map with no such size limit — shared with the
-// browser fetch path, just skipping the sessionStorage layer server-side.
-export const getProjectsForCity = fetchCityRaw;
+// fetchProjects() (lib/scraping/homzbackend.ts) caches the *raw* segment (via
+// a plain in-memory Map with no size limit, since Next's own fetch cache and
+// unstable_cache both silently drop anything over 2MB, and a real city
+// segment routinely runs 5-8MB) -- but every call here still re-ran
+// normalizeProject() over the whole city from scratch. Multiple call sites
+// request the *same* city within one render/regeneration cycle (the
+// homepage alone calls this indirectly 3-4 times for "ggn": getAllBuilders,
+// getSectorsForCity, getNewLaunchProjects, getFeaturedProjects), so that
+// normalization pass -- not the network fetch -- was the redundant work.
+// Cached here too, same TTL as the underlying raw-segment cache, so repeat
+// calls for the same city within the window reuse the normalized array
+// instead of recomputing it. 2026-09-16.
+const NORMALIZED_TTL_MS = 30 * 60 * 1000;
+type CityCacheEntry = { data: NormalizedProject[]; expiresAt: number };
+const cityCache = new Map<string, CityCacheEntry>();
+const cityInFlight = new Map<string, Promise<NormalizedProject[]>>();
+
+export async function getProjectsForCity(cityKey: string): Promise<NormalizedProject[]> {
+  const hit = cityCache.get(cityKey);
+  if (hit && hit.expiresAt > Date.now()) return hit.data;
+
+  const pending = cityInFlight.get(cityKey);
+  if (pending) return pending;
+
+  const request = (async () => {
+    const data = await fetchCityRaw(cityKey);
+    cityCache.set(cityKey, { data, expiresAt: Date.now() + NORMALIZED_TTL_MS });
+    return data;
+  })();
+
+  cityInFlight.set(cityKey, request);
+  try {
+    return await request;
+  } finally {
+    if (cityInFlight.get(cityKey) === request) cityInFlight.delete(cityKey);
+  }
+}
 
 export async function getProjectBySlug(
   cityParam: string,
@@ -318,9 +346,35 @@ export function isLinkableBuilder(builder: string | null | undefined): boolean {
   return Boolean(slug && slug.length >= 3);
 }
 
-async function buildDeveloperIndex(): Promise<
-  Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>
-> {
+type DeveloperIndex = Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>;
+
+// Called independently by getAllBuilders(), getBuilderBySlug() (any slug)
+// and the sitemap's developers segment -- each used to rebuild this same
+// across-all-5-cities index from scratch. Cached alongside
+// getProjectsForCity's own per-city cache, same TTL, so those calls share
+// one build per window instead of each redoing the full grouping pass.
+let developerIndexCache: { data: DeveloperIndex; expiresAt: number } | null = null;
+let developerIndexInFlight: Promise<DeveloperIndex> | null = null;
+
+async function buildDeveloperIndex(): Promise<DeveloperIndex> {
+  if (developerIndexCache && developerIndexCache.expiresAt > Date.now()) {
+    return developerIndexCache.data;
+  }
+  if (developerIndexInFlight) return developerIndexInFlight;
+
+  const request = buildDeveloperIndexUncached().then((data) => {
+    developerIndexCache = { data, expiresAt: Date.now() + NORMALIZED_TTL_MS };
+    return data;
+  });
+  developerIndexInFlight = request;
+  try {
+    return await request;
+  } finally {
+    if (developerIndexInFlight === request) developerIndexInFlight = null;
+  }
+}
+
+async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
   const allCities = await Promise.all(ALL_CITY_KEYS.map(getProjectsForCity));
   const map = new Map<
     string,
