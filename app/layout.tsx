@@ -11,6 +11,7 @@ import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
+import ConsentBanner from "@/components/Analytics/ConsentBanner";
 import ogImage from "@/assets/images/herobg.png";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
@@ -214,6 +215,7 @@ export default async function RootLayout({
                 <Suspense fallback={null}>
                   <GoogleAnalyticsTracker />
                 </Suspense>
+                <ConsentBanner />
               </FormProvider>
             </AuthModalProvider>
           </WishlistProvider>

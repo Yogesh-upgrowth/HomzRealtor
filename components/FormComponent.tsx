@@ -1,10 +1,25 @@
 "use client";
 
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 import { X, ShieldCheck, Sparkles, Leaf } from "lucide-react";
 import { FormContext } from "@/context/FormContext";
+import { sendGaEvent } from "@/lib/analytics/gtag";
+import { resolvePageContext } from "@/lib/analytics/pageContext";
+
+// GA4 spec (HOMZ-GA4-DYNAMIC-EVENTS-2026-09-15): this is the site's one
+// global enquiry modal, opened from many different places (header, hero,
+// property pages, footer CTAs) via FormContext's openForm(), which
+// currently takes no arguments -- so this component has no way to know
+// *why* it was opened. form_id/lead_type/placement below are therefore a
+// single generic identity for all of them, not per-placement. Passing real
+// context through would mean extending openForm()'s signature and updating
+// every call site -- flagged as a follow-up, not guessed at here.
+const FORM_ID = "general_enquiry";
+const LEAD_TYPE = "callback";
+const PLACEMENT = "modal";
 
 type FormState = {
   name: string;
@@ -31,6 +46,7 @@ export default function FormComponent({
 }) {
   const { isOpen, closeForm } = useContext(FormContext);
   const [portalReady, setPortalReady] = useState(false);
+  const pathname = usePathname();
 
   const [form, setForm] = useState<FormState>({
     name: initial?.name ?? "",
@@ -41,9 +57,33 @@ export default function FormComponent({
 
   const [loading, setLoading] = useState(false);
 
+  // Analytics dedup guards for this one modal "instance" (reset every time
+  // it reopens, per spec: lead_form_start fires once per form instance,
+  // and generate_lead must fire at most once per accepted enquiry even
+  // across a double-click/duplicate callback).
+  const hasStarted = useRef(false);
+  const hasEmittedLead = useRef(false);
+
+  const formEventContext = () => ({
+    ...resolvePageContext(pathname),
+    form_id: FORM_ID,
+    lead_type: LEAD_TYPE,
+    contact_method: "web_form",
+    placement: PLACEMENT,
+  });
+
   useEffect(() => {
     setPortalReady(true);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      hasStarted.current = false;
+      hasEmittedLead.current = false;
+      sendGaEvent("lead_form_open", formEventContext());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -65,6 +105,11 @@ export default function FormComponent({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
+    if (!hasStarted.current) {
+      hasStarted.current = true;
+      sendGaEvent("lead_form_start", formEventContext());
+    }
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -76,8 +121,15 @@ export default function FormComponent({
 
     if (!form.terms) {
       toast.error("Please accept the terms");
+      sendGaEvent("lead_form_error", {
+        ...formEventContext(),
+        error_type: "validation",
+        error_code: "required_field",
+      });
       return;
     }
+
+    sendGaEvent("lead_form_submit", formEventContext());
 
     try {
       setLoading(true);
@@ -95,6 +147,19 @@ export default function FormComponent({
       if (data.success) {
         toast.success("Form submitted successfully!");
 
+        // GA4 spec: generate_lead only on durable API acceptance, at most
+        // once per accepted enquiry. `data.success` is the best acceptance
+        // signal this endpoint currently exposes -- it is NOT a confirmed
+        // idempotent/durable-write guarantee (app/api/contact/route.ts has
+        // no idempotency key and just forwards the Apps Script webhook's
+        // own response); see docs/analytics/ga4-implementation.md for that
+        // gap. hasEmittedLead guards this specific instance against a
+        // double-click/duplicate callback still producing two lead events.
+        if (!hasEmittedLead.current) {
+          hasEmittedLead.current = true;
+          sendGaEvent("generate_lead", formEventContext());
+        }
+
         setForm({
           name: "",
           email: "",
@@ -105,10 +170,20 @@ export default function FormComponent({
         closeForm();
       } else {
         toast.error("Something went wrong");
+        sendGaEvent("lead_form_error", {
+          ...formEventContext(),
+          error_type: "server",
+          error_code: "rejected",
+        });
       }
     } catch (error) {
       console.error(error);
       toast.error("Server error");
+      sendGaEvent("lead_form_error", {
+        ...formEventContext(),
+        error_type: "network",
+        error_code: "unavailable",
+      });
     } finally {
       setLoading(false);
     }
