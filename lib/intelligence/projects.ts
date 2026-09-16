@@ -219,6 +219,105 @@ export async function getBuilderProjects(
     .slice(0, limit);
 }
 
+// DEV-03 (2026-09-16): the compare route (app/project-listing/compare/...)
+// needs a bounded set of pair keys to gate against, so the real n^2/2
+// city/slugA/slugB combinatorial space (every valid pair of ~7,500+ real
+// projects, all publicly slug-discoverable via the sitemap) isn't a
+// crawlable/renderable surface -- that was the account's single largest
+// Active CPU/origin-transfer/ISR-write driver before robots.txt blocked it
+// outright on 2026-09-12. This set instead matches exactly what real pages
+// actually link to (ProjectIntelligenceSections.tsx's "More by {builder}",
+// up to 6, cross-city, and "Similar Projects", up to 3, same-city
+// sector/category match with builder-matches excluded -- the same shape as
+// getBuilderProjects/getSectorProjects/getSimilarProjects above), computed
+// via one grouped O(n) pass rather than by calling those per-project
+// functions ~7,500 times each (benchmarked: the naive per-project-call
+// approach costs ~625ms CPU at this scale; this grouped approach is
+// sub-millisecond). Cached the same way getProjectsForCity is.
+const COMPARE_PAIRS_TTL_MS = 30 * 60 * 1000;
+let comparePairsCache: { data: Set<string>; expiresAt: number } | null = null;
+let comparePairsInFlight: Promise<Set<string>> | null = null;
+
+function pairKey(citySlug: string, slugA: string, slugB: string): string {
+  const [a, b] = [slugA, slugB].sort();
+  return `${citySlug}/${a}/${b}`;
+}
+
+async function buildComparePairKeys(): Promise<Set<string>> {
+  const allCities = await Promise.all(ALL_CITY_KEYS.map((k) => getProjectsForCity(k)));
+  const allProjects = allCities.flat();
+
+  const byBuilder = new Map<string, NormalizedProject[]>();
+  const bySectorInCity = new Map<string, Map<string, NormalizedProject[]>>();
+  const byCategoryInCity = new Map<string, Map<string, NormalizedProject[]>>();
+
+  for (const p of allProjects) {
+    if (!byBuilder.has(p.builder)) byBuilder.set(p.builder, []);
+    byBuilder.get(p.builder)!.push(p);
+
+    if (!bySectorInCity.has(p.city_key)) bySectorInCity.set(p.city_key, new Map());
+    if (!byCategoryInCity.has(p.city_key)) byCategoryInCity.set(p.city_key, new Map());
+    if (p.sector) {
+      const sectorMap = bySectorInCity.get(p.city_key)!;
+      if (!sectorMap.has(p.sector)) sectorMap.set(p.sector, []);
+      sectorMap.get(p.sector)!.push(p);
+    }
+    const categoryMap = byCategoryInCity.get(p.city_key)!;
+    if (!categoryMap.has(p.property_category)) categoryMap.set(p.property_category, []);
+    categoryMap.get(p.property_category)!.push(p);
+  }
+
+  const keys = new Set<string>();
+
+  for (const current of allProjects) {
+    const citySlug = canonicalCitySlug(current.city_key);
+
+    const builderMatches = (byBuilder.get(current.builder) || [])
+      .filter((p) => p.slug !== current.slug && p.images.length > 0)
+      .slice(0, 6);
+    for (const m of builderMatches) keys.add(pairKey(citySlug, current.slug, m.slug));
+
+    const sectorMatches = current.sector
+      ? (bySectorInCity.get(current.city_key)?.get(current.sector) || [])
+          .filter((p) => p.slug !== current.slug && p.images.length > 0)
+          .slice(0, 6)
+      : [];
+    const categoryMatches = (byCategoryInCity.get(current.city_key)?.get(current.property_category) || [])
+      .filter((p) => p.slug !== current.slug && p.images.length > 0)
+      .slice(0, 6);
+
+    const builderSlugs = new Set(builderMatches.map((p) => `${p.city_key}-${p.slug}`));
+    const seen = new Set<string>();
+    let combinedCount = 0;
+    for (const p of [...sectorMatches, ...categoryMatches]) {
+      if (combinedCount >= 3) break;
+      const dedupeKey = `${p.city_key}-${p.slug}`;
+      if (builderSlugs.has(dedupeKey) || seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+      combinedCount++;
+      keys.add(pairKey(citySlug, current.slug, p.slug));
+    }
+  }
+
+  return keys;
+}
+
+export async function getComparePairKeys(): Promise<Set<string>> {
+  if (comparePairsCache && comparePairsCache.expiresAt > Date.now()) return comparePairsCache.data;
+  if (comparePairsInFlight) return comparePairsInFlight;
+
+  const request = buildComparePairKeys().then((data) => {
+    comparePairsCache = { data, expiresAt: Date.now() + COMPARE_PAIRS_TTL_MS };
+    return data;
+  });
+  comparePairsInFlight = request;
+  try {
+    return await request;
+  } finally {
+    if (comparePairsInFlight === request) comparePairsInFlight = null;
+  }
+}
+
 // Price intelligence helpers
 
 export type PriceInsightsData = {

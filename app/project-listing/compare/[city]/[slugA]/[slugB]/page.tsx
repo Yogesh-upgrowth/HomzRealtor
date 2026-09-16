@@ -4,26 +4,46 @@ import { ChevronRight } from "lucide-react";
 import { notFound, permanentRedirect } from "next/navigation";
 import ProjectCompare from "@/components/Project/compare/ProjectCompare";
 import ProjectCompareJsonLd from "@/components/Project/compare/ProjectCompareJsonLd";
-import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { getProjectBySlug, canonicalCitySlug, CITY_PARAM_MAP, getComparePairKeys } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
 
 // ISR — matches lib/scraping/homzbackend.ts's 30-min data-cache TTL; without
-// this every visit re-executes the origin function uncached. robots.txt
-// disallows /project-listing/compare/ again as of 2026-09-12 (see that
-// file's comment) — the real n²/2 project-pair space made this the biggest
-// driver of the account's Fluid Active CPU / origin-transfer / ISR-write
-// overage, so direct/shared links still render and cache normally, but
-// bots no longer get to enumerate the full combinatorial space.
+// this every visit re-executes the origin function uncached.
 // revalidate alone doesn't activate it for a dynamic segment — needs
 // generateStaticParams too (verified — see app/project-listing/[city]/
 // page.tsx's comment). [] rather than enumerating the combinatorial
-// city x project-pair space: still activates on-demand ISR for every param.
+// city x project-pair space: still activates on-demand ISR for every param
+// that passes the pairKeys gate below (enumerating all of them here would
+// mean Next tries to statically pre-render them at build time — the same
+// kind of build-time OOM MAX_STATIC_PAGES was added elsewhere to avoid).
 // 1 week, not 30min or 6h — see app/buy-property/[city]/[slug]/page.tsx's comment on this same line (Vercel Hobby-plan ISR-write/origin-transfer/CPU budget, 2026-09-09).
 export const revalidate = 604800;
 
 export function generateStaticParams() {
   return [];
+}
+
+// DEV-03 (2026-09-16): robots.txt blocked this whole path from 2026-09-12
+// (see git history) because with no gate, every guessed city/slugA/slugB
+// combination — and real project slugs are all public via the sitemap, so
+// the valid-pair space alone is ~n²/2 — triggered a full render (two
+// project lookups + view resolution), the account's single largest
+// Active CPU/origin-transfer/ISR-write driver. That also meant Google
+// could never see this route's own noindex tag on non-curated pairs
+// (a robots-blocked page's meta tags are invisible to the crawler that
+// would read them), so stale indexed pairs couldn't cleanly deindex either.
+// getComparePairKeys() (lib/intelligence/projects.ts) is a cheap
+// (sub-millisecond, grouped-computation, cached) check against the pairs
+// actually linked from real project pages — anything outside that set
+// 404s here, before either expensive getProjectBySlug lookup ever runs.
+// robots.txt no longer blocks this path as of the same date.
+async function isRealComparePair(cityParam: string, slugA: string, slugB: string): Promise<boolean> {
+  const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
+  const citySlug = canonicalCitySlug(cityKey);
+  const [sortedA, sortedB] = [slugA, slugB].sort();
+  const keys = await getComparePairKeys();
+  return keys.has(`${citySlug}/${sortedA}/${sortedB}`);
 }
 
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };
@@ -54,6 +74,14 @@ function isIndexableCompare(city: string, sortedA: string, sortedB: string): boo
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { city, slugA, slugB } = await params;
   const [sortedA, sortedB] = sortedSlugs(slugA, slugB);
+
+  if (!(await isRealComparePair(city, sortedA, sortedB))) {
+    return {
+      title: "Compare Projects",
+      description: "Compare real estate projects side by side on HomzRealtor.",
+      robots: { index: false, follow: true },
+    };
+  }
 
   const [projectA, projectB] = await Promise.all([
     getProjectBySlug(city, sortedA).catch(() => null),
@@ -131,6 +159,8 @@ const ComparePage = async ({ params }: PageParams) => {
   if (slugA !== sortedA || slugB !== sortedB) {
     permanentRedirect(`/project-listing/compare/${city}/${sortedA}/${sortedB}`);
   }
+
+  if (!(await isRealComparePair(city, sortedA, sortedB))) notFound();
 
   const [projectA, projectB] = await Promise.all([
     getProjectBySlug(city, sortedA).catch(() => null),

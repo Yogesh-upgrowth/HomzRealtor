@@ -2,6 +2,19 @@
 
 Tracks work against `HOMZ-CLAUDE-CODE-HANDOFF-2026-09-13.md`. One row per ticket; updated as each is done, not written once at the end.
 
+## DEV-03 — Crawler, comparison and canonical rules (2026-09-16)
+
+**The core conflict**: this ticket asks for compare pages to be crawlable (so Google can see their `noindex` tag and cleanly deindex stale ones) with the pair-generation bounded first. The 2026-09-12 session had done the opposite — blocked `/project-listing/compare/` entirely in `robots.txt` — for real, measured cost reasons (see the CPU-baseline section below). Resolving this required an actual design, not just flipping the block back:
+
+- Added `getComparePairKeys()` (`lib/intelligence/projects.ts`) — computes the exact set of project pairs actually linked from real pages (`ProjectIntelligenceSections.tsx`'s "More by {builder}", up to 6 cross-city, and "Similar Projects", up to 3 same-city sector/category match) via one grouped O(n) pass, cached 30 min. **Benchmarked before committing to this approach**: the naive alternative (calling the existing per-project `getBuilderProjects`/`getSimilarProjects`/`getSectorProjects` helpers once per project, ~7,500+ times each) costs ~625ms CPU; the grouped version is sub-millisecond.
+- The compare route now calls this as a cheap gate *before* either expensive `getProjectBySlug` lookup, in both `generateMetadata` and the page component. Deliberately did **not** enumerate the pairs via `generateStaticParams` — with ~11,000+ real pairs (×2 for slug ordering), that would mean Next tries to statically pre-render all of them at build time, i.e. the same class of build-time OOM `MAX_STATIC_PAGES` was already added elsewhere to avoid. `generateStaticParams` stays `[]`; unlisted pairs still render on-demand via ISR after passing the gate, same as before, just now gated.
+- Verified live against a local prod build: a real linked pair (`emaar-emerald-floors-premier` × `m3m-latitude`, pulled from that page's own actual rendered links) returns 200 in 165ms; a garbage pair and a real-but-unrelated pair both 404 in ~40ms, before any project lookup runs.
+- `robots.txt`'s `/project-listing/compare/` disallow removed now that the route gates itself.
+
+**Anthropic crawler tokens** (explicit user decision, 2026-09-16): the handoff's own reference confirms Anthropic splits crawlers the same way OpenAI does — `Claude-SearchBot` (search), `Claude-User` (user-retrieval), `ClaudeBot` (possible training) — but `robots.txt` only allowed `ClaudeBot`, missing the two retrieval tokens entirely. Since I'm Claude, and this is specifically about how my own crawler gets treated, I flagged it rather than deciding it silently. Confirmed: allow `Claude-SearchBot`/`Claude-User`, block `ClaudeBot` — matching the training-vs-retrieval split already applied to every other vendor (GPTBot blocked, OAI-SearchBot/ChatGPT-User allowed).
+
+**Not done / deferred:** a formal route-policy table with tests (no test framework exists yet — DEV-12 scope); `llms.txt` (explicitly optional per the handoff itself, "not a required AI-search format or release blocker" — left unimplemented rather than fabricated). UTM canonicalization and page-one-alias redirects were already correct (verified by reading, not just assumed) — no change needed.
+
 ## DEV-02 — Property data validation (2026-09-16)
 
 All three evidence items the handoff cites were confirmed live against the real backend (not assumed) before fixing:
@@ -120,4 +133,5 @@ Ruled out: `lib/intelligence/news.ts` — small payload, already properly covere
 | Backend redeploy: `Homz-Scrape`'s already-committed Cache-Control fix | Done 2026-09-16 |
 | DEV-01 | Done — see section above |
 | DEV-02 | Done — see section above (3 evidence items + 1 related bug fixed) |
-| DEV-03–12 | In progress / not started |
+| DEV-03 | Done — see section above (compare-page gate + crawler tokens; route-policy table and llms.txt deferred) |
+| DEV-04–12 | In progress / not started |
