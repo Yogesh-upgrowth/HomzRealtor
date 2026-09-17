@@ -100,28 +100,17 @@ export default function robots(): MetadataRoute.Robots {
         disallow: "/",
       })),
     ],
-    // SEO audit H-05 (2026-09-08): app/sitemap.ts now uses generateSitemaps()
-    // to split the 2,967-URL sitemap into 7 segments so Search Console can
-    // report indexation per segment. Next.js doesn't auto-build a
-    // <sitemapindex> for generateSitemaps() output, so all 7 are listed here
-    // directly — multiple Sitemap: lines is a Google-supported equivalent to
-    // a formal index file. DEV-01 (2026-09-16) briefly added a real
-    // <sitemapindex> route at the literal path /sitemap.xml
-    // (app/sitemap.xml/route.ts) for tools that only try the conventional
-    // path, but Next.js/Turbopack reserves that exact name for its own
-    // metadata-route conventions and reliably fails production builds with
-    // "Conflicting route and metadata at /sitemap.xml" (caught by Vercel's
-    // build, which uses Turbopack; a local --webpack build didn't catch it,
-    // which is why this shipped once before being reverted the same day).
-    // Removed; the 7 direct entries below remain the actual index.
-    sitemap: [
-      `${baseUrl}/sitemap/projects.xml`,
-      `${baseUrl}/sitemap/sectors.xml`,
-      `${baseUrl}/sitemap/developers.xml`,
-      `${baseUrl}/sitemap/buy.xml`,
-      `${baseUrl}/sitemap/rent.xml`,
-      `${baseUrl}/sitemap/commercial.xml`,
-      `${baseUrl}/sitemap/content.xml`,
-    ],
+    // SEO audit H-05 (2026-09-08): app/sitemap.ts uses generateSitemaps() to
+    // split the sitemap into 7 segments so Search Console can report
+    // indexation per segment. This used to list all 7 segment URLs directly
+    // here (a Google-supported equivalent to a formal index, used because a
+    // real <sitemapindex> at /sitemap.xml kept failing Vercel's Turbopack
+    // build — see app/sitemap-index.xml/route.ts's comment for that history).
+    // Fixed 2026-09-18: next.config.ts now rewrites /sitemap.xml to that
+    // route at the routing layer (not a build-scanned app/ file), so a real
+    // index exists again at the conventional URL and this can point at just
+    // that one — the standard, single-line form Search Console expects,
+    // rather than 7 raw segment lines standing in for an index.
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

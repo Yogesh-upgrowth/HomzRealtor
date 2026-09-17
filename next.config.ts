@@ -80,6 +80,28 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    // /sitemap.xml must serve a real <sitemapindex> listing the 7 child
+    // sitemaps (Google Search Console expects it at this exact conventional
+    // URL). It can't be a literal app/sitemap.xml/route.ts file though —
+    // Next.js/Turbopack reserves that exact filename for its own metadata-
+    // route convention (app/sitemap.ts's generateSitemaps() already claims
+    // it internally), and a second file there fails Vercel's production
+    // build with "Conflicting route and metadata at /sitemap.xml" (hit
+    // twice in this repo's history; a plain `next build --webpack` run
+    // doesn't catch it, only Turbopack/Vercel's build does). Routing the
+    // public URL to a differently-named, unreserved route at the rewrite
+    // layer sidesteps the conflict entirely: Next's build-time file scanner
+    // never sees two things claiming "/sitemap.xml".
+    return {
+      beforeFiles: [
+        {
+          source: "/sitemap.xml",
+          destination: "/sitemap-index.xml",
+        },
+      ],
+    };
+  },
   async redirects() {
     return [
       // /contact-us 404'd outright; /contact is the one real contact page.
