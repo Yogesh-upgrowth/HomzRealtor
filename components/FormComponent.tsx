@@ -8,6 +8,7 @@ import { X, ShieldCheck, Sparkles, Leaf } from "lucide-react";
 import { FormContext } from "@/context/FormContext";
 import { sendGaEvent } from "@/lib/analytics/gtag";
 import { resolvePageContext } from "@/lib/analytics/pageContext";
+import { getConsent, subscribeConsent } from "@/lib/analytics/consent";
 
 // GA4 spec (HOMZ-GA4-DYNAMIC-EVENTS-2026-09-15): this is the site's one
 // global enquiry modal, opened from many different places (header, hero,
@@ -61,8 +62,20 @@ export default function FormComponent({
   // it reopens, per spec: lead_form_start fires once per form instance,
   // and generate_lead must fire at most once per accepted enquiry even
   // across a double-click/duplicate callback).
+  //
+  // Deliberately NOT retried on a later consent grant, unlike
+  // hasOpenedFired below: each of these describes one specific past action
+  // (the first keystroke, a submit attempt, an accepted enquiry) that
+  // either happened after consent already, or didn't happen at all from
+  // GA4's perspective if consent wasn't granted yet -- retrying them later
+  // would mean replaying a historical action, which the spec explicitly
+  // forbids (section 8/11: "no queued historical events replayed later").
+  // A genuinely new action (a real retyped input, a real corrected
+  // resubmit, a real second enquiry after reopening the modal) still gets
+  // its own event normally; nothing here suppresses that.
   const hasStarted = useRef(false);
   const hasEmittedLead = useRef(false);
+  const hasOpenedFired = useRef(false);
 
   const formEventContext = () => ({
     ...resolvePageContext(pathname),
@@ -77,11 +90,33 @@ export default function FormComponent({
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      hasStarted.current = false;
-      hasEmittedLead.current = false;
+    if (!isOpen) return;
+
+    hasStarted.current = false;
+    hasEmittedLead.current = false;
+    hasOpenedFired.current = false;
+
+    // lead_form_open describes current state ("the form is visibly open
+    // right now"), not a discrete past action -- same category as
+    // page_view, unlike lead_form_start/submit/error/generate_lead below.
+    // The spec explicitly forbids replaying historical form actions on
+    // consent grant ("no queued historical events replayed later" --
+    // section 8/11), but recording that the form is still open *now* that
+    // consent exists isn't a replay. Fixed 2026-09-17: if the modal opens
+    // before the visitor has accepted the consent banner (nothing stops
+    // them interacting with the rest of the page first) and they grant
+    // consent while it's still open, this used to never fire at all.
+    function attemptOpen() {
+      if (hasOpenedFired.current) return;
+      if (getConsent() !== "granted") return;
       sendGaEvent("lead_form_open", formEventContext());
+      hasOpenedFired.current = true;
     }
+
+    attemptOpen();
+    return subscribeConsent((state) => {
+      if (state === "granted") attemptOpen();
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
