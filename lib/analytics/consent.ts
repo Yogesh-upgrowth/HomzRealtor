@@ -12,16 +12,28 @@
 // implementation; the fuller Consent Mode API is a documented follow-up in
 // docs/analytics/ga4-implementation.md, not implemented here.
 
+declare global {
+  interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+  }
+}
+
 export type ConsentState = "unknown" | "granted" | "denied";
 
 const STORAGE_KEY = "homz_analytics_consent";
+
 const listeners = new Set<(state: ConsentState) => void>();
 
 export function getConsent(): ConsentState {
   if (typeof window === "undefined") return "unknown";
+
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw === "granted" || raw === "denied") return raw;
+
+    if (raw === "granted" || raw === "denied") {
+      return raw;
+    }
+
     return "unknown";
   } catch {
     // Storage blocked/unavailable (private mode, disabled storage) -- treat
@@ -33,15 +45,33 @@ export function getConsent(): ConsentState {
 
 export function setConsent(state: "granted" | "denied"): void {
   if (typeof window === "undefined") return;
+
   try {
     window.localStorage.setItem(STORAGE_KEY, state);
   } catch {
     // If we can't persist it, still notify listeners for this session.
   }
+  updateGoogleConsent(state);
+
   listeners.forEach((fn) => fn(state));
 }
 
-export function subscribeConsent(fn: (state: ConsentState) => void): () => void {
+export function subscribeConsent(
+  fn: (state: ConsentState) => void
+): () => void {
   listeners.add(fn);
   return () => listeners.delete(fn);
+}
+
+export function updateGoogleConsent(
+  state: "granted" | "denied"
+): void {
+  if (typeof window === "undefined") return;
+
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: "consent_update",
+    analytics_storage: state,
+  });
 }

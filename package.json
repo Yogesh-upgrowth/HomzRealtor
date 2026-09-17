@@ -13,6 +13,7 @@
     "check:sitemap": "node scripts/check-sitemap-404s.mjs"
   },
   "dependencies": {
+    "@next/third-parties": "16.2.10",
     "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "drizzle-zod": "^0.8.3",

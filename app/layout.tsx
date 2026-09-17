@@ -9,12 +9,11 @@ import { AuthModalProvider } from "@/context/AuthModalContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
-import { Suspense } from "react";
-import GoogleAnalyticsTracker from "@/components/GoogleAnalyticsTracker";
 import ConsentBanner from "@/components/Analytics/ConsentBanner";
 import ogImage from "@/assets/images/herobg.png";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 const FOOTER_CITY_KEY = "ggn";
 
@@ -189,6 +188,7 @@ export default async function RootLayout({
     // SEO audit M-04 (2026-09-08): was "en", mismatched against the
     // Organization/WebSite schema's own inLanguage: "en-IN" a few lines up.
     <html lang="en-IN">
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
       <body
         className="antialiased"
       >
@@ -212,9 +212,6 @@ export default async function RootLayout({
                     it deliberately; they're chrome, not page content. */}
                 <main>{children}</main>
                 <Footer topSectors={topSectors} topDevelopers={topDevelopers} />
-                <Suspense fallback={null}>
-                  <GoogleAnalyticsTracker />
-                </Suspense>
                 <ConsentBanner />
               </FormProvider>
             </AuthModalProvider>
