@@ -27,13 +27,20 @@ function InrTooltip({ active, payload }: { active?: boolean; payload?: any[] }) 
 const EmiCalculator = ({ title, defaultPrice }: Props) => {
   const { openForm } = useContext(FormContext);
 
-  const [price, setPrice] = useState<number>(defaultPrice ?? 10000000);
+  // MI-13 (2026-09-18): price is `number | ""` rather than plain `number`
+  // so clearing the field to retype a value doesn't force it back to 0 on
+  // every keystroke (Number("") || 0 used to do exactly that, fighting
+  // anyone trying to select-all and type a new price). "" is a real,
+  // honest blank-editing state -- the calculation below just treats it as
+  // 0 rather than crashing or showing NaN.
+  const [price, setPrice] = useState<number | "">(defaultPrice ?? 10000000);
   const [downPct, setDownPct] = useState<number>(20);
   const [rate, setRate] = useState<number>(8.5);
   const [years, setYears] = useState<number>(20);
+  const priceValue = price === "" ? 0 : price;
 
   const { emi, loanAmount, totalInterest, totalPayment } = useMemo(() => {
-    const loan = Math.max(0, price * (1 - downPct / 100));
+    const loan = Math.max(0, priceValue * (1 - downPct / 100));
     const r = rate / 100 / 12;
     const n = years * 12;
     let monthly: number;
@@ -50,7 +57,7 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
       totalInterest: Math.round(total - loan),
       totalPayment: Math.round(total),
     };
-  }, [price, downPct, rate, years]);
+  }, [priceValue, downPct, rate, years]);
 
   const pieData = [
     { name: "Principal", value: loanAmount },
@@ -69,27 +76,41 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
           <div className="flex-1 space-y-5">
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
-                <label className="text-gray-200 font-medium">Property Price</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInr(price) ?? "—"}</span>
+                <label htmlFor="emi-price" className="text-gray-200 font-medium">Property Price</label>
+                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "—"}</span>
               </div>
               <input
+                id="emi-price"
                 type="number"
                 min={0}
                 step={100000}
+                inputMode="numeric"
                 value={price}
-                onChange={(e) => setPrice(Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    setPrice("");
+                    return;
+                  }
+                  const n = Number(raw);
+                  setPrice(Number.isFinite(n) ? Math.max(0, n) : 0);
+                }}
+                onBlur={() => {
+                  if (price === "") setPrice(0);
+                }}
                 className="w-full rounded-lg bg-gray-900 border border-gray-700 px-3 py-2 text-white text-sm focus:border-[#B77D2B] outline-none"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
-                <label className="text-gray-200 font-medium">Down Payment</label>
+                <label htmlFor="emi-down-payment" className="text-gray-200 font-medium">Down Payment</label>
                 <span className="text-[#CEA44E] font-semibold">
-                  {downPct}% · {formatInrExact(Math.round((price * downPct) / 100)) ?? "—"}
+                  {downPct}% · {formatInrExact(Math.round((priceValue * downPct) / 100)) ?? "—"}
                 </span>
               </div>
               <input
+                id="emi-down-payment"
                 type="range"
                 min={0}
                 max={80}
@@ -102,10 +123,11 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
 
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
-                <label className="text-gray-200 font-medium">Interest Rate (p.a.)</label>
+                <label htmlFor="emi-rate" className="text-gray-200 font-medium">Interest Rate (p.a.)</label>
                 <span className="text-[#CEA44E] font-semibold">{rate}%</span>
               </div>
               <input
+                id="emi-rate"
                 type="range"
                 min={5}
                 max={15}
@@ -118,10 +140,11 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
 
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
-                <label className="text-gray-200 font-medium">Loan Tenure</label>
+                <label htmlFor="emi-tenure" className="text-gray-200 font-medium">Loan Tenure</label>
                 <span className="text-[#CEA44E] font-semibold">{years} years</span>
               </div>
               <input
+                id="emi-tenure"
                 type="range"
                 min={1}
                 max={30}
