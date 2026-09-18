@@ -130,8 +130,15 @@ const QuickSearchPanel = () => {
     router.push(query ? `${base}?${query}` : base);
   };
 
+  // MI-01 (2026-09-18): the inner input/select in every field below has
+  // outline-none (to avoid a default browser ring clashing with the pill
+  // shape), but nothing here compensated for it -- so a keyboard-focused
+  // field showed literally no visual change at all. The tab buttons above
+  // never had outline-none, which is why they alone showed a native ring
+  // in the original audit. focus-within on the shared wrapper standardizes
+  // real focus feedback across all four fields at once.
   const fieldCls =
-    "flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1d] px-4 h-[50px] md:h-[52px] text-[14px] text-white";
+    "flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1d] px-4 h-[50px] md:h-[52px] text-[14px] text-white transition-colors focus-within:border-[#D9B268] focus-within:ring-2 focus-within:ring-[#D9B268]/30";
 
   // Custom corner-arrow chevron for `appearance-none` selects — same shape as
   // the reference's `.select-wrap::after` (and the mobile CTA's own chevron):
@@ -161,12 +168,17 @@ const QuickSearchPanel = () => {
         </div>
       )}
 
-      <div className="mb-5 grid grid-cols-4 gap-1.5 md:mb-4 md:flex md:flex-wrap md:gap-2">
+      {/* MI-01/MI-03: a mutually-exclusive segmented control -- aria-pressed
+          gives it real selected-state semantics without claiming the fuller
+          (and here unnecessary) tab/tabpanel roles the doc warns against
+          adding incompletely. */}
+      <div role="group" aria-label="Search mode" className="mb-5 grid grid-cols-4 gap-1.5 md:mb-4 md:flex md:flex-wrap md:gap-2">
         {TABS.map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => handleTabChange(t)}
+            aria-pressed={tab === t}
             className={`min-h-11 rounded-full px-2 py-2 text-[13px] font-bold transition md:min-h-0 md:px-5 md:py-2.5 md:text-[13.5px] ${
               tab === t
                 ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
@@ -185,6 +197,8 @@ const QuickSearchPanel = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Location or Sector"
+            aria-label="Location or Sector"
+            autoComplete="off"
             className="w-full bg-transparent text-white placeholder:text-gray-500 outline-none"
           />
         </label>
@@ -194,6 +208,7 @@ const QuickSearchPanel = () => {
           <select
             value={propertyType}
             onChange={(e) => setPropertyType(e.target.value)}
+            aria-label="Property type"
             className="w-full appearance-none bg-transparent text-white outline-none"
           >
             {PROPERTY_TYPES.map((t) => (
@@ -210,6 +225,7 @@ const QuickSearchPanel = () => {
           <select
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
+            aria-label="Budget"
             className="w-full appearance-none bg-transparent text-white outline-none"
           >
             {budgets.map((b) => (
@@ -226,6 +242,7 @@ const QuickSearchPanel = () => {
           <select
             value={bhk}
             onChange={(e) => setBhk(e.target.value)}
+            aria-label="Bedrooms (BHK)"
             className="w-full appearance-none bg-transparent text-white outline-none"
           >
             {BHKS.map((b) => (

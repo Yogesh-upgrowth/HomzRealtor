@@ -361,6 +361,8 @@ export default function FormComponent({
             type="text"
             name="name"
             placeholder="Name"
+            aria-label="Name"
+            autoComplete="name"
             value={form.name}
             onChange={handleChange}
             required
@@ -371,6 +373,8 @@ export default function FormComponent({
             type="email"
             name="email"
             placeholder="Email"
+            aria-label="Email"
+            autoComplete="email"
             value={form.email}
             onChange={handleChange}
             required
@@ -381,6 +385,9 @@ export default function FormComponent({
             type="tel"
             name="phone"
             placeholder="Phone Number"
+            aria-label="Phone number"
+            autoComplete="tel"
+            inputMode="tel"
             value={form.phone}
             onChange={handleChange}
             required
