@@ -32,16 +32,12 @@ export default function ImageCarousel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images.length]);
 
-  // ✅ autoplay
-  useEffect(() => {
-    if (!images.length) return;
-
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [images]);
+  // MI-07 (2026-09-18): this used to auto-advance every 4s with no pause
+  // control, moving photos without any user action — a real WCAG 2.2.2
+  // issue and a confusing "why did the photo change" experience. Removed
+  // rather than given a Play/Pause control: the handoff's own default is
+  // manual browsing, and adding new UI for a feature nobody asked to keep
+  // would be scope creep. Navigation is now entirely user-driven.
 
   const prevSlide = () => {
     setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -54,6 +50,10 @@ export default function ImageCarousel({
   if (!images.length) return null;
 
   const currentFailed = failed.has(current);
+  // MI-07: a single-image gallery has nothing to navigate between — showing
+  // arrows/dots/a "1 / 1" counter for it is redundant chrome, not real
+  // navigation.
+  const hasMultiple = images.length > 1;
 
   return (
     <div className="relative w-full max-w-4xl mx-auto group">
@@ -88,36 +88,59 @@ export default function ImageCarousel({
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
       </div>
 
-      {/* ✅ Left Arrow */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition"
-      >
-        <ChevronLeft size={20} />
-      </button>
-
-      {/* ✅ Right Arrow */}
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition"
-      >
-        <ChevronRight size={20} />
-      </button>
-
-      {/* ✅ Dots */}
-      <div className="flex justify-center mt-4 gap-2">
-        {images.map((_, index) => (
+      {hasMultiple && (
+        <>
+          {/* MI-07: arrows used to be opacity-0 until :hover, so a
+              keyboard-focused (or touch-device) arrow was invisible even
+              though it was the active element. Visible at all times now;
+              hover/focus only add emphasis. */}
           <button
-            key={index}
-            onClick={() => setCurrent(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              index === current
-                ? "w-6 bg-black"
-                : "w-2 bg-gray-300"
-            }`}
-          />
-        ))}
-      </div>
+            onClick={prevSlide}
+            aria-label="Previous image"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black focus-visible:bg-black text-white p-3 rounded-full transition"
+          >
+            <ChevronLeft size={20} aria-hidden="true" />
+          </button>
+
+          <button
+            onClick={nextSlide}
+            aria-label="Next image"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black focus-visible:bg-black text-white p-3 rounded-full transition"
+          >
+            <ChevronRight size={20} aria-hidden="true" />
+          </button>
+
+          {/* Readable N / M counter — announced politely on real (user-driven)
+              changes only, since automatic rotation no longer exists. */}
+          <div
+            aria-live="polite"
+            className="absolute right-4 top-4 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white"
+          >
+            {current + 1} / {images.length}
+          </div>
+
+          {/* Dots: visual size stays small, but the hit area is padded out
+              to ~24px (WCAG 2.5.8 AA minimum) — MI-07 measured the old
+              unpadded buttons at 8x8px. */}
+          <div className="flex justify-center mt-4 gap-1">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrent(index)}
+                aria-label={`Show image ${index + 1} of ${images.length}`}
+                aria-current={index === current}
+                className="p-2"
+              >
+                <span
+                  className={`block h-2 rounded-full transition-all duration-300 ${
+                    index === current ? "w-6 bg-black" : "w-2 bg-gray-300"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
