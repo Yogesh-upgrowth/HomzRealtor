@@ -22,7 +22,13 @@ export function scrollToHash(hash: string, e?: { preventDefault: () => void }): 
 
   e?.preventDefault();
 
-  const scroll = () => el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // MI-16 (2026-09-18): this always smooth-scrolled regardless of the
+  // visitor's OS-level motion preference. Every #gallery/#enquire anchor
+  // site-wide goes through this one function, so the check belongs here
+  // once rather than at each call site.
+  const reducedMotion =
+    typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const scroll = () => el.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
   scroll();
 
   if (typeof ResizeObserver === "undefined") return true;
