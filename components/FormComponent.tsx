@@ -49,6 +49,16 @@ export default function FormComponent({
   const [portalReady, setPortalReady] = useState(false);
   const pathname = usePathname();
 
+  // MI-10: focus lifecycle for the modal -- overlayRef identifies this
+  // dialog's own portal node so the background-inertness pass below never
+  // touches it; dialogRef bounds the Tab-trap to elements actually inside
+  // the dialog; headingRef is where focus lands on open; previouslyFocused
+  // is who gets focus back on close.
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   const [form, setForm] = useState<FormState>({
     name: initial?.name ?? "",
     email: initial?.email ?? "",
@@ -126,14 +136,61 @@ export default function FormComponent({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeForm();
+    // MI-10 (2026-09-18): background inertness. This dialog is portaled to
+    // document.body as a sibling of the rest of the app (Header/main/
+    // Footer/Toaster/other modals), not a descendant of it -- so making the
+    // *dialog* aria-hidden would be wrong (the spec explicitly calls that
+    // out), but every OTHER top-level child of body genuinely needs to
+    // become unreachable while this is open, for keyboard, screen-reader
+    // and touch users alike -- the backdrop only ever stopped mouse clicks.
+    const inertedSiblings: HTMLElement[] = [];
+    Array.from(document.body.children).forEach((child) => {
+      if (child === overlayRef.current) return;
+      if (child instanceof HTMLElement && !child.hasAttribute("inert")) {
+        child.setAttribute("inert", "");
+        inertedSiblings.push(child);
+      }
+    });
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    headingRef.current?.focus();
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeForm();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusables = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
-    window.addEventListener("keydown", handleEscape);
+    window.addEventListener("keydown", handleKeydown);
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("keydown", handleKeydown);
+      inertedSiblings.forEach((el) => el.removeAttribute("inert"));
+      // Return focus to whatever opened the dialog -- unless it's gone
+      // (e.g. the page navigated while the dialog was still open).
+      if (previouslyFocusedRef.current && document.body.contains(previouslyFocusedRef.current)) {
+        previouslyFocusedRef.current.focus();
+      }
     };
   }, [closeForm, isOpen]);
 
@@ -228,11 +285,13 @@ export default function FormComponent({
 
   return createPortal(
     <div
+      ref={overlayRef}
       className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 pt-6 md:items-center md:px-4 md:py-8"
       onClick={closeForm}
       role="presentation"
     >
       <div
+        ref={dialogRef}
         className="relative flex max-h-[calc(100dvh-24px)] w-full flex-col gap-4 overflow-y-auto overscroll-contain rounded-t-[28px] border border-b-0 border-white/10 bg-[#141416] px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-10 text-white shadow-[0_-24px_80px_rgba(0,0,0,0.65)] scrollbar-hide md:max-h-[95vh] md:max-w-4xl md:flex-row md:gap-10 md:rounded-[24px] md:border-b md:p-12 md:shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
@@ -257,7 +316,12 @@ export default function FormComponent({
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268]">
             Talk to an expert
           </p>
-          <h2 id="expert-form-title" className="mb-3 max-w-[17ch] bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-2xl font-bold text-transparent md:mb-6 md:max-w-none md:text-3xl">
+          <h2
+            id="expert-form-title"
+            ref={headingRef}
+            tabIndex={-1}
+            className="mb-3 max-w-[17ch] bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-2xl font-bold text-transparent outline-none md:mb-6 md:max-w-none md:text-3xl"
+          >
             Get a Personalised Property &amp; Loan Estimate
           </h2>
 
