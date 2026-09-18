@@ -4,7 +4,7 @@ import type { FaqItem } from "@/lib/intelligence/content";
 // content already used as reference for the homepage's structured data.
 export const HOME_FAQS: FaqItem[] = [
   {
-    q: "Is HomzRealtor a broker or a direct seller?",
+    q: "s HomzRealtor a broker or a direct seller??",
     a: "HomzRealtor is an authorized channel partner for leading developers such as M3M, DLF, Emaar, Godrej and Tata Realty, offering verified listings at the same price as the developer with no hidden markup.",
   },
   {
