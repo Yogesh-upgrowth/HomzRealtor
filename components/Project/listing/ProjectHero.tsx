@@ -145,7 +145,7 @@ const ProjectHero = ({
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-md flex-1">
-            <ProjectCtas name={name} enquireHref={enquireHref} variant="hero" />
+            <ProjectCtas name={name} enquireHref={enquireHref} projectKey={`${cityKey}/${slug}`} variant="hero" />
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <SaveToggleButton

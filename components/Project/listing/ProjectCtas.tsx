@@ -2,19 +2,29 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { CalendarCheck, IndianRupee, Share2, Heart, Check } from "lucide-react";
 import { scrollToHash } from "@/lib/scrollToHash";
 
 type Props = {
   name: string;
   enquireHref: string;
+  // Stable per-project identity (e.g. `${cityKey}/${slug}`) for this guest
+  // save toggle's storage key. MI-08 (2026-09-18): this used to be derived
+  // from enquireHref, which is the hardcoded literal "#enquire" on every
+  // project page — every project collapsed onto the same localStorage key,
+  // so saving one silently "saved" all of them. The old shared key is left
+  // alone (not migrated, not propagated to any specific project — there's
+  // no way to know which project a stale shared flag was ever meant for),
+  // it's simply no longer read from or written to.
+  projectKey: string;
   variant?: "hero" | "compact";
 };
 
-const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
+const ProjectCtas = ({ name, enquireHref, projectKey, variant = "hero" }: Props) => {
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
-  const storageKey = `homz-saved-${enquireHref}`;
+  const storageKey = `homz-saved-v2-${projectKey}`;
 
   useEffect(() => {
     try {
@@ -37,16 +47,28 @@ const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
 
   const share = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    try {
-      if (navigator.share) {
+
+    if (navigator.share) {
+      try {
         await navigator.share({ title: name, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1800);
+      } catch (err) {
+        // MI-09 (2026-09-18): the native share sheet rejects with
+        // AbortError when the user simply dismisses it — that's a normal,
+        // neutral outcome, not a failure. Anything else (permission denied,
+        // no share target, etc.) is a real failure and must not be
+        // silently swallowed like the cancel case.
+        if (err instanceof Error && err.name === "AbortError") return;
+        toast.error("Couldn't open the share sheet. Try Copy Link instead.");
       }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
     } catch {
-      /* user cancelled */
+      toast.error("Couldn't copy the link — copy it from the address bar instead.");
     }
   };
 
@@ -83,6 +105,7 @@ const ProjectCtas = ({ name, enquireHref, variant = "hero" }: Props) => {
         <div className="flex gap-3">
           <button
             onClick={toggleSave}
+            aria-pressed={saved}
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${
               saved
                 ? "border-[#D9B268] bg-[#D9B268]/10 text-[#D9B268]"
