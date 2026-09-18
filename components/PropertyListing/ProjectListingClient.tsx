@@ -115,7 +115,12 @@ function ProjectListingInner() {
   const hasActiveFilters = Boolean(q || type || budget || bhk || status || micromarket || builder);
 
   const clearFilter = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    // MI-04 (2026-09-18): same rapid-update race as PropertyListingPage's
+    // setParam -- `searchParams` is a snapshot from the last render, not
+    // the live URL. window.location.search is current even when a
+    // previous router.push from this same rapid sequence hasn't been
+    // reflected in a re-render yet.
+    const params = new URLSearchParams(window.location.search);
     params.delete(key);
     const query = params.toString();
     router.push(query ? `/project-listing?${query}` : "/project-listing");

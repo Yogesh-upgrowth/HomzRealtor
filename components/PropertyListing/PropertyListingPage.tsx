@@ -150,7 +150,18 @@ function PropertyListingInner({
 
   const setParam = useCallback(
     (key: string, value: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
+      // MI-04 (2026-09-18): this used to build the next URL from
+      // `searchParams` -- a snapshot from the last completed render, not
+      // the actual current URL. Two setParam calls fired in quick
+      // succession (e.g. picking a BHK, then a budget, before React had
+      // re-rendered after the first router.push) both read that same stale
+      // snapshot, so the second push silently dropped whatever the first
+      // one had just added -- reproduced in the handoff as "settled URL
+      // retained only budget, BHK reset." window.location.search reflects
+      // the real current URL immediately (history.pushState is
+      // synchronous), including a push that already happened moments ago,
+      // so rapid calls now compose instead of racing.
+      const params = new URLSearchParams(window.location.search);
       if (value) params.set(key, value);
       else params.delete(key);
       // Any filter change invalidates the current page position — drop it
@@ -160,7 +171,7 @@ function PropertyListingInner({
       const query = params.toString();
       router.push(query ? `/${routeBase}?${query}` : `/${routeBase}`);
     },
-    [searchParams, routeBase, router]
+    [routeBase, router]
   );
 
   const setPage = useCallback(
