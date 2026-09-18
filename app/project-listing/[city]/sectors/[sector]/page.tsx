@@ -14,6 +14,7 @@ import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
+import { resolveCoordinate } from "@/lib/intelligence/resolveLocation";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -135,9 +136,34 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   ).slice(0, 8);
 
   // Sibling sectors for internal linking (excludes the current one).
+  //
+  // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, P2-B):
+  // this used to be an arbitrary slice of allSectors in whatever order
+  // getSectorsForCity happened to return -- "generic city selections,"
+  // per that audit, not real nearby connections. resolveLocation.ts
+  // already has a free sector-centroid lookup (built for the OSM
+  // landmarks feature) that this reuses to rank siblings by actual
+  // geographic distance. A sector resolveCoordinate can't match falls
+  // back to the city-wide business anchor (precision "cityAnchor") --
+  // those aren't a real distance signal, so they sort after every
+  // sector that did resolve, in their original order, rather than
+  // clustering meaninglessly at zero distance from the anchor point.
+  const currentCoord = resolveCoordinate(cityKey, sectorLabel);
   const otherSectors = allSectors
     .filter((s) => s.slug !== sectorSlug)
-    .slice(0, 10);
+    .map((s) => {
+      const coord = resolveCoordinate(cityKey, s.sector);
+      const resolved = currentCoord.precision !== "cityAnchor" && coord.precision !== "cityAnchor";
+      const dLat = coord.lat - currentCoord.lat;
+      const dLng = coord.lng - currentCoord.lng;
+      return { sector: s, resolved, distance: resolved ? dLat * dLat + dLng * dLng : 0 };
+    })
+    .sort((a, b) => {
+      if (a.resolved !== b.resolved) return a.resolved ? -1 : 1;
+      return a.distance - b.distance;
+    })
+    .slice(0, 10)
+    .map((entry) => entry.sector);
 
   const pageUrl = `${SITE}/project-listing/${slug}/sectors/${sector.toLowerCase()}`;
 
