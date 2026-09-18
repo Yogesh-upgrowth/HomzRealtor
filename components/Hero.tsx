@@ -7,12 +7,12 @@ import heroFamilyMobile from "@/assets/images/heroFamilyMobile.jpg";
 import { FormContext } from "@/context/FormContext";
 import QuickSearchPanel from "@/components/Home/QuickSearchPanel";
 
-const TRUST_STATS = [
-  { value: "25,500+", label: "Happy Customers" },
-  { value: "45 Mn+", label: "Sq.ft. Area Sold" },
-  { value: "500+", label: "Skilled Professionals" },
-  { value: "750+", label: "Channel Associates" },
-];
+// Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, P1-G):
+// these four figures and the "#1 Trusted" badge below were unsubstantiated
+// claims with no evidence supplied -- removed rather than replaced with
+// different invented numbers, per that audit's own instruction. Restore
+// with real, owner-approved figures (see the audit's "claim register"
+// requirement: wording, evidence, period/scope, owner and review date).
 
 export default function Hero({
   variant,
@@ -92,10 +92,6 @@ export default function Hero({
           The tall clamp only applies from md: up, same as the reference's
           desktop-only min-height clamp. */}
       <div className="relative z-10 mx-auto flex min-h-0 max-w-7xl flex-col justify-end px-4 pb-14 pt-32 md:min-h-[clamp(560px,88vh,780px)] md:px-6">
-        <span className="mb-5 inline-flex w-fit items-center gap-[5px] rounded-full border border-white/[0.12] bg-black/35 px-[11px] py-1.5 text-[10.5px] font-bold uppercase tracking-[0.6px] text-[#F5F4F2] backdrop-blur-[6px] md:px-3 md:text-[11px]">
-          #1 Trusted Property Platform in Gurgaon
-        </span>
-
         {/* SEO audit 2026-09-07 P1: this used to read "Homes you can trust,
             in the city you love." — no location or topic, so a crawler (or
             a screen-reader user landing here first) had nothing to anchor
@@ -104,29 +100,16 @@ export default function Hero({
         <h1 className="mb-4 max-w-[18ch] text-balance text-[clamp(27px,7.4vw,36px)] font-extrabold uppercase leading-[1.08] tracking-tight text-white md:text-wrap md:text-[clamp(34px,6.4vw,68px)] md:leading-[1.04]">
           Homes you can trust,{" "}
           <span className="bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
-            in Gurgaon — the city you love.
+            in Gurgaon, the city you love.
           </span>
         </h1>
 
         <p className="mb-7 max-w-[34ch] text-[14.5px] leading-[1.65] text-[#c4c3c0] md:max-w-[480px] md:text-[15.5px] md:leading-[1.75]">
-          Buy, rent or sell — discover verified listings, expert guidance, and
+          Buy, rent or sell: discover verified listings, expert guidance, and
           properties that feel like home.
         </p>
 
         <QuickSearchPanel />
-
-        {/* Trust stats — overlaid on the hero photo like the rest of this
-            content, not a separate section below it. 2 rows of 2 on
-            mobile instead of a cramped 4-across row; one baseline-aligned
-            row again from sm: up. */}
-        <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/10 pt-6 sm:flex sm:flex-wrap sm:items-baseline sm:gap-x-9 sm:gap-y-3">
-          {TRUST_STATS.map((s) => (
-            <div key={s.label} className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
-              <span className="font-display text-[19px] text-gray-200 sm:text-xl">{s.value}</span>
-              <span className="text-[11.5px] text-gray-500 sm:text-[12.5px]">{s.label}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
     </div>

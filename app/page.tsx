@@ -4,11 +4,9 @@ import HotSelling from "@/components/HotSelling";
 import Collections from "@/components/Home/Collections";
 import LatestLaunches from "@/components/Home/LatestLaunches";
 import DevelopersSection from "@/components/Home/DevelopersSection";
-import MarketStatsSection from "@/components/Home/MarketStatsSection";
 import WhyHomz from "@/components/Home/WhyHomz";
 import HowItWorks from "@/components/Home/HowItWorks";
 import ServicesGrid from "@/components/Home/ServicesGrid";
-import HomzIntelligence from "@/components/Home/HomzIntelligence";
 import LatestNews from "@/components/Home/LatestNews";
 import PropertyInsights from "@/components/Home/PropertyInsights";
 import HomeFaq from "@/components/Home/HomeFaq";
@@ -68,11 +66,22 @@ export default async function Home() {
         <LatestLaunches projects={newLaunches} />
         <DevelopersSection developers={topBuilders} />
         <DiscoverProject />
-        <MarketStatsSection />
+        {/* Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+            P1-G): MarketStatsSection removed -- its own numbers (18.4%
+            appreciation, ₹9,850/sq.ft, 6,200+ units, 42-day close) were
+            static placeholders with no real data source, presented as if
+            factual. Deleted rather than left as dead code; rebuild it if
+            a real, sourced market-data feed exists later. */}
         <WhyHomz />
         <HowItWorks />
         <ServicesGrid />
-        <HomzIntelligence />
+        {/* Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+            P1-G): HomzIntelligence removed -- hardcoded fake chart data
+            (a scripted "+62% cumulative" bar chart) plus a false capability
+            claim ("Our proprietary data engine analyzes thousands of
+            transactions... to surface... growth signals") that doesn't
+            reflect anything this app actually does. Rebuild only once a
+            real, sourced analytics capability exists to describe. */}
         <LatestNews items={news} />
         <PropertyInsights />
         {/* SEO audit 2026-09-07 P1 ("Awards, scale claims and identical

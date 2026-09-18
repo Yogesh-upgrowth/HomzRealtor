@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     // app/project-listing/[city]/page.tsx), so claiming full coverage here
     // overclaims what a visitor (and a crawler) actually finds on the site.
     default:
-      "HomzRealtor — Residential & Commercial Property in Gurgaon",
+      "HomzRealtor, Residential & Commercial Property in Gurgaon",
     // No "| HomzRealtor" suffix — every inner-page title is already
     // keyword-led and close to the ~60-char SERP truncation point; the 14
     // extra characters pushed nearly all of them past it, cutting off the
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     siteName: "HomzRealtor",
     url: "https://www.homzrealtor.com",
     title:
-      "HomzRealtor — Residential & Commercial Property in Gurgaon",
+      "HomzRealtor, Residential & Commercial Property in Gurgaon",
     description:
       "Find verified residential and commercial projects in Gurgaon. Compare prices, explore amenities and get expert advice with HomzRealtor.",
     locale: "en_IN",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
         url: ogImage.src,
         width: ogImage.width,
         height: ogImage.height,
-        alt: "HomzRealtor — Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+        alt: "HomzRealtor, Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
       },
     ],
   },
@@ -96,7 +96,14 @@ const organizationSchema = {
       description:
         "HomzRealtor is a real estate advisory platform for verified residential and commercial property in Gurgaon, India.",
       slogan: "Where Your Property Journey Begins.",
-      areaServed: ["Gurgaon", "Noida", "Greater Noida", "Delhi", "Faridabad"],
+      // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+      // P1-G): narrowed from all 5 NCR cities to the one actually
+      // confirmed -- Gurgaon is the only market with real listings and
+      // the only coverage area the owner has confirmed; the other four
+      // render live but empty "being updated" pages (see
+      // app/project-listing/[city]/page.tsx) and were never confirmed as
+      // real service areas.
+      areaServed: ["Gurgaon"],
       // Phone/email are already public elsewhere on the site (the WhatsApp
       // CTA and the homepage contact section) — no invented contact details.
       // address/identifier (RERA)/sameAs (social) come from the same

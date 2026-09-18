@@ -359,18 +359,11 @@ export default function FormComponent({
               </div>
             ))}
           </div>
-
-          <div className="hidden md:grid grid-cols-2 gap-6 mt-8 pt-6 border-t border-white/[0.08]">
-            <div>
-              <p className="font-display text-2xl text-white">25500+</p>
-              <p className="text-gray-500 text-xs mt-0.5">Happy Customers</p>
-            </div>
-
-            <div>
-              <p className="font-display text-2xl text-white">45 Mn+ Sq.Ft.</p>
-              <p className="text-gray-500 text-xs mt-0.5">Area Sold</p>
-            </div>
-          </div>
+          {/* Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+              P1-G): "25500+ Happy Customers" / "45 Mn+ Sq.Ft. Area Sold"
+              removed here -- unsubstantiated, no evidence supplied. Not
+              replaced with different invented figures; restore only with
+              real, owner-approved numbers. */}
         </div>
 
         {/* RIGHT SIDE FORM */}

@@ -2,8 +2,13 @@ import { Home, IndianRupee, FileCheck2, TrendingUp, Building2, Sparkles } from "
 
 const SERVICES = [
   { icon: Home, title: "Buying & Selling", text: "Full-cycle advisory from shortlisting to registry, with legal due-diligence at every step.", featured: true },
-  { icon: IndianRupee, title: "Home Loan Assistance", text: "Compare rates across 15+ banks and get pre-approved financing in as little as 48 hours." },
-  { icon: FileCheck2, title: "Legal & RERA Advisory", text: "Title verification, RERA checks and registry support handled by our in-house legal desk." },
+  // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, P1-G):
+  // "15+ banks", "in as little as 48 hours" and "our in-house legal desk"
+  // were specific, unverified capability claims -- removed rather than
+  // replaced with different invented specifics. Restore once the actual
+  // lender network/turnaround time and legal-team structure are confirmed.
+  { icon: IndianRupee, title: "Home Loan Assistance", text: "Help comparing home loan options and support through the pre-approval process." },
+  { icon: FileCheck2, title: "Legal & RERA Advisory", text: "Guidance on title verification, RERA checks and registry support." },
   { icon: TrendingUp, title: "Investment Advisory", text: "Data-backed recommendations on high-growth micro-markets and rental yield projections." },
   { icon: Building2, title: "Property Management", text: "Tenant sourcing, rent collection and maintenance for owners who invest and rent out." },
   { icon: Sparkles, title: "Interior & Handover", text: "Curated interior design partners and snag-checking support at possession." },
