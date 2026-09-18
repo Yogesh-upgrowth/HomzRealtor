@@ -60,8 +60,9 @@ const PrivacyPolicyPage = () => {
         <Section title="4. Cookies and analytics">
           <p>
             This site uses cookies and analytics tools (such as Google Analytics) to understand
-            how visitors use the site and to improve it. You can control or disable cookies
-            through your browser settings.
+            how visitors use the site and to improve it. You can change your choice at any time
+            using the &quot;Cookie Preferences&quot; link in the footer, or control cookies through
+            your browser settings.
           </p>
         </Section>
 

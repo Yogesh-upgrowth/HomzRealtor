@@ -63,6 +63,26 @@ export function subscribeConsent(
   return () => listeners.delete(fn);
 }
 
+// MI-18 (2026-09-18): the banner only ever asked once -- there was no way
+// for a visitor who already chose Accept/Reject to come back and change
+// that choice short of manually clearing site data. This clears the
+// stored choice and notifies listeners as "unknown" so ConsentBanner
+// (subscribed below) reopens; it does not itself push a Google Consent
+// signal, since "unknown" isn't a valid analytics_storage value -- that
+// only happens once the visitor makes a new explicit choice via the
+// banner, exactly as it already does today.
+export function resetConsent(): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Nothing to remove/notify about if storage was never reachable.
+  }
+
+  listeners.forEach((fn) => fn("unknown"));
+}
+
 export function updateGoogleConsent(
   state: "granted" | "denied"
 ): void {

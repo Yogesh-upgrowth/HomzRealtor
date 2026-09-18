@@ -8,13 +8,17 @@
 // that choice is "granted".
 
 import { useEffect, useState } from "react";
-import { getConsent, setConsent } from "@/lib/analytics/consent";
+import { getConsent, setConsent, subscribeConsent } from "@/lib/analytics/consent";
 
 export default function ConsentBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setVisible(getConsent() === "unknown");
+    // MI-18: reopen if something elsewhere (the footer's "Cookie
+    // Preferences" link) resets the stored choice back to "unknown" --
+    // this used to only ever check once, on mount.
+    return subscribeConsent((state) => setVisible(state === "unknown"));
   }, []);
 
   if (!visible) return null;

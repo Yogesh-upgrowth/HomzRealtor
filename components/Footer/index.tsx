@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import logo from "@/assets/companylogo/logo.png";
 import { Instagram, Facebook, Linkedin, Youtube } from "lucide-react";
 import { COMPANY_INFO, hasSocialLinks } from "@/lib/seo/companyInfo";
+import { resetConsent } from "@/lib/analytics/consent";
 
 type FooterLink = { label: string; href: string };
 
@@ -134,6 +135,15 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
               <Link href="/disclaimer" className={colLinkCls}>
                 Disclaimer
               </Link>
+            </li>
+            <li>
+              {/* MI-18 (2026-09-18): the consent banner only ever asked
+                  once -- there was no way to come back and change that
+                  choice besides the privacy policy's generic "use your
+                  browser settings" line. This reopens the same banner. */}
+              <button type="button" onClick={resetConsent} className={`${colLinkCls} cursor-pointer text-left`}>
+                Cookie Preferences
+              </button>
             </li>
           </ul>
         </div>
