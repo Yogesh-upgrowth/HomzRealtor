@@ -58,3 +58,26 @@ button:not(:disabled),
     transform: scaleX(1);
   }
 }
+
+/* MI-16/MI-17 (2026-09-18): the micro-interactions audit repeatedly flagged
+   missing prefers-reduced-motion support (gallery, drawers, skeleton
+   shimmer, hover transitions, etc.) — the actual root cause was that there
+   was no reduced-motion handling anywhere in the app at all. This codebase
+   uses ad hoc Tailwind `transition`/`animate-*` utility classes scattered
+   across dozens of components rather than one shared motion class, so a
+   single global override (the standard approach for exactly this
+   situation — see MDN/web.dev prefers-reduced-motion guidance) covers all
+   of them at once instead of auditing every call site individually.
+   0.01ms rather than 0ms: some libraries/browsers treat a literal 0
+   duration as "no transition" and never fire transitionend/animationend,
+   which code elsewhere may depend on for cleanup. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
