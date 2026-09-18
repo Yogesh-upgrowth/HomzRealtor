@@ -19,7 +19,7 @@ const DEFAULT_PLANS: PaymentPlanTier[] = [
     tag: "Most Popular",
     splitLabel: "10 : 80 : 10",
     upfrontPct: 10,
-    description: "Pay in stages tied to construction milestones — a lower upfront burden.",
+    description: "Pay in stages tied to construction milestones, a lower upfront burden.",
   },
   {
     id: "down-payment",
@@ -35,7 +35,7 @@ const DEFAULT_PLANS: PaymentPlanTier[] = [
     tag: "Flexible",
     splitLabel: "20 : 80",
     upfrontPct: 20,
-    description: "Minimal upfront, majority near possession — ideal for end-users.",
+    description: "Minimal upfront, majority near possession, ideal for end-users.",
   },
 ];
 
@@ -47,7 +47,7 @@ const PROJECT_PAYMENT_PLANS: Record<string, PaymentPlanTier[]> = {
       tag: "Most Popular",
       splitLabel: "10 : 80 : 10",
       upfrontPct: 10,
-      description: "Pay in stages tied to construction milestones — a lower upfront burden.",
+      description: "Pay in stages tied to construction milestones, a lower upfront burden.",
     },
     {
       id: "down-payment",
@@ -63,7 +63,7 @@ const PROJECT_PAYMENT_PLANS: Record<string, PaymentPlanTier[]> = {
       tag: "Flexible",
       splitLabel: "20 : 80",
       upfrontPct: 20,
-      description: "Minimal upfront, majority near possession — ideal for end-users.",
+      description: "Minimal upfront, majority near possession, ideal for end-users.",
     },
   ],
 };

@@ -355,9 +355,9 @@ function buildKeyHighlights(
   else out.push(`Located in ${project.city_name}, ${project.state}.`);
   if (project.property_type) out.push(`Offers ${project.property_type} configurations to suit different needs.`);
   if (hasPrice && priceText !== "Price on Request") out.push(`Pricing starts at ${priceText}.`);
-  if (status !== "Status on request") out.push(`${status}${project.possession_text ? ` — possession ${project.possession_text}` : ""}.`);
+  if (status !== "Status on request") out.push(`${status}${project.possession_text ? `, possession ${project.possession_text}` : ""}.`);
   if (project.rera_id) {
-    if (project.rera_status === "lapsed") out.push(`RERA registration (${project.rera_id}) on file has lapsed — verify current status before booking.`);
+    if (project.rera_status === "lapsed") out.push(`RERA registration (${project.rera_id}) on file has lapsed: verify current status before booking.`);
     else if (project.rera_status === "active") out.push(`RERA registered (${project.rera_id}) for buyer protection.`);
     else out.push(`RERA number on file: ${project.rera_id} (not independently verified).`);
   }
@@ -392,7 +392,7 @@ function buildInvestmentScore(
     max: 20,
     note: isKnownBuilder(project.builder)
       ? `${project.builder} is an established developer with a delivery track record.`
-      : `${project.builder} — an emerging developer in ${project.city_name}.`,
+      : `${project.builder}, an emerging developer in ${project.city_name}.`,
   });
 
   // Connectivity — 25
@@ -462,7 +462,7 @@ function buildInvestmentScore(
   const grade = score >= 85 ? "Excellent" : score >= 75 ? "Strong" : score >= 65 ? "Good" : "Fair";
   const verdict =
     score >= 85
-      ? `${project.project_name} scores highly across location, developer and product quality — a compelling option for both end-users and investors.`
+      ? `${project.project_name} scores highly across location, developer and product quality, a compelling option for both end-users and investors.`
       : score >= 75
       ? `${project.project_name} presents a strong overall proposition in ${project.city_name}, with several factors working in its favour.`
       : score >= 65

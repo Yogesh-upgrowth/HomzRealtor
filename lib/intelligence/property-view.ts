@@ -219,8 +219,8 @@ function buildScoreView(property: RawHomzProperty): PropertyScoreView | null {
   const grade = score >= 80 ? "Excellent" : score >= 65 ? "Strong" : score >= 50 ? "Good" : "Fair";
   const verdict =
     score >= 65
-      ? "Scores well on the fundamentals we track for this listing — worth a closer look."
-      : "An early-stage or higher-risk opportunity by our scoring — worth weighing against your specific goals.";
+      ? "Scores well on the fundamentals we track for this listing: worth a closer look."
+      : "An early-stage or higher-risk opportunity by our scoring: worth weighing against your specific goals.";
   return {
     score,
     grade,
@@ -306,9 +306,9 @@ function buildKeyHighlights(
   if (type) out.push(`A ${type.toLowerCase()}${property.configuration ? ` (${property.configuration})` : ""}.`);
   const { hasPrice, priceText: pt } = priceText(property);
   if (hasPrice) out.push(`${property.listingType === "rent" ? "Rent" : "Price"}: ${pt}.`);
-  if (status !== "Status on request") out.push(`${status}${property.possession ? ` — ${property.possession}` : ""}.`);
+  if (status !== "Status on request") out.push(`${status}${property.possession ? `, ${property.possession}` : ""}.`);
   if (property.reraId) {
-    if (property.reraStatus === "lapsed") out.push(`RERA registration (${property.reraId}) on file has lapsed — verify current status before booking.`);
+    if (property.reraStatus === "lapsed") out.push(`RERA registration (${property.reraId}) on file has lapsed: verify current status before booking.`);
     else if (property.reraStatus === "active") out.push(`RERA registered (${property.reraId}) for buyer protection.`);
     else out.push(`RERA number on file: ${property.reraId} (not independently verified).`);
   }
@@ -384,15 +384,15 @@ function buildFaq(property: RawHomzProperty, status: string, category: PropertyC
   const priceLabel = category === "Rent" ? "the monthly rent" : "the price";
   faqs.push({
     q: `What is ${priceLabel} for this listing?`,
-    a: hasPrice ? pt : "Price is available on request — contact us for the latest quote.",
+    a: hasPrice ? pt : "Price is available on request, contact us for the latest quote.",
   });
   if (property.possession) {
-    faqs.push({ q: "When is possession available?", a: `${status}${property.possession ? ` — ${property.possession}` : ""}.` });
+    faqs.push({ q: "When is possession available?", a: `${status}${property.possession ? `, ${property.possession}` : ""}.` });
   }
   if (property.reraId) {
     const answer =
       property.reraStatus === "lapsed"
-        ? `A RERA registration (${property.reraId}) is on file, but it has lapsed — please verify current status with the developer before booking.`
+        ? `A RERA registration (${property.reraId}) is on file, but it has lapsed; please verify current status with the developer before booking.`
         : property.reraStatus === "active"
           ? `Yes, RERA number ${property.reraId}.`
           : `RERA number ${property.reraId} is on file (not independently verified against the official registry).`;
@@ -527,7 +527,7 @@ export function buildPropertyDescription(view: PropertyView): string {
     : "with pricing on request";
 
   const areaBit = view.areaText ? `, ${view.areaText}` : "";
-  const statusBit = view.status !== "Status on request" ? ` — ${view.status}` : "";
+  const statusBit = view.status !== "Status on request" ? `, ${view.status}` : "";
 
   const verb =
     view.category === "Rent" || view.category === "Pg"
@@ -550,7 +550,7 @@ export function buildPropertyDescription(view: PropertyView): string {
   const locationBit = view.projectName ? `${view.projectName}, ${view.location}` : view.location;
 
   const sentence =
-    `${configType} ${verb} in ${locationBit}${areaBit} — ${priceBit}${statusBit}. ` +
+    `${configType} ${verb} in ${locationBit}${areaBit}, ${priceBit}${statusBit}. ` +
     `${cta} on HomzRealtor.`;
 
   return truncateAtWord(sentence);

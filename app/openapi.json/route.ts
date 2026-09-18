@@ -13,7 +13,7 @@ const spec = {
     title: "HomzRealtor Public API",
     version: "1.0.0",
     description:
-      "Read-only, unauthenticated endpoints for Gurgaon property listings and status tracking. These are the same endpoints homzrealtor.com's own pages call — nothing here requires an account.",
+      "Read-only, unauthenticated endpoints for Gurgaon property listings and status tracking. These are the same endpoints homzrealtor.com's own pages call, nothing here requires an account.",
     contact: { email: "hello@homzrealtor.com" },
   },
   servers: [{ url: "https://www.homzrealtor.com" }],
