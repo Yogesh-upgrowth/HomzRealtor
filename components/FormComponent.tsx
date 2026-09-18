@@ -86,6 +86,7 @@ export default function FormComponent({
   const hasStarted = useRef(false);
   const hasEmittedLead = useRef(false);
   const hasOpenedFired = useRef(false);
+  const isSubmittingRef = useRef(false);
 
   const formEventContext = () => ({
     ...resolvePageContext(pathname),
@@ -211,6 +212,14 @@ export default function FormComponent({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // MI-11 (2026-09-18): `loading` is React state, not applied to the
+    // button's `disabled` attribute until the next render/paint -- two
+    // taps close enough together (a real risk on a double-tap or an
+    // impatient double-click) could both call handleSubmit and both POST
+    // before that render happens. A ref updates synchronously, so this
+    // guard is airtight regardless of render timing.
+    if (isSubmittingRef.current) return;
+
     if (!form.terms) {
       toast.error("Please accept the terms");
       sendGaEvent("lead_form_error", {
@@ -221,6 +230,7 @@ export default function FormComponent({
       return;
     }
 
+    isSubmittingRef.current = true;
     sendGaEvent("lead_form_submit", formEventContext());
 
     try {
@@ -236,7 +246,17 @@ export default function FormComponent({
 
       const data = await response.json();
 
-      if (data.success) {
+      // MI-11: check response.ok alongside data.success rather than
+      // data.success alone -- app/api/contact/route.ts always sets
+      // success:false on its own error paths (400/502) today, but this is
+      // a cheap, correct second signal against a non-2xx response that
+      // somehow carries a body shaped like success. It does NOT change
+      // what a real upstream success looks like: this repo has no
+      // visibility into whether the Google Apps Script webhook's response
+      // body reliably includes success:true on every real delivery --
+      // that gap is pre-existing and documented, not something to guess
+      // at here.
+      if (response.ok && data.success) {
         toast.success("Form submitted successfully!");
 
         // GA4 spec: generate_lead only on durable API acceptance, at most
@@ -278,6 +298,7 @@ export default function FormComponent({
       });
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
