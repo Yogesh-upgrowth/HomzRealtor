@@ -71,11 +71,17 @@ const HomesCard: React.FC<HomeCardProps> = ({
         </div>
       </div>
 
-      {/* Price */}
+      {/* Price. MI-05 (2026-09-18): this was a <button> with no onClick --
+          purely informational text rendered inside the card's outer <Link>
+          (PropertyListingPage.tsx), so it was interactive markup nested
+          inside interactive markup: invalid HTML, and a keyboard Tab stop
+          that did nothing when activated. It never had an independent
+          action, so it becomes a non-interactive element; the whole card
+          still navigates via the outer Link either way. */}
       <div className="p-3 border-t border-white/[0.08]">
-        <button className="w-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold py-2 rounded-xl hover:brightness-105 transition">
+        <div className="w-full bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608] font-semibold py-2 rounded-xl text-center">
           {btntag}
-        </button>
+        </div>
       </div>
     </div>
   );
