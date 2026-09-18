@@ -169,6 +169,40 @@ const nextConfig = {
         destination: "/project-listing/compare/greaternoida/:path*",
         permanent: true,
       },
+      // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+      // P2-A): the /page/[page] routes below all deliberately notFound()
+      // on page=1 (SEO audit 2026-09-07 — page 1's canonical URL is the
+      // base hub, avoiding a self-canonical duplicate pair), but a bare
+      // 404 for a URL pattern the site itself generates (page 2 links to
+      // "page 1" implicitly) is worse than redirecting it to that same
+      // canonical destination. Not a "genuine missing property" case —
+      // just this same already-correct decision expressed as a redirect
+      // instead of a dead end.
+      {
+        source: "/buy-property/page/1",
+        destination: "/buy-property",
+        permanent: true,
+      },
+      {
+        source: "/rent-property/page/1",
+        destination: "/rent-property",
+        permanent: true,
+      },
+      {
+        source: "/commercial/page/1",
+        destination: "/commercial",
+        permanent: true,
+      },
+      {
+        source: "/project-listing/:city/page/1",
+        destination: "/project-listing/:city",
+        permanent: true,
+      },
+      {
+        source: "/buy-property/:city/:slug/page/1",
+        destination: "/buy-property/:city/:slug",
+        permanent: true,
+      },
     ];
   },
 };
