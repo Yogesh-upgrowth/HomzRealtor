@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -77,6 +77,18 @@ const QuickSearchPanel = () => {
   const [bhk, setBhk] = useState(BHKS[0]);
   const budgets = tab === "Rent" ? BUDGETS_RENT : BUDGETS_SALE;
 
+  // MI-03 (2026-09-18): this sheet already had Escape and scroll-lock --
+  // the missing piece the handoff calls out is the rest of the focus
+  // lifecycle, same technique as FormComponent's enquiry dialog: overlayRef
+  // marks this portal's own node so background-inertness skips it, dialogRef
+  // bounds the Tab-trap, headingRef is where focus lands on open (not the
+  // Location input -- that would pop the mobile keyboard immediately on
+  // open, which MI-16 flags as its own problem).
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     setPortalReady(true);
   }, []);
@@ -87,14 +99,51 @@ const QuickSearchPanel = () => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMobileOpen(false);
+    const inerted: HTMLElement[] = [];
+    Array.from(document.body.children).forEach((child) => {
+      if (child === overlayRef.current) return;
+      if (child instanceof HTMLElement && !child.hasAttribute("inert")) {
+        child.setAttribute("inert", "");
+        inerted.push(child);
+      }
+    });
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    headingRef.current?.focus();
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusables = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
-    window.addEventListener("keydown", handleEscape);
+    window.addEventListener("keydown", handleKeydown);
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("keydown", handleKeydown);
+      inerted.forEach((el) => el.removeAttribute("inert"));
+      if (previouslyFocusedRef.current && document.body.contains(previouslyFocusedRef.current)) {
+        previouslyFocusedRef.current.focus();
+      }
     };
   }, [mobileOpen]);
 
@@ -152,7 +201,12 @@ const QuickSearchPanel = () => {
         <div className="mb-5 md:hidden">
           <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-white/15" aria-hidden="true" />
           <div className="flex items-center justify-between gap-4">
-            <h2 id="mobile-search-title" className="text-[22px] font-bold tracking-[-0.02em] text-white">
+            <h2
+              id="mobile-search-title"
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-[22px] font-bold tracking-[-0.02em] text-white outline-none"
+            >
               Search properties
             </h2>
             <button
@@ -308,6 +362,7 @@ const QuickSearchPanel = () => {
       {portalReady &&
         createPortal(
           <div
+            ref={overlayRef}
             role="presentation"
             onClick={() => setMobileOpen(false)}
             className={`fixed inset-0 z-[100] flex items-end justify-center bg-black/70 pt-6 transition-[opacity,visibility] duration-300 md:hidden ${
@@ -317,6 +372,7 @@ const QuickSearchPanel = () => {
             }`}
           >
             <div
+              ref={dialogRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="mobile-search-title"
