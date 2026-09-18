@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Phone, Mail } from "lucide-react";
 
 // Real lead-capture form, modeled on EnquiryRail.tsx's fetch/toast pattern —
 // posts to the same /api/contact webhook the rest of the site uses.
 const ExpertConsultation = () => {
+  const router = useRouter();
   const [form, setForm] = useState({ name: "", phone: "", email: "", interest: "Interested in Buying", message: "" });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -15,6 +17,16 @@ const ExpertConsultation = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, DEV-08):
+    // owner's explicit choice is an immediate redirect to the seller info
+    // page on selection, not a Continue step -- the real service/fee
+    // details still depend on DEV-07, unanswered, so that page stays a
+    // truthful, minimal lead-capture proposition rather than a guessed
+    // process page.
+    if (name === "interest" && value === "Sell your property") {
+      router.push("/sell-property-in-gurgaon");
+      return;
+    }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -115,6 +127,7 @@ const ExpertConsultation = () => {
                   <option>Interested in Renting</option>
                   <option>Interested in Commercial</option>
                   <option>Interested in Investment</option>
+                  <option>Sell your property</option>
                 </select>
               </div>
               <div>
