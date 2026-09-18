@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
   const url = `${SITE}/buy-property/${city}/${slug}/page/${pageNum}`;
   return {
-    title: `${facet.label} — Page ${pageNum}`,
+    title: `${facet.label}, Page ${pageNum}`,
     description: facet.description,
     alternates: { canonical: url },
   };

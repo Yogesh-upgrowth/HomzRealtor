@@ -68,7 +68,7 @@ const ProjectCtas = ({ name, enquireHref, projectKey, variant = "hero" }: Props)
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      toast.error("Couldn't copy the link — copy it from the address bar instead.");
+      toast.error("Couldn't copy the link, copy it from the address bar instead.");
     }
   };
 

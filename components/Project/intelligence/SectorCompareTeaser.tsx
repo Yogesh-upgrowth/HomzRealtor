@@ -65,8 +65,8 @@ const SectorCompareTeaser = ({ title, minPriceInr, unitCount, amenityCount, aver
             {rows.map((row) => (
               <tr key={row.label} className="bg-black border-t border-gray-800">
                 <td className="p-3 text-gray-400">{row.label}</td>
-                <td className="p-3 text-white">{row.a || "—"}</td>
-                <td className="p-3 text-white">{row.b || "—"}</td>
+                <td className="p-3 text-white">{row.a || "N/A"}</td>
+                <td className="p-3 text-white">{row.b || "N/A"}</td>
               </tr>
             ))}
           </tbody>

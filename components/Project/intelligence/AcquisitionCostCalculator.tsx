@@ -34,7 +34,7 @@ function InrTooltip({ active, payload }: { active?: boolean; payload?: any[] }) 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm shadow-lg">
       <p className="text-gray-400 text-xs">{p.name}</p>
-      <p className="text-[#CEA44E] font-bold">{formatInr(p.value) ?? "—"}</p>
+      <p className="text-[#CEA44E] font-bold">{formatInr(p.value) ?? "N/A"}</p>
     </div>
   );
 }
@@ -87,7 +87,7 @@ const AcquisitionCostCalculator = ({
         <label htmlFor={id} className="text-gray-200 font-medium">
           {label} <span className="text-gray-500">({rate}%)</span>
         </label>
-        <span className="text-[#CEA44E] font-semibold">{formatInrExact(amount) ?? "—"}</span>
+        <span className="text-[#CEA44E] font-semibold">{formatInrExact(amount) ?? "N/A"}</span>
       </div>
       <input
         id={id}
@@ -115,7 +115,7 @@ const AcquisitionCostCalculator = ({
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="acq-price" className="text-gray-200 font-medium">Base Property Price</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "—"}</span>
+                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "N/A"}</span>
               </div>
               <input
                 id="acq-price"
@@ -152,9 +152,9 @@ const AcquisitionCostCalculator = ({
               <p className="text-xs text-gray-400 uppercase tracking-widest">
                 Total Acquisition Cost
               </p>
-              <p className="text-4xl font-bold text-white mt-1">{formatInr(total) ?? "—"}</p>
+              <p className="text-4xl font-bold text-white mt-1">{formatInr(total) ?? "N/A"}</p>
               <p className="text-sm text-[#CEA44E] mt-1">
-                {formatInrExact(charges) ?? "—"} over the base price
+                {formatInrExact(charges) ?? "N/A"} over the base price
               </p>
             </div>
 
@@ -181,27 +181,27 @@ const AcquisitionCostCalculator = ({
             <div className="mt-4 space-y-1.5 text-sm">
               <div className="flex justify-between text-gray-300">
                 <span>Base Price</span>
-                <span>{formatInrExact(Math.max(0, priceValue)) ?? "—"}</span>
+                <span>{formatInrExact(Math.max(0, priceValue)) ?? "N/A"}</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span>Stamp Duty</span>
-                <span>{formatInrExact(stampAmt) ?? "—"}</span>
+                <span>{formatInrExact(stampAmt) ?? "N/A"}</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span>Registration</span>
-                <span>{formatInrExact(regAmt) ?? "—"}</span>
+                <span>{formatInrExact(regAmt) ?? "N/A"}</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span>GST</span>
-                <span>{formatInrExact(gstAmt) ?? "—"}</span>
+                <span>{formatInrExact(gstAmt) ?? "N/A"}</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span>Other Charges</span>
-                <span>{formatInrExact(otherAmt) ?? "—"}</span>
+                <span>{formatInrExact(otherAmt) ?? "N/A"}</span>
               </div>
               <div className="flex justify-between text-white font-semibold border-t border-gray-700 pt-2 mt-2">
                 <span>Total</span>
-                <span>{formatInr(total) ?? "—"}</span>
+                <span>{formatInr(total) ?? "N/A"}</span>
               </div>
             </div>
           </div>

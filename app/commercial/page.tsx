@@ -3,9 +3,9 @@ import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/compon
 import { computeFacets } from "@/lib/listings/filters";
 import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 
-const title = "Commercial Property in Gurgaon — Price, Photos & Plans";
+const title = "Commercial Property in Gurgaon, Price, Photos & Plans";
 const description =
-  "Shops, offices, showrooms, and commercial land for sale and rent in Gurgaon — filter by investment grade, property type, and budget.";
+  "Shops, offices, showrooms, and commercial land for sale and rent in Gurgaon: filter by investment grade, property type, and budget.";
 
 export const metadata = {
   title,

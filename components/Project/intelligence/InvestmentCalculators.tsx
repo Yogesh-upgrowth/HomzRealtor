@@ -69,7 +69,7 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="rental-price" className="text-gray-200 font-medium">Purchase Price</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInrExact(rPriceValue) ?? "—"}</span>
+                <span className="text-[#CEA44E] font-semibold">{formatInrExact(rPriceValue) ?? "N/A"}</span>
               </div>
               <input
                 id="rental-price"
@@ -86,7 +86,7 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="rental-monthly-rent" className="text-gray-200 font-medium">Expected Monthly Rent</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInrExact(monthlyRentValue) ?? "—"}</span>
+                <span className="text-[#CEA44E] font-semibold">{formatInrExact(monthlyRentValue) ?? "N/A"}</span>
               </div>
               <input
                 id="rental-monthly-rent"
@@ -103,7 +103,7 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="rental-maintenance" className="text-gray-200 font-medium">Annual Maintenance</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInrExact(maintenanceValue) ?? "—"}</span>
+                <span className="text-[#CEA44E] font-semibold">{formatInrExact(maintenanceValue) ?? "N/A"}</span>
               </div>
               <input
                 id="rental-maintenance"
@@ -139,20 +139,20 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
             <div className="rounded-xl border border-gray-700 p-5 text-center">
               <p className="text-xs text-gray-400 uppercase tracking-widest">Gross Rental Yield</p>
               <p className="text-4xl font-bold text-white mt-1">{rental.grossYield.toFixed(2)}%</p>
-              <p className="text-xs text-gray-500 mt-1">{formatInrExact(rental.annualGross) ?? "—"} / year</p>
+              <p className="text-xs text-gray-500 mt-1">{formatInrExact(rental.annualGross) ?? "N/A"} / year</p>
             </div>
             <div className="rounded-xl border border-gray-700 p-5 text-center">
               <p className="text-xs text-gray-400 uppercase tracking-widest">Est. Net Rental Yield</p>
               <p className="text-3xl font-bold text-[#CEA44E] mt-1">{rental.netYield.toFixed(2)}%</p>
               <p className="text-xs text-gray-500 mt-1">
-                {formatInrExact(rental.netAnnual) ?? "—"} / year after maintenance &amp; vacancy
+                {formatInrExact(rental.netAnnual) ?? "N/A"} / year after maintenance &amp; vacancy
               </p>
             </div>
           </div>
         </div>
 
         <p className="text-[11px] text-gray-600 mt-6">
-          Illustrative estimate based on your assumptions — not a guarantee of returns. Not financial advice.
+          Illustrative estimate based on your assumptions, not a guarantee of returns. Not financial advice.
         </p>
       </div>
     </section>

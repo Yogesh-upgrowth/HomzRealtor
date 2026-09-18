@@ -3,9 +3,9 @@ import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/compon
 import { computeFacets } from "@/lib/listings/filters";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
 
-const title = "Rent Property in Gurgaon — Price, Photos & Floor Plans";
+const title = "Rent Property in Gurgaon, Price, Photos & Floor Plans";
 const description =
-  "Browse verified rental listings in Gurgaon — apartments, builder floors, and more. Filter by property type, BHK, budget, and possession status.";
+  "Browse verified rental listings in Gurgaon: apartments, builder floors, and more. Filter by property type, BHK, budget, and possession status.";
 
 export const metadata = {
   title,

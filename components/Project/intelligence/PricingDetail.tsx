@@ -66,7 +66,7 @@ function InrTooltip({ active, payload, label }: { active?: boolean; payload?: an
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm shadow-lg">
       <p className="text-gray-400 mb-1 text-xs">{label}</p>
-      <p className="text-[#CEA44E] font-bold">{formatInr(payload[0].value) ?? "—"}</p>
+      <p className="text-[#CEA44E] font-bold">{formatInr(payload[0].value) ?? "N/A"}</p>
     </div>
   );
 }
@@ -151,12 +151,12 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
                 <tr key={i} className="border-b border-gray-800 text-gray-200">
                   <td className="py-2.5 pr-4 font-medium">{r.unit}</td>
                   <td className="py-2.5 pr-4">
-                    {r.sizeNum ? `${r.sizeNum.toLocaleString("en-IN")} sq.ft` : "—"}
+                    {r.sizeNum ? `${r.sizeNum.toLocaleString("en-IN")} sq.ft` : "N/A"}
                   </td>
                   <td className="py-2.5 pr-4">
-                    {r.priceInr ? formatInr(r.priceInr) : r.priceStr || "—"}
+                    {r.priceInr ? formatInr(r.priceInr) : r.priceStr || "N/A"}
                   </td>
-                  <td className="py-2.5 text-[#CEA44E]">{r.psf ? formatInrExact(r.psf) : "—"}</td>
+                  <td className="py-2.5 text-[#CEA44E]">{r.psf ? formatInrExact(r.psf) : "N/A"}</td>
                 </tr>
               ))}
             </tbody>
@@ -192,19 +192,19 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">Current Price</p>
-            <p className="text-xl font-bold text-white mt-1">{formatInr(base) ?? "—"}</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">Real — from listing</p>
+            <p className="text-xl font-bold text-white mt-1">{formatInr(base) ?? "N/A"}</p>
+            <p className="text-[11px] text-gray-500 mt-0.5">Real, from listing</p>
           </div>
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">
               At Possession{possYear ? ` (${possYear})` : ""}
             </p>
-            <p className="text-xl font-bold text-[#CEA44E] mt-1">{formatInr(projected) ?? "—"}</p>
+            <p className="text-xl font-bold text-[#CEA44E] mt-1">{formatInr(projected) ?? "N/A"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">Projected estimate</p>
           </div>
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">Projected Gain</p>
-            <p className="text-xl font-bold text-white mt-1">{formatInr(gain) ?? "—"}</p>
+            <p className="text-xl font-bold text-white mt-1">{formatInr(gain) ?? "N/A"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">
               {growthPct}% over {holdingPeriodLabel}
             </p>
@@ -233,7 +233,7 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
 
         <p className="text-[11px] text-gray-600 mt-4">
           Only the current price is real (from the listing). The journey assumes a constant annual
-          appreciation you set and is an illustrative estimate — not price history or a guarantee of
+          appreciation you set and is an illustrative estimate, not price history or a guarantee of
           returns. Launch-price and historical transaction data are not available for this project.
         </p>
       </div>

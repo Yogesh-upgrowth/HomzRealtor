@@ -72,7 +72,7 @@ export default function ImageCarousel({
             src={images[current]}
             alt={
               alt
-                ? `${alt} — photo ${current + 1} of ${images.length}`
+                ? `${alt}, photo ${current + 1} of ${images.length}`
                 : `Property photo ${current + 1} of ${images.length}`
             }
             fill

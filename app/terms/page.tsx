@@ -40,8 +40,8 @@ const TermsPage = () => {
 
         <Section title="2. Nature of the information provided">
           <p>
-            Project details — including price, availability, possession timelines, floor plans,
-            amenities and images — are provided for general informational purposes and are
+            Project details, including price, availability, possession timelines, floor plans,
+            amenities and images, are provided for general informational purposes and are
             subject to change without notice. This information should always be independently
             verified with the developer and the relevant state RERA authority before making any
             purchase decision.
@@ -58,8 +58,8 @@ const TermsPage = () => {
 
         <Section title="4. Calculators and projections">
           <p>
-            Tools on this site — including EMI calculators, rental-yield estimates, and
-            illustrative price-projection charts — are for general guidance only. They rely on
+            Tools on this site, including EMI calculators, rental-yield estimates, and
+            illustrative price-projection charts, are for general guidance only. They rely on
             assumptions and inputs you or we provide and are not financial advice, a guarantee of
             returns, or a substitute for independent financial or legal counsel.
           </p>

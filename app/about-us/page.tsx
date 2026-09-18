@@ -6,7 +6,7 @@ import customer from "@/assets/images/customer.png";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {
-  title: "About HomzRealtor — Gurgaon Real Estate Advisory",
+  title: "About HomzRealtor, Gurgaon Real Estate Advisory",
   description:
     "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
   keywords: [
@@ -20,7 +20,7 @@ export const metadata = {
     canonical: "/about-us",
   },
   openGraph: {
-    title: "About HomzRealtor — Gurgaon Real Estate Advisory",
+    title: "About HomzRealtor, Gurgaon Real Estate Advisory",
     description:
       "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
     url: "https://www.homzrealtor.com/about-us",

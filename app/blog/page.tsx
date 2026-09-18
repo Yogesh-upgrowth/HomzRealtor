@@ -27,14 +27,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Blog — Gurgaon Real Estate Guides & Market Data",
+  title: "Blog, Gurgaon Real Estate Guides & Market Data",
   description:
-    "HomzRealtor's blog — corridor comparisons, sector-level investment guides and price data built from our live Gurgaon listing catalogue.",
+    "HomzRealtor's blog: corridor comparisons, sector-level investment guides and price data built from our live Gurgaon listing catalogue.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Blog — Gurgaon Real Estate Guides & Market Data",
+    title: "Blog, Gurgaon Real Estate Guides & Market Data",
     description:
-      "HomzRealtor's blog — corridor comparisons, sector-level investment guides and price data built from our live Gurgaon listing catalogue.",
+      "HomzRealtor's blog: corridor comparisons, sector-level investment guides and price data built from our live Gurgaon listing catalogue.",
     url: PAGE_URL,
     type: "website",
     images: [DEFAULT_OG_IMAGE],
@@ -57,7 +57,7 @@ const structuredData = {
     },
     {
       "@type": "CollectionPage",
-      name: "Blog — Gurgaon Real Estate Guides & Market Data",
+      name: "Blog, Gurgaon Real Estate Guides & Market Data",
       url: PAGE_URL,
     },
     {
@@ -104,7 +104,7 @@ const BlogIndex = () => {
         </h1>
         <p className="mt-4 max-w-2xl text-gray-400 leading-relaxed">
           Corridor comparisons, sector-level investment guides and price data
-          for Gurgaon real estate — built directly from HomzRealtor&apos;s
+          for Gurgaon real estate, built directly from HomzRealtor&apos;s
           live listing catalogue, not generic advice.
         </p>
 

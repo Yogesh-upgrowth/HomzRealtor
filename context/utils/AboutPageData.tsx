@@ -38,7 +38,7 @@ const aboutPageData = {
   aboutUs: {
     title: "ABOUT US",
     para1: {
-      text1: `At Homz, we believe buying or investing in property should feel clear, confident and rewarding — not overwhelming. We are a trusted real estate advisory platform that brings verified residential and commercial opportunities together with honest guidance, so you always know exactly what you're getting into.`,
+      text1: `At Homz, we believe buying or investing in property should feel clear, confident and rewarding, not overwhelming. We are a trusted real estate advisory platform that brings verified residential and commercial opportunities together with honest guidance, so you always know exactly what you're getting into.`,
       text2: `From first enquiry to final handover, our team supports you with transparent information, on-ground insight and end-to-end assistance. Whether you're searching for a home to live in or a property to grow your wealth, Homz is built to help you make the right decision with complete peace of mind.`,
     },
     imageSrc: aboutHomz,

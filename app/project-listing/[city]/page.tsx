@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   if (!resolved) return {};
 
   const { cityKey, name, slug } = resolved;
-  const title = `Property in ${name} — Residential & Commercial Projects`;
+  const title = `Property in ${name}, Residential & Commercial Projects`;
   const description = `Explore verified residential and commercial property projects in ${name}. Compare prices, floor plans, amenities and locations, and enquire directly with HomzRealtor.`;
 
   // A city with no live inventory yet still renders (as a "being updated"
@@ -153,7 +153,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
     `Discover ${projects.length > 0 ? `${projects.length}+ ` : ""}verified property ` +
     `projects in ${name}, ${state} on HomzRealtor` +
     (residential.length && commercial.length
-      ? ` — spanning ${residential.length} residential and ${commercial.length} commercial developments.`
+      ? `, spanning ${residential.length} residential and ${commercial.length} commercial developments.`
       : ".") +
     (microMarkets.length
       ? ` Popular corridors include ${microMarkets.slice(0, 3).join(", ")}.`
@@ -211,7 +211,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
             whole string in JS and rendering it as a single expression
             sidesteps whatever JSX text-node splitting causes that. */}
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          {`Property in ${name} — Residential & Commercial Projects`}
+          {`Property in ${name}, Residential & Commercial Projects`}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{intro}</p>
 
@@ -359,7 +359,7 @@ const CityLandingPage = async ({ params }: PageParams) => {
       <AppointmentCard
         bgImage={bgImg}
         heading={`FIND YOUR PROPERTY IN ${name.toUpperCase()}`}
-        para={`Get expert guidance on the best residential and commercial projects in ${name} — pricing, availability and a personalised investment view from the HomzRealtor team.`}
+        para={`Get expert guidance on the best residential and commercial projects in ${name}: pricing, availability and a personalised investment view from the HomzRealtor team.`}
         btnTxt="Talk to an Expert"
       />
     </div>

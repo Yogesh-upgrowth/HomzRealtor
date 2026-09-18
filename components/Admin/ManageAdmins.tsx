@@ -52,7 +52,7 @@ export default function ManageAdmins() {
     const confirmMessage =
       action === "approve"
         ? "Grant admin access to this applicant?"
-        : "Reject this application? The account will be deleted entirely — they'd need to apply again.";
+        : "Reject this application? The account will be deleted entirely, they'd need to apply again.";
     if (!window.confirm(confirmMessage)) return;
 
     setBusyId(id);
@@ -76,7 +76,7 @@ export default function ManageAdmins() {
   const revoke = async (id: string, email: string) => {
     if (
       !window.confirm(
-        `Revoke admin access from ${email}? Their account will be deleted entirely — they'd need to apply again from scratch.`
+        `Revoke admin access from ${email}? Their account will be deleted entirely, they'd need to apply again from scratch.`
       )
     )
       return;

@@ -49,7 +49,7 @@ const CredibilityFooter = ({ post }: { post: BlogPostV27 }) => {
                   >
                     {s.label}
                   </a>{" "}
-                  <span className="text-gray-600">— accessed {s.accessedAt}</span>
+                  <span className="text-gray-600">(accessed {s.accessedAt})</span>
                 </li>
               ))}
             </ol>

@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     const fallbackName = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     return {
       title: fallbackName,
-      description: `Explore ${fallbackName} — pricing, location, amenities and investment insights on HomzRealtor.`,
+      description: `Explore ${fallbackName}: pricing, location, amenities and investment insights on HomzRealtor.`,
       alternates: {
         canonical: `https://www.homzrealtor.com/project-listing/${city}/${slug}`,
       },
@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     ? `from ${project.price_text}`
     : "with the latest pricing";
   const description = truncateAtWord(
-    `${project.project_name}, ${locationLabel} — ${configBit} ${priceBit}. Enquire now with HomzRealtor.`
+    `${project.project_name}, ${locationLabel}: ${configBit} ${priceBit}. Enquire now with HomzRealtor.`
   );
 
   const keywords = [

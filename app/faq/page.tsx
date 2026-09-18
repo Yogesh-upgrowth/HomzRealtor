@@ -14,14 +14,14 @@ const SITE = "https://www.homzrealtor.com";
 const PAGE_URL = `${SITE}/faq`;
 
 export const metadata: Metadata = {
-  title: "FAQs — HomzRealtor Gurgaon Property Advisory",
+  title: "FAQs, HomzRealtor Gurgaon Property Advisory",
   description:
-    "Answers to common questions about buying property in Gurgaon through HomzRealtor — brokerage fees, RERA verification, home loan assistance and booking a site visit.",
+    "Answers to common questions about buying property in Gurgaon through HomzRealtor: brokerage fees, RERA verification, home loan assistance and booking a site visit.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "FAQs — HomzRealtor Gurgaon Property Advisory",
+    title: "FAQs, HomzRealtor Gurgaon Property Advisory",
     description:
-      "Answers to common questions about buying property in Gurgaon through HomzRealtor — brokerage fees, RERA verification, home loan assistance and booking a site visit.",
+      "Answers to common questions about buying property in Gurgaon through HomzRealtor: brokerage fees, RERA verification, home loan assistance and booking a site visit.",
     url: PAGE_URL,
     type: "website",
   },
@@ -70,7 +70,7 @@ const FaqPage = () => {
             Asked Questions") below, so this doesn't read as a literal
             duplicate heading. */}
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          Property Buying FAQs — HomzRealtor Gurgaon
+          Property Buying FAQs, HomzRealtor Gurgaon
         </h1>
       </div>
 

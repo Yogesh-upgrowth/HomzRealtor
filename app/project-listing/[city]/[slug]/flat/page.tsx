@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     project.min_price_inr != null
       ? `Prices from ${formatInr(project.min_price_inr)}. `
       : "";
-  const title = `Flats in ${project.project_name}, ${loc} — Price & Availability | HomzRealtor`;
+  const title = `Flats in ${project.project_name}, ${loc}, Price & Availability | HomzRealtor`;
   const description =
     `Looking for flats in ${project.project_name}, ${loc}? ${priceBit}` +
     `Check available configurations, floor plans, amenities and specifications, ` +
@@ -217,7 +217,7 @@ const FlatChildPage = async ({ params }: PageParams) => {
       {/* Gallery */}
       {gallery.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-8">
-          <Carousel images={gallery} alt={`${project.project_name} — flat interior`} />
+          <Carousel images={gallery} alt={`${project.project_name}, flat interior`} />
         </section>
       )}
 
@@ -269,7 +269,7 @@ const FlatChildPage = async ({ params }: PageParams) => {
               About {project.project_name}
             </h2>
             <p className="mt-1 text-sm text-gray-600">
-              See the full project — pricing, floor plans, location intelligence and
+              See the full project: pricing, floor plans, location intelligence and
               investment insights.
             </p>
           </div>

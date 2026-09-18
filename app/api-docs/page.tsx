@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const title = "HomzRealtor API Docs";
 const description =
-  "HomzRealtor's public, unauthenticated API for Gurgaon property listings and status tracking — OpenAPI spec, endpoints, and usage.";
+  "HomzRealtor's public, unauthenticated API for Gurgaon property listings and status tracking: OpenAPI spec, endpoints, and usage.";
 
 export const metadata: Metadata = {
   title,
@@ -33,7 +33,7 @@ export default function ApiDocsPage() {
           HomzRealtor API
         </h1>
         <p className="mb-8 max-w-2xl text-[15px] leading-relaxed text-gray-400">
-          HomzRealtor publishes two read-only, unauthenticated JSON endpoints —
+          HomzRealtor publishes two read-only, unauthenticated JSON endpoints,
           the same ones its own listing pages call. Full machine-readable spec:{" "}
           <Link href="/openapi.json" className="text-[#D9B268] underline">
             /openapi.json
@@ -60,7 +60,7 @@ export default function ApiDocsPage() {
           GET /api/status/&#123;city&#125;/&#123;slug&#125;
         </h2>
         <p className="mb-3 text-[14px] text-gray-400">
-          Current status and change history for one tracked property —
+          Current status and change history for one tracked property,
           check whether a listing is still live before re-fetching it.
         </p>
         <code className={`${codeCls} mb-8`}>
@@ -73,7 +73,7 @@ export default function ApiDocsPage() {
           under <code className="text-gray-300">/api/*</code> (accounts,
           agent property management, admin review) requires an authenticated
           session and isn&apos;t intended for third-party integration.
-          Rate limits aren&apos;t currently enforced beyond response caching —
+          Rate limits aren&apos;t currently enforced beyond response caching;
           treat this as a best-effort feed, not an SLA-backed API.
         </p>
       </div>

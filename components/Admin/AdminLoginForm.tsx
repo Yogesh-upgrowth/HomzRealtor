@@ -42,7 +42,7 @@ export default function AdminLoginForm({ onSwitchToApply }: AdminLoginFormProps)
       // makes it re-evaluate and show the dashboard now that login succeeded.
       router.refresh();
     } catch {
-      toast.error("Server error — please try again");
+      toast.error("Server error, please try again");
     } finally {
       setLoading(false);
     }

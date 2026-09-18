@@ -1,7 +1,7 @@
 import ComingSoon from "@/components/Common/ComingSoon";
 import discoverImage3 from "@/assets/images/discoverImage3.jpg";
 
-const title = "Plots & Lands — Coming Soon";
+const title = "Plots & Lands, Coming Soon";
 const description =
   "Plots & Lands listings are coming soon to HomzRealtor. Find the perfect plot or land for your dream project, investment, or development plan.";
 
@@ -32,7 +32,7 @@ export default function PlotsAndLandsPage() {
   return (
     <ComingSoon
       title="Plots & Lands"
-      description="Find the perfect plot or land for your dream project, investment, or development plan. This section is coming soon — stay tuned!"
+      description="Find the perfect plot or land for your dream project, investment, or development plan. This section is coming soon, stay tuned!"
     />
   );
 }

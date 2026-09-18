@@ -36,7 +36,7 @@ export default function CustomerProfileForm() {
       toast.success("Profile updated!");
       await refresh();
     } catch {
-      toast.error("Server error — please try again");
+      toast.error("Server error, please try again");
     } finally {
       setSaving(false);
     }

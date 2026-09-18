@@ -145,7 +145,7 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
     `Discover ${projects.length > 0 ? `${projects.length}+ ` : ""}verified property ` +
     `projects in ${sectorLabel}, ${name}, ${state} on HomzRealtor` +
     (residential.length && commercial.length
-      ? ` — ${residential.length} residential and ${commercial.length} commercial developments.`
+      ? `, ${residential.length} residential and ${commercial.length} commercial developments.`
       : ".") +
     ` Compare prices, floor plans, amenities and possession timelines, then enquire directly with our advisors.`;
 
@@ -360,7 +360,7 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
       <AppointmentCard
         bgImage={bgImg}
         heading={`FIND YOUR PROPERTY IN ${sectorLabel.toUpperCase()}`}
-        para={`Get expert guidance on the best projects in ${sectorLabel}, ${name} — pricing, availability and a personalised investment view from the HomzRealtor team.`}
+        para={`Get expert guidance on the best projects in ${sectorLabel}, ${name}: pricing, availability and a personalised investment view from the HomzRealtor team.`}
         btnTxt="Talk to an Expert"
       />
     </div>

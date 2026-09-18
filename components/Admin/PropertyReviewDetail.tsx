@@ -189,7 +189,7 @@ export default function PropertyReviewDetail({ propertyId, onDecided }: Property
           <div className="flex flex-col gap-1">
             {property.basicInfo.areaDetails.map((a, i) => (
               <p key={i} className="text-sm text-gray-300">
-                {a.areaSize} sq.ft — {a.areaType}
+                {a.areaSize} sq.ft, {a.areaType}
                 {a.isDisplay ? " (headline)" : ""}
               </p>
             ))}
@@ -275,7 +275,7 @@ export default function PropertyReviewDetail({ propertyId, onDecided }: Property
               <div key={e.id} className="text-sm text-gray-300">
                 <span className="font-semibold text-white capitalize">{e.action}</span> by {e.adminName} on{" "}
                 {new Date(e.at).toLocaleString("en-IN")}
-                {e.reason && <span className="text-gray-500"> — {e.reason}</span>}
+                {e.reason && <span className="text-gray-500">: {e.reason}</span>}
               </div>
             ))}
           </div>

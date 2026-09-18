@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const pageNum = parsePageNumber(page);
   if (!pageNum) return {};
 
-  const title = `Rent Property in Gurgaon — Page ${pageNum}`;
+  const title = `Rent Property in Gurgaon, Page ${pageNum}`;
   const description = `Browse properties for rent in Gurgaon, page ${pageNum}. Filter by property type, BHK, budget and possession status.`;
   const canonical = `${SITE}/rent-property/page/${pageNum}`;
 

@@ -106,7 +106,7 @@ export default function WizardSidebar() {
             Back
           </Link>
           <p className="min-w-0 truncate text-right text-[13px] font-semibold text-white">
-            Step {currentStep} of {STEP_DEFINITIONS.length} — {STEP_DEFINITIONS[currentStep - 1].title}
+            Step {currentStep} of {STEP_DEFINITIONS.length}: {STEP_DEFINITIONS[currentStep - 1].title}
           </p>
         </div>
         <div className="h-1.5 rounded-full bg-white/10">

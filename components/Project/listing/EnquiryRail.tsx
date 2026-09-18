@@ -111,7 +111,7 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
                 Talk to a property expert
               </p>
               <p className="mb-5 text-[13.5px] leading-relaxed text-gray-400">
-                Exclusive access to new launches &amp; developer deals — only for HomzRealtor clients.
+                Exclusive access to new launches &amp; developer deals, only for HomzRealtor clients.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-3">

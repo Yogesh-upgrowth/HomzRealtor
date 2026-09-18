@@ -44,7 +44,7 @@ function describeEvent(e: StatusEventDoc): string | null {
         ? `Price updated ${timeAgo(e.at)}: ${e.from} → ${e.to}`
         : `Price updated ${timeAgo(e.at)}`;
     case "status_change":
-      return `Status changed ${timeAgo(e.at)}: ${e.from ?? "—"} → ${e.to ?? "—"}`;
+      return `Status changed ${timeAgo(e.at)}: ${e.from ?? "N/A"} → ${e.to ?? "N/A"}`;
     case "delisted":
       return `Removed from listings ${timeAgo(e.at)}`;
     case "listed":

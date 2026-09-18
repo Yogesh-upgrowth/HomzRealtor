@@ -160,7 +160,7 @@ export function ListPropertyFormProvider({ children }: { children: ReactNode }) 
       router.push("/dashboard/my-property");
       router.refresh();
     } catch {
-      toast.error("Server error — please try again");
+      toast.error("Server error, please try again");
     } finally {
       setIsSubmitting(false);
     }

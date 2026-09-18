@@ -5,7 +5,7 @@ import { computeFacets } from "@/lib/listings/filters";
 
 const title = "PG Accommodation in Gurgaon";
 const description =
-  "Paying-guest accommodations in Gurgaon — filter by budget and amenities.";
+  "Paying-guest accommodations in Gurgaon: filter by budget and amenities.";
 
 // DEV-04 (2026-09-16): confirmed live against the real production feed —
 // PG genuinely has zero listings right now, not a one-session fluke (the

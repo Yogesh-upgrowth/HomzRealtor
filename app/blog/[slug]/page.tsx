@@ -52,12 +52,12 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     // the 120 floor — the only 6 URLs in the whole library that were.
     const description =
       `${count} ${count === 1 ? "guide" : "guides"} on ${label.toLowerCase()} for Gurgaon property, ` +
-      `built from HomzRealtor's live listing catalogue — real project counts and price data, not generic advice.`;
+      `built from HomzRealtor's live listing catalogue, real project counts and price data, not generic advice.`;
     return {
-      title: `${label} — HomzRealtor Blog`,
+      title: `${label}, HomzRealtor Blog`,
       description,
       alternates: { canonical: url },
-      openGraph: { title: `${label} — HomzRealtor Blog`, description, url, type: "website" },
+      openGraph: { title: `${label}, HomzRealtor Blog`, description, url, type: "website" },
     };
   }
 
@@ -117,7 +117,7 @@ const CategoryArchive = ({ category }: { category: BlogCategory }) => {
       },
       {
         "@type": "CollectionPage",
-        name: `${label} — HomzRealtor Blog`,
+        name: `${label}, HomzRealtor Blog`,
         url,
       },
       ...(posts.length > 0
@@ -152,7 +152,7 @@ const CategoryArchive = ({ category }: { category: BlogCategory }) => {
         <p className="mt-3 max-w-2xl text-gray-400">
           {posts.length > 0
             ? `${posts.length} ${posts.length === 1 ? "guide" : "guides"} in this category, built from HomzRealtor's live Gurgaon catalogue.`
-            : "No guides published in this category yet — check back soon."}
+            : "No guides published in this category yet, check back soon."}
         </p>
 
         {posts.length > 0 && (

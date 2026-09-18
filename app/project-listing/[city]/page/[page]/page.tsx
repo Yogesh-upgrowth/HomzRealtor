@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   if (!resolved || !pageNum) return {};
 
   const { name, slug } = resolved;
-  const title = `Property Projects in ${name} — Page ${pageNum}`;
+  const title = `Property Projects in ${name}, Page ${pageNum}`;
   const description = `Browse verified residential and commercial property projects in ${name}, page ${pageNum}. Compare prices, floor plans and possession timelines, then enquire directly with HomzRealtor.`;
   const canonical = `${SITE}/project-listing/${slug}/page/${pageNum}`;
 
@@ -138,7 +138,7 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
       },
       {
         "@type": "CollectionPage",
-        name: `Property Projects in ${name} — Page ${pageNum}`,
+        name: `Property Projects in ${name}, Page ${pageNum}`,
         url: pageUrl,
       },
     ],
@@ -174,7 +174,7 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
             before an em-dash on a text node adjacent to an expression gets
             silently dropped by React's SSR output otherwise. */}
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
-          {`Property Projects in ${name} — Page ${pageNum} of ${totalPages}`}
+          {`Property Projects in ${name}, Page ${pageNum} of ${totalPages}`}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-600 leading-relaxed">
           Showing {pageProjects.length} of {allProjects.length} verified projects in {name}.
@@ -184,7 +184,7 @@ const ProjectsPagePaginated = async ({ params }: PageParams) => {
       <SimilarProjects
         title={name}
         projects={pageProjects}
-        heading={`Projects in ${name} — page ${pageNum}`}
+        heading={`Projects in ${name}, page ${pageNum}`}
       />
 
       {/* Real anchors, not buttons — this is the crawl path between pages. */}

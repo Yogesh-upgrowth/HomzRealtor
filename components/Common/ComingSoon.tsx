@@ -26,7 +26,7 @@ export default function ComingSoon({ title, description }: ComingSoonProps) {
 
         <p className="mt-6 text-gray-400 text-lg">
           {description ??
-            "We're working hard to bring this experience to you. This section will be available soon — stay tuned!"}
+            "We're working hard to bring this experience to you. This section will be available soon, stay tuned!"}
         </p>
 
         <Link

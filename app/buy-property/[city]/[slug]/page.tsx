@@ -47,7 +47,7 @@ export async function generateMetadata(props: PageParams): Promise<Metadata> {
   if (facet) {
     const url = `${SITE}/buy-property/${city}/${slug}`;
     return {
-      title: `${facet.label} — Price, Photos & Details`,
+      title: `${facet.label}, Price, Photos & Details`,
       description: facet.description,
       alternates: { canonical: url },
       openGraph: { title: facet.label, description: facet.description, url, type: "website" },

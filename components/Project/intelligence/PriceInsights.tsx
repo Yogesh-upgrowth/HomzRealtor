@@ -195,7 +195,7 @@ const PriceInsights = ({ title, data, priceList = [], bare = false }: Props) => 
                 <Tooltip
                   content={
                     <ChartTooltip
-                      formatter={(v) => formatInr(v) ?? "—"}
+                      formatter={(v) => formatInr(v) ?? "N/A"}
                     />
                   }
                   cursor={{ fill: "rgba(206,164,78,0.08)" }}

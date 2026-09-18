@@ -104,7 +104,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const title = `${projectA.project_name} vs ${projectB.project_name}, ${locationLabel}: Compare Price & Amenities`;
 
   const description =
-    `Compare ${projectA.project_name} vs ${projectB.project_name} in ${locationLabel} — ` +
+    `Compare ${projectA.project_name} vs ${projectB.project_name} in ${locationLabel}: ` +
     `price, possession, amenities and floor plans side by side on HomzRealtor.`;
 
   const keywords = [

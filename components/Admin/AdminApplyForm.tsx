@@ -41,7 +41,7 @@ export default function AdminApplyForm({ onSwitchToLogin }: AdminApplyFormProps)
 
       setSubmitted(true);
     } catch {
-      toast.error("Server error — please try again");
+      toast.error("Server error, please try again");
     } finally {
       setLoading(false);
     }

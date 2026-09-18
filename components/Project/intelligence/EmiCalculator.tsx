@@ -19,7 +19,7 @@ function InrTooltip({ active, payload }: { active?: boolean; payload?: any[] }) 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm shadow-lg">
       <p className="text-gray-400 text-xs">{p.name}</p>
-      <p className="text-[#CEA44E] font-bold">{formatInr(p.value) ?? "—"}</p>
+      <p className="text-[#CEA44E] font-bold">{formatInr(p.value) ?? "N/A"}</p>
     </div>
   );
 }
@@ -77,7 +77,7 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="emi-price" className="text-gray-200 font-medium">Property Price</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "—"}</span>
+                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "N/A"}</span>
               </div>
               <input
                 id="emi-price"
@@ -106,7 +106,7 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
               <div className="flex items-center justify-between text-sm mb-1">
                 <label htmlFor="emi-down-payment" className="text-gray-200 font-medium">Down Payment</label>
                 <span className="text-[#CEA44E] font-semibold">
-                  {downPct}% · {formatInrExact(Math.round((priceValue * downPct) / 100)) ?? "—"}
+                  {downPct}% · {formatInrExact(Math.round((priceValue * downPct) / 100)) ?? "N/A"}
                 </span>
               </div>
               <input
@@ -160,7 +160,7 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
           <div className="flex-1 w-full">
             <div className="text-center mb-4">
               <p className="text-xs text-gray-400 uppercase tracking-widest">Monthly EMI</p>
-              <p className="text-4xl font-bold text-white mt-1">{formatInrExact(emi) ?? "—"}</p>
+              <p className="text-4xl font-bold text-white mt-1">{formatInrExact(emi) ?? "N/A"}</p>
             </div>
 
             <ResponsiveContainer width="100%" height={180}>
@@ -186,15 +186,15 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
             <div className="grid grid-cols-3 gap-2 mt-4 text-center">
               <div>
                 <p className="text-[11px] text-gray-500">Loan Amount</p>
-                <p className="text-sm font-semibold text-white">{formatInr(loanAmount) ?? "—"}</p>
+                <p className="text-sm font-semibold text-white">{formatInr(loanAmount) ?? "N/A"}</p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-500">Total Interest</p>
-                <p className="text-sm font-semibold text-white">{formatInr(totalInterest) ?? "—"}</p>
+                <p className="text-sm font-semibold text-white">{formatInr(totalInterest) ?? "N/A"}</p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-500">Total Payable</p>
-                <p className="text-sm font-semibold text-white">{formatInr(totalPayment) ?? "—"}</p>
+                <p className="text-sm font-semibold text-white">{formatInr(totalPayment) ?? "N/A"}</p>
               </div>
             </div>
 

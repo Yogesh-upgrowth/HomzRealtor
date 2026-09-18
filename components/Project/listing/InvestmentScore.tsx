@@ -22,7 +22,7 @@ const InvestmentScore = ({ title, data, heading }: Props) => {
             The {data.score}/100 score is the sum of five weighted factors, shown below with
             their individual scores: Developer Reputation (out of 20), Connectivity (out of 25),
             Social Infrastructure (out of 20), Product &amp; Compliance (out of 20), and Entry
-            Timing (out of 15) — {data.factors.reduce((s, f) => s + f.max, 0)} points total,
+            Timing (out of 15), {data.factors.reduce((s, f) => s + f.max, 0)} points total,
             scaled to 100.
           </p>
         </details>

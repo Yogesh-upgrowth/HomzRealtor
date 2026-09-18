@@ -1,5 +1,5 @@
 const STEPS = [
-  { num: "01", title: "Tell Us Your Needs", text: "Share your budget, location and property type — our system shortlists matching projects instantly." },
+  { num: "01", title: "Tell Us Your Needs", text: "Share your budget, location and property type, our system shortlists matching projects instantly." },
   { num: "02", title: "Meet a Local Expert", text: "A dedicated Gurgaon specialist walks you through verified options and site visits." },
   { num: "03", title: "Finalize with Confidence", text: "Compare pricing, negotiate and complete paperwork with full legal and RERA support." },
   { num: "04", title: "Move In & Beyond", text: "From loan disbursal to handover, we stay with you through possession and after." },

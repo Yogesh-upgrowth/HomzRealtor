@@ -59,7 +59,7 @@ export const BUY_FACETS: Record<string, FacetDef> = {
   "ready-to-move": {
     slug: "ready-to-move",
     label: "Ready to Move Flats in Gurgaon",
-    description: "Ready-to-move properties for sale in Gurgaon — no construction wait — from HomzRealtor's live listing catalogue.",
+    description: "Ready-to-move properties for sale in Gurgaon (no construction wait) from HomzRealtor's live listing catalogue.",
     filters: { possession: "ready-to-move" },
   },
   plots: {
@@ -151,7 +151,7 @@ const FacetedListingPage = async ({ facet, pageNum }: Props) => {
         </nav>
 
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          {pageNum > 1 ? `${facet.label} — Page ${pageNum}` : facet.label}
+          {pageNum > 1 ? `${facet.label}, Page ${pageNum}` : facet.label}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">{facet.description}</p>
         <p className="mt-2 text-sm text-gray-500">

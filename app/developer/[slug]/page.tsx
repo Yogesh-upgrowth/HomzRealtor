@@ -38,12 +38,12 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       ? `${cityNames.slice(0, -1).join(", ")} & ${cityNames[cityNames.length - 1]}`
       : cityNames[0] || "Delhi NCR";
 
-  const title = `${summary.name} Projects — Price, Properties & Developments in ${cityLabel}`;
+  const title = `${summary.name} Projects, Price, Properties & Developments in ${cityLabel}`;
   const description =
     `Explore ${summary.count} ${summary.name} ${summary.count === 1 ? "project" : "projects"} ` +
     `across ${cityLabel} on HomzRealtor` +
     (summary.residential && summary.commercial
-      ? ` — ${summary.residential} residential and ${summary.commercial} commercial developments.`
+      ? `: ${summary.residential} residential and ${summary.commercial} commercial developments.`
       : ".") +
     ` Compare prices, floor plans, amenities and locations, and enquire directly.`;
 
@@ -262,7 +262,7 @@ const DeveloperPage = async ({ params }: PageParams) => {
       <AppointmentCard
         bgImage={bgImg}
         heading={`EXPLORE ${summary.name.toUpperCase()} PROJECTS`}
-        para={`Get expert guidance on ${summary.name} developments — pricing, availability and a personalised investment view from the HomzRealtor team.`}
+        para={`Get expert guidance on ${summary.name} developments: pricing, availability and a personalised investment view from the HomzRealtor team.`}
         btnTxt="Talk to an Expert"
       />
     </div>

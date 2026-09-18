@@ -32,7 +32,7 @@ export default function ConsentBanner() {
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center md:flex-row md:items-center md:justify-between md:gap-6 md:text-left">
         <p className="text-[13px] leading-relaxed text-gray-300">
           We use analytics cookies to understand how visitors use HomzRealtor and improve the
-          site. We only turn them on with your consent — see our{" "}
+          site. We only turn them on with your consent, see our{" "}
           <a href="/privacy-policy" className="text-[#D9B268] underline hover:opacity-80">
             Privacy Policy
           </a>

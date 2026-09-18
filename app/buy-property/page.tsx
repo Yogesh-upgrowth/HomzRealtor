@@ -3,9 +3,9 @@ import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/compon
 import { computeFacets } from "@/lib/listings/filters";
 import discoverImage1 from "@/assets/images/discoverImage1.jpg";
 
-const title = "Buy Property in Gurgaon — Price, Photos & Floor Plans";
+const title = "Buy Property in Gurgaon, Price, Photos & Floor Plans";
 const description =
-  "Resale and new-launch properties for sale in Gurgaon — filter by property type, BHK, budget, and possession status.";
+  "Resale and new-launch properties for sale in Gurgaon: filter by property type, BHK, budget, and possession status.";
 
 export const metadata = {
   title,

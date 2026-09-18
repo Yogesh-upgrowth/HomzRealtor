@@ -68,12 +68,12 @@ const ConfigurationsTable = ({ title, priceList }: Props) => {
               <tr key={i} className="border-b border-gray-800 text-gray-200">
                 <td className="py-2.5 pr-4 font-medium">{r.unit}</td>
                 <td className="py-2.5 pr-4">
-                  {r.sizeNum ? `${r.sizeNum.toLocaleString("en-IN")} sq.ft` : "—"}
+                  {r.sizeNum ? `${r.sizeNum.toLocaleString("en-IN")} sq.ft` : "N/A"}
                 </td>
                 <td className="py-2.5 pr-4">
-                  {r.priceInr ? formatInr(r.priceInr) : r.priceStr || "—"}
+                  {r.priceInr ? formatInr(r.priceInr) : r.priceStr || "N/A"}
                 </td>
-                <td className="py-2.5 text-[#CEA44E]">{r.psf ? formatInrExact(r.psf) : "—"}</td>
+                <td className="py-2.5 text-[#CEA44E]">{r.psf ? formatInrExact(r.psf) : "N/A"}</td>
               </tr>
             ))}
           </tbody>

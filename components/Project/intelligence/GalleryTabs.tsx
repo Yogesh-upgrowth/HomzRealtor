@@ -49,7 +49,7 @@ const GalleryTabs = ({ title, exterior, interior, masterPlan }: Props) => {
           even though the real image at index 0 loads fine. Reported live
           on /project-listing/gurgaon/reach-buzz-114 — confirmed all 4 of
           that project's real image URLs return 200. */}
-      <Carousel key={activeBucket.id} images={activeBucket.images} alt={`${title} — ${activeBucket.label}`} />
+      <Carousel key={activeBucket.id} images={activeBucket.images} alt={`${title}, ${activeBucket.label}`} />
     </section>
   );
 };

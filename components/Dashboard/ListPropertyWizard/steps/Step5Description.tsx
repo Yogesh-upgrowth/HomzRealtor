@@ -16,7 +16,7 @@ export default function Step5Description() {
         label="One line description"
         required
         error={errors.oneLineDescription}
-        helperText={!errors.oneLineDescription ? `${wordCount}/20 words — a catchy title increases views by up to 30%` : undefined}
+        helperText={!errors.oneLineDescription ? `${wordCount}/20 words: a catchy title increases views by up to 30%` : undefined}
       >
         <input
           type="text"

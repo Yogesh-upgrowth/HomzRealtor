@@ -16,7 +16,7 @@ export const HOME_FAQS: FaqItem[] = [
     // uniformly "verified" state. The honest answer describes what the
     // site actually does: display the real status, not guarantee one.
     q: "Are all listings on HomzRealtor RERA registered?",
-    a: "Not automatically. Every project page on HomzRealtor shows that project's actual RERA status — registered, lapsed, unverified or not registered — as sourced from available records, so you can check it before proceeding. Always confirm the current registration on the official HARERA portal before making any payment.",
+    a: "Not automatically. Every project page on HomzRealtor shows that project's actual RERA status registered, lapsed, unverified or not registered as sourced from available records, so you can check it before proceeding. Always confirm the current registration on the official HARERA portal before making any payment.",
   },
   {
     q: "Does HomzRealtor charge buyers a brokerage fee?",

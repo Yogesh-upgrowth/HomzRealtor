@@ -132,7 +132,7 @@ const DevelopersIndexPage = async () => {
       <AppointmentCard
         bgImage={bgImg}
         heading="FIND THE RIGHT DEVELOPER FOR YOU"
-        para="Get expert guidance on the best developers and projects across Delhi NCR — pricing, availability and a personalised investment view from the HomzRealtor team."
+        para="Get expert guidance on the best developers and projects across Delhi NCR: pricing, availability and a personalised investment view from the HomzRealtor team."
         btnTxt="Talk to an Expert"
       />
     </div>

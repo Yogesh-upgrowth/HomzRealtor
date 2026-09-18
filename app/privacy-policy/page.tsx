@@ -33,7 +33,7 @@ const PrivacyPolicyPage = () => {
         <Section title="1. What we collect">
           <p>
             When you submit an enquiry, request a callback, or contact us through this website
-            (including via WhatsApp), we collect the information you provide — typically your
+            (including via WhatsApp), we collect the information you provide, typically your
             name, phone number, email address, and details of the property you are enquiring
             about. We also collect standard usage data (pages visited, device/browser type,
             approximate location) through analytics tools.
@@ -43,7 +43,7 @@ const PrivacyPolicyPage = () => {
         <Section title="2. How we use it">
           <p>
             We use this information to respond to your enquiry, share relevant property
-            information, and — where you have consented — to follow up by phone, email or
+            information, and, where you have consented, to follow up by phone, email or
             WhatsApp. We do not sell your personal information to third parties.
           </p>
         </Section>

@@ -6,7 +6,7 @@ import { getProjectsForCity } from "@/lib/intelligence/projects";
 // The site's main listings hub had no page-specific metadata at all — it was
 // inheriting the root layout's generic default title/description.
 export const metadata: Metadata = {
-  title: "Property Projects in Gurgaon — Price, Photos & Floor Plans",
+  title: "Property Projects in Gurgaon, Price, Photos & Floor Plans",
   description:
     "Browse residential and commercial property projects in Gurgaon. Filter by sector, budget, BHK and status, compare prices and enquire directly with HomzRealtor.",
   alternates: { canonical: "/project-listing" },

@@ -12,14 +12,14 @@ const SITE = "https://www.homzrealtor.com";
 const PAGE_URL = `${SITE}/property-insights`;
 
 export const metadata: Metadata = {
-  title: "Property Insights — Buyer's Guides",
+  title: "Property Insights, Buyer's Guides",
   description:
-    "HomzRealtor's buyer's guides — RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
+    "HomzRealtor's buyer's guides: RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Property Insights — Buyer's Guides",
+    title: "Property Insights, Buyer's Guides",
     description:
-      "HomzRealtor's buyer's guides — RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
+      "HomzRealtor's buyer's guides: RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
     url: PAGE_URL,
     type: "website",
     images: [DEFAULT_OG_IMAGE],
@@ -42,7 +42,7 @@ const structuredData = {
     },
     {
       "@type": "CollectionPage",
-      name: "Property Insights — Buyer's Guides",
+      name: "Property Insights, Buyer's Guides",
       url: PAGE_URL,
     },
     {
@@ -81,7 +81,7 @@ const PropertyInsightsIndex = () => {
         </nav>
 
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          Property Insights — Buyer&apos;s Guides
+          Property Insights, Buyer&apos;s Guides
         </h1>
         <p className="mt-4 max-w-2xl text-gray-400 leading-relaxed">
           Practical, HomzRealtor-authored guides for buyers navigating RERA

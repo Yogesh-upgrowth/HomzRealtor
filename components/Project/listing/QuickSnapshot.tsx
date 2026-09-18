@@ -19,7 +19,7 @@ const QuickSnapshot = ({ chips }: { chips: Chip[] }) => {
                 rel="noopener noreferrer"
                 className={`block text-sm md:text-base font-semibold mt-0.5 line-clamp-2 underline decoration-current/40 underline-offset-2 hover:opacity-80 ${reraTextClass(chip.value, chip.status)}`}
               >
-                {chip.value} — verify ↗
+                {chip.value}, verify ↗
               </a>
             ) : chip.label === "RERA" ? (
               <p className={`text-sm md:text-base font-semibold mt-0.5 line-clamp-2 ${reraTextClass(chip.value, chip.status)}`}>

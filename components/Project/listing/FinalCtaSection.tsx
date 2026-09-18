@@ -39,7 +39,7 @@ const FinalCtaSection = ({ projectName, locationLine, bgImage }: Props) => {
           Walk the property before it&apos;s gone.
         </h2>
         <p className="mx-auto mb-8 max-w-[46ch] text-base leading-relaxed text-gray-300">
-          Get expert guidance on {projectName} — pricing, availability and a personalised
+          Get expert guidance on {projectName}: pricing, availability and a personalised
           investment view from the HomzRealtor team.
         </p>
         <div className="flex flex-wrap justify-center gap-3">

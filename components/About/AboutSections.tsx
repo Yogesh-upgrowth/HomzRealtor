@@ -293,7 +293,7 @@ const AboutSections = () => {
           </div>
 
           <p className="mt-10 text-2xl md:text-3xl font-semibold font-corbert bg-gradient-to-b from-[#FDF094] to-[#B77D2B] text-transparent bg-clip-text inline-block">
-            &ldquo;HomzRealtor — Where Your Property Journey Begins.&rdquo;
+            &ldquo;HomzRealtor: Where Your Property Journey Begins.&rdquo;
           </p>
         </div>
       </section>

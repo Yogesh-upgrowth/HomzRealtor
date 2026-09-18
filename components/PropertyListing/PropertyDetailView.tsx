@@ -137,7 +137,7 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
             <ScoreRing score={view.investmentScore.score} grade={view.investmentScore.grade} size={140} />
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#D9B268] mb-2">
-                Homz Score — {view.investmentScore.grade}
+                Homz Score: {view.investmentScore.grade}
               </p>
               <p className="text-gray-300 max-w-2xl">{view.investmentScore.verdict}</p>
               <div className="flex gap-6 mt-4 text-sm">

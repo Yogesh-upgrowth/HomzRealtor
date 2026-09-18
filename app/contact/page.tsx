@@ -12,14 +12,14 @@ const SITE = "https://www.homzrealtor.com";
 const PAGE_URL = `${SITE}/contact`;
 
 export const metadata: Metadata = {
-  title: "Contact HomzRealtor — Gurgaon Property Advisors",
+  title: "Contact HomzRealtor, Gurgaon Property Advisors",
   description:
-    "Get in touch with HomzRealtor — phone, email, WhatsApp and office details for verified residential and commercial property advice in Gurgaon.",
+    "Get in touch with HomzRealtor: phone, email, WhatsApp and office details for verified residential and commercial property advice in Gurgaon.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
     title: "Contact HomzRealtor",
     description:
-      "Get in touch with HomzRealtor — phone, email, WhatsApp and office details for verified residential and commercial property advice in Gurgaon.",
+      "Get in touch with HomzRealtor: phone, email, WhatsApp and office details for verified residential and commercial property advice in Gurgaon.",
     url: PAGE_URL,
     type: "website",
     images: [DEFAULT_OG_IMAGE],
@@ -90,7 +90,7 @@ const ContactPage = () => {
         {COMPANY_INFO.hararaAgentNumber && (
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9B268]/30 bg-[#D9B268]/10 px-4 py-2 text-sm font-medium text-[#D9B268]">
             <ShieldCheck size={16} />
-            HARERA Registered Channel Partner — {COMPANY_INFO.hararaAgentNumber}
+            HARERA Registered Channel Partner: {COMPANY_INFO.hararaAgentNumber}
           </div>
         )}
 

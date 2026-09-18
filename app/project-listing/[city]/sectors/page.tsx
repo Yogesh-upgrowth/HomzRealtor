@@ -51,7 +51,7 @@ export async function generateMetadata({
   if (!resolved) return {};
 
   const { cityKey, name, slug } = resolved;
-  const title = `Property by Sector in ${name} — Browse Projects Sector-wise`;
+  const title = `Property by Sector in ${name}, Browse Projects Sector-wise`;
   const description = `Browse residential and commercial property projects in ${name} by sector. Pick a sector to see verified projects, prices, floor plans and availability, then enquire directly with HomzRealtor.`;
 
   // Same reasoning as the city landing page's generateMetadata: a city with
@@ -243,7 +243,7 @@ const CitySectorsPage = async ({ params }: PageParams) => {
       <AppointmentCard
         bgImage={bgImg}
         heading={`FIND YOUR PROPERTY IN ${name.toUpperCase()}`}
-        para={`Tell us the sector you're interested in and get expert guidance on the best projects in ${name} — pricing, availability and a personalised investment view from the HomzRealtor team.`}
+        para={`Tell us the sector you're interested in and get expert guidance on the best projects in ${name}: pricing, availability and a personalised investment view from the HomzRealtor team.`}
         btnTxt="Talk to an Expert"
       />
     </div>

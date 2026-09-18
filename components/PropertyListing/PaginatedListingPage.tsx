@@ -274,7 +274,7 @@ const PaginatedListingPage = async ({ category, pageNum }: Props) => {
           { "@type": "ListItem", position: 3, name: `Page ${pageNum}`, item: pageUrl },
         ],
       },
-      { "@type": "CollectionPage", name: `${heading} — Page ${pageNum}`, url: pageUrl },
+      { "@type": "CollectionPage", name: `${heading}, Page ${pageNum}`, url: pageUrl },
     ],
   };
   const safeJson = (g: unknown) =>
@@ -297,7 +297,7 @@ const PaginatedListingPage = async ({ category, pageNum }: Props) => {
         </nav>
 
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          {`${heading} — Page ${pageNum} of ${totalPages}`}
+          {`${heading}, Page ${pageNum} of ${totalPages}`}
         </h1>
         <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">
           Showing {pageProperties.length} of {all.length} listings.

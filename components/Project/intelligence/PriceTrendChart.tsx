@@ -70,7 +70,7 @@ function InrTooltip({ active, payload, label }: { active?: boolean; payload?: an
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm shadow-lg">
       <p className="text-gray-400 mb-1 text-xs">{label}</p>
-      <p className="text-[#CEA44E] font-bold">{formatInr(payload[0].value) ?? "—"}</p>
+      <p className="text-[#CEA44E] font-bold">{formatInr(payload[0].value) ?? "N/A"}</p>
     </div>
   );
 }
@@ -154,19 +154,19 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">Current Price</p>
-            <p className="text-xl font-bold text-white mt-1">{formatInr(base) ?? "—"}</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">Real — from listing</p>
+            <p className="text-xl font-bold text-white mt-1">{formatInr(base) ?? "N/A"}</p>
+            <p className="text-[11px] text-gray-500 mt-0.5">Real, from listing</p>
           </div>
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">
               At Possession{futurePossessionYear ? ` (${futurePossessionYear})` : ""}
             </p>
-            <p className="text-xl font-bold text-[#CEA44E] mt-1">{formatInr(projected) ?? "—"}</p>
+            <p className="text-xl font-bold text-[#CEA44E] mt-1">{formatInr(projected) ?? "N/A"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">Projected estimate</p>
           </div>
           <div className="rounded-xl border border-gray-700 p-4">
             <p className="text-[11px] text-gray-500 uppercase tracking-widest">Projected Gain</p>
-            <p className="text-xl font-bold text-white mt-1">{formatInr(gain) ?? "—"}</p>
+            <p className="text-xl font-bold text-white mt-1">{formatInr(gain) ?? "N/A"}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">
               {growthPct}% over {holdingPeriodLabel}
             </p>
@@ -195,7 +195,7 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
 
         <p className="text-[11px] text-gray-600 mt-4">
           Only the current price is real (from the listing). The journey assumes a constant annual
-          appreciation you set and is an illustrative estimate — not price history or a guarantee of
+          appreciation you set and is an illustrative estimate, not price history or a guarantee of
           returns. Launch-price and historical transaction data are not available for this project.
         </p>
       </div>
