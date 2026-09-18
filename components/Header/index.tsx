@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
 import logo from "@/assets/companylogo/logo.png";
@@ -73,9 +73,73 @@ const Navbar: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // 🔥 Prevent background scroll when menu open
+  // MI-02 (2026-09-18): this drawer previously had zero Escape handling
+  // (the audit's "Escape remained ineffective" finding), no focus trap, no
+  // initial/returned focus, and nothing making the header bar behind it
+  // actually inert -- a keyboard user could Tab straight through the open
+  // drawer into the (visually obscured, backdrop-covered) navbar links and
+  // activate them. drawerRef bounds the Tab-trap and initial-focus target
+  // to the drawer's own controls; chromeRef is the promo bar + main navbar
+  // block that becomes unreachable while the drawer is open (document.body's
+  // other top-level children -- <main>, <Footer> -- are inerted too, same
+  // technique as FormComponent's dialog).
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const chromeRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto";
+    if (!isMobileMenuOpen) return;
+
+    const inerted: HTMLElement[] = [];
+    if (chromeRef.current) {
+      chromeRef.current.setAttribute("inert", "");
+      inerted.push(chromeRef.current);
+    }
+    Array.from(document.body.children).forEach((child) => {
+      if (child instanceof HTMLElement && !child.contains(drawerRef.current) && !child.hasAttribute("inert")) {
+        child.setAttribute("inert", "");
+        inerted.push(child);
+      }
+    });
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !drawerRef.current) return;
+
+      const focusables = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+      inerted.forEach((el) => el.removeAttribute("inert"));
+      if (previouslyFocusedRef.current && document.body.contains(previouslyFocusedRef.current)) {
+        previouslyFocusedRef.current.focus();
+      }
+    };
   }, [isMobileMenuOpen]);
 
   const navBackgroundClass =
@@ -94,6 +158,7 @@ const Navbar: React.FC = () => {
     // this navbar's real rendered height (it changes when the promo bar
     // above is dismissed) rather than guessing it with a hardcoded offset.
     <nav id="site-navbar" className="fixed top-0 left-0 w-full z-50">
+      <div ref={chromeRef}>
       {/* Top Strip */}
       {showPromoBar && (
         <div className="relative text-[10px] md:text-sm bg-black text-white flex items-center justify-between md:justify-center gap-2 px-3 py-2 pr-9 md:pr-12">
@@ -209,6 +274,7 @@ const Navbar: React.FC = () => {
           </button>
         </div>
       </div>
+      </div>
 
       {/* Mobile nav drawer — a right-side panel under the header (not a
           full-screen overlay), matching the reference's `.mobile-nav-drawer`
@@ -224,16 +290,36 @@ const Navbar: React.FC = () => {
       {isMobileMenuOpen && (
         <button
           aria-label="Close menu"
+          tabIndex={-1}
           onClick={() => setIsMobileMenuOpen(false)}
           className="fixed inset-0 z-30 bg-black/60"
         />
       )}
 
       <div
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
         className={`fixed top-0 right-0 bottom-0 z-40 w-[min(320px,84vw)] overflow-y-auto border-l border-white/10 bg-[#131315] pt-28 shadow-[0_30px_90px_rgba(0,0,0,0.6)] transition-transform duration-[350ms] ${
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
+        {/* MI-02: a real, visible, labeled close control inside the panel
+            itself -- previously the only way to dismiss via anything other
+            than a route change or Escape (which didn't work either) was
+            tapping the full-screen backdrop, which happened to visually sit
+            over the header's own hamburger/X toggle and intercept clicks
+            meant for it. */}
+        <button
+          type="button"
+          ref={closeButtonRef}
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-label="Close menu"
+          className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-300 transition-colors hover:border-[#D9B268] hover:text-[#D9B268]"
+        >
+          <IoClose size={20} />
+        </button>
         <div className="flex flex-col gap-1 px-6 pb-8">
           <Link
             href="/"
