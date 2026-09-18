@@ -48,28 +48,34 @@ const AcquisitionCostCalculator = ({
 }: Props) => {
   const preset = defaultRates(state, propertyCategory, readyToMove);
 
-  const [price, setPrice] = useState<number>(defaultPrice ?? 10000000);
+  // MI-13 (2026-09-18): number | "" rather than plain number so clearing
+  // the field to retype doesn't force it back to 0 on every keystroke
+  // (Number("") || 0 evaluates to 0) -- same fix as the other two
+  // calculators on this page.
+  const [price, setPrice] = useState<number | "">(defaultPrice ?? 10000000);
   const [stampDuty, setStampDuty] = useState<number>(preset.stampDuty);
   const [registration, setRegistration] = useState<number>(preset.registration);
   const [gst, setGst] = useState<number>(preset.gst);
   const [other, setOther] = useState<number>(preset.other);
+  const priceValue = price === "" ? 0 : price;
 
   const { stampAmt, regAmt, gstAmt, otherAmt, total, charges } = useMemo(() => {
-    const p = Math.max(0, price);
+    const p = Math.max(0, priceValue);
     const stampAmt = Math.round((p * stampDuty) / 100);
     const regAmt = Math.round((p * registration) / 100);
     const gstAmt = Math.round((p * gst) / 100);
     const otherAmt = Math.round((p * other) / 100);
     const charges = stampAmt + regAmt + gstAmt + otherAmt;
     return { stampAmt, regAmt, gstAmt, otherAmt, total: p + charges, charges };
-  }, [price, stampDuty, registration, gst, other]);
+  }, [priceValue, stampDuty, registration, gst, other]);
 
   const pieData = [
-    { name: "Base Price", value: Math.max(0, price) },
+    { name: "Base Price", value: Math.max(0, priceValue) },
     { name: "Charges & Taxes", value: charges },
   ];
 
   const rateRow = (
+    id: string,
     label: string,
     rate: number,
     setRate: (n: number) => void,
@@ -78,12 +84,13 @@ const AcquisitionCostCalculator = ({
   ) => (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
-        <label className="text-gray-200 font-medium">
+        <label htmlFor={id} className="text-gray-200 font-medium">
           {label} <span className="text-gray-500">({rate}%)</span>
         </label>
         <span className="text-[#CEA44E] font-semibold">{formatInrExact(amount) ?? "—"}</span>
       </div>
       <input
+        id={id}
         type="range"
         min={0}
         max={max}
@@ -107,23 +114,36 @@ const AcquisitionCostCalculator = ({
           <div className="flex-1 space-y-5">
             <div>
               <div className="flex items-center justify-between text-sm mb-1">
-                <label className="text-gray-200 font-medium">Base Property Price</label>
-                <span className="text-[#CEA44E] font-semibold">{formatInr(price) ?? "—"}</span>
+                <label htmlFor="acq-price" className="text-gray-200 font-medium">Base Property Price</label>
+                <span className="text-[#CEA44E] font-semibold">{formatInr(priceValue) ?? "—"}</span>
               </div>
               <input
+                id="acq-price"
                 type="number"
                 min={0}
                 step={100000}
+                inputMode="numeric"
                 value={price}
-                onChange={(e) => setPrice(Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    setPrice("");
+                    return;
+                  }
+                  const n = Number(raw);
+                  setPrice(Number.isFinite(n) ? Math.max(0, n) : 0);
+                }}
+                onBlur={() => {
+                  if (price === "") setPrice(0);
+                }}
                 className="w-full rounded-lg bg-gray-900 border border-gray-700 px-3 py-2 text-white text-sm focus:border-[#B77D2B] outline-none"
               />
             </div>
 
-            {rateRow("Stamp Duty", stampDuty, setStampDuty, stampAmt, 10)}
-            {rateRow("Registration", registration, setRegistration, regAmt, 5)}
-            {rateRow("GST", gst, setGst, gstAmt, 18)}
-            {rateRow("Other Charges", other, setOther, otherAmt, 10)}
+            {rateRow("acq-stamp-duty", "Stamp Duty", stampDuty, setStampDuty, stampAmt, 10)}
+            {rateRow("acq-registration", "Registration", registration, setRegistration, regAmt, 5)}
+            {rateRow("acq-gst", "GST", gst, setGst, gstAmt, 18)}
+            {rateRow("acq-other", "Other Charges", other, setOther, otherAmt, 10)}
           </div>
 
           {/* Results */}
@@ -161,7 +181,7 @@ const AcquisitionCostCalculator = ({
             <div className="mt-4 space-y-1.5 text-sm">
               <div className="flex justify-between text-gray-300">
                 <span>Base Price</span>
-                <span>{formatInrExact(Math.max(0, price)) ?? "—"}</span>
+                <span>{formatInrExact(Math.max(0, priceValue)) ?? "—"}</span>
               </div>
               <div className="flex justify-between text-gray-400">
                 <span>Stamp Duty</span>
