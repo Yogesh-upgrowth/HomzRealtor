@@ -26,11 +26,17 @@ const LandmarksTable = ({ data,title }: Props) => {
         {`Nearby Landmarks - ${title}`}
       </h2> 
       {/* ===== Horizontal Tabs ===== */}
-      <div className="flex overflow-x-auto gap-3 pb-3 mb-6 scrollbar-hide">
+      {/* MI-12 (2026-09-18): the other segmented pickers in this codebase
+          (EMI/Rental/Acquisition Cost, investor/buyer) already carry
+          aria-pressed -- this one, being a bespoke button row rather than
+          the shared SegmentedTabs component, never got it. */}
+      <div role="group" aria-label="Landmark category" className="flex overflow-x-auto gap-3 pb-3 mb-6 scrollbar-hide">
         {categories.map((category) => (
           <button
             key={category}
+            type="button"
             onClick={() => setActive(category)}
+            aria-pressed={active === category}
             className={`whitespace-nowrap px-5 py-2 rounded-md text-sm font-semibold transition ${
               active === category
                 ? "bg-gradient-to-r from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
