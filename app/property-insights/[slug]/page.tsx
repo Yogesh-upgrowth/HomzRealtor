@@ -22,6 +22,26 @@ const GUIDE_CATEGORY: Record<string, string> = {
   "gurgaon-micro-markets-best-rental-yields-2026": "property-investment",
 };
 
+// Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, P2-B):
+// a plain .slice(0, 155) cut mid-word with no ellipsis ("...get a l"),
+// which is what the audit flagged as a "clipped description." Prefers a
+// complete first sentence if one fits within the target range; otherwise
+// falls back to the last whole word before the limit. Never adds "..."
+// since the result is always a complete sentence or word, not a
+// mid-thought cut.
+function truncateAtBoundary(text: string, max = 155): string {
+  if (text.length <= max) return text;
+
+  const firstSentenceEnd = text.slice(0, max + 40).search(/[.!?](?:\s|$)/);
+  if (firstSentenceEnd !== -1 && firstSentenceEnd + 1 <= max + 40) {
+    return text.slice(0, firstSentenceEnd + 1);
+  }
+
+  const truncated = text.slice(0, max);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated;
+}
+
 function guideWordCount(guide: BuyerGuide): number {
   return guide.sections
     .flatMap((s) => s.paragraphs)
@@ -64,7 +84,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const guide = getBuyerGuide(slug);
   if (!guide) return {};
 
-  const description = guide.sections[0]?.paragraphs[0]?.slice(0, 155) || guide.title;
+  const firstParagraph = guide.sections[0]?.paragraphs[0];
+  const description = firstParagraph ? truncateAtBoundary(firstParagraph) : guide.title;
   const url = `${SITE}/property-insights/${guide.slug}`;
 
   return {
@@ -129,7 +150,13 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         // (lib/seo/blogJsonLd.ts); these 4 guides were the odd ones out.
         "@type": "BlogPosting",
         headline: guide.title,
-        image: [guide.img.src],
+        // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
+        // P2-B): guide.img.src is a Next.js static-import path
+        // (/_next/static/media/...), relative -- schema.org/Google's
+        // structured-data guidance requires an absolute URL here. Unlike
+        // the openGraph.images above, this raw JSON-LD isn't resolved
+        // against metadataBase automatically.
+        image: [`${SITE}${guide.img.src}`],
         wordCount: guideWordCount(guide),
         articleSection: GUIDE_CATEGORY[guide.slug],
         inLanguage: "en-IN",
