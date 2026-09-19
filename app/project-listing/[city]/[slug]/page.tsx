@@ -127,17 +127,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
-const IntelligenceSkeleton = () => (
-  <div className="w-full max-w-7xl mx-auto px-2 my-12 space-y-4 animate-pulse">
-    <div className="h-6 w-64 rounded bg-white/10" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-24 rounded-xl bg-white/5" />
-      ))}
-    </div>
-  </div>
-);
-
 const ProjectPage = async ({ params }: PageParams) => {
   const { city, slug } = await params;
   const project = await getProjectBySlug(city, slug).catch(() => null);
@@ -299,12 +288,19 @@ const ProjectPage = async ({ params }: PageParams) => {
         </Suspense>
 
         <div className="max-w-7xl mx-auto px-2 lg:grid lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-10 mt-4">
-          <main className="min-w-0">
-            {/* Geo + AI heavy sections stream in (all cached after first load) */}
-            <Suspense fallback={<IntelligenceSkeleton />}>
-              <ProjectIntelligenceSections cityParam={canonicalCity} slug={slug} />
-            </Suspense>
-          </main>
+          {/* Audit item 10 (2026-09-19): this was wrapped in <Suspense> with a
+              skeleton fallback, so the page's actual content arrived after the
+              footer in hidden nodes and JavaScript swapped it in. This route is
+              ISR (revalidate below), so the page is rendered once and cached --
+              streaming buys nothing here and costs in-order HTML. Rendered
+              inline so the main content is where a crawler and a reader both
+              expect it, with no client-side swap.
+
+              Also was a nested <main>: app/layout.tsx already declares one, and
+              a document may only have one. Now a plain <div>. */}
+          <div className="min-w-0">
+            <ProjectIntelligenceSections cityParam={canonicalCity} slug={slug} />
+          </div>
 
           <aside className="mt-10 lg:mt-0 lg:sticky lg:top-28 lg:self-start lg:py-10">
             <EnquiryRail projectName={view.name} locationLine={view.locationLine} />
