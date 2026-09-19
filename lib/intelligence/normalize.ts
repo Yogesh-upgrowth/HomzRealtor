@@ -128,13 +128,68 @@ function detectAreaUnit(text: string): string | null {
   return null;
 }
 
+// R19-04 (2026-09-19). DEV-02 already found that some scraped values carry an
+// entire unit-selector dropdown's option list appended to the real value, e.g.
+// "1350 sqft sqft sqyrd sqm acre bigha hectare marla kanal biswa1 biswa2
+// ground aankadam rood chatak kottah marla cent perch guntha are katha gaj
+// killa kuncham ₹ 56/sqft" instead of "1350 sqft". That fix was applied only
+// to the `specifications` rows; the same contamination also reaches
+// `property.size`, which feeds the area chip, the listing cards and the meta
+// description, and it silently corrupts extractSizeRange() below:
+//   - detectAreaUnit() tests sq.m before sq.ft, so the dump's "sqm" token wins
+//     and a sq.ft listing is relabelled "sq.m";
+//   - the digit scan picks up "biswa1"/"biswa2" and the trailing "₹ 56/sqft"
+//     rate, so min/max come from tokens that are not areas at all.
+// Hence one shared detector here (normalize.ts is the leaf module both
+// view-model.ts and property-view.ts can import without a cycle).
+const UNIT_SELECTOR_TOKENS = [
+  "sqft", "sqyd", "sqyrd", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
+  "biswa", "ground", "aankadam", "rood", "chatak", "kottah", "cent", "perch",
+  "guntha", "katha", "gaj", "killa", "kuncham",
+];
+
+export function looksLikeUnitSelectorDump(value: string): boolean {
+  const lower = String(value ?? "").toLowerCase();
+  let distinctHits = 0;
+  for (const token of UNIT_SELECTOR_TOKENS) {
+    if (lower.includes(token)) distinctHits++;
+    // A real value never legitimately names 2+ different land/area units.
+    // DEV-02 used 3; lowered to 2 because "1350 sqft sqyrd" is already
+    // corrupt and the 3-token threshold let shorter dumps through.
+    if (distinctHits >= 2) return true;
+  }
+  // The same unit repeated ("1350 sqft sqft") is a dump even at one distinct
+  // token — a genuine value never restates its own unit.
+  return UNIT_SELECTOR_TOKENS.some(
+    (t) => lower.split(t).length - 1 >= 2
+  );
+}
+
+// Salvage the leading "<number> <unit>" from a contaminated area string.
+// The dump is always appended *after* the real value, so the leading pair is
+// the one part that can be confirmed. Returns null when even that can't be
+// read, so callers omit the field rather than show a fabricated one.
+export function salvageAreaText(value?: string | null): string | null {
+  if (!value) return null;
+  const text = String(value).trim();
+  if (!looksLikeUnitSelectorDump(text)) return text;
+  const match = text.match(
+    /^(\d+(?:[.,]\d+)?)\s*(sq\.?\s*ft|sqft|square\s*fee?t|sq\.?\s*yd|sqyd|square\s*yard|sq\.?\s*m(?:eter|etre)?s?|sqm|acres?)\b/i
+  );
+  if (!match) return null;
+  return `${match[1]} ${match[2]}`.replace(/\s+/g, " ").trim();
+}
+
 export function extractSizeRange(sizeText?: string | null): {
   min: number | null;
   max: number | null;
   unit: string | null;
 } {
   if (!sizeText) return { min: null, max: null, unit: null };
-  const text = String(sizeText);
+  // Parse the salvaged value, never the raw dump — otherwise the unit and the
+  // min/max below are both read off the dropdown's option list.
+  const text = salvageAreaText(String(sizeText));
+  if (!text) return { min: null, max: null, unit: null };
   const unit = detectAreaUnit(text);
   const nums = (text.match(/\d+(?:\.\d+)?/g) || []).map(Number);
   if (nums.length === 0) return { min: null, max: null, unit };

@@ -104,6 +104,24 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Home
               </Link>
             </li>
+            {/* Buy/Rent restored 2026-09-19 (see components/Header/index.tsx's
+                note): the two highest-intent transaction hubs previously had
+                no sitewide internal link from either nav. */}
+            <li>
+              <Link href="/buy-property" className={colLinkCls}>
+                Buy Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/rent-property" className={colLinkCls}>
+                Rent Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/commercial" className={colLinkCls}>
+                Commercial
+              </Link>
+            </li>
             <li>
               <Link href="/project-listing" className={colLinkCls}>
                 Projects

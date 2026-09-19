@@ -2,6 +2,7 @@ import type { PriceInsightsData } from "@/lib/intelligence/projects";
 import PriceTrendChart from "./PriceTrendChart";
 import PriceInsights from "./PriceInsights";
 import PaymentPlanCards from "./PaymentPlanCards";
+import { deriveStatusFromText } from "@/lib/intelligence/view-model";
 
 type Props = {
   title: string;
@@ -15,6 +16,9 @@ type Props = {
   // unchanged to PriceInsights/PriceTrendChart which each do their own parsing.
   priceList: any[];
   possessionText: string | null;
+  /** Raw project_status from the feed; combined with possessionText to derive
+   *  the real possession state so payment plans can be gated (R19-04). */
+  projectStatus?: string | null;
 };
 
 // Below-market comparison is only ever shown when it's genuinely favorable —
@@ -39,6 +43,7 @@ const PricingAndPayment = ({
   priceData,
   priceList,
   possessionText,
+  projectStatus,
 }: Props) => {
   const badge = belowMarketBadge(minPriceInr, priceData);
 
@@ -76,7 +81,10 @@ const PricingAndPayment = ({
       </div>
 
       <div className="mt-8">
-        <PaymentPlanCards slug={slug} />
+        <PaymentPlanCards
+          slug={slug}
+          status={deriveStatusFromText(projectStatus ?? null, possessionText)}
+        />
       </div>
     </section>
   );

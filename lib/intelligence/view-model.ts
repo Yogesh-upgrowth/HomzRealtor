@@ -330,10 +330,18 @@ function buildWhyThisProject(
   const infra = ["Schools", "Hospitals", "Shopping Centres"].filter((k) => (landmarks[k]?.length || 0) > 0);
   if (infra.length >= 2) add("TreePine", "Social Infrastructure", "Schools, hospitals & malls nearby");
 
-  // Guarantee a minimum of 4 by adding safe, non-fabricated positives.
+  // Pad to 4 with safe, non-fabricated positives.
+  //
+  // R19-04 (2026-09-19): "HomzRealtor Verified" was removed from this list.
+  // It was added purely to fill the row (its own note, "Assisted site
+  // visits", describes a service, not a verification), which meant a project
+  // whose RERA status is literally "Unverified" could still display a
+  // ShieldCheck "Verified" badge beside it — exactly the contradiction the
+  // recheck flagged on M3M Golf Hills. Verification claims must trace to a
+  // checked field (rera_status above), never to a layout rule. Falling short
+  // of 4 badges is the honest outcome when there is nothing true left to say.
   if (badges.length < 4) add("MapPin", "Well-Connected Location", `In ${project.city_name}`);
   if (badges.length < 4) add("TrendingUp", "Growth Corridor", `${project.city_name} real-estate market`);
-  if (badges.length < 4) add("ShieldCheck", "HomzRealtor Verified", "Assisted site visits");
 
   return badges.slice(0, 8);
 }

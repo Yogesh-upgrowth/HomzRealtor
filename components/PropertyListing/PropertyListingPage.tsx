@@ -31,6 +31,7 @@ import {
 import { PROPERTY_TYPE_LABELS, type ListingFacets, type ListingFilters } from "@/lib/listings/filters";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
 import { validImages } from "@/lib/intelligence/view-model";
+import { salvageAreaText } from "@/lib/intelligence/normalize";
 
 // Must match this component's own filters object shape exactly (all empty/
 // false) and DEFAULT_LIMIT below (the desktop cardsPerPage default —
@@ -239,7 +240,10 @@ function PropertyListingInner({
     title: property.title || "Untitled Listing",
     btntag: property.price || "View Details",
     specifications: [
-      { icon: areaImg, label: "Area", value: property.size || "N/A" },
+      // R19-04: never render the raw feed value here — it can carry a whole
+      // scraped unit-selector dropdown. salvageAreaText keeps the confirmed
+      // "<number> <unit>" prefix and returns null when even that is unreadable.
+      { icon: areaImg, label: "Area", value: salvageAreaText(property.size) || "N/A" },
       {
         icon: unitImg,
         label: "Config",

@@ -64,6 +64,20 @@ const POI_RULES = [
   { key: "aeroway", values: ["aerodrome"], category: "Airports" },
 ];
 
+// R19-04 (2026-09-19): mirror of IMPLAUSIBLE_BY_CATEGORY in
+// lib/intelligence/osmPlaces.ts. The runtime guard there is what fixes the
+// already-committed data file; this keeps a regeneration from reintroducing
+// the same mistagged nodes. Keep the two in sync if either changes.
+const IMPLAUSIBLE_BY_CATEGORY = {
+  Parks: /\b(bank|atm)\b/i,
+  Supermarkets: /\b(bank|atm|body\s*shop|salon|spa|cosmetics?|pharmacy|chemist|optic(?:al|ians?)?)\b/i,
+};
+
+function isImplausibleForCategory(name, category) {
+  const rule = IMPLAUSIBLE_BY_CATEGORY[category];
+  return rule ? rule.test(String(name ?? "")) : false;
+}
+
 function classify(tags) {
   if (!tags) return null;
   // Delhi Metro / NCR metro stations: railway=station + station=subway
@@ -138,6 +152,9 @@ async function main() {
         // Skip unnamed POIs outright rather than inventing a label from the
         // category — a card that just says "Shopping Centres" as if that
         // were the venue's name is worse than not showing it.
+        // R19-04: also drop nodes whose own name contradicts the tag we'd
+        // trust (a bank tagged leisure=park).
+        if (category && name && isImplausibleForCategory(name, category)) continue;
         if (category && name && !seenPoiIds.has(item.id)) {
           if (STATION_CATEGORIES.has(category)) {
             const key = `${category}|${normalizeStationName(name)}`;

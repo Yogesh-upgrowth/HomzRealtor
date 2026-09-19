@@ -198,10 +198,17 @@ const Navbar: React.FC = () => {
               only from the footer or deep links, never from the header on
               any page — added here; "Properties" (project catalogue) is a
               distinct, already-correct destination and stays as-is. Buy
-              and Rent were added alongside it but removed per user
-              request (2026-09-09) — not ready to surface yet. */}
+              and Rent were added alongside it, then removed per user
+              request (2026-09-09) while those hubs were "not ready to
+              surface yet"; restored 2026-09-19 per user confirmation now
+              that both server-render real inventory (24 cards each, see
+              app/buy-property/page.tsx's DEV-04 note). They are the site's
+              highest-intent hubs and were the only major destinations
+              carrying zero sitewide internal links. */}
           <div className="hidden lg:flex items-center space-x-6 text-white text-sm">
             <Link href="/">Home</Link>
+            <Link href="/buy-property">Buy</Link>
+            <Link href="/rent-property">Rent</Link>
             <Link href="/commercial">Commercial</Link>
             <Link href="/project-listing">Properties</Link>
             <Link href="/developer">Developers</Link>
@@ -327,6 +334,20 @@ const Navbar: React.FC = () => {
             className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
           >
             Home
+          </Link>
+          <Link
+            href="/buy-property"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Buy
+          </Link>
+          <Link
+            href="/rent-property"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex min-h-[48px] items-center border-b border-white/[0.06] py-3.5 text-[16px] font-bold text-[#ececea]"
+          >
+            Rent
           </Link>
           <Link
             href="/commercial"

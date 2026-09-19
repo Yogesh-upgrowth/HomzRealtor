@@ -20,6 +20,7 @@ import { getSortedSegment } from "@/lib/listings/segmentCache";
 import { PROPERTY_TYPE_LABELS, type PropertyCategory } from "@/lib/listings/filters";
 import { propertySegment, type RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { validImages } from "@/lib/intelligence/view-model";
+import { salvageAreaText } from "@/lib/intelligence/normalize";
 import { slugForProperty } from "@/lib/intelligence/property-view";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
@@ -90,7 +91,8 @@ export function formatProperty(property: RawHomzProperty) {
     title: property.title || "Untitled Listing",
     btntag: property.price || "View Details",
     specifications: [
-      { icon: areaImg, label: "Area", value: property.size || "N/A" },
+      // R19-04: see PropertyListingPage.tsx — same guard, same reason.
+      { icon: areaImg, label: "Area", value: salvageAreaText(property.size) || "N/A" },
       {
         icon: unitImg,
         label: "Config",

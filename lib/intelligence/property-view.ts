@@ -21,7 +21,12 @@
 import { clean, normalizeAmenities, validImages } from "./view-model";
 import type { Badge, Chip, HighlightStat, LinkItem, PersonaReasons } from "./view-model";
 import { slugify } from "@/components/utils/slugify";
-import { truncateAtWord, redactEmbeddedRegulatoryIds } from "./normalize";
+import {
+  truncateAtWord,
+  redactEmbeddedRegulatoryIds,
+  looksLikeUnitSelectorDump,
+  salvageAreaText,
+} from "./normalize";
 import type { PropertyCategory, RawHomzProperty } from "@/lib/scraping/homzbackend";
 
 // Chrome-asset filtering (site logo, developer-logo thumbnail, amenity
@@ -159,21 +164,10 @@ export function extractProjectName(property: RawHomzProperty): string | null {
 // clean area is shown separately anyway via areaText/the snapshot chip, so
 // dropping a contaminated specs row loses no real information — matches
 // the handoff's own "prefer honest omission to a fabricated correction."
-const UNIT_SELECTOR_TOKENS = [
-  "sqft", "sqyd", "sqyrd", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
-  "biswa", "ground", "aankadam", "rood", "chatak", "kottah", "cent", "perch",
-  "guntha", "katha", "gaj", "killa", "kuncham",
-];
-
-function looksLikeUnitSelectorDump(value: string): boolean {
-  const lower = value.toLowerCase();
-  let hits = 0;
-  for (const token of UNIT_SELECTOR_TOKENS) {
-    if (lower.includes(token)) hits++;
-    if (hits >= 3) return true; // a real value never legitimately names 3+ different land/area units
-  }
-  return false;
-}
+//
+// R19-04 (2026-09-19): the detector moved to normalize.ts so the same rule
+// also guards property.size (the area chip, the cards and the meta
+// description all read it) instead of only these specification rows.
 
 function sanitizeSpecifications(
   specs: { heading: string; value: string }[]
@@ -240,7 +234,7 @@ function buildSnapshot(property: RawHomzProperty, status: string, amenityCount: 
   push(property.listingType === "rent" ? "Monthly Rent" : "Price", hasPrice ? pt : null);
   push("Configuration", property.configuration || (property.bedrooms ? `${property.bedrooms} BHK` : null));
   push("Property Type", PROPERTY_TYPE_LABELS[property.propertyType || ""] || null);
-  push("Area", property.size);
+  push("Area", salvageAreaText(property.size));
   push("Status", status === "Status on request" ? null : status);
   // Right after Status/before Possession — same reasoning as
   // view-model.ts's buildChips: RERA status belongs next to "Ready to
@@ -468,7 +462,7 @@ export function resolvePropertyView(
     priceText: pt,
     configuration: clean(property.configuration),
     bedrooms: property.bedrooms ?? null,
-    areaText: clean(property.size),
+    areaText: clean(salvageAreaText(property.size)),
     images,
     heroImage: images[0] || null,
     interiorImages: propertyImages(property.interiorImages || []),

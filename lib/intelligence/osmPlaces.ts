@@ -28,7 +28,38 @@ export type ConnectivityItem = {
 
 type Poi = { id: number; name: string; category: string; lat: number; lon: number };
 
-const pois = poisData as Poi[];
+// R19-04 (2026-09-19): the audit found a Kotak bank listed under Parks and
+// The Body Shop under Supermarkets. classify() in scripts/generate-osm-pois.mjs
+// trusts the upstream OSM tag outright (first rule wins, no sanity check), so
+// a mistagged node propagates straight onto a project page as a local amenity.
+//
+// Scoped deliberately narrow. A scan of the committed 4,332-POI set found
+// exactly these two contradictions, so this is a data-quality guard, not a
+// taxonomy rewrite: broad "name looks like X" heuristics produce false
+// positives on legitimate records (e.g. "School of Open Learning Canteen" is
+// correctly a Restaurant). Only the two confirmed classes are excluded, and
+// only for the categories where they are genuinely impossible.
+const IMPLAUSIBLE_BY_CATEGORY: Record<string, RegExp> = {
+  // A bank branch or ATM is never a park or a grocery store.
+  Parks: /\b(bank|atm)\b/i,
+  Supermarkets: /\b(bank|atm|body\s*shop|salon|spa|cosmetics?|pharmacy|chemist|optic(?:al|ians?)?)\b/i,
+};
+
+export function isImplausibleForCategory(name: string, category: string): boolean {
+  const rule = IMPLAUSIBLE_BY_CATEGORY[category];
+  return rule ? rule.test(String(name ?? "")) : false;
+}
+
+// OSM multi-value fields arrive semicolon-separated ("Kotak Mahindra Bank;india").
+// Keep the first value; the rest is never part of the display name.
+function cleanPoiName(name: string): string {
+  return String(name ?? "").split(";")[0].trim();
+}
+
+const pois = (poisData as Poi[])
+  .filter((p) => !isImplausibleForCategory(p.name, p.category))
+  .map((p) => ({ ...p, name: cleanPoiName(p.name) }))
+  .filter((p) => p.name.length > 0);
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -69,7 +100,23 @@ const LANDMARK_CATEGORIES = [
   "Parks", "Gyms", "Hotels", "Restaurants",
 ];
 
-export function nearbyLandmarks(lat: number, lng: number): LandmarksMap {
+// R19-04 (2026-09-19): resolveCoordinate() falls back to the city anchor when
+// a project's sector and micro-market both fail to resolve. For Gurgaon that
+// anchor IS Cyber City, so every distance below was then being measured from
+// the city centre and presented as the project's own — which is how a Sector
+// 79 project came to advertise "Cyber City 0.0 km" and "airport 6.9 km"
+// (6.9 km is exactly IGI-to-Cyber-City). The precision flag existed on
+// resolveCoordinate's return all along but nothing read it. Both public
+// helpers now require it and return nothing at cityAnchor precision: no
+// distance table at all is honest, a city-centre one labelled as the
+// project's is not. This also keeps the wrong figures out of the AI prose in
+// generateProjectContent(), which takes these as input.
+export function nearbyLandmarks(
+  lat: number,
+  lng: number,
+  precision: "sector" | "microMarket" | "cityAnchor"
+): LandmarksMap {
+  if (precision === "cityAnchor") return {};
   const result: LandmarksMap = {};
   for (const category of LANDMARK_CATEGORIES) {
     const radius = RADIUS_KM[category];
@@ -101,23 +148,33 @@ function nearestOfCategory(pois: Poi[], category: string, lat: number, lng: numb
   return best;
 }
 
-export function nearbyConnectivity(cityKey: string, lat: number, lng: number): ConnectivityItem[] {
+export function nearbyConnectivity(
+  cityKey: string,
+  lat: number,
+  lng: number,
+  precision: "sector" | "microMarket" | "cityAnchor"
+): ConnectivityItem[] {
+  // See nearbyLandmarks() above — at cityAnchor precision every row here
+  // describes the city centre, not this project.
+  if (precision === "cityAnchor") return [];
+
   const anchors = CITY_ANCHORS[cityKey] || CITY_ANCHORS.ggn;
   const rows: ConnectivityItem[] = [];
 
-  rows.push({
-    label: anchors.airport.label,
-    category: "airport",
-    distance_km: Math.round(haversineKm(lat, lng, anchors.airport.lat, anchors.airport.lng) * 10) / 10,
-    travel_time: null,
-  });
+  // A row that rounds to 0.0 km carries no information and reads as a data
+  // error even when the coordinate is genuinely correct (a project actually
+  // sitting on the anchor), so drop it rather than print "0 km away".
+  const pushAnchorRow = (
+    anchor: { label: string; lat: number; lng: number },
+    category: ConnectivityItem["category"]
+  ) => {
+    const distance_km = Math.round(haversineKm(lat, lng, anchor.lat, anchor.lng) * 10) / 10;
+    if (distance_km <= 0) return;
+    rows.push({ label: anchor.label, category, distance_km, travel_time: null });
+  };
 
-  rows.push({
-    label: anchors.business.label,
-    category: "business",
-    distance_km: Math.round(haversineKm(lat, lng, anchors.business.lat, anchors.business.lng) * 10) / 10,
-    travel_time: null,
-  });
+  pushAnchorRow(anchors.airport, "airport");
+  pushAnchorRow(anchors.business, "business");
 
   const metro = nearestOfCategory(pois, "Metro Stations", lat, lng, RADIUS_KM["Metro Stations"]);
   if (metro) {

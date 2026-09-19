@@ -2,15 +2,25 @@ import { getPaymentPlans } from "@/lib/intelligence/paymentPlans";
 
 type Props = {
   slug: string;
+  /** Derived possession status — gates plans that assume construction is
+   *  still under way. See getPaymentPlans(). */
+  status?: string | null;
 };
 
-const PaymentPlanCards = ({ slug }: Props) => {
-  const plans = getPaymentPlans(slug);
+const PaymentPlanCards = ({ slug, status }: Props) => {
+  const plans = getPaymentPlans(slug, status);
   if (plans.length === 0) return null;
 
   return (
     <div>
       <p className="mb-4 text-lg font-bold text-white">Payment plans</p>
+      {/* R19-04: these tiers are standard market structures, not terms
+          confirmed with the developer for this specific project — say so
+          rather than let them read as a quoted offer. */}
+      <p className="mb-4 text-[12.5px] text-gray-500">
+        Indicative structures only. Confirm actual terms with the developer before
+        relying on them.
+      </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {plans.map((p) => (
           <div
