@@ -9,7 +9,7 @@ const description =
 
 // R19-08 (2026-09-19). The owner supplied the fee terms, so this page now
 // publishes: 1% of the transaction value from the seller and 1% from the
-// buyer, payable on completion.
+// buyer, plus GST, payable on completion.
 //
 // The mandate and withdrawal rows were held back at first, on the ground
 // that "all handled by us" describes the service and not the contract. The
@@ -38,7 +38,7 @@ export default function SellPropertyPage() {
     <ServicePage
       eyebrow="For property owners"
       h1="Sell Your Property in Gurgaon"
-      intro="If you own a flat, floor, villa or plot in Gurgaon and want to sell, an advisor will talk you through what your property is likely to fetch, what paperwork you will need, and how we would market it. We handle the sale end to end from there. Our brokerage is 1% of the transaction value, payable when the sale completes, and there is nothing to pay before that. We do not ask for an exclusive mandate, and you can withdraw at any time."
+      intro="If you own a flat, floor, villa or plot in Gurgaon and want to sell, an advisor will talk you through what your property is likely to fetch, what paperwork you will need, and how we would market it. We handle the sale end to end from there. Our brokerage is 1% of the transaction value plus GST, payable when the sale completes, and there is nothing to pay before that. We do not ask for an exclusive mandate, and you can withdraw at any time."
       steps={[
         {
           title: "Tell us about the property",
@@ -96,7 +96,7 @@ export default function SellPropertyPage() {
         },
         {
           q: "What does it cost to sell through HomzRealtor?",
-          a: "Our brokerage is 1% of the transaction value from the seller and 1% from the buyer, payable when the sale completes. Nothing is payable for the valuation conversation, the listing, the photographs or the viewings.",
+          a: "Our brokerage is 1% of the transaction value from the seller and 1% from the buyer, plus GST at the applicable rate, payable when the sale completes. Nothing is payable for the valuation conversation, the listing, the photographs or the viewings.",
         },
         {
           q: "Will HomzRealtor verify my property's title?",

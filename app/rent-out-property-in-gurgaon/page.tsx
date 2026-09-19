@@ -31,7 +31,7 @@ export default function RentOutPropertyPage() {
     <ServicePage
       eyebrow="For landlords"
       h1="Rent Out Your Property in Gurgaon"
-      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor will talk you through achievable rent for your sector, how we find tenants, and what the paperwork involves. We handle the letting end to end, rent agreement included. Our brokerage is half of one month\u2019s rent, payable once the agreement is signed. We do not ask for an exclusive instruction, and you can withdraw at any time."
+      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor will talk you through achievable rent for your sector, how we find tenants, and what the paperwork involves. We handle the letting end to end, rent agreement included. Our brokerage is half of one month\u2019s rent plus GST, payable once the agreement is signed. We do not ask for an exclusive instruction, and you can withdraw at any time."
       steps={[
         {
           title: "Tell us about the property",
@@ -85,7 +85,7 @@ export default function RentOutPropertyPage() {
         },
         {
           q: "What does it cost to let through HomzRealtor?",
-          a: "Half of one month's rent from you and half from the tenant, payable once, when the tenancy agreement is signed. Nothing is payable for the rent conversation, the listing, the photographs or the viewings.",
+          a: "Half of one month's rent from you and half from the tenant, plus GST at the applicable rate, payable once, when the tenancy agreement is signed. Nothing is payable for the rent conversation, the listing, the photographs or the viewings.",
         },
         {
           q: "Do you screen tenants?",

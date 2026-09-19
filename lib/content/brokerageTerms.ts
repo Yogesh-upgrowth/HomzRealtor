@@ -39,13 +39,23 @@
 // protect. A seller reading them should find nothing that traps them, and
 // Homz should find nothing that lets a completed introduction go unpaid.
 //
-// Still NOT stated anywhere below, because nobody has decided it and a tax
-// position is not something to infer: whether GST is charged on top of these
-// rates. The business is GST registered, so it probably is, but "probably" is
-// not a term. Decide it, add it here, and it appears everywhere at once.
+// GST: confirmed by the owner 2026-09-19 as charged on top of these rates,
+// not included in them. Every published rate now says so.
+//
+// The rate itself is deliberately NOT quoted. It is set by the government,
+// not by Homz, and a percentage written into a page in September is a number
+// nobody remembers to change when it moves -- the same reason the FAQs point
+// at the Haryana revenue department for stamp duty rather than printing a
+// figure. "Plus GST at the applicable rate" is accurate the day it is written
+// and stays accurate. A client who wants the exact number gets it on the
+// invoice, where it is correct by definition.
 
 /** The introduction period in the withdrawal carve-out, in months. */
 export const INTRODUCTION_PERIOD_MONTHS = 6;
+
+/** Appended to every published rate. See the note above on why no percentage
+ *  appears here. */
+export const GST_NOTE = "plus GST at the applicable rate";
 
 export const BROKERAGE_TERMS = {
   /** Sale of a house, villa or plot. */
@@ -53,8 +63,10 @@ export const BROKERAGE_TERMS = {
     /** Percentage of the transaction value, charged to each side. */
     percentOfValue: 1,
     payers: "both the buyer and the seller",
+    /** True when GST is charged on top of the rate rather than included. */
+    gstExtra: true,
     summary:
-      "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller, payable when the transaction completes.",
+      "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller, plus GST at the applicable rate, payable when the transaction completes.",
     mandate:
       "Open, not exclusive. You can list with other agents and sell privately while we are marketing the property, and there is no minimum listing period. Our brokerage is payable only if the buyer who completes was introduced by us.",
     withdrawal:
@@ -65,8 +77,9 @@ export const BROKERAGE_TERMS = {
     /** Share of the first month's rent, charged to each side. */
     percentOfFirstMonthRent: 50,
     payers: "both the owner and the tenant",
+    gstExtra: true,
     summary:
-      "On a letting, our brokerage is half of one month's rent from the owner and half of one month's rent from the tenant, payable once, when the tenancy agreement is signed.",
+      "On a letting, our brokerage is half of one month's rent from the owner and half of one month's rent from the tenant, plus GST at the applicable rate, payable once, when the tenancy agreement is signed.",
     mandate:
       "Open, not exclusive. You can instruct other agents and let privately while we are marketing the property, and there is no minimum instruction period. Our brokerage is payable only if the tenant who signs was introduced by us.",
     withdrawal:

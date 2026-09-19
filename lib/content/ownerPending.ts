@@ -69,7 +69,7 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question: "What does Homz charge to sell a property, as a percentage or a flat fee?",
     owner: "business",
     value:
-      "1% of the transaction value.",
+      "1% of the transaction value, plus GST at the applicable rate.",
   },
   "seller.feePayer": {
     question: "Who pays that fee, the seller or the buyer, and at what point does it become payable?",
@@ -116,7 +116,7 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question: "What does Homz charge to let a property, as a percentage of rent, a flat fee or a month's rent?",
     owner: "business",
     value:
-      "Half of one month's rent.",
+      "Half of one month's rent, plus GST at the applicable rate.",
   },
   "landlord.feePayer": {
     question: "Who pays the letting fee, the landlord or the tenant, and when?",

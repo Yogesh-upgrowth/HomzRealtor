@@ -170,7 +170,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "The brokerage terms shown on every detail page",
     lands: "components/PropertyListing/HomzRecordSections.tsx (currently states no buyer/tenant viewing fee)",
     why:
-      "Supplied 2026-09-19: 1% of transaction value from each of buyer and seller on a sale, payable on completion; half of one month's rent from each of owner and tenant on a letting, payable when the agreement is signed; nothing payable for viewings. The mandate and withdrawal clauses in the same file were written to the owner's best-judgement instruction rather than supplied. All of it is stated on every detail page, the FAQs, /about-us and both service pages from one source, lib/content/brokerageTerms.ts. Still undecided there: whether GST is charged on top of these rates.",
+      "Supplied 2026-09-19: 1% of transaction value from each of buyer and seller on a sale, payable on completion; half of one month's rent from each of owner and tenant on a letting, payable when the agreement is signed; nothing payable for viewings. The mandate and withdrawal clauses in the same file were written to the owner's best-judgement instruction rather than supplied. All of it is stated on every detail page, the FAQs, /about-us and both service pages from one source, lib/content/brokerageTerms.ts. GST confirmed 2026-09-19 as charged on top of these rates; the rate itself is not quoted anywhere, because it is set by the government and a percentage written into a page is a number nobody remembers to change.",
     done: true,
   },
 

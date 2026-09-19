@@ -41,7 +41,7 @@ export const SITE_FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "What does HomzRealtor charge?",
-        a: "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller, payable when the transaction completes. On a letting it is half of one month's rent from the owner and half from the tenant, payable once, when the tenancy agreement is signed. Nothing is payable before that.",
+        a: "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller, payable when the transaction completes. On a letting it is half of one month's rent from the owner and half from the tenant, payable once, when the tenancy agreement is signed. GST is charged on top of both at the applicable rate. Nothing is payable before the transaction completes.",
       },
       {
         q: "Is HomzRealtor a channel partner for any developers?",
@@ -140,7 +140,7 @@ export const SITE_FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "I own a property in Gurgaon and want to sell it. What happens first?",
-        a: "Tell us about the property and an advisor will call to discuss realistic pricing against comparable listings in your sector and how we would market it. We handle the sale end to end from there — pricing, listing, viewings, negotiation and paperwork. Our brokerage is 1% of the transaction value, payable when the sale completes.",
+        a: "Tell us about the property and an advisor will call to discuss realistic pricing against comparable listings in your sector and how we would market it. We handle the sale end to end from there — pricing, listing, viewings, negotiation and paperwork. Our brokerage is 1% of the transaction value plus GST, payable when the sale completes.",
       },
       {
         q: "Do I have to list exclusively with HomzRealtor?",
@@ -152,7 +152,7 @@ export const SITE_FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "Can HomzRealtor find me a tenant?",
-        a: "Yes, and we handle the letting end to end: pricing, listing, viewings, tenant selection and the rent agreement. Our brokerage is half of one month's rent, payable once the tenancy agreement is signed.",
+        a: "Yes, and we handle the letting end to end: pricing, listing, viewings, tenant selection and the rent agreement. Our brokerage is half of one month's rent plus GST, payable once the tenancy agreement is signed.",
       },
       {
         q: "How long does it take to sell or let a property in Gurgaon?",
