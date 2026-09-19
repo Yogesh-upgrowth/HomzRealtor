@@ -13,6 +13,7 @@ export default function AdminTabs({ isSuperAdmin }: AdminTabsProps) {
   const tabs = [
     { href: "/admin/review-queue", label: "Review Queue" },
     { href: "/admin/listings", label: "All Listings" },
+    { href: "/admin/verify-listings", label: "Verify Listings" },
     ...(isSuperAdmin ? [{ href: "/admin/manage-admins", label: "Manage Admins" }] : []),
   ];
 

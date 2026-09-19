@@ -11,7 +11,12 @@
 // gracefully instead of shipping a placeholder value.
 export const COMPANY_INFO = {
   name: "HomzRealtor",
-  legalName: "",
+  // Supplied by the owner 2026-09-19. If the registered entity carries a
+  // suffix (Pvt Ltd / LLP) or differs from the trading name, replace this
+  // with the exact registered string -- Organization.legalName is matched
+  // against registry and directory records, so an approximation is worse
+  // than the trading name alone.
+  legalName: "Homz Realtor",
   phone: "+91-8447909227",
   phoneDisplay: "+91 84479 09227",
   email: "hello@homzrealtor.com",
@@ -64,7 +69,12 @@ export const COMPANY_INFO = {
     // session saved for the full list and what's still needed.
     justdial: "",
     crunchbase: "",
-    googleBusiness: "", // the profile's public g.page / Maps share URL, once claimed
+    // Supplied by the owner 2026-09-19. This is a share.google short link;
+    // it resolves, but the canonical profile URL (g.page/<name> once a short
+    // name is set, or the full Maps URL carrying the CID) is the more stable
+    // thing to put in sameAs/hasMap, because a share link can be regenerated.
+    // Worth swapping when convenient.
+    googleBusiness: "https://share.google/kOsUxGd3PcDBraquC",
   },
 };
 

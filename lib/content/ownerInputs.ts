@@ -52,7 +52,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     lands: "lib/seo/companyInfo.ts → legalName",
     shape: '"Acme Realty Services Pvt Ltd"',
     why: "Organization schema, footer and /contact all currently omit it. Google cannot verify an unnamed operator in a YMYL category.",
-    done: false,
+    done: true,
   },
   {
     key: "identity.hareraAgentNumber",
@@ -95,7 +95,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     lands: "lib/seo/companyInfo.ts → social.googleBusiness",
     shape: "the g.page or Maps share link, e.g. https://g.page/...",
     why: "Wired into Organization.sameAs and hasMap. The profile exists but nothing on the site points at it, so the entity and the profile are not yet connected.",
-    done: false,
+    done: true,
   },
   {
     key: "identity.socials",
@@ -140,8 +140,8 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: 'A source of truth for "an advisor confirmed this unit with the owner on this date"',
     lands: "lib/status/verification.ts → OWNER_CALL_LOG_SOURCE + readOwnerCallLog()",
     shape: "sheet | mongo | crm — columns: homz_listing_id, called_at, outcome, confirmed_price, agent",
-    why: 'Every detail page is wired to show "Confirmed with the owner on X". Until this exists it honestly shows only "listing last checked", which is a much weaker claim.',
-    done: false,
+    why: 'Wired 2026-09-19 to a Mongo-backed log, written from /admin/verify-listings. The mechanism exists; coverage now grows one call at a time. A listing with no confirming call still shows only "listing last checked".',
+    done: true,
   },
   {
     key: "content.ownPhotography",

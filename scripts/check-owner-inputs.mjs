@@ -71,8 +71,10 @@ const detectors = {
   "identity.socials": () =>
     ["instagram", "facebook", "linkedin", "youtube", "justdial"].some(companySocialFilled),
   "identity.team": () => !/team:\s*\[\]/.test(companySrc),
+  // Wired when the source is anything but "none" AND a reader is implemented.
   "content.ownerCallLog": () =>
-    !/OWNER_CALL_LOG_SOURCE[^=]*=\s*"none"/.test(verificationSrc),
+    !/OWNER_CALL_LOG_SOURCE[^=]*=\s*"none"/.test(verificationSrc) &&
+    /latestVerification/.test(verificationSrc),
   "journeys.sellerLandlordTerms": () => !/value:\s*null/.test(pendingSrc),
 };
 
