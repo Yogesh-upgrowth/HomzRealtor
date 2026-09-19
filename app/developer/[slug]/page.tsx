@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 import { getBuilderBySlug, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { buildDeveloperProfile, buildDeveloperFaqs } from "@/lib/intelligence/developerProfile";
+import { formatInr } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
+import DeveloperIntelligence from "@/components/Developer/DeveloperIntelligence";
+import Faq from "@/components/Project/intelligence/Faq";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
@@ -81,6 +85,10 @@ const DeveloperPage = async ({ params }: PageParams) => {
   const withImages = projects.filter((p) => p.images.length > 0);
   const pageUrl = `${SITE}/developer/${summary.slug}`;
 
+  // Audit item 9 (2026-09-19): computed portfolio facts, so the page is about
+  // the builder rather than being a nine-card teaser with their name on it.
+  const profile = buildDeveloperProfile(projects, canonicalCitySlug);
+
   const cityNames = summary.cities.map((c) => c.name);
   const cityLabel =
     cityNames.length > 1
@@ -96,13 +104,28 @@ const DeveloperPage = async ({ params }: PageParams) => {
           summary.residential + summary.commercial === 1 ? "development" : "developments"
         }.`
       : ".") +
-    ` Browse their portfolio below to compare prices, configurations, amenities and ` +
-    `possession timelines, then enquire directly with our advisors.`;
+    (profile.price
+      ? ` Listed entry prices run from ${formatInr(profile.price.minInr)} to ${formatInr(
+          profile.price.maxInr
+        )}, with a median of ${formatInr(profile.price.medianInr)} across the ${
+          profile.price.pricedCount
+        } projects carrying a price.`
+      : "") +
+    (profile.readyToMove + profile.underConstruction > 0
+      ? ` ${profile.readyToMove} ${profile.readyToMove === 1 ? "is" : "are"} ready to move and ${
+          profile.underConstruction
+        } ${profile.underConstruction === 1 ? "is" : "are"} under construction.`
+      : "") +
+    ` Everything below is computed from our own catalogue, and every project is linked by name.`;
 
   // Other developers for internal linking (exclude the current one).
   const others = (await getAllBuilders().catch(() => []))
     .filter((d) => d.slug !== summary.slug)
     .slice(0, 12);
+
+  // Answered entirely from the computed profile — only questions the data can
+  // actually answer are emitted, since these feed FAQPage markup.
+  const faqs = buildDeveloperFaqs(summary.name, cityLabel, profile, formatInr);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -138,17 +161,33 @@ const DeveloperPage = async ({ params }: PageParams) => {
         url: pageUrl,
       },
       // CollectionPage alone doesn't enumerate the developer's projects —
-      // ItemList does, matching exactly the capped preview grid rendered
-      // below (withImages.slice(0, 9)), never more than what's on screen.
-      ...(withImages.length > 0
+      // ItemList does, and it matches exactly what the page renders. That
+      // used to be withImages.slice(0, 9); the page now links every project
+      // by name in the index below the grid, so the list is the full set.
+      ...(projects.length > 0
         ? [
             {
               "@type": "ItemList",
-              itemListElement: withImages.slice(0, 9).map((p, i) => ({
+              numberOfItems: projects.length,
+              itemListElement: projects.map((p, i) => ({
                 "@type": "ListItem",
                 position: i + 1,
                 name: p.project_name,
                 url: `${SITE}/project-listing/${canonicalCitySlug(p.city_key)}/${p.slug}`,
+              })),
+            },
+          ]
+        : []),
+      ...(faqs.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${pageUrl}#faq`,
+              url: pageUrl,
+              mainEntity: faqs.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
               })),
             },
           ]
@@ -220,15 +259,19 @@ const DeveloperPage = async ({ params }: PageParams) => {
         )}
       </section>
 
-      {/* Project grid (reuses the shared card component) — capped preview;
-          the real, filterable, paginated grid lives at /project-listing. */}
+      {/* Project grid (reuses the shared card component) — a visual preview of
+          the nine best-presented projects. "View all" used to point at
+          /project-listing?builder=<slug>, a query-param view this site does
+          not server-render as anchors, so a builder with 40 projects linked 9
+          of them and orphaned the rest. It now points at the complete index
+          below, which links every one of them by name. */}
       {withImages.length > 0 ? (
         <SimilarProjects
           title={summary.name}
           projects={withImages.slice(0, 9)}
           heading={`Projects by ${summary.name}`}
-          viewAllHref={`/project-listing?builder=${summary.slug}`}
-          viewAllLabel={`View all ${withImages.length} →`}
+          viewAllHref="#all-projects"
+          viewAllLabel={`See all ${projects.length} →`}
         />
       ) : (
         <div className="w-full max-w-7xl mx-auto px-4 my-12 text-gray-500">
@@ -239,6 +282,44 @@ const DeveloperPage = async ({ params }: PageParams) => {
           in the meantime.
         </div>
       )}
+
+      <DeveloperIntelligence name={summary.name} cityLabel={cityLabel} profile={profile} />
+
+      {/* The complete index. Every project this builder has on HomzRealtor,
+          linked by name, so nothing in the portfolio depends on a query-param
+          view to be reachable. Grouped by city where the builder spans more
+          than one. */}
+      {projects.length > 0 && (
+        <section id="all-projects" className="w-full max-w-7xl mx-auto px-4 mt-12 scroll-mt-28">
+          <h2 className="mb-1 text-2xl font-bold text-white">
+            All {projects.length} {summary.name}{" "}
+            {projects.length === 1 ? "project" : "projects"}
+          </h2>
+          <p className="mb-5 text-[13px] text-gray-500">
+            Every project we list for this developer, with its location and current status.
+          </p>
+          <ul className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((p) => (
+              <li key={`${p.city_key}-${p.slug}`} className="border-b border-white/[0.05] pb-2.5">
+                <Link
+                  href={`/project-listing/${canonicalCitySlug(p.city_key)}/${p.slug}`}
+                  className="text-[14.5px] text-gray-300 transition hover:text-[#CEA44E]"
+                >
+                  {p.project_name}
+                </Link>
+                <span className="block text-[12px] text-gray-600">
+                  {[p.sector, p.micro_market, p.city_name]
+                    .filter((v, i, a) => v && a.indexOf(v) === i)
+                    .join(", ")}
+                  {p.project_status ? ` · ${p.project_status}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <Faq title={summary.name} items={faqs} />
 
       {/* Other developers — internal linking + crawlability */}
       {others.length > 0 && (

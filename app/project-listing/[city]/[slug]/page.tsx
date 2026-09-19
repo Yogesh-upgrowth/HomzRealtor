@@ -78,8 +78,33 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     : project.price_text
     ? `from ${project.price_text}`
     : "with the latest pricing";
+
+  // Audit item 10 (2026-09-19): this ran to roughly 100 characters, leaving a
+  // third of the SERP snippet unused on the site's highest-intent pages. The
+  // additions below are builder, size range, possession/status and RERA state
+  // — each already shown on the page, each a fact the searcher is weighing,
+  // and each appended only when the record actually carries it, so a sparse
+  // project still gets a complete sentence rather than a padded one.
+  // truncateAtWord's 158-char default then trims on a word boundary.
+  const builderBit =
+    project.builder && project.builder !== "Unknown" ? ` by ${project.builder}` : "";
+  const sizeBit =
+    project.min_size && project.size_unit
+      ? `, ${project.min_size.toLocaleString("en-IN")}${
+          project.max_size && project.max_size > project.min_size
+            ? `-${project.max_size.toLocaleString("en-IN")}`
+            : ""
+        } ${project.size_unit}`
+      : "";
+  const statusBit = project.possession_text
+    ? ` Possession ${project.possession_text}.`
+    : project.project_status
+    ? ` ${project.project_status}.`
+    : "";
+  const reraBit = project.rera_status === "active" ? " RERA registered." : "";
   const description = truncateAtWord(
-    `${project.project_name}, ${locationLabel}: ${configBit} ${priceBit}. Enquire now with HomzRealtor.`
+    `${project.project_name}${builderBit}, ${locationLabel}: ${configBit}${sizeBit} ${priceBit}.` +
+      `${statusBit}${reraBit} Compare prices, floor plans and amenities on HomzRealtor.`
   );
 
   const keywords = [
@@ -149,6 +174,16 @@ const ProjectPage = async ({ params }: PageParams) => {
 
   // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
   const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
+
+  // Audit item 10 (2026-09-19): the ribbon led with a starting price and said
+  // nothing about when that price was true. This route is ISR'd for 14 days
+  // (revalidate above), so a visitor can be reading a fortnight-old figure.
+  // Prefer the feed record's own timestamp; fall back to generation time,
+  // which for an ISR page is exactly when this copy of the price was read.
+  const updatedAt = project.updated_at ? new Date(project.updated_at) : null;
+  const pricedAsOf = (
+    updatedAt && !Number.isNaN(updatedAt.getTime()) ? updatedAt : new Date()
+  ).toISOString();
 
   // Links this project back up to its sector hub page — the hub already
   // links down to its projects, but nothing on the project page itself
@@ -279,6 +314,7 @@ const ProjectPage = async ({ params }: PageParams) => {
           unitCount={view.units.length}
           rera={view.rera}
           reraStatus={view.reraStatus}
+          pricedAsOf={pricedAsOf}
         />
 
         {/* Live listing status (tracked in MongoDB) — streams in after the

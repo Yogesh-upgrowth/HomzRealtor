@@ -134,14 +134,19 @@ const ProjectHero = ({
           <span>{builder}</span>
         </div>
 
-        <h1 className="mb-4 max-w-[15ch] font-display text-[clamp(40px,7vw,80px)] leading-[0.98] tracking-tight text-white">
+        {/* Audit item 10 (2026-09-19): the h1 was the bare project name, with
+            the location in a separate paragraph below it. The searches these
+            pages compete for carry the location in the query ("m3m route 65
+            sector 65 gurgaon"), so the location belongs inside the heading,
+            not next to it. Set as a smaller block inside the same h1 — the
+            visual hierarchy is unchanged, the heading text is not. */}
+        <h1 className="mb-7 max-w-[18ch] font-display text-[clamp(40px,7vw,80px)] leading-[0.98] tracking-tight text-white">
           {name}
+          <span className="mt-3 flex items-start gap-1.5 font-ui text-sm font-normal leading-snug tracking-normal text-gray-300 md:text-base">
+            <MapPin size={16} className="mt-0.5 shrink-0 text-[#D9B268]" aria-hidden />
+            <span>{locationLine}</span>
+          </span>
         </h1>
-
-        <div className="mb-7 flex items-start gap-1.5 text-sm text-gray-300 md:text-base">
-          <MapPin size={16} className="mt-0.5 shrink-0 text-[#D9B268]" />
-          <span>{locationLine}</span>
-        </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-md flex-1">
