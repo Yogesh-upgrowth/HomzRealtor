@@ -13,6 +13,7 @@
     "check:sitemap": "node scripts/check-sitemap-404s.mjs",
     "report:listing-quality": "node scripts/listing-quality-report.mjs",
     "test:identity": "node tests/listing-identity.test.mjs",
+    "test:taxonomy": "node tests/taxonomy.test.mjs",
     "check:owner-inputs": "node scripts/check-owner-inputs.mjs"
   },
   "dependencies": {

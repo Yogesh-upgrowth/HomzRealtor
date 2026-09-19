@@ -56,18 +56,103 @@ export function redactEmbeddedRegulatoryIds(paragraphs: string[]): string[] {
   );
 }
 
+// Audit item 9 (2026-09-19): the fallback below used to be
+// `title.split(/\s+/)[0]`, i.e. the first word of the project title, with no
+// check that it was a builder name at all. That produced developer hubs at
+// /developer/the (34 projects), /old, /good, /golden, /royal, /sharma,
+// /trump, /huda and /rwa, and is a large part of why 140 of 254 hubs held a
+// single project. A junk hub is worse than no hub: it is a thin indexable
+// page asserting a developer that does not exist.
+//
+// A first word is only accepted now when it could plausibly be a company
+// name. Everything else returns "Unknown", and buildDeveloperIndex() drops
+// those rather than minting a hub for them.
+const BUILDER_STOPWORDS = new Set([
+  "the", "a", "an", "new", "old", "good", "best", "golden", "royal", "luxury",
+  "premium", "green", "sector", "plot", "plots", "flat", "flats", "apartment",
+  "apartments", "villa", "villas", "house", "home", "homes", "floor", "floors",
+  "builder", "independent", "residential", "commercial", "affordable", "huda",
+  "rwa", "society", "project", "property", "land", "shop", "office", "sale",
+  "rent", "my", "your", "our", "prime", "grand", "elite",
+]);
+
+// Same company, two spellings in the feed. Merging them stops one developer
+// being split across two hubs, each too thin to rank.
+const BUILDER_ALIASES: Record<string, string> = {
+  signature: "Signature Global",
+  "signature global": "Signature Global",
+  uppal: "Uppal",
+  uppals: "Uppal",
+  gpl: "Godrej Properties",
+  godrej: "Godrej Properties",
+  "godrej properties": "Godrej Properties",
+  dwarkadhis: "Dwarkadhis",
+  dwarkadhish: "Dwarkadhis",
+};
+
+function canonicalBuilder(name: string): string {
+  return BUILDER_ALIASES[name.trim().toLowerCase()] ?? name.trim();
+}
+
 export function extractBuilder(projectTitle: string): string {
   const title = (projectTitle || "").trim();
+  if (!title) return "Unknown";
+
   for (const b of KNOWN_BUILDERS) {
-    if (title.toLowerCase().startsWith(b.toLowerCase())) return b;
+    if (title.toLowerCase().startsWith(b.toLowerCase())) return canonicalBuilder(b);
   }
-  return title.split(/\s+/)[0] || "Unknown";
+
+  const words = title.split(/\s+/).filter(Boolean);
+
+  // Try a two-word prefix before a one-word one -- "Signature Global" and
+  // "Godrej Properties" are the company; "Signature" and "Godrej" alone are
+  // the ones that split a developer across two hubs.
+  const pair = words.slice(0, 2).join(" ").toLowerCase();
+  if (BUILDER_ALIASES[pair]) return BUILDER_ALIASES[pair];
+
+  const first = words[0] || "";
+  const lower = first.toLowerCase().replace(/[^a-z]/g, "");
+  if (
+    lower.length < 3 ||
+    BUILDER_STOPWORDS.has(lower) ||
+    /^\d+$/.test(first)
+  ) {
+    return "Unknown";
+  }
+  return canonicalBuilder(first);
 }
+
+// Audit item 8 (2026-09-19): this pulled "Sector N" out of free text with no
+// regard for which town the sector belongs to, so Sohna's sector numbering
+// merged into Gurgaon's -- LID Plaza, in Sector 6 Sohna, was filed under
+// Sector 6 Gurgaon -- and a "Sector 150", which is Noida, appeared under
+// Gurgaon too. Both produce a sector hub that mixes unrelated inventory.
+//
+// Gurgaon's sectors run 1-115 (plus letter suffixes). A number outside that
+// range, or a sector qualified by another town's name in the same text, is
+// not a Gurgaon sector and returns null rather than contaminating a hub.
+const GURGAON_MAX_SECTOR = 115;
+// "Sohna Road" is a Gurgaon corridor and appears in MICRO_MARKETS above --
+// "Sector 48, Sohna Road, Gurgaon" is a genuine Gurgaon sector. Only the town
+// of Sohna (its own sector numbering) disqualifies, hence the lookahead.
+const OTHER_TOWNS = /\b(sohna(?!\s+road)|manesar|bhiwadi|dharuhera|pataudi|farukh?nagar|noida|faridabad|delhi)\b/i;
 
 export function extractSector(...texts: (string | string[] | null | undefined)[]): string | null {
   const blob = texts.flatMap((t) => (Array.isArray(t) ? t : [t])).filter(Boolean).join(" ");
   const m = blob.match(/\bSector\s*-?\s*([0-9]{1,3}[A-Za-z]?)\b/i);
-  return m ? `Sector ${m[1].toUpperCase()}` : null;
+  if (!m) return null;
+
+  const raw = m[1].toUpperCase();
+  const num = parseInt(raw, 10);
+  if (!Number.isFinite(num) || num < 1 || num > GURGAON_MAX_SECTOR) return null;
+
+  // "Sector 6, Sohna" is Sohna's Sector 6, not Gurgaon's. Only reject when the
+  // other town is named near the sector mention, so a project that merely
+  // lists "30 min to Noida" under connectivity is unaffected.
+  const around = blob.slice(Math.max(0, m.index! - 40), (m.index ?? 0) + m[0].length + 40);
+  if (OTHER_TOWNS.test(around)) return null;
+
+  return `Sector ${raw}`;
 }
 
 const MICRO_MARKETS = [
