@@ -3,6 +3,7 @@
 
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
+import { isExcludedProject } from "./excludedProjects";
 import { normalizeAmenities } from "./view-model";
 import { fetchProjects, categorySegment } from "@/lib/scraping/homzbackend";
 
@@ -54,10 +55,17 @@ async function fetchCityRaw(cityKey: string): Promise<CityData> {
   // portfolio figures and the project counts in copy, not just out of the
   // grid. See lib/intelligence/projectDedupe.ts for what it will and will not
   // merge; the collapsed slug redirects rather than 404s (getProjectBySlug).
-  return collapseDuplicateProjects([
+  const normalized = [
     ...commercial.map((r) => normalizeProject(r, cityKey, "Commercial")),
     ...residential.map((r) => normalizeProject(r, cityKey, "Residential")),
-  ]);
+  // Records the owner has asked not to carry (lib/intelligence/
+  // excludedProjects.ts). Dropped here so an excluded record leaves the
+  // sitemap, the sector medians and the developer counts at the same moment
+  // it leaves the grid, rather than being hidden in one place and still
+  // counted in another.
+  ].filter((p) => !isExcludedProject(p.city_key, p.slug));
+
+  return collapseDuplicateProjects(normalized);
 }
 
 // fetchProjects() (lib/scraping/homzbackend.ts) caches the *raw* segment (via

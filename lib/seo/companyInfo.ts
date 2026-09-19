@@ -4,27 +4,66 @@
 // thing. Real estate is a YMYL category; Google and buyers both weight
 // consistent NAP plus a visible RERA registration number heavily here.
 //
-// officeAddress / hararaAgentNumber / gstNumber / social / hours are
-// deliberately blank — fill these in with the company's actual registered
+// Fields left blank are deliberately blank — fill these in with the company's actual registered
 // details. Every consumer of this object renders each field conditionally
 // (omitted, not faked) wherever it's blank, so leaving one empty degrades
 // gracefully instead of shipping a placeholder value.
 export const COMPANY_INFO = {
   name: "HomzRealtor",
-  // Supplied by the owner 2026-09-19. If the registered entity carries a
-  // suffix (Pvt Ltd / LLP) or differs from the trading name, replace this
-  // with the exact registered string -- Organization.legalName is matched
-  // against registry and directory records, so an approximation is worse
-  // than the trading name alone.
-  legalName: "Homz Realtor",
+  // The registered operator, corrected 2026-09-19 against the GST
+  // certificate (Form GST REG-06, GSTIN 06BANPS9686L1ZI, issued 11/09/2024).
+  //
+  // The owner first gave the legal name as "Homz Realtor". The certificate
+  // shows no such entity: the registration is a Proprietorship whose legal
+  // name and trade name are both SUNITA SINGHVI, which is also the name on
+  // the HARERA agent registration. So HomzRealtor is a trading brand, not a
+  // registered company, and legalName carries the registered string.
+  //
+  // This is the point of the field. Organization.legalName is reconciled
+  // against registry and directory records; a name that matches nothing on
+  // the GST or HARERA portals is worse than no claim at all, and here one
+  // consistent identity runs across the GST certificate, the HARERA
+  // registration and the site. If a separate Pvt Ltd or LLP named Homz
+  // Realtor also exists, replace this with its exact registered string --
+  // but then the GST and HARERA numbers below belong to a different entity
+  // and must be labelled as such.
+  legalName: "Sunita Singhvi",
+  /** How the brand relates to the registered operator, in plain words, for
+   *  the footer and /contact. Rendered wherever legalName is shown so the
+   *  proprietorship is never mistaken for a company. */
+  legalStructure:
+    "HomzRealtor is the trading name of a sole proprietorship registered in the name of Sunita Singhvi.",
   phone: "+91-8447909227",
   phoneDisplay: "+91 84479 09227",
   email: "hello@homzrealtor.com",
-  officeAddress: "",
+  // Supplied by the owner 2026-09-19. This is the operating office, and it is
+  // deliberately NOT the address on the GST certificate -- that one is the
+  // principal place of business on record (H.NO.303 T-10, Vipul Lavanya
+  // Apartment, Sector 81), a residential flat. The address published here and
+  // the address on the Google Business Profile must be this same string,
+  // character for character, because local ranking is built on that
+  // consistency.
+  officeAddress: "10th Floor, 308, Badshahpur Sohna Road, Sector 48, Gurugram, Haryana 122018",
+  /** Structured form of officeAddress, for PostalAddress. */
+  postalAddress: {
+    street: "10th Floor, 308, Badshahpur Sohna Road",
+    locality: "Sector 48",
+    city: "Gurugram",
+    state: "Haryana",
+    postalCode: "122018",
+  } as null | { street: string; locality: string; city: string; state: string; postalCode: string },
   city: "Gurgaon",
   state: "Haryana",
   country: "IN",
-  gstNumber: "",
+  // Verified 2026-09-19 against the GST certificate. Like the HARERA
+  // registration below, this is held by the proprietor rather than by a
+  // company -- the GST portal shows SUNITA SINGHVI against this number, so
+  // every surface that prints it prints the holder too.
+  gstNumber: "06BANPS9686L1ZI",
+  /** The registered person this GSTIN belongs to. */
+  gstHolder: "Sunita Singhvi",
+  /** Date of issue, as printed on the certificate. */
+  gstIssuedOn: "2024-09-11",
   // HARERA agent registration (Haryana RERA — the relevant authority for the
   // Gurgaon market this site serves). Verified 2026-09-19 against the
   // certificate issued by HARERA Panchkula.
@@ -67,8 +106,19 @@ export const COMPANY_INFO = {
     closes: "23:59",
   } as null | { days: string[]; opens: string; closes: string },
 
-  /** Office coordinates, for LocalBusiness.geo. Only set these alongside a
-   *  real officeAddress -- a geo point with no address is not a location. */
+  /** Office coordinates, for LocalBusiness.geo.
+   *
+   *  Deliberately still null even though officeAddress is now set. The only
+   *  coordinate available here is the Sector 48 centroid from
+   *  data/osm/ncr-places.json (28.4105, 77.0395), which can sit several
+   *  hundred metres from the building. Google reconciles LocalBusiness.geo
+   *  against the Business Profile pin, and by the same rule applied to
+   *  opening hours, a coordinate that disagrees with the pin is worse than
+   *  no coordinate at all -- the exact address below plus hasMap pointing at
+   *  the profile already carry the location.
+   *
+   *  To fill it: open the Business Profile pin in Google Maps, copy the
+   *  lat/lng out of the URL, and set them here. Nothing else changes. */
   geo: null as null | { lat: number; lng: number },
 
   /** The Gurgaon sectors Homz actually services, for areaServed. An explicit

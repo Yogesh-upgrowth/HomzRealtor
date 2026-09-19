@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SellPropertyForm from "@/components/Home/SellPropertyForm";
 import ServicePage from "@/components/Services/ServicePage";
-import { allResolved, type OwnerPendingKey } from "@/lib/content/ownerPending";
+import { allResolved, LANDLORD_TERM_KEYS } from "@/lib/content/ownerPending";
 
 const title = "Rent Out Your Property in Gurgaon | HomzRealtor";
 const description =
@@ -10,17 +10,14 @@ const description =
 // R19-08 (2026-09-19): the landlord journey did not exist at all -- the
 // recheck's point that "selling and letting are still not equal to buying"
 // was most obvious here, since /rent-out-property-in-gurgaon simply 404'd.
-// Same posture as the seller page: full structure, real process copy, every
-// commercial term deferred to OWNER_PENDING, and noindex until none of them
-// is still a placeholder. See app/sell-property-in-gurgaon/page.tsx.
-const PENDING_KEYS: OwnerPendingKey[] = [
-  "landlord.feeAmount",
-  "landlord.feePayer",
-  "landlord.mandate",
-  "landlord.withdrawal",
-  "landlord.tenantScreening",
-  "landlord.agreementSupport",
-];
+// Same posture as the seller page, and the same 2026-09-19 change: the owner
+// supplied the letting fee, so this publishes -- half of one month's rent
+// from the owner and half from the tenant, payable once. The mandate and
+// withdrawal rows are dropped rather than filled, for the reason set out in
+// app/sell-property-in-gurgaon/page.tsx: those are contractual positions
+// with consequences for the landlord, and "all handled by us" is a
+// description of the service, not of the contract.
+const PENDING_KEYS = LANDLORD_TERM_KEYS;
 
 const READY_TO_INDEX = allResolved(PENDING_KEYS);
 
@@ -36,7 +33,7 @@ export default function RentOutPropertyPage() {
     <ServicePage
       eyebrow="For landlords"
       h1="Rent Out Your Property in Gurgaon"
-      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor can talk you through achievable rent for your sector, how we find and screen tenants, and what the paperwork involves. Our full letting terms are being finalised, so the fee and mandate details below are not published yet, and nothing on this page is an offer."
+      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor will talk you through achievable rent for your sector, how we find tenants, and what the paperwork involves. We handle the letting end to end, rent agreement included. Our brokerage is half of one month's rent, payable once the tenancy is agreed."
       steps={[
         {
           title: "Tell us about the property",
@@ -66,8 +63,6 @@ export default function RentOutPropertyPage() {
       terms={[
         { label: "What it costs", keyName: "landlord.feeAmount" },
         { label: "Who pays the fee, and when", keyName: "landlord.feePayer" },
-        { label: "Mandate and exclusivity", keyName: "landlord.mandate" },
-        { label: "Withdrawing your instruction", keyName: "landlord.withdrawal" },
         { label: "Tenant screening", keyName: "landlord.tenantScreening" },
         { label: "Rent agreement and registration", keyName: "landlord.agreementSupport" },
       ]}
@@ -81,12 +76,16 @@ export default function RentOutPropertyPage() {
           a: "It varies with the sector, the asking rent and the time of year. An advisor will give you a realistic view for your specific property rather than a headline number.",
         },
         {
+          q: "What does it cost to let through HomzRealtor?",
+          a: "Half of one month's rent from you and half from the tenant, payable once, on the first month's rent. Nothing is payable for the rent conversation, the listing, the photographs or the viewings.",
+        },
+        {
           q: "Do you screen tenants?",
-          a: "What screening we carry out, and what remains your responsibility as the landlord, is set out in the fees and terms section above and is not yet published.",
+          a: "We find and select the tenant and handle the letting end to end. The specific checks run on a given tenancy are agreed with you rather than fixed here, so ask your advisor what will be done on your property before you rely on it.",
         },
         {
           q: "Who handles the rent agreement?",
-          a: "See the fees and terms section above. Whatever the arrangement, a rent agreement in Haryana should be stamped and, above the applicable duration, registered. Take your own legal advice on your specific agreement.",
+          a: "We do, as part of the letting. A rent agreement in Haryana should be stamped and, above the applicable duration, registered; those government charges are set by the state and payable separately. Take your own legal advice on your specific agreement.",
         },
         {
           q: "Can I let the property while I am abroad?",

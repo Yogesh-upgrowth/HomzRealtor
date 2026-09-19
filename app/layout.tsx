@@ -178,7 +178,23 @@ const organizationSchema = {
         areaServed: "IN",
         availableLanguage: ["en", "hi"],
       },
-      ...(COMPANY_INFO.officeAddress
+      // 2026-09-19: the office address is now real, and PostalAddress carries
+      // its parts separately rather than one string in streetAddress -- a
+      // locality and a postal code are what a map-pack match is actually
+      // made on. This must stay identical to what the Google Business
+      // Profile publishes.
+      ...(COMPANY_INFO.postalAddress
+        ? {
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: COMPANY_INFO.postalAddress.street,
+              addressLocality: `${COMPANY_INFO.postalAddress.locality}, ${COMPANY_INFO.postalAddress.city}`,
+              addressRegion: COMPANY_INFO.postalAddress.state,
+              postalCode: COMPANY_INFO.postalAddress.postalCode,
+              addressCountry: COMPANY_INFO.country,
+            },
+          }
+        : COMPANY_INFO.officeAddress
         ? {
             address: {
               "@type": "PostalAddress",
@@ -195,21 +211,36 @@ const organizationSchema = {
       // lib/seo/companyInfo.ts. A checker who looks the number up on the
       // HARERA portal sees that name, so the markup states it rather than
       // letting the number imply the company is the registered agent.
-      ...(COMPANY_INFO.hararaAgentNumber
-        ? {
-            identifier: {
-              "@type": "PropertyValue",
-              propertyID: "HARERA real estate agent registration",
-              value: COMPANY_INFO.hararaAgentNumber,
-              ...(COMPANY_INFO.hareraHolder
-                ? { description: `Registered to ${COMPANY_INFO.hareraHolder}` }
-                : {}),
-              ...(COMPANY_INFO.hareraValidUntil
-                ? { validThrough: COMPANY_INFO.hareraValidUntil }
-                : {}),
-            },
-          }
-        : {}),
+      // 2026-09-19: GST joins HARERA here, so `identifier` became an array.
+      // Both are held by the proprietor rather than by a company, and both
+      // name the holder for the same reason: a checker who looks either
+      // number up sees "Sunita Singhvi" on the portal, and markup that let
+      // the number imply a company registration would fail the very check it
+      // invites.
+      ...(() => {
+        const ids = [
+          COMPANY_INFO.hararaAgentNumber && {
+            "@type": "PropertyValue",
+            propertyID: "HARERA real estate agent registration",
+            value: COMPANY_INFO.hararaAgentNumber,
+            ...(COMPANY_INFO.hareraHolder
+              ? { description: `Registered to ${COMPANY_INFO.hareraHolder}` }
+              : {}),
+            ...(COMPANY_INFO.hareraValidUntil
+              ? { validThrough: COMPANY_INFO.hareraValidUntil }
+              : {}),
+          },
+          COMPANY_INFO.gstNumber && {
+            "@type": "PropertyValue",
+            propertyID: "GSTIN",
+            value: COMPANY_INFO.gstNumber,
+            ...(COMPANY_INFO.gstHolder
+              ? { description: `Registered to ${COMPANY_INFO.gstHolder}` }
+              : {}),
+          },
+        ].filter(Boolean);
+        return ids.length > 0 ? { identifier: ids } : {};
+      })(),
       ...(Object.values(COMPANY_INFO.social).some(Boolean)
         ? { sameAs: Object.values(COMPANY_INFO.social).filter(Boolean) }
         : {}),

@@ -22,6 +22,33 @@ const inputsSrc = read("lib/content/ownerInputs.ts");
 const companySrc = read("lib/seo/companyInfo.ts");
 const pendingSrc = read("lib/content/ownerPending.ts");
 const verificationSrc = read("lib/status/verification.ts");
+const brokerageSrc = read("lib/content/brokerageTerms.ts");
+const partnersSrc = read("lib/content/channelPartners.ts");
+
+/** True when a single OWNER_PENDING key carries a real answer. The whole-file
+ *  "no value: null anywhere" check this replaced was wrong once the two
+ *  service pages stopped rendering the mandate and withdrawal rows: those
+ *  stay open by design, and they do not hold the pages back. */
+function pendingResolved(key) {
+  const start = pendingSrc.indexOf(`"${key}": {`);
+  if (start === -1) return false;
+  const end = pendingSrc.indexOf("},", start);
+  if (end === -1) return false;
+  return !/value:\s*null/.test(pendingSrc.slice(start, end));
+}
+
+/** The keys each service page renders — mirrors lib/content/ownerPending.ts's
+ *  SELLER_TERM_KEYS / LANDLORD_TERM_KEYS. */
+const SERVICE_PAGE_KEYS = [
+  "seller.feeAmount",
+  "seller.feePayer",
+  "seller.verification",
+  "seller.timeline",
+  "landlord.feeAmount",
+  "landlord.feePayer",
+  "landlord.tenantScreening",
+  "landlord.agreementSupport",
+];
 
 // --- parse the checklist -----------------------------------------------------
 
@@ -75,7 +102,15 @@ const detectors = {
   "content.ownerCallLog": () =>
     !/OWNER_CALL_LOG_SOURCE[^=]*=\s*"none"/.test(verificationSrc) &&
     /latestVerification/.test(verificationSrc),
-  "journeys.sellerLandlordTerms": () => !/value:\s*null/.test(pendingSrc),
+  // Resolved when both service pages can publish, i.e. every term they
+  // actually render has an answer. The mandate and withdrawal questions stay
+  // open in ownerPending.ts on purpose and are not counted here.
+  "journeys.sellerLandlordTerms": () => SERVICE_PAGE_KEYS.every(pendingResolved),
+  "content.brokerageTerms": () =>
+    /percentOfValue:\s*[1-9]/.test(brokerageSrc) &&
+    /percentOfFirstMonthRent:\s*[1-9]/.test(brokerageSrc),
+  "authority.channelPartnerProof": () =>
+    /CHANNEL_PARTNER_DEVELOPERS\s*=\s*\[\s*"/.test(partnersSrc),
 };
 
 for (const item of items) {

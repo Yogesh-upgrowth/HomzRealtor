@@ -14,8 +14,13 @@ import type { FaqItem } from "@/lib/intelligence/content";
 //     official source instead of quoting a number that could be wrong by the
 //     time someone acts on it.
 //   - any claim about outcomes, appreciation or "best" anything.
-//   - any restatement of the unverified channel-partner and loan-desk claims
-//     carried by HOME_FAQS (see the note there).
+//   - the "in-house loan desk works with 15+ banks and NBFCs" claim the old
+//     homepage FAQ carried. Nothing evidences it and the owner has not
+//     restated it.
+//
+// The channel-partner question IS answered here, but only with the three
+// developers the owner actually named (lib/content/channelPartners.ts). The
+// version removed from HOME_FAQS named five that nothing supported.
 //
 // Grouped so the page can render sections rather than one long list; the group
 // names double as the on-page headings.
@@ -32,7 +37,15 @@ export const SITE_FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "Does HomzRealtor charge buyers or tenants a fee to view a property?",
-        a: "No. There is no viewing fee. Where a fee applies to a transaction it is disclosed before you commit to anything, never after.",
+        a: "No. There is no charge to view a property or to talk to an advisor. Brokerage is payable only on a completed transaction, and the rates are published below rather than raised at the end.",
+      },
+      {
+        q: "What does HomzRealtor charge?",
+        a: "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller. On a letting it is half of one month's rent from the owner and half of one month's rent from the tenant, payable once. Nothing is payable unless the transaction completes.",
+      },
+      {
+        q: "Is HomzRealtor a channel partner for any developers?",
+        a: "Yes. HomzRealtor is an authorised channel partner for DLF, M3M and Central Park, among other Gurgaon developers. Authorisation is granted per developer and often per project, so ask us which projects that covers before you rely on it for a specific booking.",
       },
       {
         q: "Which areas does HomzRealtor cover?",
@@ -127,11 +140,11 @@ export const SITE_FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "I own a property in Gurgaon and want to sell it. What happens first?",
-        a: "Tell us about the property and an advisor will call to discuss realistic pricing against comparable listings in your sector and how we would market it. Our full seller terms are being finalised and are not published yet, so nothing on the seller page is an offer.",
+        a: "Tell us about the property and an advisor will call to discuss realistic pricing against comparable listings in your sector and how we would market it. We handle the sale end to end from there — pricing, listing, viewings, negotiation and paperwork. Our brokerage is 1% of the transaction value, payable on completion.",
       },
       {
         q: "Can HomzRealtor find me a tenant?",
-        a: "Yes. An advisor will discuss achievable rent for your sector, how we find and screen tenants and what the paperwork involves. As with selling, the detailed letting terms are being finalised and will be published when they are agreed.",
+        a: "Yes, and we handle the letting end to end: pricing, listing, viewings, tenant selection and the rent agreement. Our brokerage is half of one month's rent, payable once the tenancy is agreed.",
       },
       {
         q: "How long does it take to sell or let a property in Gurgaon?",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ListingRecord } from "@/lib/intelligence/get-listing-record";
 import { formatInr } from "@/lib/intelligence/normalize";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
+import { BROKERAGE_TERMS } from "@/lib/content/brokerageTerms";
 
 // The HomzRealtor half of a detail page (2026-09-19).
 //
@@ -255,11 +256,28 @@ export default function HomzRecordSections({ record }: { record: ListingRecord }
             </div>
           )}
 
-          <p className="mt-5 border-t border-white/[0.07] pt-4 text-[12.5px] leading-relaxed text-gray-500">
-            HomzRealtor brokers this unit. Quote reference {record.listingId} when you
-            call {COMPANY_INFO.phone}. We do not charge buyers or tenants a fee to view a
-            property.
-          </p>
+          {/* Our brokerage terms, stated on the page rather than left to the
+              phone call. Until 2026-09-19 this said only that viewings are
+              free, which was true but was the whole of what the site said
+              about money -- and elsewhere the homepage FAQ claimed the
+              developer pays us so a buyer pays nothing, which is not the
+              arrangement on a resale. Single source: lib/content/brokerageTerms.ts. */}
+          <div className="mt-5 border-t border-white/[0.07] pt-4 text-[12.5px] leading-relaxed text-gray-500">
+            <p>
+              HomzRealtor brokers this unit. Quote reference {record.listingId} when you
+              call{" "}
+              <a href={`tel:${COMPANY_INFO.phone}`} className="text-[#D9B268] hover:underline">
+                {COMPANY_INFO.phoneDisplay}
+              </a>
+              .
+            </p>
+            <p className="mt-2">
+              {BROKERAGE_TERMS.viewingSummary}{" "}
+              {record.view.category === "Rent" || record.view.category === "Pg"
+                ? BROKERAGE_TERMS.rent.summary
+                : BROKERAGE_TERMS.sale.summary}
+            </p>
+          </div>
         </div>
       </Section>
     </div>

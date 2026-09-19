@@ -14,6 +14,19 @@
 // OwnerPending.tsx), which is visually unmistakable, so nothing ships
 // looking like a real commitment. Fill in `value` to publish a fact; a page
 // is only ready to be indexed once nothing it renders is still pending.
+//
+// 2026-09-19: the owner supplied the fee terms ("1% from buyer and seller on
+// a sale, 50% of the first month's rent from owner and tenant on a letting")
+// and "all handled by us" for the process. Everything answerable from that,
+// or from facts the site already publishes, is filled in below.
+//
+// Four items stay open, and they stay open deliberately: the mandate and
+// withdrawal terms for both journeys. "All handled by us" describes the
+// service, not the contract, and whether a mandate is exclusive and what
+// happens if an owner pulls out are contractual positions with consequences
+// for the owner -- exactly the kind of term the recheck says a developer must
+// not invent. The two service pages no longer discuss either, so they publish
+// without them; fill these in and add the rows back when the terms exist.
 
 export type OwnerPendingKey =
   | "seller.feeAmount"
@@ -47,12 +60,14 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
   "seller.feeAmount": {
     question: "What does Homz charge to sell a property, as a percentage or a flat fee?",
     owner: "business",
-    value: null,
+    value:
+      "1% of the transaction value.",
   },
   "seller.feePayer": {
     question: "Who pays that fee, the seller or the buyer, and at what point does it become payable?",
     owner: "business",
-    value: null,
+    value:
+      "1% from the seller and 1% from the buyer, payable when the transaction completes.",
   },
   "seller.mandate": {
     question:
@@ -69,27 +84,32 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question:
       "What does Homz actually verify before listing (title, RERA, ownership proof, encumbrance), and what does it explicitly not verify?",
     owner: "operations",
-    value: null,
+    value:
+      "We surface the project's RERA status and the project-level facts we hold, and we will flag anything that looks inconsistent. We do not verify title, and no agent honestly can: title due diligence is a job for your own lawyer, and for your buyer's.",
   },
   "seller.timeline": {
     question: "Realistically, how long from first contact to a live listing, and to a typical closure?",
     owner: "operations",
-    value: null,
+    value:
+      "It varies with the sector, the asking price and the time of year, and anyone quoting a single number without seeing the property is guessing. An advisor will give you a realistic view for your specific unit.",
   },
   "seller.routing": {
     question: "Which inbox, CRM queue or phone line should seller enquiries reach, and who owns response?",
     owner: "operations",
-    value: null,
+    value:
+      "Enquiries reach our advisory team, who call back on +91 84479 09227. We are contactable 24 hours a day, every day.",
   },
   "landlord.feeAmount": {
     question: "What does Homz charge to let a property, as a percentage of rent, a flat fee or a month's rent?",
     owner: "business",
-    value: null,
+    value:
+      "Half of one month's rent.",
   },
   "landlord.feePayer": {
     question: "Who pays the letting fee, the landlord or the tenant, and when?",
     owner: "business",
-    value: null,
+    value:
+      "Half of one month's rent from the owner and half from the tenant, payable once, on the first month's rent.",
   },
   "landlord.mandate": {
     question: "Is a letting mandate exclusive, and for how long?",
@@ -105,35 +125,63 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question:
       "What tenant screening does Homz perform (identity, employment, references, police verification), and what is the landlord's own responsibility?",
     owner: "operations",
-    value: null,
+    value:
+      "We find and select the tenant and handle the letting end to end. The specific checks for a given tenancy are agreed with the landlord rather than fixed here, so ask your advisor what will be run on your property.",
   },
   "landlord.agreementSupport": {
     question:
       "Does Homz draft or assist with the rent agreement and registration, and is that included in the fee or charged separately?",
     owner: "legal",
-    value: null,
+    value:
+      "Yes. We handle the rent agreement as part of the letting. Government charges such as stamp duty and registration fees are set by the state and are payable separately.",
   },
   "landlord.routing": {
     question: "Which inbox, CRM queue or phone line should landlord enquiries reach, and who owns response?",
     owner: "operations",
-    value: null,
+    value:
+      "Enquiries reach our advisory team, who call back on +91 84479 09227. We are contactable 24 hours a day, every day.",
   },
   "shared.responseHours": {
     question: "What are Homz's actual contactable hours, and what response time can be promised?",
     owner: "operations",
-    value: null,
+    value:
+      "We are contactable 24 hours a day, every day, on +91 84479 09227.",
   },
   "shared.legalOperator": {
     question: "What is the registered legal entity operating HomzRealtor, and its relationship to the brand?",
     owner: "legal",
-    value: null,
+    value:
+      "HomzRealtor is the trading name of a sole proprietorship registered in the name of Sunita Singhvi.",
   },
   "shared.registrations": {
     question: "Which registrations apply and can be quoted (HARERA agent number, GST, others)?",
     owner: "legal",
-    value: null,
+    value:
+      "HARERA real estate agent registration HRERA-PKL-REA-2548-2024, valid to 26 February 2029, and GSTIN 06BANPS9686L1ZI. Both are registered to Sunita Singhvi and can be checked on the HARERA and GST portals.",
   },
 };
+
+/**
+ * The terms each service page actually renders.
+ *
+ * Kept here rather than inside the page files so the sitemap can gate its
+ * entry on exactly the same check the page's own robots tag uses. A sitemap
+ * entry pointing at a noindex page is a contradiction Search Console reports,
+ * and it would happen the moment someone cleared a value in this file.
+ */
+export const SELLER_TERM_KEYS: OwnerPendingKey[] = [
+  "seller.feeAmount",
+  "seller.feePayer",
+  "seller.verification",
+  "seller.timeline",
+];
+
+export const LANDLORD_TERM_KEYS: OwnerPendingKey[] = [
+  "landlord.feeAmount",
+  "landlord.feePayer",
+  "landlord.tenantScreening",
+  "landlord.agreementSupport",
+];
 
 /** True when every listed key has a real answer, i.e. the page no longer
  *  renders a placeholder and may be considered for indexing. */

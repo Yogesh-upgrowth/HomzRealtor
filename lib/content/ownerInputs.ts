@@ -51,7 +51,8 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "The registered legal entity operating HomzRealtor, and its relationship to the brand",
     lands: "lib/seo/companyInfo.ts → legalName",
     shape: '"Acme Realty Services Pvt Ltd"',
-    why: "Organization schema, footer and /contact all currently omit it. Google cannot verify an unnamed operator in a YMYL category.",
+    why:
+      "Supplied 2026-09-19 and corrected against the GST certificate: there is no registered entity called \"Homz Realtor\". The registration is a proprietorship in the name of Sunita Singhvi, the same name on the HARERA certificate, so legalName carries that and the footer, /about-us and Organization schema all state the trading relationship in plain words.",
     done: true,
   },
   {
@@ -68,16 +69,18 @@ export const OWNER_INPUTS: OwnerInput[] = [
     area: "Trust and local",
     need: "GST number, if the business is registered",
     lands: "lib/seo/companyInfo.ts → gstNumber",
-    why: "Shown in the footer alongside the legal name. Omit if genuinely not registered — do not invent one.",
-    done: false,
+    why:
+      "Supplied 2026-09-19: GSTIN 06BANPS9686L1ZI, Form GST REG-06 issued 11/09/2024. Registered to Sunita Singhvi rather than to a company, so every surface that prints it prints the holder, exactly as with HARERA.",
+    done: true,
   },
   {
     key: "identity.officeAddress",
     area: "Trust and local",
     need: "Registered or operating address, if one exists",
     lands: "lib/seo/companyInfo.ts → officeAddress (+ geo, mapEmbedUrl)",
-    why: "PostalAddress and geo only render as a pair. A service-area business with no premises should say so rather than invent an address — Google's service-area rules allow that.",
-    done: false,
+    why:
+      "Supplied 2026-09-19: 10th Floor, 308, Badshahpur Sohna Road, Sector 48, Gurugram 122018. Deliberately not the GST certificate's principal place of business, which is a residential flat in Sector 81. geo is still null on purpose -- see the note in companyInfo.ts; the only coordinate available is a sector centroid and a pin that disagrees with the Business Profile is worse than none.",
+    done: true,
   },
   {
     key: "identity.hours",
@@ -166,8 +169,9 @@ export const OWNER_INPUTS: OwnerInput[] = [
     area: "Content originality",
     need: "The brokerage terms shown on every detail page",
     lands: "components/PropertyListing/HomzRecordSections.tsx (currently states no buyer/tenant viewing fee)",
-    why: "The page asserts a fee position today. Confirm it is accurate, or correct it — an inaccurate fee claim is a consumer-facing problem, not an SEO one.",
-    done: false,
+    why:
+      "Supplied 2026-09-19: 1% of transaction value from each of buyer and seller on a sale, half of one month's rent from each of owner and tenant on a letting, nothing payable for viewings. Now stated on every detail page, the FAQs, /about-us and both service pages from one source, lib/content/brokerageTerms.ts.",
+    done: true,
   },
 
   // ------------------------------------------------------------ Authority
@@ -194,8 +198,9 @@ export const OWNER_INPUTS: OwnerInput[] = [
     area: "Authority",
     need: "The list of projects Homz is a genuinely authorised channel partner for, with proof",
     lands: "a data file, once supplied — drives an authorised-partner badge and prioritised indexing",
-    why: "This is the strongest differentiator available and is currently unstated anywhere on the site.",
-    done: false,
+    why:
+      "Named by the owner 2026-09-19: DLF, M3M and Central Park. Stated as prose on /about-us and in the FAQs, never as structured data, because it is the business's own assertion and no schema type means \"the business says so\". The statement ended \"etc.\", and only the three named are listed. A per-project authorised-partner badge still needs which projects, under what authorisation, valid until when.",
+    done: true,
   },
 
   // ---------------------------------------------------------- Technical
@@ -224,8 +229,9 @@ export const OWNER_INPUTS: OwnerInput[] = [
     area: "Trust and local",
     need: "Fee amount and payer, mandate/exclusivity, withdrawal terms, what is verified before listing, tenant screening scope, rent-agreement support, routing recipients",
     lands: "lib/content/ownerPending.ts — 17 typed questions, each with the function that owes it",
-    why: "/sell-property-in-gurgaon and /rent-out-property-in-gurgaon are built and reachable but noindex; the robots gate is derived, so filling those values publishes them.",
-    done: false,
+    why:
+      "Fee terms supplied 2026-09-19, so both pages now publish and are in the sitemap. The mandate and withdrawal questions stay open in ownerPending.ts and the pages no longer discuss either: \"all handled by us\" describes the service, not the contract, and exclusivity and withdrawal are the owner's terms to set, not ours to write.",
+    done: true,
   },
 ];
 

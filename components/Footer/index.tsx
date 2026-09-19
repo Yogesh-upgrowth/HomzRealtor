@@ -65,7 +65,18 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
               </a>
             </p>
             {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
-            {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
+            {/* Both registrations are held by the proprietor rather than by a
+                company, so both print the holder's name. Anyone checking
+                either number on the GST or HARERA portal sees "Sunita
+                Singhvi"; a site claiming otherwise would fail the check it
+                is inviting. */}
+            {COMPANY_INFO.legalStructure && <p>{COMPANY_INFO.legalStructure}</p>}
+            {COMPANY_INFO.gstNumber && (
+              <p>
+                GSTIN: {COMPANY_INFO.gstNumber}
+                {COMPANY_INFO.gstHolder ? ` (${COMPANY_INFO.gstHolder})` : ""}
+              </p>
+            )}
             {COMPANY_INFO.hararaAgentNumber && (
               <p>
                 HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}
