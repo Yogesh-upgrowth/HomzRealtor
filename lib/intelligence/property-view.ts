@@ -65,6 +65,15 @@ export type PropertyView = {
   reraStatus: string | null;
   hasPrice: boolean;
   priceText: string;
+  /** R19-06: the parsed numeric amount in INR behind priceText, carried
+   *  through so structured data can emit a machine-readable price instead of
+   *  the feed's display string ("70 L", "1.5 Cr", "60,000/month"). null when
+   *  the feed gave no parsed value, in which case the Offer is omitted rather
+   *  than guessed at. */
+  priceValueInr: number | null;
+  /** True when priceValueInr is a monthly rent rather than a sale price, so
+   *  markup can state the billing period instead of implying a purchase. */
+  priceIsMonthly: boolean;
   configuration: string | null;
   bedrooms: number | null;
   areaText: string | null;
@@ -201,6 +210,26 @@ function priceText(property: RawHomzProperty): { hasPrice: boolean; priceText: s
   const raw = clean(property.price);
   if (raw && raw !== "Price on Request") return { hasPrice: true, priceText: raw };
   return { hasPrice: false, priceText: "Price on Request" };
+}
+
+// R19-06 (2026-09-19): the feed's own parsed numerics, the same pair
+// lib/listings/filters.ts already trusts for budget filtering. priceValue is
+// a sale amount, rentMonthly a per-month amount — they are never both the
+// meaningful one, so the listingType decides which is authoritative rather
+// than a blind ?? chain that would call a rental's monthly figure a price.
+function priceValue(property: RawHomzProperty): {
+  priceValueInr: number | null;
+  priceIsMonthly: boolean;
+} {
+  const isRental = property.listingType === "rent" || property.rentMonthly != null;
+  const value = isRental
+    ? property.rentMonthly ?? null
+    : property.priceValue ?? null;
+  // A non-positive amount is not a price; omit rather than publish a zero.
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
+    return { priceValueInr: null, priceIsMonthly: isRental };
+  }
+  return { priceValueInr: value, priceIsMonthly: isRental };
 }
 
 // Real enrichment output (homz enrich scores), not a fabricated multi-factor
@@ -460,6 +489,7 @@ export function resolvePropertyView(
     reraStatus: property.reraStatus || null,
     hasPrice,
     priceText: pt,
+    ...priceValue(property),
     configuration: clean(property.configuration),
     bedrooms: property.bedrooms ?? null,
     areaText: clean(salvageAreaText(property.size)),

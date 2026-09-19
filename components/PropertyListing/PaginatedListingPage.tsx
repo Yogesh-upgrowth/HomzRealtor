@@ -205,12 +205,25 @@ function safeJson(g: unknown): string {
 // built from the same PAGE_SIZE slice ListingPreviewSection actually
 // renders on the page, not the full segment — structured data has to match
 // what's visibly on the page, not the whole underlying dataset.
-export async function PropertyHubJsonLd({ category }: { category: PropertyCategory }) {
+// R19-06 (2026-09-19): `filtered` suppresses the ItemList. This component is
+// a server component with no access to the visitor's filter state, so once a
+// filter is applied the top-24 slice below no longer describes what is on the
+// page — the recheck caught a Sector 82 rental query whose ItemList still
+// declared 24 unfiltered items against 16 rendered anchors. Emitting no
+// ItemList is correct there: the CollectionPage still describes the page, and
+// structured data must not assert a list it cannot see.
+export async function PropertyHubJsonLd({
+  category,
+  filtered = false,
+}: {
+  category: PropertyCategory;
+  filtered?: boolean;
+}) {
   const routeBase = ROUTE_BASE[category];
   const heading = CATEGORY_HEADING[category];
   const pageUrl = `${SITE}/${routeBase}`;
   const all = await getAllSorted(category);
-  const preview = all.slice(0, PAGE_SIZE);
+  const preview = filtered ? [] : all.slice(0, PAGE_SIZE);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -231,6 +244,9 @@ export async function PropertyHubJsonLd({ category }: { category: PropertyCatego
         ? [
             {
               "@type": "ItemList",
+              // Count the items actually enumerated here, never the segment
+              // total — the two disagreeing is what the recheck flagged.
+              numberOfItems: preview.length,
               itemListElement: preview.map((p, i) => ({
                 "@type": "ListItem",
                 position: i + 1,

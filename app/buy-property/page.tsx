@@ -1,6 +1,6 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
-import { computeFacets } from "@/lib/listings/filters";
+import { computeFacets, hasActiveListingFilters } from "@/lib/listings/filters";
 import discoverImage1 from "@/assets/images/discoverImage1.jpg";
 
 const title = "Buy Property in Gurgaon, Price, Photos & Floor Plans";
@@ -45,21 +45,31 @@ export const dynamic = "force-dynamic";
 // hooks/useListingsPage.ts), and ListingPreviewSection's `skip={8}` renders
 // only records 8..24 — together still the full PAGE_SIZE=24 "page 1" the
 // /page/2 boundary already assumes, just with no record appearing twice.
-export default async function BuyPropertyPage() {
+// R19-01 (2026-09-19): see app/rent-property/page.tsx for why searchParams is
+// read here — the fallback grid and the ItemList must both stand down while a
+// filter is active.
+export default async function BuyPropertyPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const filtered = hasActiveListingFilters(params);
+
   const all = await getAllSorted("Sale");
   const initialResults = all.slice(0, 8);
   const initialFacets = computeFacets(all);
 
   return (
     <>
-      <PropertyHubJsonLd category="Sale" />
+      <PropertyHubJsonLd category="Sale" filtered={filtered} />
       <PropertyListingPage
         category="Sale"
         initialResults={initialResults}
         initialTotal={all.length}
         initialFacets={initialFacets}
       />
-      <ListingPreviewSection category="Sale" skip={8} />
+      {!filtered && <ListingPreviewSection category="Sale" skip={8} />}
     </>
   );
 }

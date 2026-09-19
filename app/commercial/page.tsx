@@ -1,6 +1,6 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
-import { computeFacets } from "@/lib/listings/filters";
+import { computeFacets, hasActiveListingFilters } from "@/lib/listings/filters";
 import discoverImage5 from "@/assets/images/discoverImage5.jpg";
 
 const title = "Commercial Property in Gurgaon, Price, Photos & Plans";
@@ -34,21 +34,31 @@ export const dynamic = "force-dynamic";
 // same change: seeds PropertyListingPage's own server-rendered HTML with
 // the first 8 results directly, and ListingPreviewSection covers the rest
 // of "page 1" (records 8..24) so nothing appears twice.
-export default async function CommercialPage() {
+// R19-01 (2026-09-19): see app/rent-property/page.tsx for why searchParams is
+// read here — the fallback grid and the ItemList must both stand down while a
+// filter is active.
+export default async function CommercialPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const filtered = hasActiveListingFilters(params);
+
   const all = await getAllSorted("Commercial");
   const initialResults = all.slice(0, 8);
   const initialFacets = computeFacets(all);
 
   return (
     <>
-      <PropertyHubJsonLd category="Commercial" />
+      <PropertyHubJsonLd category="Commercial" filtered={filtered} />
       <PropertyListingPage
         category="Commercial"
         initialResults={initialResults}
         initialTotal={all.length}
         initialFacets={initialFacets}
       />
-      <ListingPreviewSection category="Commercial" skip={8} />
+      {!filtered && <ListingPreviewSection category="Commercial" skip={8} />}
     </>
   );
 }

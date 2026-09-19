@@ -13,7 +13,6 @@ import ConsentBanner from "@/components/Analytics/ConsentBanner";
 import ogImage from "@/assets/images/herobg.png";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
-import { GoogleTagManager } from "@next/third-parties/google";
 
 const FOOTER_CITY_KEY = "ggn";
 
@@ -191,11 +190,32 @@ export default async function RootLayout({
     .slice(0, 6)
     .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
 
+  // R19-03 (2026-09-19): <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
+  // used to render as the first child of <html>, unconditionally and outside
+  // every consent check. Two problems, both confirmed:
+  //
+  //   1. Consent. lib/analytics/gtag.ts deliberately refuses to load gtag.js
+  //      until getConsent() === "granted", and the banner promises analytics
+  //      is off until then. GTM loaded from that line regardless, so container
+  //      GTM-KJJ2SSMT and its GA4 tags fired on first paint for every visitor
+  //      — the promise was already broken before the gate ever ran.
+  //   2. Duplication. The published container carries two Google-tag
+  //      configuration entries for G-5C24236F2Z, and lib/analytics/gtag.ts
+  //      configures that same property directly. That is the duplicate
+  //      configuration the recheck found, and it double-counts page views.
+  //
+  // One delivery path, and it is the in-repo direct gtag: the consent gate,
+  // event schema and validation already exist there and stay fixable in code,
+  // whereas the container can only be changed from the GTM account. The
+  // non-null assertion on a possibly-unset env var was its own latent bug (an
+  // undefined gtmId yields a broken script URL).
+  //
+  // OWNER ACTION, not doable from this repo: pause or delete the two GA4
+  // configuration tags in container GTM-KJJ2SSMT.
   return (
     // SEO audit M-04 (2026-09-08): was "en", mismatched against the
     // Organization/WebSite schema's own inLanguage: "en-IN" a few lines up.
     <html lang="en-IN">
-      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
       <body
         className="antialiased"
       >

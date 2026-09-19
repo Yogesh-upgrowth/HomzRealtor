@@ -6,9 +6,19 @@ import { ChevronRight } from "lucide-react";
 
 import { BUYER_GUIDES, getBuyerGuide, type BuyerGuide } from "@/lib/content/buyerGuides";
 import AppointmentCard from "@/components/Common/Appointment";
+import { truncateAtWord } from "@/lib/intelligence/normalize";
 import bgImg from "@/public/appointmentBG.jpg";
 
 const SITE = "https://www.homzrealtor.com";
+
+// R19-06 (2026-09-19): guide.img is a webpack StaticImageData import, so
+// .src is a root-relative path ("/_next/static/media/discoverImage2.<hash>.jpg").
+// metadataBase resolves that for openGraph/twitter, but JSON-LD gets no such
+// treatment — the four insight pages were publishing BlogPosting.image values
+// a consumer cannot resolve. Structured-data image URLs must be absolute.
+function absoluteUrl(path: string): string {
+  return /^https?:\/\//i.test(path) ? path : `${SITE}${path.startsWith("/") ? "" : "/"}${path}`;
+}
 
 // Schema audit B-05 (2026-09-08): these 4 guides had @type Article (blog
 // posts use BlogPosting) and no articleSection at all. Real categories, not
@@ -64,7 +74,12 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const guide = getBuyerGuide(slug);
   if (!guide) return {};
 
-  const description = guide.sections[0]?.paragraphs[0]?.slice(0, 155) || guide.title;
+  // R19-06 (2026-09-19): was a raw .slice(0, 155), the only metadata
+  // truncation in the codebase that cut mid-word and mid-sentence with no
+  // ellipsis — it produced descriptions ending on a broken word. truncateAtWord
+  // is the shared helper every other route already uses.
+  const firstParagraph = guide.sections[0]?.paragraphs[0];
+  const description = firstParagraph ? truncateAtWord(firstParagraph, 155) : guide.title;
   const url = `${SITE}/property-insights/${guide.slug}`;
 
   return {
@@ -129,7 +144,7 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         // (lib/seo/blogJsonLd.ts); these 4 guides were the odd ones out.
         "@type": "BlogPosting",
         headline: guide.title,
-        image: [guide.img.src],
+        image: [absoluteUrl(guide.img.src)],
         wordCount: guideWordCount(guide),
         articleSection: GUIDE_CATEGORY[guide.slug],
         inLanguage: "en-IN",

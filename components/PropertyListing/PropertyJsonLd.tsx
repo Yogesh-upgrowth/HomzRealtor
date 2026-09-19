@@ -59,12 +59,40 @@ export default function PropertyJsonLd({ view }: { view: PropertyView }) {
 
   // Never an Offer with a fabricated/zero price — omit the whole block when
   // the listing itself has no confirmed price, per DEV-05's own guardrail.
-  if (view.hasPrice) {
+  //
+  // R19-06 (2026-09-19): `price` used to be view.priceText, i.e. the feed's
+  // raw display string ("70 L", "1.5 Cr", "60,000/month"). schema.org allows
+  // Text for price, but a formatted string carries no machine-readable
+  // amount, mixes the billing period into the value, and in the rental case
+  // states a monthly figure where a consumer reads a total. It now emits the
+  // parsed numeric from the same priceValue/rentMonthly pair the budget
+  // filter already trusts, with the period expressed structurally. An
+  // unparsed price means no Offer at all rather than an invented number.
+  //
+  // `availability` was also hardcoded InStock on every listing. Nothing in
+  // the feed asserts availability, and this site does not maintain per-unit
+  // inventory, so the claim was unsupported on all 113 offers the recheck
+  // sampled. Omitted: availability is an optional property, and leaving out
+  // what cannot be evidenced is what Google's structured-data policies ask
+  // for.
+  if (view.hasPrice && view.priceValueInr != null) {
     listing.offers = {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: view.priceText,
-      availability: "https://schema.org/InStock",
+      price: view.priceValueInr,
+      ...(view.priceIsMonthly
+        ? {
+            // UnitPriceSpecification is how a recurring amount states its
+            // period; without it "60000" on a rental reads as a sale price.
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              priceCurrency: "INR",
+              price: view.priceValueInr,
+              unitCode: "MON",
+              billingIncrement: 1,
+            },
+          }
+        : {}),
     };
   }
 

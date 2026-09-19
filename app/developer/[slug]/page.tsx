@@ -116,7 +116,14 @@ const DeveloperPage = async ({ params }: PageParams) => {
         ],
       },
       {
-        "@type": "RealEstateAgent",
+        // R19-06 (2026-09-19): was RealEstateAgent. This node describes the
+        // builder, not Homz, but sitting on a homzrealtor.com URL with a
+        // multi-city areaServed it read as a second estate-agent entity
+        // claiming NCR-wide coverage — directly contradicting the sitewide
+        // Organization.areaServed: ["Gurgaon"]. A property developer is an
+        // Organization; areaServed here is the developer's own project
+        // footprint, which is a fact about them, not a Homz service claim.
+        "@type": "Organization",
         name: summary.name,
         url: pageUrl,
         areaServed: summary.cities.map((c) => ({

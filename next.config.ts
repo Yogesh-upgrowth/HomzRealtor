@@ -44,13 +44,26 @@ const nextConfig = {
     // Once this has run for a while with no unexpected violations in the
     // browser console, promote it to a real `Content-Security-Policy`
     // header (drop "-Report-Only").
+    // R19-03 (2026-09-19): script-src/connect-src/img-src did not allow any
+    // Google analytics origin, so promoting this header from Report-Only to
+    // enforcing — which the comment above plans — would have silently blocked
+    // gtag.js from loading and every measurement request from being sent,
+    // with no code change to point at. Added now, while the header is still
+    // observe-only, so the promotion is a one-line change rather than an
+    // outage. Origins match lib/analytics/gtag.ts's loader and GA4's own
+    // collect endpoints; no GTM origin is listed because the container was
+    // removed from app/layout.tsx in this same pass.
+    const ANALYTICS_SCRIPT_ORIGINS = "https://www.googletagmanager.com";
+    const ANALYTICS_CONNECT_ORIGINS =
+      "https://www.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://*.google-analytics.com";
+
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline' ${ANALYTICS_SCRIPT_ORIGINS}`,
       "style-src 'self' 'unsafe-inline'",
-      `img-src 'self' blob: data: ${IMAGE_HOSTS.map((h) => `https://${h}`).join(" ")}`,
+      `img-src 'self' blob: data: https://www.google-analytics.com ${IMAGE_HOSTS.map((h) => `https://${h}`).join(" ")}`,
       "font-src 'self'",
-      "connect-src 'self'",
+      `connect-src 'self' ${ANALYTICS_CONNECT_ORIGINS}`,
       // Google Maps embed on /contact, once COMPANY_INFO.mapEmbedUrl is set.
       "frame-src 'self' https://www.google.com",
       "frame-ancestors 'self'",
