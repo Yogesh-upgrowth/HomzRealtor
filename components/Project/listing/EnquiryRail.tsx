@@ -90,7 +90,12 @@ const EnquiryRail = ({ projectName, locationLine }: Props) => {
         <div className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#D9B268]/18 to-[#D9B268]/[0.03] border-b border-[#D9B268]/20">
           <span className="h-2 w-2 rounded-full bg-[#D9B268] shrink-0 animate-pulse" />
           <span className="text-[12.5px] font-bold tracking-wide text-[#e8c88a]">
-            Selling fast · Limited-time pricing
+            {/* Audit item 10 (2026-09-19): this read "Selling fast ·
+                Limited-time pricing" on every project page regardless of the
+                record -- an urgency claim nothing in the data supports, on a
+                page about a multi-crore purchase. Replaced with something
+                true of every project: an advisor responds. */}
+            Speak to a HomzRealtor advisor about this project
           </span>
         </div>
 

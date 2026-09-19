@@ -23,8 +23,34 @@ export const COMPANY_INFO = {
   // HARERA channel-partner/agent registration number (Haryana RERA — the
   // relevant authority for the Gurgaon market this site actually serves).
   hararaAgentNumber: "",
-  hours: "", // e.g. "Mon–Sat, 10:00 AM – 7:00 PM"
+  hours: "", // e.g. "Mon-Sat, 10:00 AM - 7:00 PM"
   mapEmbedUrl: "", // Google Maps embed src, once officeAddress is set
+
+  // 2026-09-19, Trust & local. The 19 Sep audit scored this area 15/100 and
+  // named it "the biggest gap outside content" -- Google cannot verify Homz
+  // as a real Gurgaon business, which also blocks the map pack entirely.
+  // Everything below is consumed conditionally, so filling any single field
+  // takes effect immediately with no code change.
+
+  /** Machine-readable opening hours for openingHoursSpecification. `hours`
+   *  above stays the human string shown in the footer; this is what schema
+   *  and the Google Business Profile need to agree on.
+   *  e.g. { days: ["Mo","Tu","We","Th","Fr","Sa"], opens: "10:00", closes: "19:00" } */
+  openingHours: null as null | { days: string[]; opens: string; closes: string },
+
+  /** Office coordinates, for LocalBusiness.geo. Only set these alongside a
+   *  real officeAddress -- a geo point with no address is not a location. */
+  geo: null as null | { lat: number; lng: number },
+
+  /** The Gurgaon sectors Homz actually services, for areaServed. An explicit
+   *  list is stronger than the bare city name and is honest about coverage.
+   *  e.g. ["Sector 65", "Sector 81", "Golf Course Extension Road"] */
+  serviceAreas: [] as string[],
+
+  /** Named, real people for E-E-A-T. A YMYL property page carrying no human
+   *  author is a trust gap Google weights. Do not invent these.
+   *  e.g. [{ name: "...", role: "Principal Advisor", reraId: "..." }] */
+  team: [] as { name: string; role: string; reraId?: string }[],
   social: {
     instagram: "",
     facebook: "",

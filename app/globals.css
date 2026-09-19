@@ -1,6 +1,14 @@
+/* Audit item 11 (2026-09-19): this @font-face had no font-display, so the
+   browser default (auto -> block in practice) hid every Corbert heading until
+   the OTF finished downloading -- invisible text on first paint, and a raw OTF
+   at that, which is larger than WOFF2 and unsupported by older engines.
+   font-display: swap paints in the fallback immediately and swaps when the
+   font lands, which is the right trade for a heading face. Converting the OTF
+   to WOFF2 is the remaining win and needs the source file. */
 @font-face {
   font-family: Corbert;
-  src: url("./..//public/fonts/Corbert-Regular.otf")
+  src: url("./..//public/fonts/Corbert-Regular.otf") format("opentype");
+  font-display: swap;
 }
 
 @import "tailwindcss";

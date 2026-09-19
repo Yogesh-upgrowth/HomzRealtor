@@ -21,7 +21,7 @@ Buy, rent or sell — discover verified listings, expert guidance, and propertie
 - [Rent Property](/rent-property)
 - [Commercial](/commercial)
 - [Projects](/project-listing)
-- [Plots & Land](/plots-and-lands)
+- [Plots & Land](/buy-property/gurgaon/plots)
 - [Browse by Sector](/project-listing/gurgaon/sectors)
 - [Developers](/developer)
 

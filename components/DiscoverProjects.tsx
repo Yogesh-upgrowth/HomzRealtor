@@ -31,7 +31,7 @@ const projects = [
     title: "Plots & Lands",
     desc: "Find the perfect plot or land for your dream project, investment, or development plan.",
     img: discoverImage3,
-    href: "/plots-and-lands",
+    href: "/buy-property/gurgaon/plots",
   },
   {
     id: 4,

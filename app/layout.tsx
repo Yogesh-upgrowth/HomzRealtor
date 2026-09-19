@@ -102,7 +102,64 @@ const organizationSchema = {
       // render live but empty "being updated" pages (see
       // app/project-listing/[city]/page.tsx) and were never confirmed as
       // real service areas.
-      areaServed: ["Gurgaon"],
+      // 2026-09-19: an explicit sector list is a stronger and more honest
+      // coverage signal than the bare city name, and is what a map-pack
+      // listing is matched against. Falls back to the city until
+      // COMPANY_INFO.serviceAreas is filled.
+      areaServed:
+        COMPANY_INFO.serviceAreas.length > 0
+          ? COMPANY_INFO.serviceAreas.map((a) => ({ "@type": "Place", name: a }))
+          : ["Gurgaon"],
+      // Machine-readable hours. Google reconciles these against the Google
+      // Business Profile; a mismatch is worse than an omission, so this only
+      // appears once COMPANY_INFO.openingHours is set to the same hours the
+      // profile publishes.
+      ...(COMPANY_INFO.openingHours
+        ? {
+            openingHoursSpecification: {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: COMPANY_INFO.openingHours.days,
+              opens: COMPANY_INFO.openingHours.opens,
+              closes: COMPANY_INFO.openingHours.closes,
+            },
+          }
+        : {}),
+      // geo only alongside a real postal address -- a coordinate with no
+      // address is not a location, and Google treats the pair as one claim.
+      ...(COMPANY_INFO.geo && COMPANY_INFO.officeAddress
+        ? {
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: COMPANY_INFO.geo.lat,
+              longitude: COMPANY_INFO.geo.lng,
+            },
+          }
+        : {}),
+      // hasMap points at the claimed Google Business Profile, which is the
+      // link that ties this entity to the map pack.
+      ...(COMPANY_INFO.social.googleBusiness
+        ? { hasMap: COMPANY_INFO.social.googleBusiness }
+        : {}),
+      // Named people. A YMYL property site with no human attached is a trust
+      // gap; these are real advisors or the key is absent.
+      ...(COMPANY_INFO.team.length > 0
+        ? {
+            employee: COMPANY_INFO.team.map((m) => ({
+              "@type": "Person",
+              name: m.name,
+              jobTitle: m.role,
+              ...(m.reraId
+                ? {
+                    identifier: {
+                      "@type": "PropertyValue",
+                      propertyID: "HARERA agent registration",
+                      value: m.reraId,
+                    },
+                  }
+                : {}),
+            })),
+          }
+        : {}),
       // Phone/email are already public elsewhere on the site (the WhatsApp
       // CTA and the homepage contact section) — no invented contact details.
       // address/identifier (RERA)/sameAs (social) come from the same

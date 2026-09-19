@@ -133,6 +133,18 @@ const nextConfig = {
       { source: "/buy-property/:city/:slug/page/1", destination: "/buy-property/:city/:slug", permanent: true },
       { source: "/project-listing/:city/page/1", destination: "/project-listing/:city", permanent: true },
 
+      // Audit item 11 (2026-09-19): /plots-and-lands was a noindex "Coming
+      // Soon" placeholder linked from the homepage and the blog, while
+      // /buy-property/gurgaon/plots is a real, server-rendered facet over the
+      // plots Homz actually brokers (propertyType "plot" in the sale feed --
+      // see BUY_FACETS and lib/search/searchModes.ts). Sending the friendly
+      // URL to the page that has the inventory is strictly better than a
+      // dead end, and retires the placeholder without losing the link.
+      {
+        source: "/plots-and-lands",
+        destination: "/buy-property/gurgaon/plots",
+        permanent: true,
+      },
       // /contact-us 404'd outright; /contact is the one real contact page.
       {
         source: "/contact-us",

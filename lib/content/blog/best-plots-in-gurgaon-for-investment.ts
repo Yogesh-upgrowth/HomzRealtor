@@ -204,7 +204,7 @@ export const bestPlotsInGurgaonForInvestment: BlogPostV27 = {
   internalLinks: [
     { anchor: "Compare Gurgaon's apartment-buying corridors instead", url: "/blog/best-areas-to-buy-property-in-gurgaon" },
     { anchor: "See Gurgaon's under-₹2-crore property options", url: "/blog/best-property-investment-in-gurgaon-under-2-crore" },
-    { anchor: "Register interest in HomzRealtor's upcoming plots and land section", url: "/plots-and-lands" },
+    { anchor: "Browse plots for sale in Gurgaon on HomzRealtor", url: "/buy-property/gurgaon/plots" },
   ],
   faqs: [
     {

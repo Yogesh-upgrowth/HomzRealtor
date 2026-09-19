@@ -166,9 +166,9 @@ export const SEARCH_MODES: SearchMode[] = [
     id: "plots",
     label: "Plots",
     // Plots are part of the sale feed (propertyType "plot"), not a separate
-    // one — /plots-and-lands is still a placeholder with no inventory, so a
-    // Plots search used to navigate to a "coming soon" page and drop every
-    // filter the user had just set.
+    // one. A Plots search used to navigate to /plots-and-lands, a "coming
+    // soon" placeholder, dropping every filter the user had just set; that
+    // route now 301s to /buy-property/gurgaon/plots (see next.config.ts).
     route: "/buy-property",
     category: "Sale",
     blurb: "Residential and investment plots for sale — filter by budget and possession.",

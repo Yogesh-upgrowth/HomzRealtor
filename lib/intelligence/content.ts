@@ -192,14 +192,21 @@ export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
     faqs.push({ q: `Is ${name} RERA registered?`, a: answer });
   }
 
+  // Audit item 10 (2026-09-19): this asserted every builder was "reputed" and
+  // "known for quality construction and timely delivery" -- a claim about a
+  // third party that nothing in the dataset supports, applied uniformly to
+  // hundreds of developers. States only the relationship the data holds.
   faqs.push({
     q: `Who is the builder of ${name}?`,
-    a: `${name} is developed by ${builder}, a reputed real estate developer in India known for quality construction and timely delivery.`,
+    a: `${name} is developed by ${builder}. You can see their other projects on their HomzRealtor developer page.`,
   });
 
   faqs.push({
     q: `Where is ${name} located?`,
-    a: `${name} is located in ${location || cityName}. The project enjoys excellent connectivity to major commercial and social infrastructure in the area.`,
+    // "excellent connectivity" was asserted for every project regardless of
+    // where it is. The distances on this page are computed and real; the
+    // adjective was not.
+    a: `${name} is located in ${location || cityName}. See the connectivity section on this page for measured distances to the nearest metro, the airport and the main business districts.`,
   });
 
   if (propertyType) {
@@ -209,9 +216,14 @@ export function buildFallbackFaqs(project: NormalizedProject): FaqItem[] {
     });
   }
 
+  // Audit item 10 (2026-09-19): this answered "yes" for every project on the
+  // site, citing a builder reputation and infrastructure pipeline the data
+  // does not contain. On a page about a major purchase that is a liability,
+  // not a feature. The question stays -- people genuinely ask it -- but the
+  // answer now points at what can actually be checked.
   faqs.push({
-    q: `Is ${name} a good investment?`,
-    a: `${name} by ${builder} in ${cityName} offers strong investment potential given the location, builder reputation, and ongoing infrastructure development in the area. We recommend consulting HomzRealtor's experts for a personalised investment analysis.`,
+    q: `What should I check before investing in ${name}?`,
+    a: `Verify the RERA registration and its current status on the Haryana RERA portal, compare the asking price against recent listings in the same sector, and ask for the developer's latest quarterly construction progress report if the project is under construction. HomzRealtor advisors can walk you through each of these for ${name}.`,
   });
 
   faqs.push({
