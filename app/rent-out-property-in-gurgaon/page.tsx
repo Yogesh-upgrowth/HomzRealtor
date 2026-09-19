@@ -10,13 +10,11 @@ const description =
 // R19-08 (2026-09-19): the landlord journey did not exist at all -- the
 // recheck's point that "selling and letting are still not equal to buying"
 // was most obvious here, since /rent-out-property-in-gurgaon simply 404'd.
-// Same posture as the seller page, and the same 2026-09-19 change: the owner
-// supplied the letting fee, so this publishes -- half of one month's rent
-// from the owner and half from the tenant, payable once. The mandate and
-// withdrawal rows are dropped rather than filled, for the reason set out in
-// app/sell-property-in-gurgaon/page.tsx: those are contractual positions
-// with consequences for the landlord, and "all handled by us" is a
-// description of the service, not of the contract.
+// Same posture as the seller page, and the same 2026-09-19 sequence: the
+// owner supplied the letting fee, then asked for the mandate and withdrawal
+// terms to be written to best judgement. Both mirror the sale side -- open
+// instruction, no notice, no cancellation fee, a six-month introduction
+// period on a tenant we brought. Reasoning in lib/content/brokerageTerms.ts.
 const PENDING_KEYS = LANDLORD_TERM_KEYS;
 
 const READY_TO_INDEX = allResolved(PENDING_KEYS);
@@ -33,7 +31,7 @@ export default function RentOutPropertyPage() {
     <ServicePage
       eyebrow="For landlords"
       h1="Rent Out Your Property in Gurgaon"
-      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor will talk you through achievable rent for your sector, how we find tenants, and what the paperwork involves. We handle the letting end to end, rent agreement included. Our brokerage is half of one month's rent, payable once the tenancy is agreed."
+      intro="If you own a flat, builder floor or villa in Gurgaon and want to let it, an advisor will talk you through achievable rent for your sector, how we find tenants, and what the paperwork involves. We handle the letting end to end, rent agreement included. Our brokerage is half of one month\u2019s rent, payable once the agreement is signed. We do not ask for an exclusive instruction, and you can withdraw at any time."
       steps={[
         {
           title: "Tell us about the property",
@@ -63,6 +61,8 @@ export default function RentOutPropertyPage() {
       terms={[
         { label: "What it costs", keyName: "landlord.feeAmount" },
         { label: "Who pays the fee, and when", keyName: "landlord.feePayer" },
+        { label: "Mandate and exclusivity", keyName: "landlord.mandate" },
+        { label: "Withdrawing your instruction", keyName: "landlord.withdrawal" },
         { label: "Tenant screening", keyName: "landlord.tenantScreening" },
         { label: "Rent agreement and registration", keyName: "landlord.agreementSupport" },
       ]}
@@ -76,8 +76,16 @@ export default function RentOutPropertyPage() {
           a: "It varies with the sector, the asking rent and the time of year. An advisor will give you a realistic view for your specific property rather than a headline number.",
         },
         {
+          q: "Can I instruct other agents at the same time?",
+          a: "Yes. We work on an open instruction, not an exclusive one, so you are free to instruct other agents and to let privately while we are marketing the property. There is no minimum instruction period. Our brokerage is payable only if the tenant who signs was introduced by us.",
+        },
+        {
+          q: "What if I want to take the property off the market?",
+          a: "Tell your advisor, or put it in writing, and we stop. There is no notice period and nothing is payable. The one exception is a tenant we introduced: if that tenancy is signed within six months of you withdrawing, the brokerage is still payable on it.",
+        },
+        {
           q: "What does it cost to let through HomzRealtor?",
-          a: "Half of one month's rent from you and half from the tenant, payable once, on the first month's rent. Nothing is payable for the rent conversation, the listing, the photographs or the viewings.",
+          a: "Half of one month's rent from you and half from the tenant, payable once, when the tenancy agreement is signed. Nothing is payable for the rent conversation, the listing, the photographs or the viewings.",
         },
         {
           q: "Do you screen tenants?",

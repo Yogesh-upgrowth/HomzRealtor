@@ -25,10 +25,13 @@ const verificationSrc = read("lib/status/verification.ts");
 const brokerageSrc = read("lib/content/brokerageTerms.ts");
 const partnersSrc = read("lib/content/channelPartners.ts");
 
-/** True when a single OWNER_PENDING key carries a real answer. The whole-file
- *  "no value: null anywhere" check this replaced was wrong once the two
- *  service pages stopped rendering the mandate and withdrawal rows: those
- *  stay open by design, and they do not hold the pages back. */
+/** True when a single OWNER_PENDING key carries a real answer.
+ *
+ *  Per-key rather than a whole-file "no value: null anywhere" scan, so a
+ *  question that is open but not rendered by either page cannot hold the
+ *  pages back. Nothing is in that state today -- every key is answered -- but
+ *  the next question added to OWNER_PENDING would otherwise silently
+ *  de-index two live pages. */
 function pendingResolved(key) {
   const start = pendingSrc.indexOf(`"${key}": {`);
   if (start === -1) return false;
@@ -42,10 +45,14 @@ function pendingResolved(key) {
 const SERVICE_PAGE_KEYS = [
   "seller.feeAmount",
   "seller.feePayer",
+  "seller.mandate",
+  "seller.withdrawal",
   "seller.verification",
   "seller.timeline",
   "landlord.feeAmount",
   "landlord.feePayer",
+  "landlord.mandate",
+  "landlord.withdrawal",
   "landlord.tenantScreening",
   "landlord.agreementSupport",
 ];

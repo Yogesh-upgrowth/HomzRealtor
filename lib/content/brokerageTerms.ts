@@ -1,20 +1,51 @@
-// What HomzRealtor charges, and who pays it (2026-09-19).
+// What HomzRealtor charges, who pays it, and on what terms (2026-09-19).
 //
-// Supplied by the owner. Before this, the site asserted a fee position in one
-// place (HomzRecordSections) and a contradictory one in another (the old
-// homepage FAQ claimed buyers pay nothing because the developer pays us).
+// Rates supplied by the owner. Before this, the site asserted a fee position
+// in one place (HomzRecordSections) and a contradictory one in another (the
+// old homepage FAQ claimed buyers pay nothing because the developer pays us).
 // Both cannot be true, and a wrong fee claim is a consumer problem before it
 // is an SEO one, so the terms live here once and every surface reads them.
 //
-// Deliberately not stated anywhere below, because the owner has not stated
-// them and inventing commercial terms is not a gap this file may fill:
-//   - whether a mandate is exclusive, and for how long
-//   - withdrawal or cancellation terms
-//   - when the fee becomes payable, and whether any part is refundable
-//   - whether GST is charged on top of these rates (the business is GST
-//     registered, so it probably is, but "probably" is not a term)
-// A page that needs one of these says nothing about it rather than guessing.
-// Ask the owner, add it here, and it appears everywhere at once.
+// ---------------------------------------------------------------------------
+// MANDATE AND WITHDRAWAL — WRITTEN TO THE OWNER'S BEST-JUDGEMENT INSTRUCTION,
+// AND THE ONE PART OF THIS FILE THAT NEEDS CONFIRMING
+// ---------------------------------------------------------------------------
+// The owner gave the rates and said "all handled by us", which describes the
+// service and not the contract. Asked for the contractual terms, they asked
+// for my judgement. So these are chosen, not supplied, and the reasoning is
+// here rather than in a commit message because whoever changes them next
+// needs it:
+//
+//   Open mandate, not exclusive. An exclusive mandate restricts the seller or
+//   landlord, and nobody has agreed to impose that on them. An open mandate
+//   also costs Homz nothing it does not already have, because the fee is
+//   earned on introduction (below) rather than on exclusivity -- which is the
+//   clause that actually protects the brokerage.
+//
+//   Withdraw at any time, no notice, nothing payable. Same reasoning: a
+//   cancellation fee on a service that has not produced a buyer is
+//   indefensible, and a notice period on an unpaid instruction buys Homz
+//   nothing.
+//
+//   One carve-out: a buyer or tenant Homz introduced, whose transaction
+//   completes within six months of withdrawal, still carries the brokerage.
+//   Without it, an owner could take an introduction and cancel the next day,
+//   and the open mandate above would be unsafe to offer. Six months is the
+//   conventional introduction period; it is the only number here that is a
+//   convention rather than a derivation, and it is the thing to change if the
+//   owner wants a different one.
+//
+// The terms are deliberately generous to the client and narrow in what they
+// protect. A seller reading them should find nothing that traps them, and
+// Homz should find nothing that lets a completed introduction go unpaid.
+//
+// Still NOT stated anywhere below, because nobody has decided it and a tax
+// position is not something to infer: whether GST is charged on top of these
+// rates. The business is GST registered, so it probably is, but "probably" is
+// not a term. Decide it, add it here, and it appears everywhere at once.
+
+/** The introduction period in the withdrawal carve-out, in months. */
+export const INTRODUCTION_PERIOD_MONTHS = 6;
 
 export const BROKERAGE_TERMS = {
   /** Sale of a house, villa or plot. */
@@ -23,7 +54,11 @@ export const BROKERAGE_TERMS = {
     percentOfValue: 1,
     payers: "both the buyer and the seller",
     summary:
-      "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller.",
+      "On a sale — house, villa or plot — our brokerage is 1% of the transaction value from the buyer and 1% from the seller, payable when the transaction completes.",
+    mandate:
+      "Open, not exclusive. You can list with other agents and sell privately while we are marketing the property, and there is no minimum listing period. Our brokerage is payable only if the buyer who completes was introduced by us.",
+    withdrawal:
+      "Withdraw at any time, by telling your advisor or in writing. There is no notice period and nothing is payable on withdrawal. The one exception: if we introduced the buyer and that sale completes within six months of you withdrawing, the brokerage is still payable on it.",
   },
   /** Letting a property. */
   rent: {
@@ -31,7 +66,11 @@ export const BROKERAGE_TERMS = {
     percentOfFirstMonthRent: 50,
     payers: "both the owner and the tenant",
     summary:
-      "On a letting, our brokerage is half of one month's rent from the owner and half of one month's rent from the tenant, payable once, on the first month's rent.",
+      "On a letting, our brokerage is half of one month's rent from the owner and half of one month's rent from the tenant, payable once, when the tenancy agreement is signed.",
+    mandate:
+      "Open, not exclusive. You can instruct other agents and let privately while we are marketing the property, and there is no minimum instruction period. Our brokerage is payable only if the tenant who signs was introduced by us.",
+    withdrawal:
+      "Withdraw at any time, by telling your advisor or in writing. There is no notice period and nothing is payable on withdrawal. The one exception: if we introduced the tenant and that tenancy is signed within six months of you withdrawing, the brokerage is still payable on it.",
   },
   /** True for viewings and advice, which is what the detail pages assert. */
   noViewingFee: true,

@@ -20,13 +20,21 @@
 // and "all handled by us" for the process. Everything answerable from that,
 // or from facts the site already publishes, is filled in below.
 //
-// Four items stay open, and they stay open deliberately: the mandate and
-// withdrawal terms for both journeys. "All handled by us" describes the
-// service, not the contract, and whether a mandate is exclusive and what
-// happens if an owner pulls out are contractual positions with consequences
-// for the owner -- exactly the kind of term the recheck says a developer must
-// not invent. The two service pages no longer discuss either, so they publish
-// without them; fill these in and add the rows back when the terms exist.
+// The mandate and withdrawal terms were left open at first, on the ground
+// that "all handled by us" describes the service and not the contract. The
+// owner then asked for them to be written to best judgement, and confirmed
+// the sale fee is payable on completion. They are filled in below and the
+// rows are back on both service pages.
+//
+// Those four values are chosen rather than supplied, so they are the ones to
+// review: an open mandate with no notice period and no cancellation fee,
+// protected only by a six-month introduction period on a buyer or tenant Homz
+// brought. The full reasoning, including why the introduction period is the
+// clause that makes the open mandate safe to offer, is in
+// lib/content/brokerageTerms.ts, which is the single source they are copied
+// from -- change it there.
+
+import { BROKERAGE_TERMS } from "./brokerageTerms";
 
 export type OwnerPendingKey =
   | "seller.feeAmount"
@@ -67,18 +75,23 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question: "Who pays that fee, the seller or the buyer, and at what point does it become payable?",
     owner: "business",
     value:
-      "1% from the seller and 1% from the buyer, payable when the transaction completes.",
+      "1% from the seller and 1% from the buyer, payable when the transaction completes. Nothing is payable before that -- not for the valuation conversation, the listing, the photographs or the viewings.",
   },
+  // The four contractual terms below are read from BROKERAGE_TERMS rather
+  // than copied, so the service pages, the property detail pages and the FAQs
+  // cannot drift apart on what the same clause says.
   "seller.mandate": {
     question:
       "Is a listing mandate exclusive or open? If exclusive, for how long, and can the owner list elsewhere during it?",
     owner: "legal",
-    value: null,
+    value:
+      BROKERAGE_TERMS.sale.mandate,
   },
   "seller.withdrawal": {
     question: "How does an owner withdraw a listing, with what notice, and is anything payable on withdrawal?",
     owner: "legal",
-    value: null,
+    value:
+      BROKERAGE_TERMS.sale.withdrawal,
   },
   "seller.verification": {
     question:
@@ -109,17 +122,19 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
     question: "Who pays the letting fee, the landlord or the tenant, and when?",
     owner: "business",
     value:
-      "Half of one month's rent from the owner and half from the tenant, payable once, on the first month's rent.",
+      "Half of one month's rent from the owner and half from the tenant, payable once, when the tenancy agreement is signed. Nothing is payable before that.",
   },
   "landlord.mandate": {
     question: "Is a letting mandate exclusive, and for how long?",
     owner: "legal",
-    value: null,
+    value:
+      BROKERAGE_TERMS.rent.mandate,
   },
   "landlord.withdrawal": {
     question: "How does a landlord withdraw a letting instruction, and is anything payable?",
     owner: "legal",
-    value: null,
+    value:
+      BROKERAGE_TERMS.rent.withdrawal,
   },
   "landlord.tenantScreening": {
     question:
@@ -172,6 +187,8 @@ export const OWNER_PENDING: Record<OwnerPendingKey, OwnerPendingItem> = {
 export const SELLER_TERM_KEYS: OwnerPendingKey[] = [
   "seller.feeAmount",
   "seller.feePayer",
+  "seller.mandate",
+  "seller.withdrawal",
   "seller.verification",
   "seller.timeline",
 ];
@@ -179,6 +196,8 @@ export const SELLER_TERM_KEYS: OwnerPendingKey[] = [
 export const LANDLORD_TERM_KEYS: OwnerPendingKey[] = [
   "landlord.feeAmount",
   "landlord.feePayer",
+  "landlord.mandate",
+  "landlord.withdrawal",
   "landlord.tenantScreening",
   "landlord.agreementSupport",
 ];

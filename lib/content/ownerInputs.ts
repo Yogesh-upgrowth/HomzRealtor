@@ -170,7 +170,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "The brokerage terms shown on every detail page",
     lands: "components/PropertyListing/HomzRecordSections.tsx (currently states no buyer/tenant viewing fee)",
     why:
-      "Supplied 2026-09-19: 1% of transaction value from each of buyer and seller on a sale, half of one month's rent from each of owner and tenant on a letting, nothing payable for viewings. Now stated on every detail page, the FAQs, /about-us and both service pages from one source, lib/content/brokerageTerms.ts.",
+      "Supplied 2026-09-19: 1% of transaction value from each of buyer and seller on a sale, payable on completion; half of one month's rent from each of owner and tenant on a letting, payable when the agreement is signed; nothing payable for viewings. The mandate and withdrawal clauses in the same file were written to the owner's best-judgement instruction rather than supplied. All of it is stated on every detail page, the FAQs, /about-us and both service pages from one source, lib/content/brokerageTerms.ts. Still undecided there: whether GST is charged on top of these rates.",
     done: true,
   },
 
@@ -230,7 +230,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "Fee amount and payer, mandate/exclusivity, withdrawal terms, what is verified before listing, tenant screening scope, rent-agreement support, routing recipients",
     lands: "lib/content/ownerPending.ts — 17 typed questions, each with the function that owes it",
     why:
-      "Fee terms supplied 2026-09-19, so both pages now publish and are in the sitemap. The mandate and withdrawal questions stay open in ownerPending.ts and the pages no longer discuss either: \"all handled by us\" describes the service, not the contract, and exclusivity and withdrawal are the owner's terms to set, not ours to write.",
+      "Closed 2026-09-19. The owner supplied the fee rates and confirmed the sale fee is payable on completion, then asked for the mandate and withdrawal terms to be written to best judgement. Both pages publish and are in the sitemap. The four chosen terms -- open mandate, no notice, no cancellation fee, six-month introduction period -- are the ones to re-read, since nobody dictated them; reasoning and single source in lib/content/brokerageTerms.ts.",
     done: true,
   },
 ];
