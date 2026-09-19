@@ -14,7 +14,8 @@
     "report:listing-quality": "node scripts/listing-quality-report.mjs",
     "test:identity": "node tests/listing-identity.test.mjs",
     "test:taxonomy": "node tests/taxonomy.test.mjs",
-    "check:owner-inputs": "node scripts/check-owner-inputs.mjs"
+    "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
+    "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },
   "dependencies": {
     "@next/third-parties": "16.2.10",

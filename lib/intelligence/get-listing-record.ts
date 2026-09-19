@@ -34,6 +34,7 @@ import {
 } from "@/lib/listings/identity";
 import { PROPERTY_TYPE_LABELS } from "@/lib/listings/filters";
 import { getListingVerification, type ListingVerification } from "@/lib/status/verification";
+import { resolveListingImages, isHotlinked } from "@/lib/listings/media";
 
 export type ListingRecord = {
   view: PropertyView;
@@ -49,6 +50,10 @@ export type ListingRecord = {
   /** Price spread across those postings, when brokers disagree. */
   postingPriceRange: { min: number; max: number; count: number } | null;
   verification: ListingVerification;
+  /** True once this listing's images are served from Homz rather than
+   *  hotlinked from the source portal's CDN. Drives the media migration's
+   *  progress reporting and lets the UI mark own photography. */
+  ownedMedia: boolean;
 };
 
 export async function getListingRecord(
@@ -65,6 +70,12 @@ export async function getListingRecord(
   if (!match) return null;
 
   const view = resolvePropertyView(match, { category, citySlug });
+
+  // Serve Homz-hosted images the moment any exist for this unit; fall back to
+  // the source until the media migration reaches it. See lib/listings/media.ts.
+  const media = resolveListingImages(homzListingId(match, category, cityKey), view.images);
+  view.images = media.images;
+  view.heroImage = media.images[0] ?? null;
   const context = await buildListingContext(match, segment, { cityKey, citySlug });
   const listingId = homzListingId(match, category, cityKey);
 
@@ -114,5 +125,6 @@ export async function getListingRecord(
     postingCount: group.postingCount,
     postingPriceRange: postingPriceRange(group),
     verification,
+    ownedMedia: media.owned || (view.heroImage != null && !isHotlinked(view.heroImage)),
   };
 }
