@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import ProjectIntelligenceSections from "@/components/Project/intelligence/ProjectIntelligenceSections";
 import ProjectHero from "@/components/Project/listing/ProjectHero";
 import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
@@ -10,7 +10,7 @@ import EnquiryRail from "@/components/Project/listing/EnquiryRail";
 import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
-import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { getProjectBySlug, getProjectBySlugResolved, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
@@ -154,9 +154,20 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 const ProjectPage = async ({ params }: PageParams) => {
   const { city, slug } = await params;
-  const project = await getProjectBySlug(city, slug).catch(() => null);
+  const resolved = await getProjectBySlugResolved(city, slug).catch(() => null);
 
-  if (!project) notFound();
+  if (!resolved) notFound();
+  const { project, canonicalSlug } = resolved;
+
+  // The feed sometimes carries one development twice ("Emaar Emerald Floors
+  // Select" and "Emaar Emrald Floors Select"). The duplicate is collapsed
+  // into one record upstream (lib/intelligence/projectDedupe.ts); the losing
+  // slug lands here and is sent to the surviving page rather than 404'd, so
+  // whatever ranking and links the duplicate had accrued consolidate instead
+  // of breaking. 308, because the merge is not temporary.
+  if (canonicalSlug !== slug) {
+    permanentRedirect(`/project-listing/${canonicalCitySlug(project.city_key)}/${canonicalSlug}`);
+  }
 
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   // Always resolve the view against the canonical city slug (e.g. "gurgaon",
