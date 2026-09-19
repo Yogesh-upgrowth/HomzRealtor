@@ -8,6 +8,7 @@
 // invented address components.
 
 import type { PropertyView } from "@/lib/intelligence/property-view";
+import type { ListingRecord } from "@/lib/intelligence/get-listing-record";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -40,15 +41,48 @@ function safeJson(value: unknown): string {
     .join("\\u2029");
 }
 
-export default function PropertyJsonLd({ view }: { view: PropertyView }) {
+export default function PropertyJsonLd({
+  view,
+  record,
+}: {
+  view: PropertyView;
+  record?: ListingRecord;
+}) {
   const routeBase = ROUTE_BASE[view.category];
   const pageUrl = `${SITE}/${routeBase}/${view.citySlug}/${view.slug}`;
+
+  // 2026-09-19: the listing node now names HomzRealtor as the broker and
+  // carries Homz's own identifier and description. Previously it was an
+  // anonymous RealEstateListing whose description was the source portal's
+  // prose -- markup indistinguishable from the posting it was rebuilt from.
+  // `provider` is the schema.org property for the agent responsible for the
+  // listing; `identifier` is the reference a caller can quote.
+  const homzAgent = {
+    "@type": "RealEstateAgent",
+    "@id": `${SITE}/#organization`,
+    name: "HomzRealtor",
+    url: SITE,
+  };
 
   const listing: Record<string, unknown> = {
     "@type": "RealEstateListing",
     name: view.title,
     url: pageUrl,
-    ...(view.about[0] ? { description: view.about[0] } : {}),
+    provider: homzAgent,
+    ...(record?.listingId
+      ? {
+          identifier: {
+            "@type": "PropertyValue",
+            propertyID: "HomzRealtor listing ID",
+            value: record.listingId,
+          },
+        }
+      : {}),
+    ...(record?.narrative?.length
+      ? { description: record.narrative[0] }
+      : view.about[0]
+        ? { description: view.about[0] }
+        : {}),
     ...(view.images.length ? { image: view.images.slice(0, 5) } : {}),
     address: {
       "@type": "PostalAddress",
@@ -80,6 +114,10 @@ export default function PropertyJsonLd({ view }: { view: PropertyView }) {
       "@type": "Offer",
       priceCurrency: "INR",
       price: view.priceValueInr,
+      // Who is actually transacting. Without this the Offer reads as
+      // unattributed, which is how a republished portal listing looks.
+      offeredBy: homzAgent,
+      url: pageUrl,
       ...(view.priceIsMonthly
         ? {
             // UnitPriceSpecification is how a recurring amount states its

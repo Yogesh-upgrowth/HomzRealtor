@@ -61,7 +61,9 @@ const pois = (poisData as Poi[])
   .map((p) => ({ ...p, name: cleanPoiName(p.name) }))
   .filter((p) => p.name.length > 0);
 
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+// Exported for lib/intelligence/listingContext.ts, which measures each listing
+// against the Gurgaon commute anchors using the same formula.
+export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
