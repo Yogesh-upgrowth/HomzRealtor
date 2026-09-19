@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 // DEV-08/DEV-07 (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17): the real
@@ -10,10 +10,31 @@ import { toast } from "sonner";
 // the team follow up, same /api/contact path every other lead form here
 // uses. Expand once DEV-07 is answered; do not guess policy to fill this
 // page out.
-export default function SellPropertyForm() {
+// R19-08 (2026-09-19): parameterised so the landlord journey reuses this
+// instead of becoming a fifth hand-rolled copy of the same fetch/toast block.
+// Defaults keep the existing seller behaviour unchanged.
+type Props = {
+  /** Sent as `interest`, and used to label the lead. */
+  interest?: string;
+  /** Sent as `source`, so operations can tell the journeys apart. */
+  source?: string;
+  /** Prefix for field ids, so two forms on one page never collide. */
+  idPrefix?: string;
+  messageLabel?: string;
+  messagePlaceholder?: string;
+};
+
+export default function SellPropertyForm({
+  interest = "Sell your property",
+  source = "sell-property-in-gurgaon",
+  idPrefix = "sell",
+  messageLabel = "Tell us about your property (optional)",
+  messagePlaceholder = "Type, size, expected price, or anything else useful",
+}: Props = {}) {
   const [form, setForm] = useState({ name: "", phone: "", email: "", location: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -22,12 +43,16 @@ export default function SellPropertyForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // R19-05 parity with the other lead forms: `loading` is state and does not
+    // reach the button's disabled attribute until the next render.
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     try {
       setLoading(true);
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, interest: "Sell your property", source: "sell-property-in-gurgaon" }),
+        body: JSON.stringify({ ...form, interest, source }),
       });
       const data = await response.json();
       if (response.ok && data.success) {
@@ -40,6 +65,7 @@ export default function SellPropertyForm() {
       toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -65,30 +91,30 @@ export default function SellPropertyForm() {
     <form onSubmit={handleSubmit} className="rounded-[24px] border border-white/[0.08] bg-[#141416] p-7 flex flex-col gap-3.5">
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
         <div>
-          <label htmlFor="sell-name" className={labelCls}>Full Name</label>
-          <input id="sell-name" name="name" value={form.name} onChange={handleChange} placeholder="Full Name" required className={inputCls} />
+          <label htmlFor={`${idPrefix}-name`} className={labelCls}>Full Name</label>
+          <input id={`${idPrefix}-name`} name="name" value={form.name} onChange={handleChange} placeholder="Full Name" required className={inputCls} />
         </div>
         <div>
-          <label htmlFor="sell-phone" className={labelCls}>Phone Number</label>
-          <input id="sell-phone" type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" required className={inputCls} />
+          <label htmlFor={`${idPrefix}-phone`} className={labelCls}>Phone Number</label>
+          <input id={`${idPrefix}-phone`} type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" required className={inputCls} />
         </div>
       </div>
       <div>
-        <label htmlFor="sell-email" className={labelCls}>Email Address</label>
-        <input id="sell-email" type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" required className={inputCls} />
+        <label htmlFor={`${idPrefix}-email`} className={labelCls}>Email Address</label>
+        <input id={`${idPrefix}-email`} type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" required className={inputCls} />
       </div>
       <div>
-        <label htmlFor="sell-location" className={labelCls}>Property Location (Sector/Society)</label>
-        <input id="sell-location" name="location" value={form.location} onChange={handleChange} placeholder="e.g. Sector 65, Gurgaon" required className={inputCls} />
+        <label htmlFor={`${idPrefix}-location`} className={labelCls}>Property Location (Sector/Society)</label>
+        <input id={`${idPrefix}-location`} name="location" value={form.location} onChange={handleChange} placeholder="e.g. Sector 65, Gurgaon" required className={inputCls} />
       </div>
       <div>
-        <label htmlFor="sell-message" className={labelCls}>Tell us about your property (optional)</label>
+        <label htmlFor={`${idPrefix}-message`} className={labelCls}>{messageLabel}</label>
         <textarea
-          id="sell-message"
+          id={`${idPrefix}-message`}
           name="message"
           value={form.message}
           onChange={handleChange}
-          placeholder="Type, size, expected price, or anything else useful"
+          placeholder={messagePlaceholder}
           rows={3}
           className={`${inputCls} resize-vertical`}
         />

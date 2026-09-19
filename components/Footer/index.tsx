@@ -122,6 +122,20 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Commercial
               </Link>
             </li>
+            {/* R19-08: the owner-side journeys. Both pages are noindex,follow
+                while their commercial terms are owner-pending, but they are
+                real, usable pages and a seller or landlord had no route to
+                either from anywhere on the site. */}
+            <li>
+              <Link href="/sell-property-in-gurgaon" className={colLinkCls}>
+                Sell Your Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/rent-out-property-in-gurgaon" className={colLinkCls}>
+                Rent Out Your Property
+              </Link>
+            </li>
             <li>
               <Link href="/project-listing" className={colLinkCls}>
                 Projects
