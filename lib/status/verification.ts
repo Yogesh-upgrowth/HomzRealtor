@@ -19,6 +19,7 @@
 
 import { getStatusCollections } from "./db";
 import type { StatusEventDoc } from "./types";
+import { latestVerification } from "./verificationLog";
 
 export type PricePoint = { at: string; priceText: string | null; priceInr: number | null };
 export type StatusPoint = { at: string; from: string | null; to: string | null };
@@ -38,31 +39,28 @@ export type ListingVerification = {
   statusHistory: StatusPoint[];
 };
 
-// [[owner-input: owner-call-log]]
+// Owner-call log: wired 2026-09-19 to the Mongo-backed record in
+// lib/status/verificationLog.ts (option (b) of the three originally listed).
+// The owner supplied the calling number, 8447909227; that identifies who
+// calls, not which unit was confirmed when, so the log itself is what makes
+// "Homz-verified on [date]" a claim the site can stand behind.
 //
-// Homz needs one source of truth for "an advisor spoke to the owner of this
-// unit on this date and confirmed it is available at this price". Options, in
-// order of how quickly they could be wired:
-//
-//   a) A Google Sheet the calling team already keeps, with columns
-//      homz_listing_id | called_at | outcome | confirmed_price | agent.
-//      Read it the same way /api/contact writes: one Apps Script endpoint.
-//   b) A `listing_verifications` collection in the existing MongoDB, written
-//      by a small form in /admin. Best long-term; needs the admin screen.
-//   c) The CRM, if enquiries already route to one.
-//
-// Until one is chosen this resolver returns null and the page degrades
-// honestly. Set OWNER_CALL_LOG_SOURCE and implement readOwnerCallLog() below.
-const OWNER_CALL_LOG_SOURCE: "none" | "sheet" | "mongo" | "crm" = "none";
+// Entries are written from /api/admin/verify-listing, which the admin screen
+// posts to after an advisor rings the owner. Until a listing has a confirming
+// entry this still returns null and the page says "listing last checked",
+// which is the weaker, true statement.
+const OWNER_CALL_LOG_SOURCE: "none" | "sheet" | "mongo" | "crm" = "mongo";
+
+/** The Homz number advisors call owners from. Recorded against each entry so
+ *  a verification is attributable, and shown nowhere public. */
+export const VERIFICATION_CALLER_PHONE = "8447909227";
 
 async function readOwnerCallLog(
-  _listingId: string
+  listingId: string
 ): Promise<{ verifiedAt: string } | null> {
-  if (OWNER_CALL_LOG_SOURCE === "none") return null;
-  // Implement against the chosen source above. Deliberately unimplemented
-  // rather than stubbed with a plausible date: a wrong "verified on" date on a
-  // property page is a trust claim Homz cannot stand behind.
-  return null;
+  if (OWNER_CALL_LOG_SOURCE !== "mongo") return null;
+  const hit = await latestVerification(listingId).catch(() => null);
+  return hit ? { verifiedAt: hit.verifiedAt } : null;
 }
 
 function toIso(d: Date | string | null | undefined): string | null {
