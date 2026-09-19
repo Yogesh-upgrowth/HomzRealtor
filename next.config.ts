@@ -117,6 +117,22 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // R19-07 (2026-09-19): every paginated route hard-404s page 1
+      // (`if (pageNum === 1) notFound()`), deliberately, so that /page/1 can
+      // never become a self-canonical duplicate of the base hub. That call is
+      // right and stays. But a 404 is the wrong response for a URL that has a
+      // perfectly good canonical equivalent: the recheck reached
+      // /project-listing/gurgaon/page/1 and /buy-property/gurgaon/3-bhk/page/1
+      // and got dead ends. A 308 to the base path keeps the canonical story
+      // intact while letting any stray external link, bookmark or hand-typed
+      // guess resolve. Listed before the route files are consulted, so the
+      // notFound() branch is simply never reached for page 1.
+      { source: "/buy-property/page/1", destination: "/buy-property", permanent: true },
+      { source: "/rent-property/page/1", destination: "/rent-property", permanent: true },
+      { source: "/commercial/page/1", destination: "/commercial", permanent: true },
+      { source: "/buy-property/:city/:slug/page/1", destination: "/buy-property/:city/:slug", permanent: true },
+      { source: "/project-listing/:city/page/1", destination: "/project-listing/:city", permanent: true },
+
       // /contact-us 404'd outright; /contact is the one real contact page.
       {
         source: "/contact-us",

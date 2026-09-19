@@ -204,7 +204,7 @@ export const bestPlotsInGurgaonForInvestment: BlogPostV27 = {
   internalLinks: [
     { anchor: "Compare Gurgaon's apartment-buying corridors instead", url: "/blog/best-areas-to-buy-property-in-gurgaon" },
     { anchor: "See Gurgaon's under-₹2-crore property options", url: "/blog/best-property-investment-in-gurgaon-under-2-crore" },
-    { anchor: "Browse HomzRealtor's plots and land listings", url: "/plots-and-lands" },
+    { anchor: "Register interest in HomzRealtor's upcoming plots and land section", url: "/plots-and-lands" },
   ],
   faqs: [
     {
@@ -254,10 +254,10 @@ export const bestPlotsInGurgaonForInvestment: BlogPostV27 = {
   relatedArticles: [],
   bottomCta: {
     kicker: "Your move",
-    headline: "See Gurgaon's Live Plot Listings",
-    body: "Browse current plot and land inventory across Gurgaon's sectors, with real pricing.",
-    buttonText: "Browse Plots & Land",
-    url: "/plots-and-lands",
+    headline: "Talk to Us About Gurgaon Plots",
+    body: "HomzRealtor's dedicated plots and land section is still being built \u2014 in the meantime, speak to an advisor about plot options across Gurgaon's sectors.",
+    buttonText: "Speak to an advisor",
+    url: "/contact",
   },
   qualityGates: {
     wordCount: 1502,

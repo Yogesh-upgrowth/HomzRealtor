@@ -166,7 +166,7 @@ export const bestProjectsInNewGurgaon: BlogPostV27 = {
       contentMarkdown:
         "Start with the builders and sectors above, then check each shortlisted project's RERA registration and disclosed possession date on the Haryana RERA (HARERA) portal — a builder's overall project count doesn't guarantee any one specific project is on schedule or fully compliant. Compare at least two or three listings within the same sector before making a final decision, since price and unit quality can vary meaningfully project to project even within a single well-regarded sector like Sector 95. If a shortlisted project is still under construction, request the developer's most recent quarterly progress report rather than relying on marketing renders alone — HARERA requires registered projects to file these, and they're a far more reliable read on actual construction status than a sales pitch.",
       media: [
-        { type: "product_cta", text: "Browse live New Gurgaon listings on HomzRealtor", url: "https://www.homzrealtor.com/project-listing/gurgaon", variant: "banner" },
+        { type: "product_cta", text: "Browse Gurgaon projects by sector on HomzRealtor", url: "https://www.homzrealtor.com/project-listing/gurgaon/sectors", variant: "banner" },
       ],
     },
     {
@@ -229,9 +229,9 @@ export const bestProjectsInNewGurgaon: BlogPostV27 = {
   bottomCta: {
     kicker: "Your move",
     headline: "Browse Live New Gurgaon Listings",
-    body: "Filter HomzRealtor's New Gurgaon catalogue by builder, sector and possession status.",
-    buttonText: "Browse New Gurgaon",
-    url: "/project-listing/gurgaon",
+    body: "Pick a New Gurgaon sector from HomzRealtor's live Gurgaon catalogue, then filter by builder and possession status.",
+    buttonText: "Browse by sector",
+    url: "/project-listing/gurgaon/sectors",
   },
   qualityGates: {
     wordCount: 1517,
