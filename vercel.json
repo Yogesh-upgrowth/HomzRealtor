@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/warm-cache",
-      "schedule": "*/25 * * * *"
+      "schedule": "0 4 * * *"
     }
   ]
 }

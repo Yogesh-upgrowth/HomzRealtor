@@ -2,6 +2,8 @@
 // Fetches from homzbackend API with Next.js fetch caching (1 hour).
 
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
+import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
+import { isExcludedProject } from "./excludedProjects";
 import { normalizeAmenities } from "./view-model";
 import { fetchProjects, categorySegment } from "@/lib/scraping/homzbackend";
 
@@ -41,15 +43,29 @@ export const CITY_DISPLAY: Record<string, { name: string; state: string }> = {
   noida: { name: "Noida", state: "Uttar Pradesh" },
 };
 
-async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
+async function fetchCityRaw(cityKey: string): Promise<CityData> {
   const [commercial, residential] = await Promise.all([
     fetchProjects(categorySegment(cityKey, "Commercial")).catch(() => []),
     fetchProjects(categorySegment(cityKey, "Residential")).catch(() => []),
   ]);
-  return [
+  // One development sometimes reaches us twice -- "Emaar Emerald Floors
+  // Select" alongside "Emaar Emrald Floors Select", M3M St Andrews listed
+  // twice. Collapsing here, at the single boundary every consumer reads
+  // through, keeps the duplicate out of the sector medians, the developer
+  // portfolio figures and the project counts in copy, not just out of the
+  // grid. See lib/intelligence/projectDedupe.ts for what it will and will not
+  // merge; the collapsed slug redirects rather than 404s (getProjectBySlug).
+  const normalized = [
     ...commercial.map((r) => normalizeProject(r, cityKey, "Commercial")),
     ...residential.map((r) => normalizeProject(r, cityKey, "Residential")),
-  ];
+  // Records the owner has asked not to carry (lib/intelligence/
+  // excludedProjects.ts). Dropped here so an excluded record leaves the
+  // sitemap, the sector medians and the developer counts at the same moment
+  // it leaves the grid, rather than being hidden in one place and still
+  // counted in another.
+  ].filter((p) => !isExcludedProject(p.city_key, p.slug));
+
+  return collapseDuplicateProjects(normalized);
 }
 
 // fetchProjects() (lib/scraping/homzbackend.ts) caches the *raw* segment (via
@@ -65,11 +81,12 @@ async function fetchCityRaw(cityKey: string): Promise<NormalizedProject[]> {
 // calls for the same city within the window reuse the normalized array
 // instead of recomputing it. 2026-09-16.
 const NORMALIZED_TTL_MS = 30 * 60 * 1000;
-type CityCacheEntry = { data: NormalizedProject[]; expiresAt: number };
+type CityData = CollapseResult;
+type CityCacheEntry = { data: CityData; expiresAt: number };
 const cityCache = new Map<string, CityCacheEntry>();
-const cityInFlight = new Map<string, Promise<NormalizedProject[]>>();
+const cityInFlight = new Map<string, Promise<CityData>>();
 
-export async function getProjectsForCity(cityKey: string): Promise<NormalizedProject[]> {
+async function getCityData(cityKey: string): Promise<CityData> {
   const hit = cityCache.get(cityKey);
   if (hit && hit.expiresAt > Date.now()) return hit.data;
 
@@ -90,13 +107,39 @@ export async function getProjectsForCity(cityKey: string): Promise<NormalizedPro
   }
 }
 
+export async function getProjectsForCity(cityKey: string): Promise<NormalizedProject[]> {
+  return (await getCityData(cityKey)).projects;
+}
+
+/**
+ * A project by slug, plus where the canonical page for it lives.
+ *
+ * `canonicalSlug` differs from the slug asked for when that slug was a
+ * duplicate record collapsed into another (see projectDedupe.ts). The page
+ * redirects there rather than rendering or 404ing, so an already-indexed
+ * duplicate consolidates into the surviving page instead of breaking.
+ */
+export async function getProjectBySlugResolved(
+  cityParam: string,
+  slug: string
+): Promise<{ project: NormalizedProject; canonicalSlug: string } | null> {
+  const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
+  const { projects, aliases } = await getCityData(cityKey);
+
+  const direct = projects.find((p) => p.slug === slug);
+  if (direct) return { project: direct, canonicalSlug: direct.slug };
+
+  const canonical = aliases.get(`${cityKey}:${slug}`);
+  if (!canonical) return null;
+  const target = projects.find((p) => p.slug === canonical);
+  return target ? { project: target, canonicalSlug: target.slug } : null;
+}
+
 export async function getProjectBySlug(
   cityParam: string,
   slug: string
 ): Promise<NormalizedProject | null> {
-  const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
-  const projects = await getProjectsForCity(cityKey);
-  return projects.find((p) => p.slug === slug) ?? null;
+  return (await getProjectBySlugResolved(cityParam, slug))?.project ?? null;
 }
 
 // ── Sector browsing ──────────────────────────────────────────────────────────

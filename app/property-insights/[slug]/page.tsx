@@ -6,9 +6,19 @@ import { ChevronRight } from "lucide-react";
 
 import { BUYER_GUIDES, getBuyerGuide, type BuyerGuide } from "@/lib/content/buyerGuides";
 import AppointmentCard from "@/components/Common/Appointment";
+import { truncateAtWord } from "@/lib/intelligence/normalize";
 import bgImg from "@/public/appointmentBG.jpg";
 
 const SITE = "https://www.homzrealtor.com";
+
+// R19-06 (2026-09-19): guide.img is a webpack StaticImageData import, so
+// .src is a root-relative path ("/_next/static/media/discoverImage2.<hash>.jpg").
+// metadataBase resolves that for openGraph/twitter, but JSON-LD gets no such
+// treatment — the four insight pages were publishing BlogPosting.image values
+// a consumer cannot resolve. Structured-data image URLs must be absolute.
+function absoluteUrl(path: string): string {
+  return /^https?:\/\//i.test(path) ? path : `${SITE}${path.startsWith("/") ? "" : "/"}${path}`;
+}
 
 // Schema audit B-05 (2026-09-08): these 4 guides had @type Article (blog
 // posts use BlogPosting) and no articleSection at all. Real categories, not
@@ -21,26 +31,6 @@ const GUIDE_CATEGORY: Record<string, string> = {
   "home-loan-documentation-checklist": "home-loans-and-finance",
   "gurgaon-micro-markets-best-rental-yields-2026": "property-investment",
 };
-
-// Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17, P2-B):
-// a plain .slice(0, 155) cut mid-word with no ellipsis ("...get a l"),
-// which is what the audit flagged as a "clipped description." Prefers a
-// complete first sentence if one fits within the target range; otherwise
-// falls back to the last whole word before the limit. Never adds "..."
-// since the result is always a complete sentence or word, not a
-// mid-thought cut.
-function truncateAtBoundary(text: string, max = 155): string {
-  if (text.length <= max) return text;
-
-  const firstSentenceEnd = text.slice(0, max + 40).search(/[.!?](?:\s|$)/);
-  if (firstSentenceEnd !== -1 && firstSentenceEnd + 1 <= max + 40) {
-    return text.slice(0, firstSentenceEnd + 1);
-  }
-
-  const truncated = text.slice(0, max);
-  const lastSpace = truncated.lastIndexOf(" ");
-  return lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated;
-}
 
 function guideWordCount(guide: BuyerGuide): number {
   return guide.sections
@@ -84,8 +74,12 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const guide = getBuyerGuide(slug);
   if (!guide) return {};
 
+  // R19-06 (2026-09-19): was a raw .slice(0, 155), the only metadata
+  // truncation in the codebase that cut mid-word and mid-sentence with no
+  // ellipsis — it produced descriptions ending on a broken word. truncateAtWord
+  // is the shared helper every other route already uses.
   const firstParagraph = guide.sections[0]?.paragraphs[0];
-  const description = firstParagraph ? truncateAtBoundary(firstParagraph) : guide.title;
+  const description = firstParagraph ? truncateAtWord(firstParagraph, 155) : guide.title;
   const url = `${SITE}/property-insights/${guide.slug}`;
 
   return {
@@ -150,13 +144,7 @@ const PropertyInsightPage = async ({ params }: PageParams) => {
         // (lib/seo/blogJsonLd.ts); these 4 guides were the odd ones out.
         "@type": "BlogPosting",
         headline: guide.title,
-        // Owner recheck (HOMZ-LIVE-RECHECK-AND-OWNER-INPUTS-2026-09-17,
-        // P2-B): guide.img.src is a Next.js static-import path
-        // (/_next/static/media/...), relative -- schema.org/Google's
-        // structured-data guidance requires an absolute URL here. Unlike
-        // the openGraph.images above, this raw JSON-LD isn't resolved
-        // against metadataBase automatically.
-        image: [`${SITE}${guide.img.src}`],
+        image: [absoluteUrl(guide.img.src)],
         wordCount: guideWordCount(guide),
         articleSection: GUIDE_CATEGORY[guide.slug],
         inLanguage: "en-IN",

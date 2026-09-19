@@ -56,18 +56,103 @@ export function redactEmbeddedRegulatoryIds(paragraphs: string[]): string[] {
   );
 }
 
+// Audit item 9 (2026-09-19): the fallback below used to be
+// `title.split(/\s+/)[0]`, i.e. the first word of the project title, with no
+// check that it was a builder name at all. That produced developer hubs at
+// /developer/the (34 projects), /old, /good, /golden, /royal, /sharma,
+// /trump, /huda and /rwa, and is a large part of why 140 of 254 hubs held a
+// single project. A junk hub is worse than no hub: it is a thin indexable
+// page asserting a developer that does not exist.
+//
+// A first word is only accepted now when it could plausibly be a company
+// name. Everything else returns "Unknown", and buildDeveloperIndex() drops
+// those rather than minting a hub for them.
+const BUILDER_STOPWORDS = new Set([
+  "the", "a", "an", "new", "old", "good", "best", "golden", "royal", "luxury",
+  "premium", "green", "sector", "plot", "plots", "flat", "flats", "apartment",
+  "apartments", "villa", "villas", "house", "home", "homes", "floor", "floors",
+  "builder", "independent", "residential", "commercial", "affordable", "huda",
+  "rwa", "society", "project", "property", "land", "shop", "office", "sale",
+  "rent", "my", "your", "our", "prime", "grand", "elite",
+]);
+
+// Same company, two spellings in the feed. Merging them stops one developer
+// being split across two hubs, each too thin to rank.
+const BUILDER_ALIASES: Record<string, string> = {
+  signature: "Signature Global",
+  "signature global": "Signature Global",
+  uppal: "Uppal",
+  uppals: "Uppal",
+  gpl: "Godrej Properties",
+  godrej: "Godrej Properties",
+  "godrej properties": "Godrej Properties",
+  dwarkadhis: "Dwarkadhis",
+  dwarkadhish: "Dwarkadhis",
+};
+
+function canonicalBuilder(name: string): string {
+  return BUILDER_ALIASES[name.trim().toLowerCase()] ?? name.trim();
+}
+
 export function extractBuilder(projectTitle: string): string {
   const title = (projectTitle || "").trim();
+  if (!title) return "Unknown";
+
   for (const b of KNOWN_BUILDERS) {
-    if (title.toLowerCase().startsWith(b.toLowerCase())) return b;
+    if (title.toLowerCase().startsWith(b.toLowerCase())) return canonicalBuilder(b);
   }
-  return title.split(/\s+/)[0] || "Unknown";
+
+  const words = title.split(/\s+/).filter(Boolean);
+
+  // Try a two-word prefix before a one-word one -- "Signature Global" and
+  // "Godrej Properties" are the company; "Signature" and "Godrej" alone are
+  // the ones that split a developer across two hubs.
+  const pair = words.slice(0, 2).join(" ").toLowerCase();
+  if (BUILDER_ALIASES[pair]) return BUILDER_ALIASES[pair];
+
+  const first = words[0] || "";
+  const lower = first.toLowerCase().replace(/[^a-z]/g, "");
+  if (
+    lower.length < 3 ||
+    BUILDER_STOPWORDS.has(lower) ||
+    /^\d+$/.test(first)
+  ) {
+    return "Unknown";
+  }
+  return canonicalBuilder(first);
 }
+
+// Audit item 8 (2026-09-19): this pulled "Sector N" out of free text with no
+// regard for which town the sector belongs to, so Sohna's sector numbering
+// merged into Gurgaon's -- LID Plaza, in Sector 6 Sohna, was filed under
+// Sector 6 Gurgaon -- and a "Sector 150", which is Noida, appeared under
+// Gurgaon too. Both produce a sector hub that mixes unrelated inventory.
+//
+// Gurgaon's sectors run 1-115 (plus letter suffixes). A number outside that
+// range, or a sector qualified by another town's name in the same text, is
+// not a Gurgaon sector and returns null rather than contaminating a hub.
+const GURGAON_MAX_SECTOR = 115;
+// "Sohna Road" is a Gurgaon corridor and appears in MICRO_MARKETS above --
+// "Sector 48, Sohna Road, Gurgaon" is a genuine Gurgaon sector. Only the town
+// of Sohna (its own sector numbering) disqualifies, hence the lookahead.
+const OTHER_TOWNS = /\b(sohna(?!\s+road)|manesar|bhiwadi|dharuhera|pataudi|farukh?nagar|noida|faridabad|delhi)\b/i;
 
 export function extractSector(...texts: (string | string[] | null | undefined)[]): string | null {
   const blob = texts.flatMap((t) => (Array.isArray(t) ? t : [t])).filter(Boolean).join(" ");
   const m = blob.match(/\bSector\s*-?\s*([0-9]{1,3}[A-Za-z]?)\b/i);
-  return m ? `Sector ${m[1].toUpperCase()}` : null;
+  if (!m) return null;
+
+  const raw = m[1].toUpperCase();
+  const num = parseInt(raw, 10);
+  if (!Number.isFinite(num) || num < 1 || num > GURGAON_MAX_SECTOR) return null;
+
+  // "Sector 6, Sohna" is Sohna's Sector 6, not Gurgaon's. Only reject when the
+  // other town is named near the sector mention, so a project that merely
+  // lists "30 min to Noida" under connectivity is unaffected.
+  const around = blob.slice(Math.max(0, m.index! - 40), (m.index ?? 0) + m[0].length + 40);
+  if (OTHER_TOWNS.test(around)) return null;
+
+  return `Sector ${raw}`;
 }
 
 const MICRO_MARKETS = [
@@ -128,13 +213,68 @@ function detectAreaUnit(text: string): string | null {
   return null;
 }
 
+// R19-04 (2026-09-19). DEV-02 already found that some scraped values carry an
+// entire unit-selector dropdown's option list appended to the real value, e.g.
+// "1350 sqft sqft sqyrd sqm acre bigha hectare marla kanal biswa1 biswa2
+// ground aankadam rood chatak kottah marla cent perch guntha are katha gaj
+// killa kuncham ₹ 56/sqft" instead of "1350 sqft". That fix was applied only
+// to the `specifications` rows; the same contamination also reaches
+// `property.size`, which feeds the area chip, the listing cards and the meta
+// description, and it silently corrupts extractSizeRange() below:
+//   - detectAreaUnit() tests sq.m before sq.ft, so the dump's "sqm" token wins
+//     and a sq.ft listing is relabelled "sq.m";
+//   - the digit scan picks up "biswa1"/"biswa2" and the trailing "₹ 56/sqft"
+//     rate, so min/max come from tokens that are not areas at all.
+// Hence one shared detector here (normalize.ts is the leaf module both
+// view-model.ts and property-view.ts can import without a cycle).
+const UNIT_SELECTOR_TOKENS = [
+  "sqft", "sqyd", "sqyrd", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
+  "biswa", "ground", "aankadam", "rood", "chatak", "kottah", "cent", "perch",
+  "guntha", "katha", "gaj", "killa", "kuncham",
+];
+
+export function looksLikeUnitSelectorDump(value: string): boolean {
+  const lower = String(value ?? "").toLowerCase();
+  let distinctHits = 0;
+  for (const token of UNIT_SELECTOR_TOKENS) {
+    if (lower.includes(token)) distinctHits++;
+    // A real value never legitimately names 2+ different land/area units.
+    // DEV-02 used 3; lowered to 2 because "1350 sqft sqyrd" is already
+    // corrupt and the 3-token threshold let shorter dumps through.
+    if (distinctHits >= 2) return true;
+  }
+  // The same unit repeated ("1350 sqft sqft") is a dump even at one distinct
+  // token — a genuine value never restates its own unit.
+  return UNIT_SELECTOR_TOKENS.some(
+    (t) => lower.split(t).length - 1 >= 2
+  );
+}
+
+// Salvage the leading "<number> <unit>" from a contaminated area string.
+// The dump is always appended *after* the real value, so the leading pair is
+// the one part that can be confirmed. Returns null when even that can't be
+// read, so callers omit the field rather than show a fabricated one.
+export function salvageAreaText(value?: string | null): string | null {
+  if (!value) return null;
+  const text = String(value).trim();
+  if (!looksLikeUnitSelectorDump(text)) return text;
+  const match = text.match(
+    /^(\d+(?:[.,]\d+)?)\s*(sq\.?\s*ft|sqft|square\s*fee?t|sq\.?\s*yd|sqyd|square\s*yard|sq\.?\s*m(?:eter|etre)?s?|sqm|acres?)\b/i
+  );
+  if (!match) return null;
+  return `${match[1]} ${match[2]}`.replace(/\s+/g, " ").trim();
+}
+
 export function extractSizeRange(sizeText?: string | null): {
   min: number | null;
   max: number | null;
   unit: string | null;
 } {
   if (!sizeText) return { min: null, max: null, unit: null };
-  const text = String(sizeText);
+  // Parse the salvaged value, never the raw dump — otherwise the unit and the
+  // min/max below are both read off the dropdown's option list.
+  const text = salvageAreaText(String(sizeText));
+  if (!text) return { min: null, max: null, unit: null };
   const unit = detectAreaUnit(text);
   const nums = (text.match(/\d+(?:\.\d+)?/g) || []).map(Number);
   if (nums.length === 0) return { min: null, max: null, unit };

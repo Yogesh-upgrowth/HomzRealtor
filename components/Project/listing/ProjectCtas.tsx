@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { CalendarCheck, IndianRupee, Share2, Heart, Check } from "lucide-react";
+import { CalendarCheck, IndianRupee, Share2, Heart, Check, Link as LinkIcon } from "lucide-react";
 import { scrollToHash } from "@/lib/scrollToHash";
 
 type Props = {
@@ -34,42 +34,80 @@ const ProjectCtas = ({ name, enquireHref, projectKey, variant = "hero" }: Props)
     }
   }, [storageKey]);
 
+  // R19-12 (2026-09-19): setSaved() ran *before* the write and the catch was
+  // empty, so when localStorage is unavailable (private mode, blocked site
+  // data, quota exhausted) the button still flipped to "Saved" with
+  // aria-pressed="true" while nothing had been persisted -- and the save was
+  // silently gone on reload. Write first, reflect the outcome second, and say
+  // so when it fails rather than implying durable storage that does not exist.
   const toggleSave = () => {
     const next = !saved;
-    setSaved(next);
     try {
       if (next) localStorage.setItem(storageKey, "1");
       else localStorage.removeItem(storageKey);
+      setSaved(next);
     } catch {
-      /* ignore */
+      toast.error(
+        "Couldn't save this on your device. Check your browser's site-data settings and try again."
+      );
     }
   };
 
+  // R19-12: saves are per-browser and a second tab writing the same key used
+  // to leave this one showing stale state. `storage` fires only in *other*
+  // tabs of the same origin, which is exactly the case that was wrong.
+  useEffect(() => {
+    const syncFromOtherTab = (event: StorageEvent) => {
+      if (event.key !== storageKey) return;
+      setSaved(event.newValue === "1");
+    };
+    window.addEventListener("storage", syncFromOtherTab);
+    return () => window.removeEventListener("storage", syncFromOtherTab);
+  }, [storageKey]);
+
+  // R19-12: extracted so both the Share failure path and the always-present
+  // Copy link button below use the same implementation.
+  const copyLink = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+      return true;
+    } catch {
+      toast.error("Couldn't copy the link, copy it from the address bar instead.");
+      return false;
+    }
+  };
+
+  // R19-12: the failure toast used to read "Try Copy Link instead" while no
+  // Copy Link control existed anywhere, and the early `return` after the
+  // native-share branch made the clipboard fallback below unreachable on any
+  // device that has navigator.share -- i.e. essentially every phone, which is
+  // also where `copied`/"Copied" was therefore dead code. Now a real failure
+  // falls through to the clipboard, and there is a separate Copy link button
+  // regardless.
   const share = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
 
     if (navigator.share) {
       try {
         await navigator.share({ title: name, url });
+        return;
       } catch (err) {
         // MI-09 (2026-09-18): the native share sheet rejects with
         // AbortError when the user simply dismisses it — that's a normal,
         // neutral outcome, not a failure. Anything else (permission denied,
-        // no share target, etc.) is a real failure and must not be
-        // silently swallowed like the cancel case.
+        // no share target, etc.) is a real failure, and the useful recovery
+        // is to copy the link rather than tell the user to find a button.
         if (err instanceof Error && err.name === "AbortError") return;
-        toast.error("Couldn't open the share sheet. Try Copy Link instead.");
+        const didCopy = await copyLink();
+        if (didCopy) toast.success("Share sheet unavailable, link copied instead.");
+        return;
       }
-      return;
     }
 
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      toast.error("Couldn't copy the link, copy it from the address bar instead.");
-    }
+    await copyLink();
   };
 
   const isHero = variant === "hero";
@@ -119,8 +157,19 @@ const ProjectCtas = ({ name, enquireHref, projectKey, variant = "hero" }: Props)
             onClick={share}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-gray-300 hover:border-white/30 transition-colors"
           >
-            {copied ? <Check size={16} /> : <Share2 size={16} />}
-            {copied ? "Copied" : "Share"}
+            <Share2 size={16} />
+            Share
+          </button>
+          {/* R19-12: the real Copy link affordance the failure message used to
+              point at. Also the only way to copy on a device with a native
+              share sheet, where the clipboard path was previously unreachable. */}
+          <button
+            onClick={copyLink}
+            aria-label="Copy link to this project"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-gray-300 hover:border-white/30 transition-colors"
+          >
+            {copied ? <Check size={16} /> : <LinkIcon size={16} />}
+            {copied ? "Copied" : "Copy link"}
           </button>
         </div>
       )}

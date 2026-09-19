@@ -1,10 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import SegmentedTabs from "@/components/Project/listing/SegmentedTabs";
-import EmiCalculator from "./EmiCalculator";
 import InvestmentCalculators from "./InvestmentCalculators";
-import AcquisitionCostCalculator from "./AcquisitionCostCalculator";
+
+// Audit item 11 (2026-09-19): recharts was imported by five project-page
+// components with no next/dynamic anywhere in the codebase, so the whole chart
+// library shipped in the first bundle of the most important template. These
+// two are calculators behind a tab -- most visitors never open them, and
+// nothing here needs to exist before hydration. ssr:false because a chart has
+// no meaningful server render and its markup is not content a crawler needs.
+const loading = () => (
+  <div className="h-64 animate-pulse rounded-xl bg-white/5" aria-hidden />
+);
+const EmiCalculator = dynamic(() => import("./EmiCalculator"), { ssr: false, loading });
+const AcquisitionCostCalculator = dynamic(
+  () => import("./AcquisitionCostCalculator"),
+  { ssr: false, loading }
+);
 
 type Props = {
   title: string;

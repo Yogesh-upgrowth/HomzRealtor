@@ -44,7 +44,9 @@ const FinalCtaSection = ({ projectName, locationLine, bgImage }: Props) => {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <button
-            onClick={openForm}
+            onClick={() =>
+              openForm({ kind: "site_visit", placement: "project_final_cta", subject: projectName })
+            }
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-7 py-3.5 text-[15px] font-bold text-[#1c1608] shadow-[0_12px_34px_rgba(201,154,75,0.3)] hover:brightness-105 transition cursor-pointer"
           >
             Schedule Site Visit

@@ -23,6 +23,37 @@ export type ListingFilters = {
   investmentGrade?: boolean; // Commercial category only
 };
 
+/** Every query-string key that narrows the result set. `page` is deliberately
+ *  excluded — paginating is not filtering. Kept beside ListingFilters so the
+ *  two cannot drift apart. */
+export const LISTING_FILTER_PARAMS = [
+  "q",
+  "type",
+  "bedrooms",
+  "budget",
+  "possession",
+  "saleType",
+  "golf",
+  "investmentGrade",
+] as const;
+
+/** R19-01/R19-06 (2026-09-19): server components on the hub routes need to
+ *  know whether the visitor has narrowed the list, because two things must
+ *  not happen while a filter is active — a citywide fallback grid rendering
+ *  under a "no matches" empty state, and ItemList markup advertising the
+ *  unfiltered top-24 as though it were the result set. They receive raw
+ *  searchParams, hence a string-keyed check rather than a ListingFilters one. */
+export function hasActiveListingFilters(
+  searchParams: Record<string, string | string[] | undefined> | undefined
+): boolean {
+  if (!searchParams) return false;
+  return LISTING_FILTER_PARAMS.some((key) => {
+    const value = searchParams[key];
+    const first = Array.isArray(value) ? value[0] : value;
+    return typeof first === "string" && first.trim() !== "";
+  });
+}
+
 export type FacetOption = { value: string; label: string; count: number };
 export type ListingFacets = {
   propertyTypes: FacetOption[];

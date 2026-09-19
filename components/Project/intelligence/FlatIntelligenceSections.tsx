@@ -45,8 +45,9 @@ const FlatIntelligenceSections = async ({ cityParam, slug }: Props) => {
   if (!project) return null;
 
   const coords = resolveCoordinate(cityKey, project.sector, project.micro_market);
-  const landmarks = nearbyLandmarks(coords.lat, coords.lng);
-  const connectivity = nearbyConnectivity(cityKey, coords.lat, coords.lng);
+  // R19-04: see ProjectIntelligenceSections.tsx — same guard, same reason.
+  const landmarks = nearbyLandmarks(coords.lat, coords.lng, coords.precision);
+  const connectivity = nearbyConnectivity(cityKey, coords.lat, coords.lng, coords.precision);
 
   const content = await generateProjectContent(project, landmarks, connectivity).catch(() => ({
     location_intelligence: "",

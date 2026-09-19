@@ -65,9 +65,23 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
               </a>
             </p>
             {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
-            {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
+            {/* Both registrations are held by the proprietor rather than by a
+                company, so both print the holder's name. Anyone checking
+                either number on the GST or HARERA portal sees "Sunita
+                Singhvi"; a site claiming otherwise would fail the check it
+                is inviting. */}
+            {COMPANY_INFO.legalStructure && <p>{COMPANY_INFO.legalStructure}</p>}
+            {COMPANY_INFO.gstNumber && (
+              <p>
+                GSTIN: {COMPANY_INFO.gstNumber}
+                {COMPANY_INFO.gstHolder ? ` (${COMPANY_INFO.gstHolder})` : ""}
+              </p>
+            )}
             {COMPANY_INFO.hararaAgentNumber && (
-              <p>HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}</p>
+              <p>
+                HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}
+                {COMPANY_INFO.hareraHolder ? ` (registered to ${COMPANY_INFO.hareraHolder})` : ""}
+              </p>
             )}
           </div>
           {hasSocialLinks() && (
@@ -102,6 +116,38 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
             <li>
               <Link href="/" className={colLinkCls}>
                 Home
+              </Link>
+            </li>
+            {/* Buy/Rent restored 2026-09-19 (see components/Header/index.tsx's
+                note): the two highest-intent transaction hubs previously had
+                no sitewide internal link from either nav. */}
+            <li>
+              <Link href="/buy-property" className={colLinkCls}>
+                Buy Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/rent-property" className={colLinkCls}>
+                Rent Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/commercial" className={colLinkCls}>
+                Commercial
+              </Link>
+            </li>
+            {/* R19-08: the owner-side journeys. Both pages are noindex,follow
+                while their commercial terms are owner-pending, but they are
+                real, usable pages and a seller or landlord had no route to
+                either from anywhere on the site. */}
+            <li>
+              <Link href="/sell-property-in-gurgaon" className={colLinkCls}>
+                Sell Your Property
+              </Link>
+            </li>
+            <li>
+              <Link href="/rent-out-property-in-gurgaon" className={colLinkCls}>
+                Rent Out Your Property
               </Link>
             </li>
             <li>

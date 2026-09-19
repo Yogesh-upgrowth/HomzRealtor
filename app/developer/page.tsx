@@ -9,10 +9,16 @@ import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 const SITE = "https://www.homzrealtor.com";
 
+// R19-06 (2026-09-19): the sitewide Organization.areaServed was narrowed to
+// Gurgaon in ec7906c after the owner confirmed it as the only serviced market,
+// but this page still advertised five NCR cities in its title, description and
+// body copy — the four others render "being updated" empty pages. Reworded to
+// lead with the market Homz actually serves, without claiming the directory
+// holds only Gurgaon builders (it doesn't; their portfolios are their own).
 export const metadata: Metadata = {
-  title: "Property Developers & Builders in Delhi NCR",
+  title: "Property Developers & Builders in Gurgaon",
   description:
-    "Browse real estate developers and builders across Gurgaon, Noida, Greater Noida, Delhi and Faridabad. Explore each developer's projects, prices and developments on HomzRealtor.",
+    "Browse real estate developers and builders with projects listed on HomzRealtor, covering Gurgaon. Explore each developer's projects, prices and developments.",
   keywords: [
     "property developers Delhi NCR",
     "builders in Gurgaon",
@@ -83,12 +89,12 @@ const DevelopersIndexPage = async () => {
         </nav>
 
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-          Property Developers in Delhi NCR
+          Property Developers in Gurgaon
         </h1>
         <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">
           Explore {developers.length > 0 ? `${developers.length} ` : ""}real estate developers
-          with projects listed on HomzRealtor across Gurgaon, Noida, Greater Noida, Delhi and
-          Faridabad. Select a developer to view their full portfolio, prices and developments.
+          with projects listed on HomzRealtor. Select a developer to view their full portfolio,
+          prices and developments.
         </p>
       </section>
 

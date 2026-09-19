@@ -10,7 +10,15 @@
     "set-user-role": "node scripts/set-user-role.mjs",
     "generate:osm-pois": "node scripts/generate-osm-pois.mjs",
     "verify:agent-readiness": "node scripts/verify-agent-readiness.mjs",
-    "check:sitemap": "node scripts/check-sitemap-404s.mjs"
+    "check:sitemap": "node scripts/check-sitemap-404s.mjs",
+    "report:listing-quality": "node scripts/listing-quality-report.mjs",
+    "test:identity": "node tests/listing-identity.test.mjs",
+    "test:taxonomy": "node tests/taxonomy.test.mjs",
+    "test:developer-profile": "node --experimental-strip-types tests/developer-profile.test.mjs",
+    "test:project-dedupe": "node --experimental-strip-types tests/project-dedupe.test.mjs",
+    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe",
+    "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
+    "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },
   "dependencies": {
     "@next/third-parties": "16.2.10",

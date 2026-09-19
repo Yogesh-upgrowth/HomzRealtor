@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Phone, Mail } from "lucide-react";
@@ -12,6 +12,7 @@ const ExpertConsultation = () => {
   const [form, setForm] = useState({ name: "", phone: "", email: "", interest: "Interested in Buying", message: "" });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -32,6 +33,13 @@ const ExpertConsultation = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // R19-05 (2026-09-19): `loading` is React state and does not reach the
+    // button's disabled attribute until the next render, so two taps close
+    // together could both reach this handler and both POST, creating two
+    // leads. A ref updates synchronously. Mirrors the guard MI-11 added to
+    // FormComponent.tsx, which this form was left out of.
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     try {
       setLoading(true);
       const response = await fetch("/api/contact", {
@@ -40,7 +48,10 @@ const ExpertConsultation = () => {
         body: JSON.stringify({ ...form, source: "homepage-consultation" }),
       });
       const data = await response.json();
-      if (data.success) {
+      // R19-05: check the HTTP status too, not just the JSON flag -- a non-2xx
+      // response carrying a success-shaped body would otherwise read as a
+      // delivered lead. Same check FormComponent.tsx already makes.
+      if (response.ok && data.success) {
         toast.success("Thanks! Our team will call you back shortly.");
         setSubmitted(true);
       } else {
@@ -50,6 +61,7 @@ const ExpertConsultation = () => {
       toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

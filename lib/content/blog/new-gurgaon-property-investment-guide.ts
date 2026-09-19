@@ -172,7 +172,7 @@ export const newGurgaonPropertyInvestmentGuide: BlogPostV27 = {
       contentMarkdown:
         "Investors targeting the western growth corridor broadly, whether it's labelled New Gurgaon or Dwarka Expressway, are the right fit, provided they're comfortable with the same construction-timeline exposure that applies across this newer part of the city. Buyers fixated specifically on the New Gurgaon name risk narrowing their search unnecessarily, when broadening to the full sector range (both labels) surfaces meaningfully more real inventory.\n\nEnd-users specifically drawn to the \"New Gurgaon\" branding for its newer, more modern development character should weigh that against the area's somewhat lower ready-to-move share and less mature social infrastructure compared with Gurgaon's established corridors, a genuinely reasonable tradeoff for buyers who value newer construction and are comfortable with an area still filling in around them, but worth entering with clear eyes rather than marketing enthusiasm alone.\n\nFirst-time property investors specifically should weigh their own capacity to track a project through construction, quarterly RERA progress reports, site visits, a realistic buffer for possession delays, against the lower entry price this corridor offers relative to Gurgaon's established addresses. An investor who'd rather not commit that ongoing attention may be better served by a more settled corridor, even at a higher entry price, since New Gurgaon's growth-stage upside comes paired with genuine construction-timeline risk that doesn't disappear just because the corridor's broader growth story sounds compelling.",
       media: [
-        { type: "product_cta", text: "Browse live listings across Sectors 81-115", url: "https://www.homzrealtor.com/project-listing/gurgaon", variant: "banner" },
+        { type: "product_cta", text: "Browse Gurgaon projects by sector, including 81-115", url: "https://www.homzrealtor.com/project-listing/gurgaon/sectors", variant: "banner" },
       ],
     },
     {
@@ -220,8 +220,8 @@ export const newGurgaonPropertyInvestmentGuide: BlogPostV27 = {
   bottomCta: {
     kicker: "Your move",
     headline: "Explore New Gurgaon Investment Options",
-    body: "Browse HomzRealtor's live catalogue by sector to find listings across Sectors 81-115, under either corridor label.",
-    buttonText: "Browse by Sector",
+    body: "Pick a sector from HomzRealtor's live Gurgaon catalogue, the New Gurgaon range runs across Sectors 81-115, under both corridor labels.",
+    buttonText: "Browse by sector",
     url: "/project-listing/gurgaon/sectors",
   },
   qualityGates: {

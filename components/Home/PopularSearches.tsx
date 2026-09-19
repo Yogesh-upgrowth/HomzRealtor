@@ -1,24 +1,37 @@
 import Link from "next/link";
 
-// Each chip maps to real, working /project-listing filters (q/type/budget/bhk/
-// status/micromarket — see app/project-listing/page.tsx). Two of the original
-// twelve labels ("Rental Yield Properties", "Pre-Leased Retail Gurgaon")
-// described attributes with no backing field anywhere in the data model
-// (rental yield is a calculator on the project detail page, not a listing
-// attribute; lease status isn't tracked at all) — rather than link them to a
-// filter that silently returns the full unfiltered list, they're dropped
-// until that data actually exists.
+// Audit item 6 (2026-09-19): every chip here pointed at /project-listing?...
+// with a query string. That URL declares a static canonical of
+// /project-listing, which is force-dynamic and client-rendered with zero
+// project links in its server HTML -- so none of these could ever rank, and
+// the queries they name ("ready to move flats Gurgaon", "2 BHK in Sector 57")
+// are exactly the ones the site should be winning. The chips were the biggest
+// block of internal links on the homepage and all of them dead-ended.
+//
+// Every chip now points at a route that is server-rendered, self-canonical and
+// actually filtered: the six BUY_FACETS under /buy-property/gurgaon/ (see
+// components/PropertyListing/FacetedListingPage.tsx) and the real sector pages
+// under /project-listing/gurgaon/sectors/.
+//
+// Labels were rewritten to match what the destination genuinely delivers. The
+// audit specifically flagged "Studio Apartments Gurgaon" pointing at a plain
+// Apartment filter; rather than relabel a lie, chips with no honest
+// destination are gone. Three of the originals -- Golf Course Road, Sohna Road
+// and Dwarka Expressway -- describe corridors that have no hub page yet; they
+// return here once those exist, and inventing a query-string URL for them now
+// would just recreate the dead end.
 const SEARCHES = [
-  { label: "2 BHK in Sector 57", href: "/project-listing?bhk=2&q=Sector+57" },
-  { label: "3 BHK Golf Course Road", href: "/project-listing?bhk=3&micromarket=golf-course-road" },
-  { label: "Ready to Move Flats Gurgaon", href: "/project-listing?status=ready-to-move" },
-  { label: "Commercial Shops Sector 65", href: "/project-listing?type=Commercial&q=Sector+65" },
-  { label: "Plots on Sohna Road", href: "/project-listing?type=Plot&micromarket=sohna-road" },
-  { label: "Villas in Sector 92", href: "/project-listing?type=Villa&q=Sector+92" },
-  { label: "Office Space Dwarka Expressway", href: "/project-listing?type=Office+Space&micromarket=dwarka-expressway" },
-  { label: "Luxury Apartments Under 2 Cr", href: "/project-listing?type=Apartment&budget=under-2cr" },
-  { label: "New Launch Projects", href: "/project-listing?status=new-launch" },
-  { label: "Studio Apartments Gurgaon", href: "/project-listing?type=Apartment" },
+  { label: "3 BHK Flats in Gurgaon", href: "/buy-property/gurgaon/3-bhk" },
+  { label: "4 BHK Flats in Gurgaon", href: "/buy-property/gurgaon/4-bhk" },
+  { label: "Ready to Move Flats", href: "/buy-property/gurgaon/ready-to-move" },
+  { label: "Flats Under \u20b91 Crore", href: "/buy-property/gurgaon/under-1-crore" },
+  { label: "Property Under \u20b92 Crore", href: "/buy-property/gurgaon/under-2-crore" },
+  { label: "Plots for Sale in Gurgaon", href: "/buy-property/gurgaon/plots" },
+  { label: "Projects in Sector 57", href: "/project-listing/gurgaon/sectors/sector-57" },
+  { label: "Projects in Sector 65", href: "/project-listing/gurgaon/sectors/sector-65" },
+  { label: "Projects in Sector 92", href: "/project-listing/gurgaon/sectors/sector-92" },
+  { label: "Commercial Property in Gurgaon", href: "/commercial" },
+  { label: "Browse All Gurgaon Sectors", href: "/project-listing/gurgaon/sectors" },
 ];
 
 const PopularSearches = () => {

@@ -1,10 +1,10 @@
 "use client";
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useId, useMemo, useState } from "react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
@@ -18,11 +18,12 @@ import {
   slugify as toSlug,
 } from "@/lib/intelligence/normalize";
 import { deriveStatusFromText, validImages } from "@/lib/intelligence/view-model";
-import customer from "@/assets/images/customer.png";
+import customer from "@/assets/images/customer.jpg";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import { useHomzProjects } from "@/hooks/useHomzProjects";
 import { categorySegment, type RawHomzProject } from "@/lib/scraping/homzbackend";
 import LoadError from "@/components/Common/LoadError";
+import { validateKeyword } from "@/lib/search/searchModes";
 
 const useIsMobile = (breakpoint = 768) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -114,17 +115,42 @@ function ProjectListingInner() {
   const builder = searchParams.get("builder") || "";
   const hasActiveFilters = Boolean(q || type || budget || bhk || status || micromarket || builder);
 
-  const clearFilter = (key: string) => {
-    // MI-04 (2026-09-18): same rapid-update race as PropertyListingPage's
-    // setParam -- `searchParams` is a snapshot from the last render, not
-    // the live URL. window.location.search is current even when a
-    // previous router.push from this same rapid sequence hasn't been
-    // reflected in a re-render yet.
+  // Keyword box — the projects catalogue only ever received `q` from another
+  // page's link; there was no way to search it from the page itself.
+  const keywordFieldId = useId();
+  const [keyword, setKeyword] = useState(q);
+  const [keywordError, setKeywordError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setKeyword(q);
+    setKeywordError(null);
+  }, [q]);
+
+  const setParam = (key: string, value: string | null) => {
+    // MI-04 (2026-09-18): window.location.search, not `searchParams` --
+    // the latter is a snapshot from the last render, not the live URL, so
+    // two changes made in quick succession both read the pre-navigation
+    // value and the second clobbers the first.
     const params = new URLSearchParams(window.location.search);
-    params.delete(key);
+    if (value) params.set(key, value);
+    else params.delete(key);
     const query = params.toString();
     router.push(query ? `/project-listing?${query}` : "/project-listing");
   };
+
+  const submitKeyword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = keyword.trim();
+    const error = validateKeyword(trimmed);
+    if (error) {
+      setKeywordError(error);
+      return;
+    }
+    setKeywordError(null);
+    setParam("q", trimmed || null);
+  };
+
+  const clearFilter = (key: string) => setParam(key, null);
 
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
@@ -369,6 +395,52 @@ function ProjectListingInner() {
               </Link>
             </div>
           )}
+
+          {/* Keyword search — same validation as the homepage hero and the
+              listing pages (validateKeyword). */}
+          <form onSubmit={submitKeyword} noValidate className="w-full max-w-xl">
+            <div className="flex items-stretch gap-2">
+              <div
+                className={`flex flex-1 items-center gap-2.5 rounded-xl border bg-[#1a1a1d] px-4 py-2.5 transition-colors ${
+                  keywordError
+                    ? "border-[#e2564d]"
+                    : "border-white/10 focus-within:border-[#D9B268]"
+                }`}
+              >
+                <Search size={16} className="shrink-0 text-gray-500" />
+                <input
+                  id={keywordFieldId}
+                  value={keyword}
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                    setKeywordError(null);
+                  }}
+                  placeholder="Search projects by name, sector or locality"
+                  aria-label="Search projects by name, sector or locality"
+                  aria-invalid={Boolean(keywordError)}
+                  aria-describedby={keywordError ? `${keywordFieldId}-error` : undefined}
+                  autoComplete="off"
+                  className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 text-sm font-bold text-[#1c1608] transition hover:brightness-105"
+              >
+                Search
+              </button>
+            </div>
+            {keywordError && (
+              <p
+                id={`${keywordFieldId}-error`}
+                role="alert"
+                className="mt-2 flex items-center gap-1.5 text-[12.5px] font-semibold text-[#ef8079]"
+              >
+                <AlertCircle size={14} className="shrink-0" />
+                {keywordError}
+              </p>
+            )}
+          </form>
 
           {/* Sector filter — Gurgaon-only */}
           {sectorOptions.length > 0 && (

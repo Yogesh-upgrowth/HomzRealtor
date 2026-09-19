@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import ProjectIntelligenceSections from "@/components/Project/intelligence/ProjectIntelligenceSections";
 import ProjectHero from "@/components/Project/listing/ProjectHero";
 import StickyMiniHeader from "@/components/Project/listing/StickyMiniHeader";
@@ -10,7 +10,7 @@ import EnquiryRail from "@/components/Project/listing/EnquiryRail";
 import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
-import { getProjectBySlug, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { getProjectBySlug, getProjectBySlugResolved, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
@@ -78,8 +78,33 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     : project.price_text
     ? `from ${project.price_text}`
     : "with the latest pricing";
+
+  // Audit item 10 (2026-09-19): this ran to roughly 100 characters, leaving a
+  // third of the SERP snippet unused on the site's highest-intent pages. The
+  // additions below are builder, size range, possession/status and RERA state
+  // — each already shown on the page, each a fact the searcher is weighing,
+  // and each appended only when the record actually carries it, so a sparse
+  // project still gets a complete sentence rather than a padded one.
+  // truncateAtWord's 158-char default then trims on a word boundary.
+  const builderBit =
+    project.builder && project.builder !== "Unknown" ? ` by ${project.builder}` : "";
+  const sizeBit =
+    project.min_size && project.size_unit
+      ? `, ${project.min_size.toLocaleString("en-IN")}${
+          project.max_size && project.max_size > project.min_size
+            ? `-${project.max_size.toLocaleString("en-IN")}`
+            : ""
+        } ${project.size_unit}`
+      : "";
+  const statusBit = project.possession_text
+    ? ` Possession ${project.possession_text}.`
+    : project.project_status
+    ? ` ${project.project_status}.`
+    : "";
+  const reraBit = project.rera_status === "active" ? " RERA registered." : "";
   const description = truncateAtWord(
-    `${project.project_name}, ${locationLabel}: ${configBit} ${priceBit}. Enquire now with HomzRealtor.`
+    `${project.project_name}${builderBit}, ${locationLabel}: ${configBit}${sizeBit} ${priceBit}.` +
+      `${statusBit}${reraBit} Compare prices, floor plans and amenities on HomzRealtor.`
   );
 
   const keywords = [
@@ -127,22 +152,22 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
-const IntelligenceSkeleton = () => (
-  <div className="w-full max-w-7xl mx-auto px-2 my-12 space-y-4 animate-pulse">
-    <div className="h-6 w-64 rounded bg-white/10" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-24 rounded-xl bg-white/5" />
-      ))}
-    </div>
-  </div>
-);
-
 const ProjectPage = async ({ params }: PageParams) => {
   const { city, slug } = await params;
-  const project = await getProjectBySlug(city, slug).catch(() => null);
+  const resolved = await getProjectBySlugResolved(city, slug).catch(() => null);
 
-  if (!project) notFound();
+  if (!resolved) notFound();
+  const { project, canonicalSlug } = resolved;
+
+  // The feed sometimes carries one development twice ("Emaar Emerald Floors
+  // Select" and "Emaar Emrald Floors Select"). The duplicate is collapsed
+  // into one record upstream (lib/intelligence/projectDedupe.ts); the losing
+  // slug lands here and is sent to the surviving page rather than 404'd, so
+  // whatever ranking and links the duplicate had accrued consolidate instead
+  // of breaking. 308, because the merge is not temporary.
+  if (canonicalSlug !== slug) {
+    permanentRedirect(`/project-listing/${canonicalCitySlug(project.city_key)}/${canonicalSlug}`);
+  }
 
   // Fast, gap-safe view (no geo) for the immediately-rendered hero + snapshot.
   // Always resolve the view against the canonical city slug (e.g. "gurgaon",
@@ -160,6 +185,16 @@ const ProjectPage = async ({ params }: PageParams) => {
 
   // Canonical, deduped URL for structured data — matches the <link rel=canonical>.
   const pageUrl = `https://www.homzrealtor.com/project-listing/${canonicalCity}/${slug}`;
+
+  // Audit item 10 (2026-09-19): the ribbon led with a starting price and said
+  // nothing about when that price was true. This route is ISR'd for 14 days
+  // (revalidate above), so a visitor can be reading a fortnight-old figure.
+  // Prefer the feed record's own timestamp; fall back to generation time,
+  // which for an ISR page is exactly when this copy of the price was read.
+  const updatedAt = project.updated_at ? new Date(project.updated_at) : null;
+  const pricedAsOf = (
+    updatedAt && !Number.isNaN(updatedAt.getTime()) ? updatedAt : new Date()
+  ).toISOString();
 
   // Links this project back up to its sector hub page — the hub already
   // links down to its projects, but nothing on the project page itself
@@ -290,6 +325,7 @@ const ProjectPage = async ({ params }: PageParams) => {
           unitCount={view.units.length}
           rera={view.rera}
           reraStatus={view.reraStatus}
+          pricedAsOf={pricedAsOf}
         />
 
         {/* Live listing status (tracked in MongoDB) — streams in after the
@@ -299,12 +335,19 @@ const ProjectPage = async ({ params }: PageParams) => {
         </Suspense>
 
         <div className="max-w-7xl mx-auto px-2 lg:grid lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-10 mt-4">
-          <main className="min-w-0">
-            {/* Geo + AI heavy sections stream in (all cached after first load) */}
-            <Suspense fallback={<IntelligenceSkeleton />}>
-              <ProjectIntelligenceSections cityParam={canonicalCity} slug={slug} />
-            </Suspense>
-          </main>
+          {/* Audit item 10 (2026-09-19): this was wrapped in <Suspense> with a
+              skeleton fallback, so the page's actual content arrived after the
+              footer in hidden nodes and JavaScript swapped it in. This route is
+              ISR (revalidate below), so the page is rendered once and cached --
+              streaming buys nothing here and costs in-order HTML. Rendered
+              inline so the main content is where a crawler and a reader both
+              expect it, with no client-side swap.
+
+              Also was a nested <main>: app/layout.tsx already declares one, and
+              a document may only have one. Now a plain <div>. */}
+          <div className="min-w-0">
+            <ProjectIntelligenceSections cityParam={canonicalCity} slug={slug} />
+          </div>
 
           <aside className="mt-10 lg:mt-0 lg:sticky lg:top-28 lg:self-start lg:py-10">
             <EnquiryRail projectName={view.name} locationLine={view.locationLine} />

@@ -199,7 +199,7 @@ const EmiCalculator = ({ title, defaultPrice }: Props) => {
             </div>
 
             <button
-              onClick={openForm}
+              onClick={() => openForm({ kind: "price_enquiry", placement: "emi_calculator" })}
               className="mt-6 w-full rounded-lg bg-gradient-to-b from-[#FDF094] to-[#B77D2B] px-4 py-3 text-sm font-semibold text-black hover:opacity-90 transition"
             >
               Get a Home-Loan Estimate

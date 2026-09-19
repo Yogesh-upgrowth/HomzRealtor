@@ -8,6 +8,7 @@
 // invented address components.
 
 import type { PropertyView } from "@/lib/intelligence/property-view";
+import type { ListingRecord } from "@/lib/intelligence/get-listing-record";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -40,15 +41,48 @@ function safeJson(value: unknown): string {
     .join("\\u2029");
 }
 
-export default function PropertyJsonLd({ view }: { view: PropertyView }) {
+export default function PropertyJsonLd({
+  view,
+  record,
+}: {
+  view: PropertyView;
+  record?: ListingRecord;
+}) {
   const routeBase = ROUTE_BASE[view.category];
   const pageUrl = `${SITE}/${routeBase}/${view.citySlug}/${view.slug}`;
+
+  // 2026-09-19: the listing node now names HomzRealtor as the broker and
+  // carries Homz's own identifier and description. Previously it was an
+  // anonymous RealEstateListing whose description was the source portal's
+  // prose -- markup indistinguishable from the posting it was rebuilt from.
+  // `provider` is the schema.org property for the agent responsible for the
+  // listing; `identifier` is the reference a caller can quote.
+  const homzAgent = {
+    "@type": "RealEstateAgent",
+    "@id": `${SITE}/#organization`,
+    name: "HomzRealtor",
+    url: SITE,
+  };
 
   const listing: Record<string, unknown> = {
     "@type": "RealEstateListing",
     name: view.title,
     url: pageUrl,
-    ...(view.about[0] ? { description: view.about[0] } : {}),
+    provider: homzAgent,
+    ...(record?.listingId
+      ? {
+          identifier: {
+            "@type": "PropertyValue",
+            propertyID: "HomzRealtor listing ID",
+            value: record.listingId,
+          },
+        }
+      : {}),
+    ...(record?.narrative?.length
+      ? { description: record.narrative[0] }
+      : view.about[0]
+        ? { description: view.about[0] }
+        : {}),
     ...(view.images.length ? { image: view.images.slice(0, 5) } : {}),
     address: {
       "@type": "PostalAddress",
@@ -59,12 +93,44 @@ export default function PropertyJsonLd({ view }: { view: PropertyView }) {
 
   // Never an Offer with a fabricated/zero price — omit the whole block when
   // the listing itself has no confirmed price, per DEV-05's own guardrail.
-  if (view.hasPrice) {
+  //
+  // R19-06 (2026-09-19): `price` used to be view.priceText, i.e. the feed's
+  // raw display string ("70 L", "1.5 Cr", "60,000/month"). schema.org allows
+  // Text for price, but a formatted string carries no machine-readable
+  // amount, mixes the billing period into the value, and in the rental case
+  // states a monthly figure where a consumer reads a total. It now emits the
+  // parsed numeric from the same priceValue/rentMonthly pair the budget
+  // filter already trusts, with the period expressed structurally. An
+  // unparsed price means no Offer at all rather than an invented number.
+  //
+  // `availability` was also hardcoded InStock on every listing. Nothing in
+  // the feed asserts availability, and this site does not maintain per-unit
+  // inventory, so the claim was unsupported on all 113 offers the recheck
+  // sampled. Omitted: availability is an optional property, and leaving out
+  // what cannot be evidenced is what Google's structured-data policies ask
+  // for.
+  if (view.hasPrice && view.priceValueInr != null) {
     listing.offers = {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: view.priceText,
-      availability: "https://schema.org/InStock",
+      price: view.priceValueInr,
+      // Who is actually transacting. Without this the Offer reads as
+      // unattributed, which is how a republished portal listing looks.
+      offeredBy: homzAgent,
+      url: pageUrl,
+      ...(view.priceIsMonthly
+        ? {
+            // UnitPriceSpecification is how a recurring amount states its
+            // period; without it "60000" on a rental reads as a sale price.
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              priceCurrency: "INR",
+              price: view.priceValueInr,
+              unitCode: "MON",
+              billingIncrement: 1,
+            },
+          }
+        : {}),
     };
   }
 

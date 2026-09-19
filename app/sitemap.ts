@@ -13,6 +13,7 @@ import { getAllSorted } from '@/components/PropertyListing/PaginatedListingPage'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
+import { allResolved, SELLER_TERM_KEYS, LANDLORD_TERM_KEYS } from '@/lib/content/ownerPending'
 
 // Was `force-dynamic` — that recomputed every segment (full catalogue
 // fetch + JSON parse + facet filtering over tens of thousands of records)
@@ -309,6 +310,18 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     ...(pgHasInventory ? [{ url: `${BASE_URL}/pg-property`, changeFrequency: 'daily' as const, priority: 0.6 }] : []),
     // SEO audit M-08 (2026-09-08) — real standalone page, real FAQ content.
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.5 },
+
+    // The owner-side journeys. Both were noindex while their commercial terms
+    // were unpublished; the owner supplied the fee terms on 2026-09-19 and
+    // both pages now publish. The entries are gated on the same derived
+    // check the pages themselves use, so a sitemap entry can never point at a
+    // page that has gone back to noindex because a term was cleared.
+    ...(allResolved(SELLER_TERM_KEYS)
+      ? [{ url: `${BASE_URL}/sell-property-in-gurgaon`, changeFrequency: 'monthly' as const, priority: 0.7 }]
+      : []),
+    ...(allResolved(LANDLORD_TERM_KEYS)
+      ? [{ url: `${BASE_URL}/rent-out-property-in-gurgaon`, changeFrequency: 'monthly' as const, priority: 0.7 }]
+      : []),
 
     // Buyer guides — real, deliberately-maintained updatedAt already exists
     // in lib/content/buyerGuides.ts (bumped only on an actual text edit,

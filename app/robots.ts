@@ -89,7 +89,13 @@ export default function robots(): MetadataRoute.Robots {
         // render (cheap, cached, sub-millisecond check); everything else
         // 404s before either expensive project lookup runs. See that
         // route's own comment.
-        disallow: ["/api/"],
+        // Audit item 11 (2026-09-19): the private trees carried no noindex
+        // and no disallow. They now declare robots:{index:false,follow:false}
+        // in their own layouts; these entries stop crawl budget being spent
+        // reaching them at all. Both together, deliberately -- a disallowed
+        // URL's noindex tag is never read, so the meta tag is what actually
+        // de-indexes anything already in the index, and this saves the fetch.
+        disallow: ["/api/", "/account/", "/dashboard/", "/admin/"],
       },
       ...allowedAiAgents.map((userAgent) => ({
         userAgent,

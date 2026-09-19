@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ProjectListingClient from "@/components/PropertyListing/ProjectListingClient";
 import { getProjectsForCity } from "@/lib/intelligence/projects";
+import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 
 // The site's main listings hub had no page-specific metadata at all — it was
 // inheriting the root layout's generic default title/description.
@@ -38,6 +39,19 @@ const ALL_CITIES: { slug: string; name: string; cityKey: string }[] = [
   { slug: "faridabad", name: "Faridabad", cityKey: "faridabad" },
 ];
 
+// R19-07 (2026-09-19): the city chips below were the only server-rendered
+// links on this route, so the initial HTML of the site's most prominent
+// discovery page contained zero project-detail anchors — every card came from
+// ProjectListingClient after hydration. The city landing pages do server-render
+// their projects, so this was never "all project pages are invisible", but it
+// made a prominent route depend on client rendering for no reason. Rendering a
+// real first page of Gurgaon projects here, with the same SimilarProjects
+// component /project-listing/[city] already uses, puts genuine <a href> anchors
+// in the initial response. Gurgaon only: it is the one city with real
+// inventory (the other four render "being updated"), and the chips already
+// cover them.
+const HUB_PREVIEW_COUNT = 12;
+
 export default async function ProjectListingPage() {
   const cities = await Promise.all(
     ALL_CITIES.map(async (c) => {
@@ -46,9 +60,21 @@ export default async function ProjectListingPage() {
     })
   );
 
+  const gurgaonProjects = await getProjectsForCity("ggn").catch(() => []);
+  const gurgaonWithImages = gurgaonProjects.filter((p) => p.images.length > 0);
+
   return (
     <>
       <ProjectListingClient />
+      {gurgaonWithImages.length > 0 && (
+        <SimilarProjects
+          title="Gurgaon"
+          projects={gurgaonWithImages.slice(0, HUB_PREVIEW_COUNT)}
+          heading="Featured Projects in Gurgaon"
+          viewAllHref="/project-listing/gurgaon"
+          viewAllLabel={`View all ${gurgaonWithImages.length} →`}
+        />
+      )}
       <section className="w-full bg-[#0B0B0C] py-12">
         <div className="w-full max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold text-white mb-4">Browse Projects by City</h2>

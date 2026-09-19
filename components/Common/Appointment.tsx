@@ -51,7 +51,7 @@ const AppointmentCard: React.FC<AppointmentProps> = ({
         <p className="text-base md:text-lg mb-8 opacity-90">{para}</p>
         {btnTxt && (
           <button
-            onClick={openForm}
+            onClick={() => openForm({ kind: "callback", placement: "appointment_card" })}
             className="bg-white text-gray-800 font-semibold px-6 py-3 rounded-md hover:bg-gray-200 transition cursor-pointer"
           >
             {btnTxt.toUpperCase()}

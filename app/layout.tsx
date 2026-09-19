@@ -10,10 +10,9 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import ConsentBanner from "@/components/Analytics/ConsentBanner";
-import ogImage from "@/assets/images/herobg.png";
+import ogImage from "@/assets/images/herobg.jpg";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
-import { GoogleTagManager } from "@next/third-parties/google";
 
 const FOOTER_CITY_KEY = "ggn";
 
@@ -91,6 +90,11 @@ const organizationSchema = {
       "@type": ["RealEstateAgent", "Organization"],
       "@id": "https://www.homzrealtor.com/#organization",
       name: "HomzRealtor",
+      // 2026-09-19: legalName was in COMPANY_INFO but nothing emitted it, so
+      // the registered operator stayed invisible to Google despite being on
+      // file. Conditional, so it disappears again rather than rendering empty
+      // if the field is ever cleared.
+      ...(COMPANY_INFO.legalName ? { legalName: COMPANY_INFO.legalName } : {}),
       url: "https://www.homzrealtor.com",
       logo: "https://www.homzrealtor.com/android-icon-192x192.png",
       description:
@@ -103,7 +107,64 @@ const organizationSchema = {
       // render live but empty "being updated" pages (see
       // app/project-listing/[city]/page.tsx) and were never confirmed as
       // real service areas.
-      areaServed: ["Gurgaon"],
+      // 2026-09-19: an explicit sector list is a stronger and more honest
+      // coverage signal than the bare city name, and is what a map-pack
+      // listing is matched against. Falls back to the city until
+      // COMPANY_INFO.serviceAreas is filled.
+      areaServed:
+        COMPANY_INFO.serviceAreas.length > 0
+          ? COMPANY_INFO.serviceAreas.map((a) => ({ "@type": "Place", name: a }))
+          : ["Gurgaon"],
+      // Machine-readable hours. Google reconciles these against the Google
+      // Business Profile; a mismatch is worse than an omission, so this only
+      // appears once COMPANY_INFO.openingHours is set to the same hours the
+      // profile publishes.
+      ...(COMPANY_INFO.openingHours
+        ? {
+            openingHoursSpecification: {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: COMPANY_INFO.openingHours.days,
+              opens: COMPANY_INFO.openingHours.opens,
+              closes: COMPANY_INFO.openingHours.closes,
+            },
+          }
+        : {}),
+      // geo only alongside a real postal address -- a coordinate with no
+      // address is not a location, and Google treats the pair as one claim.
+      ...(COMPANY_INFO.geo && COMPANY_INFO.officeAddress
+        ? {
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: COMPANY_INFO.geo.lat,
+              longitude: COMPANY_INFO.geo.lng,
+            },
+          }
+        : {}),
+      // hasMap points at the claimed Google Business Profile, which is the
+      // link that ties this entity to the map pack.
+      ...(COMPANY_INFO.social.googleBusiness
+        ? { hasMap: COMPANY_INFO.social.googleBusiness }
+        : {}),
+      // Named people. A YMYL property site with no human attached is a trust
+      // gap; these are real advisors or the key is absent.
+      ...(COMPANY_INFO.team.length > 0
+        ? {
+            employee: COMPANY_INFO.team.map((m) => ({
+              "@type": "Person",
+              name: m.name,
+              jobTitle: m.role,
+              ...(m.reraId
+                ? {
+                    identifier: {
+                      "@type": "PropertyValue",
+                      propertyID: "HARERA agent registration",
+                      value: m.reraId,
+                    },
+                  }
+                : {}),
+            })),
+          }
+        : {}),
       // Phone/email are already public elsewhere on the site (the WhatsApp
       // CTA and the homepage contact section) — no invented contact details.
       // address/identifier (RERA)/sameAs (social) come from the same
@@ -117,7 +178,23 @@ const organizationSchema = {
         areaServed: "IN",
         availableLanguage: ["en", "hi"],
       },
-      ...(COMPANY_INFO.officeAddress
+      // 2026-09-19: the office address is now real, and PostalAddress carries
+      // its parts separately rather than one string in streetAddress -- a
+      // locality and a postal code are what a map-pack match is actually
+      // made on. This must stay identical to what the Google Business
+      // Profile publishes.
+      ...(COMPANY_INFO.postalAddress
+        ? {
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: COMPANY_INFO.postalAddress.street,
+              addressLocality: `${COMPANY_INFO.postalAddress.locality}, ${COMPANY_INFO.postalAddress.city}`,
+              addressRegion: COMPANY_INFO.postalAddress.state,
+              postalCode: COMPANY_INFO.postalAddress.postalCode,
+              addressCountry: COMPANY_INFO.country,
+            },
+          }
+        : COMPANY_INFO.officeAddress
         ? {
             address: {
               "@type": "PostalAddress",
@@ -128,15 +205,42 @@ const organizationSchema = {
             },
           }
         : {}),
-      ...(COMPANY_INFO.hararaAgentNumber
-        ? {
-            identifier: {
-              "@type": "PropertyValue",
-              propertyID: "HARERA",
-              value: COMPANY_INFO.hararaAgentNumber,
-            },
-          }
-        : {}),
+      // HARERA agent registration. 2026-09-19: the number is now real, and the
+      // holder is named alongside it because the registration belongs to an
+      // individual (Sunita Singhvi) rather than to the entity -- see
+      // lib/seo/companyInfo.ts. A checker who looks the number up on the
+      // HARERA portal sees that name, so the markup states it rather than
+      // letting the number imply the company is the registered agent.
+      // 2026-09-19: GST joins HARERA here, so `identifier` became an array.
+      // Both are held by the proprietor rather than by a company, and both
+      // name the holder for the same reason: a checker who looks either
+      // number up sees "Sunita Singhvi" on the portal, and markup that let
+      // the number imply a company registration would fail the very check it
+      // invites.
+      ...(() => {
+        const ids = [
+          COMPANY_INFO.hararaAgentNumber && {
+            "@type": "PropertyValue",
+            propertyID: "HARERA real estate agent registration",
+            value: COMPANY_INFO.hararaAgentNumber,
+            ...(COMPANY_INFO.hareraHolder
+              ? { description: `Registered to ${COMPANY_INFO.hareraHolder}` }
+              : {}),
+            ...(COMPANY_INFO.hareraValidUntil
+              ? { validThrough: COMPANY_INFO.hareraValidUntil }
+              : {}),
+          },
+          COMPANY_INFO.gstNumber && {
+            "@type": "PropertyValue",
+            propertyID: "GSTIN",
+            value: COMPANY_INFO.gstNumber,
+            ...(COMPANY_INFO.gstHolder
+              ? { description: `Registered to ${COMPANY_INFO.gstHolder}` }
+              : {}),
+          },
+        ].filter(Boolean);
+        return ids.length > 0 ? { identifier: ids } : {};
+      })(),
       ...(Object.values(COMPANY_INFO.social).some(Boolean)
         ? { sameAs: Object.values(COMPANY_INFO.social).filter(Boolean) }
         : {}),
@@ -191,11 +295,32 @@ export default async function RootLayout({
     .slice(0, 6)
     .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
 
+  // R19-03 (2026-09-19): <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
+  // used to render as the first child of <html>, unconditionally and outside
+  // every consent check. Two problems, both confirmed:
+  //
+  //   1. Consent. lib/analytics/gtag.ts deliberately refuses to load gtag.js
+  //      until getConsent() === "granted", and the banner promises analytics
+  //      is off until then. GTM loaded from that line regardless, so container
+  //      GTM-KJJ2SSMT and its GA4 tags fired on first paint for every visitor
+  //      — the promise was already broken before the gate ever ran.
+  //   2. Duplication. The published container carries two Google-tag
+  //      configuration entries for G-5C24236F2Z, and lib/analytics/gtag.ts
+  //      configures that same property directly. That is the duplicate
+  //      configuration the recheck found, and it double-counts page views.
+  //
+  // One delivery path, and it is the in-repo direct gtag: the consent gate,
+  // event schema and validation already exist there and stay fixable in code,
+  // whereas the container can only be changed from the GTM account. The
+  // non-null assertion on a possibly-unset env var was its own latent bug (an
+  // undefined gtmId yields a broken script URL).
+  //
+  // OWNER ACTION, not doable from this repo: pause or delete the two GA4
+  // configuration tags in container GTM-KJJ2SSMT.
   return (
     // SEO audit M-04 (2026-09-08): was "en", mismatched against the
     // Organization/WebSite schema's own inLanguage: "en-IN" a few lines up.
     <html lang="en-IN">
-      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
       <body
         className="antialiased"
       >

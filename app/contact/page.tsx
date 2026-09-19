@@ -87,10 +87,20 @@ const ContactPage = () => {
           one of our advisors will get back to you.
         </p>
 
+        {/* 2026-09-19: this read "HARERA Registered Channel Partner", which is
+            wrong twice over. The certificate grants a *real estate agent*
+            registration under section 9(3)(a), not a channel-partner status,
+            and it is granted to an individual rather than to the company.
+            Anyone checking the number on the HARERA portal sees that name, so
+            the badge states it. Overclaiming a regulatory status is the one
+            kind of trust signal that actively backfires. */}
         {COMPANY_INFO.hararaAgentNumber && (
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9B268]/30 bg-[#D9B268]/10 px-4 py-2 text-sm font-medium text-[#D9B268]">
+          <div className="mt-6 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-[#D9B268]/30 bg-[#D9B268]/10 px-4 py-2 text-sm font-medium text-[#D9B268]">
             <ShieldCheck size={16} />
-            HARERA Registered Channel Partner: {COMPANY_INFO.hararaAgentNumber}
+            <span>
+              HARERA registered real estate agent: {COMPANY_INFO.hararaAgentNumber}
+              {COMPANY_INFO.hareraHolder ? ` — registered to ${COMPANY_INFO.hareraHolder}` : ""}
+            </span>
           </div>
         )}
 

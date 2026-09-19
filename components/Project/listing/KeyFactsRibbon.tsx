@@ -8,6 +8,11 @@ type Props = {
   unitCount: number;
   rera?: string | null;
   reraStatus?: string | null;
+  /** ISO date the price shown was last read from our catalogue. Audit item
+   *  10 (2026-09-19): the ribbon led with a price and said nothing about when
+   *  it was true. This route is ISR'd for 14 days, so a visitor could be
+   *  reading a fortnight-old figure presented as current. */
+  pricedAsOf?: string | null;
 };
 
 // Floating glass "key facts" ribbon overlapping the hero's bottom edge. Only
@@ -29,6 +34,7 @@ const KeyFactsRibbon = ({
   unitCount,
   rera,
   reraStatus,
+  pricedAsOf,
 }: Props) => {
   const items = [
     { label: "Starting Price", value: priceText, note: priceSubtext },
@@ -70,6 +76,20 @@ const KeyFactsRibbon = ({
             </div>
           ))}
         </div>
+        {pricedAsOf && (
+          <p className="mt-2.5 px-1 text-[12px] leading-relaxed text-gray-500">
+            Prices as listed on{" "}
+            <time dateTime={pricedAsOf}>
+              {new Date(pricedAsOf).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </time>
+            . These are asking prices, not transacted prices, and they change. Confirm the current
+            price with an advisor before acting on it.
+          </p>
+        )}
       </div>
     </section>
   );

@@ -1,0 +1,31 @@
+const NOISE=new Set(["the","a","an","apartment","apartments","flat","flats","residency","residences","residence","society","project","tower","towers","phase","sector","sec","gurgaon","gurugram","haryana","india","sale","rent","for","in","at","bhk","rk","sq","ft","sqft","yard","yards","unit","units","property","house","floor","builder","independent"]);
+const norm=v=>String(v??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const sig=v=>norm(v).replace(/\bsec(?:tor)?[\s.-]*[0-9]{1,3}\s*[a-d]?\b/gi," ").split(" ").filter(t=>t&&!NOISE.has(t)&&!/^\d+$/.test(t));
+const sectorNum=t=>{const m=String(t??"").match(/\bsec(?:tor)?[\s.-]*([0-9]{1,3}\s*[a-d]?)\b/i);return m?m[1].replace(/\s+/g,"").toLowerCase():null;};
+function fp(p){
+  const society=sig((p.specifications||[]).find(s=>/project|society|building/i.test(s?.heading||""))?.value||p.title||"").slice(0,4);
+  const sector=sectorNum(p.location)||sectorNum(p.title);
+  const bedrooms=p.bedrooms!=null?String(p.bedrooms):"";
+  const type=norm(p.propertyType);
+  const area=typeof p.areaValue==="number"&&p.areaValue>0?String(Math.round(p.areaValue/25)*25):"";
+  if(!sector && society.length<2) return null;
+  if(!bedrooms && !area) return null;
+  if(!sector && !area) return null;
+  return [society.join("-"),sector||"",type,bedrooms,area].join("|");
+}
+let fail=0;
+const t=(l,a,b)=>{const ok=String(a)===String(b);if(!ok)fail++;console.log((ok?"PASS":"FAIL").padEnd(5)+l+"  => "+JSON.stringify(a));};
+const a={title:"3 BHK Flat for Sale in DLF The Ultima, Sector 81 Gurgaon",location:"Sector 81, Gurgaon",bedrooms:3,propertyType:"apartment",areaValue:1704};
+const b={title:"3 BHK Apartment in DLF Ultima Apartments, Sec 81",location:"Sec 81 Gurgaon",bedrooms:3,propertyType:"apartment",areaValue:1700};
+t("same unit, 2 brokers -> same fp", fp(a)===fp(b), true);
+t("  fp value", fp(a), "dlf-ultima|81|apartment|3|1700");
+t("different area band -> different fp", fp(a)!==fp({...a,areaValue:1504}), true);
+t("different BHK -> different fp", fp(a)!==fp({...a,bedrooms:4}), true);
+t("generic title, no sector -> null", fp({title:"Nice flat",bedrooms:2}), null);
+t("one-word society + sector, no area -> groups on sector+bhk", fp({title:"Nice flat",location:"Sector 65",bedrooms:2}), "nice|65||2|");
+t("society only, no sector, no area -> null", fp({title:"DLF Ultima Residences",bedrooms:3}), null);
+t("society only + area, no sector -> groups", fp({title:"DLF Ultima Residences",bedrooms:3,areaValue:1700})!==null, true);
+t("plot: sector + area, no bhk -> groups", fp({title:"Plot in Sector 65",location:"Sector 65",areaValue:1800})!==null, true);
+t("plot: sector, no area, no bhk -> null", fp({title:"Plot in Sector 65",location:"Sector 65"}), null);
+console.log(fail===0?"\nALL PASS":`\n${fail} FAILED`);
+process.exit(fail?1:0);

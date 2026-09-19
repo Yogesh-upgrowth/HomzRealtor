@@ -1,8 +1,9 @@
 import PromoBanner from "@/components/Common/PromoBanner";
 import ContentSection from "@/components/About/ContentSection";
 import AboutSections from "@/components/About/AboutSections";
+import Credentials from "@/components/About/Credentials";
 import aboutPageData from "@/context/utils/AboutPageData";
-import customer from "@/assets/images/customer.png";
+import customer from "@/assets/images/customer.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {
@@ -73,6 +74,11 @@ const About = () => {
 
       {/* EXPANDED ABOUT CONTENT */}
       <AboutSections />
+
+      {/* The checkable facts: registrations, office, coverage, fees. Audit
+          item, trust and local -- the site described itself at length and
+          never said who the operator is or what it charges. */}
+      <Credentials />
 
       {/* SEO audit 2026-09-07 P1: the testimonials previously here were
           word-for-word identical across all three named "clients" with

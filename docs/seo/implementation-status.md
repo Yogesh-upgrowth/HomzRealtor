@@ -1,5 +1,72 @@
 # Homz SEO Implementation — Status
 
+## R19 recheck (2026-09-19)
+
+Work against `HOMZ-SEO-AND-MICRO-INTERACTIONS-RECHECK-2026-09-19.md`.
+
+**Read this first: part of that recheck was already stale when it was
+written.** Commits `ec7906c`, `c13b29d` and `f56b56a` landed 2026-09-18 21:09
+IST; the recheck's technical capture ran 2026-09-19 ~08:23 IST. The homepage
+market-stat claims it flags (18.4% appreciation, ₹9,850/sq.ft, +62% graphic)
+were already removed, `Organization.areaServed` was already narrowed to
+Gurgaon, and the mobile-search focus lifecycle had already shipped. Confirm
+what is actually deployed before acting on any R19 item.
+
+| Ticket | Status |
+|---|---|
+| R19-01 Filters/results | Done — pending-merge ref, labelled selects, result count, second grid gated |
+| R19-02 Dialogs | Done — shared `useDialogLifecycle`, AuthModal, closed drawer, scroll-lock clobber |
+| R19-03 GTM/consent | Code side done — GTM removed from layout, CSP origins added. **Owner: pause GA4 tags in GTM-KJJ2SSMT** |
+| R19-04 Property data | Done — area sanitizer, cityAnchor coords, POI guard, payment plans, verification badges |
+| R19-05 Forms | Done — `response.ok` + dup guards on all forms, lead intent, terms/privacy links |
+| R19-06 Schema/metadata | Done — numeric offers, ItemList honesty, absolute images, areaServed |
+| R19-07 Discovery/pagination | Done — `/page/1` 308s, `/project-listing` SSR |
+| R19-08 Seller/landlord | Built, noindex — **blocked on owner terms** (see `lib/content/ownerPending.ts`) |
+| R19-09 Identity/claims | Owner input — the code-side claims were already removed in `ec7906c` |
+| R19-10 Content | Done — price-trends median claim and band denominators corrected; New Gurgaon and plots CTAs repointed |
+| R19-11 Performance/images | Not started — needs real device/lab measurement, not a code change |
+| R19-12 Micro-interactions | Done — Save failure, Share copy fallback, calculator, slider labels |
+
+### Not verified in this environment
+
+The network policy blocked both `www.homzrealtor.com` and the upstream feed
+`homz-scrape.vercel.app`, and no browser was available. So:
+
+- Anything data-dependent (project cards, listing cards, populated JSON-LD,
+  the `/project-listing` SSR block, ItemList suppression) was **not** rendered
+  here. Verify against a deployment.
+- The filter race fix is backed by a logic simulation, not a browser test.
+- The dialog focus lifecycle and the closed-drawer tab order need a manual
+  keyboard pass.
+
+What *was* verified against a local prod build and server: `/page/1` 308s on
+all five families, Buy/Rent in the served nav, no `googletagmanager` in the
+HTML, both service pages 200 + `noindex,follow` with no internal notes leaked,
+and the Offer shape proved offline (numeric price, MON period on rentals, no
+`availability`, no Offer when unpriced).
+
+### Index strategy — evidence first, no changes made
+
+~34K of ~38.8K indexable URLs are listing details rebuilt from a third-party
+feed. No robots or noindex rule was changed. `npm run report:listing-quality`
+produces the site-side evidence (per-listing flags: no price, no numeric
+price, no image, duplicate title, contaminated area) as CSV + JSON.
+
+**Needed from the owner:** GSC Performance export (query + page, India, 12
+months), Page indexing report, and per-segment Sitemaps indexed counts. A
+flagged URL that already earns impressions is a reason to improve the record,
+not to noindex it.
+
+### Also flagged, not in the recheck
+
+- `lib/intelligence/content.ts` generates project copy via an LLM across
+  ~2,098 Gurgaon projects, on top of ~34K re-published feed listings. That
+  combination is what Google's scaled-content-abuse policy targets. Not a
+  code fix; belongs in the index-strategy decision above.
+- `/buy-property` and `/rent-property` had **zero** sitewide internal links
+  (removed in `8a540c4`). Restored 2026-09-19 with user confirmation.
+
+
 Tracks work against `HOMZ-CLAUDE-CODE-HANDOFF-2026-09-13.md`. One row per ticket; updated as each is done, not written once at the end.
 
 ## DEV-05 — Intent-aware metadata and truthful schema (2026-09-16)

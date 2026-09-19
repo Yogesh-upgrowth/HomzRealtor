@@ -79,8 +79,14 @@ const StatusStrip = async ({ cityKey, slug }: Props) => {
             </span>
           </span>
 
+          {/* R19-04: was "Verified {time}". This timestamp only records when
+              the listing's availability was last re-checked against the feed
+              — it verifies nothing about the project, its RERA registration
+              or its facts. Sitting next to a "RERA Unverified" badge, the
+              bare word "Verified" read as a contradictory trust claim, so the
+              label now names the field it actually covers. */}
           <span className="text-[12px] text-gray-500">
-            Verified {timeAgo(status.last_checked_at)}
+            Availability checked {timeAgo(status.last_checked_at)}
           </span>
 
           {!status.listed && (

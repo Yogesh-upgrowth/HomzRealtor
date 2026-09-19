@@ -1,4 +1,4 @@
-import ogImage from "@/assets/images/herobg.png";
+import ogImage from "@/assets/images/herobg.jpg";
 
 // Branded fallback social-share image for templates with no natural
 // per-entity photo (listing index, city/sector/developer hubs, static

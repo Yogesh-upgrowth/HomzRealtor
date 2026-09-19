@@ -50,9 +50,9 @@ const PrivacyPolicyPage = () => {
 
         <Section title="3. Sharing with developers and partners">
           <p>
-            As a channel partner, we may share your enquiry details with the specific
-            developer(s) whose project you enquired about, so they or their sales team can
-            assist you directly. We do not share your information with unrelated third parties
+            Where you enquire about a specific project or property, we may share your
+            enquiry details with the developer, owner or their appointed sales team, so
+            they can assist you directly. We do not share your information with unrelated third parties
             for marketing purposes.
           </p>
         </Section>

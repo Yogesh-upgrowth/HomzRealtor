@@ -1,81 +1,67 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Building2, IndianRupee, BedDouble, Search, X } from "lucide-react";
-
-const TABS = ["Buy", "Rent", "Commercial", "Plots"];
+import {
+  MapPin,
+  Building2,
+  IndianRupee,
+  BedDouble,
+  CalendarClock,
+  Search,
+  X,
+  AlertCircle,
+} from "lucide-react";
+import {
+  EMPTY_SEARCH_VALUES,
+  FIELD_LABEL,
+  FIELD_PARAM,
+  SEARCH_MODES,
+  buildSearchUrl,
+  hasErrors,
+  optionsFor,
+  validateSearch,
+  valuesForMode,
+  type SearchErrors,
+  type SearchFieldId,
+  type SearchValues,
+} from "@/lib/search/searchModes";
 
 const TRENDING = [
-  { label: "Sector 65", href: "/project-listing?q=Sector+65" },
-  { label: "Golf Course Road", href: "/project-listing?q=Golf+Course+Road" },
-  { label: "Ready to move", href: "/project-listing?status=ready-to-move" },
-  { label: "Commercial spaces", href: "/project-listing?type=Commercial" },
-  { label: "Under ₹1 Cr", href: "/project-listing?budget=under-1cr" },
+  { label: "Sector 65", href: "/buy-property?q=Sector+65" },
+  { label: "Golf Course Road", href: "/buy-property?q=Golf+Course+Road" },
+  // These two have dedicated, indexable landing pages (BUY_FACETS in
+  // components/PropertyListing/FacetedListingPage.tsx) — better destinations
+  // than the equivalent filtered query string, which canonicalises away.
+  { label: "Ready to move", href: "/buy-property/gurgaon/ready-to-move" },
+  { label: "Commercial spaces", href: "/commercial" },
+  { label: "Under ₹1 Cr", href: "/buy-property/gurgaon/under-1-crore" },
 ];
 
-const PROPERTY_TYPES = ["Any Type", "Apartment", "Villa", "Plot", "Office Space", "Retail"];
-
-// Sale/Commercial listings are priced in crores (priceValue); Rent listings
-// are priced in monthly rupees (rentMonthly, ~6k-8.3L/month in the live feed).
-// These used to share one crore-scale dropdown regardless of tab, so every
-// budget-filtered Rent search silently returned zero results — a value like
-// ₹40,000/month can never satisfy "min: 2,00,00,000". Key values here must
-// match PropertyListingPage.tsx's BUDGET_RANGES_SALE/BUDGET_RANGES_RENT.
-const BUDGETS_SALE = [
-  { label: "Any Budget", value: "" },
-  { label: "Under ₹50 Lakh", value: "under-50l" },
-  { label: "₹50L – ₹1 Cr", value: "50l-1cr" },
-  { label: "₹1 Cr – ₹2 Cr", value: "1cr-2cr" },
-  { label: "Above ₹2 Cr", value: "above-2cr" },
-];
-const BUDGETS_RENT = [
-  { label: "Any Budget", value: "" },
-  { label: "Under ₹25k/mo", value: "under-25k" },
-  { label: "₹25k – ₹50k/mo", value: "25k-50k" },
-  { label: "₹50k – ₹1L/mo", value: "50k-1l" },
-  { label: "₹1L – ₹3L/mo", value: "1l-3l" },
-  { label: "Above ₹3L/mo", value: "above-3l" },
-];
-const BHKS = ["Any BHK", "1 BHK", "2 BHK", "3 BHK", "4+ BHK"];
-
-// Each tab searches a genuinely different dataset — individual resale/CGHS
-// listings (e.g. a 2 BHK flat in a Sector 56 society) live in the Sale
-// Properties feed behind /buy-property, NOT the Projects feed behind
-// /project-listing. Every tab used to route to /project-listing regardless
-// of selection, so real inventory in the other three feeds was completely
-// unreachable from this search panel. "Plots" has no listing feed of its
-// own yet (/plots-and-lands is a placeholder), so it just navigates there.
-const TAB_ROUTE: Record<string, string> = {
-  Buy: "/buy-property",
-  Rent: "/rent-property",
-  Commercial: "/commercial",
-  Plots: "/plots-and-lands",
-};
-
-// /buy-property, /rent-property and /commercial (PropertyListingPage.tsx)
-// filter on the backend's raw propertyType key, not this panel's display
-// label — passing "Apartment" straight through would never match anything.
-const PROPERTY_TYPE_KEY: Record<string, string> = {
-  Apartment: "apartment",
-  Villa: "villa",
-  Plot: "plot",
-  "Office Space": "office",
-  Retail: "retail_shop",
+const FIELD_ICON: Record<SearchFieldId, typeof Building2> = {
+  propertyType: Building2,
+  budget: IndianRupee,
+  bedrooms: BedDouble,
+  possession: CalendarClock,
 };
 
 const QuickSearchPanel = () => {
   const router = useRouter();
+  const errorId = useId();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
-  const [tab, setTab] = useState("Buy");
-  const [location, setLocation] = useState("");
-  const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
-  const [budget, setBudget] = useState("");
-  const [bhk, setBhk] = useState(BHKS[0]);
-  const budgets = tab === "Rent" ? BUDGETS_RENT : BUDGETS_SALE;
+  const [modeId, setModeId] = useState(SEARCH_MODES[0].id);
+  const [values, setValues] = useState<SearchValues>(EMPTY_SEARCH_VALUES);
+  // Errors only appear after a submit attempt — flagging an untouched panel
+  // red on first paint would be noise, not feedback.
+  const [errors, setErrors] = useState<SearchErrors>({});
+
+  const mode = useMemo(
+    () => SEARCH_MODES.find((m) => m.id === modeId) || SEARCH_MODES[0],
+    [modeId]
+  );
 
   // MI-03 (2026-09-18): this sheet already had Escape and scroll-lock --
   // the missing piece the handoff calls out is the rest of the focus
@@ -147,36 +133,33 @@ const QuickSearchPanel = () => {
     };
   }, [mobileOpen]);
 
-  // The two budget scales use disjoint value sets (e.g. "above-2cr" vs
-  // "above-3l") — switching tabs without resetting could carry a crore-scale
-  // value into a Rent search (or vice versa), silently matching nothing.
-  const handleTabChange = (nextTab: string) => {
-    setTab(nextTab);
-    setBudget("");
+  // Each tab searches a different feed with a different field set, so the
+  // carried-over values are narrowed to what the new tab can actually
+  // express (valuesForMode) instead of being silently sent as-is.
+  const handleTabChange = (nextModeId: string) => {
+    const nextMode = SEARCH_MODES.find((m) => m.id === nextModeId) || SEARCH_MODES[0];
+    setModeId(nextModeId);
+    setValues((current) => valuesForMode(nextMode, current));
+    setErrors({});
+  };
+
+  const setValue = (key: keyof SearchValues, value: string) => {
+    setValues((current) => ({ ...current, [key]: value }));
+    // Any edit is an attempt to fix the problem — clear the complaint rather
+    // than leaving a stale red field while the user types.
+    setErrors({});
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setMobileOpen(false);
-    const base = TAB_ROUTE[tab] || "/project-listing";
-
-    // The Plots page is a placeholder with no filters to apply yet.
-    if (tab === "Plots") {
-      router.push(base);
+    const nextErrors = validateSearch(mode, values);
+    if (hasErrors(nextErrors)) {
+      setErrors(nextErrors);
       return;
     }
-
-    const params = new URLSearchParams();
-    if (location.trim()) params.set("q", location.trim());
-    if (propertyType !== "Any Type") {
-      const key = PROPERTY_TYPE_KEY[propertyType];
-      if (key) params.set("type", key);
-    }
-    if (budget) params.set("budget", budget);
-    // PropertyListingPage.tsx's filter param is "bedrooms", not "bhk".
-    if (bhk !== "Any BHK") params.set("bedrooms", bhk.replace(" BHK", ""));
-    const query = params.toString();
-    router.push(query ? `${base}?${query}` : base);
+    setErrors({});
+    setMobileOpen(false);
+    router.push(buildSearchUrl(mode, values));
   };
 
   // MI-01 (2026-09-18): the inner input/select in every field below has
@@ -186,14 +169,22 @@ const QuickSearchPanel = () => {
   // never had outline-none, which is why they alone showed a native ring
   // in the original audit. focus-within on the shared wrapper standardizes
   // real focus feedback across all four fields at once.
-  const fieldCls =
-    "flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1d] px-4 h-[50px] md:h-[52px] text-[14px] text-white transition-colors focus-within:border-[#D9B268] focus-within:ring-2 focus-within:ring-[#D9B268]/30";
+  const fieldCls = (invalid = false) =>
+    `flex items-center gap-2.5 rounded-xl border bg-[#1a1a1d] px-4 h-[50px] md:h-[52px] text-[14px] text-white transition-colors focus-within:ring-2 ${
+      invalid
+        ? "border-[#e2564d] focus-within:border-[#e2564d] focus-within:ring-[#e2564d]/30"
+        : "border-white/10 focus-within:border-[#D9B268] focus-within:ring-[#D9B268]/30"
+    }`;
 
   // Custom corner-arrow chevron for `appearance-none` selects — same shape as
   // the reference's `.select-wrap::after` (and the mobile CTA's own chevron):
   // an 8x8px rotated corner, not a lucide icon.
   const arrowCls =
     "h-2 w-2 shrink-0 rotate-45 border-b-[1.5px] border-r-[1.5px] border-[#8a8986]";
+
+  // The grid has 5 columns on desktop, 2 of which the location field spans —
+  // with 3 selects it fills exactly, with 2 (Plots) the row stays balanced.
+  const locationSpan = mode.fields.length >= 3 ? "lg:col-span-2" : "lg:col-span-3";
 
   const renderSearchControls = (showMobileHeader: boolean) => (
     <>
@@ -226,93 +217,91 @@ const QuickSearchPanel = () => {
           gives it real selected-state semantics without claiming the fuller
           (and here unnecessary) tab/tabpanel roles the doc warns against
           adding incompletely. */}
-      <div role="group" aria-label="Search mode" className="mb-5 grid grid-cols-4 gap-1.5 md:mb-4 md:flex md:flex-wrap md:gap-2">
-        {TABS.map((t) => (
+      <div role="group" aria-label="Search mode" className="mb-3 grid grid-cols-4 gap-1.5 md:flex md:flex-wrap md:gap-2">
+        {SEARCH_MODES.map((m) => (
           <button
-            key={t}
+            key={m.id}
             type="button"
-            onClick={() => handleTabChange(t)}
-            aria-pressed={tab === t}
+            onClick={() => handleTabChange(m.id)}
+            aria-pressed={mode.id === m.id}
+            data-testid={`button-search-mode-${m.id}`}
             className={`min-h-11 rounded-full px-2 py-2 text-[13px] font-bold transition md:min-h-0 md:px-5 md:py-2.5 md:text-[13.5px] ${
-              tab === t
+              mode.id === m.id
                 ? "bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] text-[#1c1608]"
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            {t}
+            {m.label}
           </button>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
-        <label className={`${fieldCls} lg:col-span-2`}>
+      {/* Says in plain words what the selected tab searches, so a changing
+          field set reads as intentional rather than as a glitch. */}
+      <p className="mb-4 text-[12px] leading-snug text-gray-500 md:text-[12.5px]" aria-live="polite">
+        {mode.blurb}
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        aria-describedby={errors.form ? `${errorId}-form` : undefined}
+        className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5"
+      >
+        <label className={`${fieldCls(Boolean(errors.q))} ${locationSpan}`}>
           <MapPin size={17} className="shrink-0 text-gray-500" />
           <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location or Sector"
-            aria-label="Location or Sector"
+            value={values.q}
+            onChange={(e) => setValue("q", e.target.value)}
+            placeholder={mode.locationPlaceholder}
+            aria-label={mode.locationLabel}
+            aria-invalid={Boolean(errors.q)}
+            aria-describedby={errors.q ? `${errorId}-q` : undefined}
             autoComplete="off"
             className="w-full bg-transparent text-white placeholder:text-gray-500 outline-none"
           />
         </label>
 
-        <label className={fieldCls}>
-          <Building2 size={17} className="shrink-0 text-gray-500" />
-          <select
-            value={propertyType}
-            onChange={(e) => setPropertyType(e.target.value)}
-            aria-label="Property type"
-            className="w-full appearance-none bg-transparent text-white outline-none"
-          >
-            {PROPERTY_TYPES.map((t) => (
-              <option key={t} className="bg-[#1a1a1d]">
-                {t}
-              </option>
-            ))}
-          </select>
-          <span aria-hidden="true" className={arrowCls} />
-        </label>
+        {mode.fields.map((field) => {
+          const Icon = FIELD_ICON[field];
+          const param = FIELD_PARAM[field];
+          return (
+            <label key={field} className={fieldCls()}>
+              <Icon size={17} className="shrink-0 text-gray-500" />
+              <select
+                value={values[param]}
+                onChange={(e) => setValue(param, e.target.value)}
+                aria-label={FIELD_LABEL[field]}
+                className="w-full appearance-none bg-transparent text-white outline-none"
+              >
+                {optionsFor(mode, field).map((o) => (
+                  <option key={o.value} value={o.value} className="bg-[#1a1a1d]">
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <span aria-hidden="true" className={arrowCls} />
+            </label>
+          );
+        })}
 
-        <label className={fieldCls}>
-          <IndianRupee size={16} className="shrink-0 text-gray-500" />
-          <select
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            aria-label="Budget"
-            className="w-full appearance-none bg-transparent text-white outline-none"
+        {(errors.q || errors.form) && (
+          <p
+            id={errors.q ? `${errorId}-q` : `${errorId}-form`}
+            role="alert"
+            className="flex items-start gap-1.5 text-[12.5px] font-semibold text-[#ef8079] md:col-span-2 lg:col-span-5"
           >
-            {budgets.map((b) => (
-              <option key={b.value} value={b.value} className="bg-[#1a1a1d]">
-                {b.label}
-              </option>
-            ))}
-          </select>
-          <span aria-hidden="true" className={arrowCls} />
-        </label>
-
-        <label className={fieldCls}>
-          <BedDouble size={17} className="shrink-0 text-gray-500" />
-          <select
-            value={bhk}
-            onChange={(e) => setBhk(e.target.value)}
-            aria-label="Bedrooms (BHK)"
-            className="w-full appearance-none bg-transparent text-white outline-none"
-          >
-            {BHKS.map((b) => (
-              <option key={b} className="bg-[#1a1a1d]">
-                {b}
-              </option>
-            ))}
-          </select>
-          <span aria-hidden="true" className={arrowCls} />
-        </label>
+            <AlertCircle size={14} className="mt-[1px] shrink-0" />
+            {errors.q || errors.form}
+          </p>
+        )}
 
         <button
           type="submit"
+          data-testid="button-submit-property-search"
           className="flex h-14 items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 text-[15px] font-bold text-[#1c1608] transition hover:brightness-105 md:col-span-2 md:h-[52px] md:text-[14px] lg:col-span-5"
         >
-          <Search size={17} /> Search
+          <Search size={17} /> Search {mode.searchNoun}
         </button>
       </form>
 
@@ -350,7 +339,7 @@ const QuickSearchPanel = () => {
           </span>
           <span className="min-w-0 flex-1 leading-[1.35]">
             <span className="block truncate text-[14px] font-bold text-[#ececea]">Search properties in Gurgaon</span>
-            <span className="block truncate text-[11.5px] text-[#7d7c79]">Sector · budget · BHK</span>
+            <span className="block truncate text-[11.5px] text-[#7d7c79]">Buy · Rent · Commercial · Plots</span>
           </span>
           <span
             aria-hidden="true"

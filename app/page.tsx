@@ -19,7 +19,6 @@ import MobileBottomNav from "@/components/Home/MobileBottomNav";
 import { getAllBuilders, getSectorsForCity, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { getNewLaunchProjects, getFeaturedProjects } from "@/lib/intelligence/homepage";
 import { getGurgaonRealEstateNews } from "@/lib/intelligence/news";
-import { HOME_FAQS } from "@/lib/content/homeFaq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
 const GURGAON_CITY_KEY = "ggn";
@@ -36,28 +35,10 @@ export default async function Home() {
   const topBuilders = builders.slice(0, 6);
   const gurgaonSlug = canonicalCitySlug(GURGAON_CITY_KEY);
 
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: HOME_FAQS.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  };
 
-  const safeJsonLd = (data: unknown) =>
-    JSON.stringify(data)
-      .replace(/</g, "\\u003c")
-      .replace(/>/g, "\\u003e")
-      .replace(/&/g, "\\u0026");
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqLd) }}
-      />
 
       <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui bg-[#0B0B0C] text-white`}>
         <Hero variant="default" />

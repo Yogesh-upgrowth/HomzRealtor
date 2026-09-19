@@ -44,13 +44,26 @@ const nextConfig = {
     // Once this has run for a while with no unexpected violations in the
     // browser console, promote it to a real `Content-Security-Policy`
     // header (drop "-Report-Only").
+    // R19-03 (2026-09-19): script-src/connect-src/img-src did not allow any
+    // Google analytics origin, so promoting this header from Report-Only to
+    // enforcing — which the comment above plans — would have silently blocked
+    // gtag.js from loading and every measurement request from being sent,
+    // with no code change to point at. Added now, while the header is still
+    // observe-only, so the promotion is a one-line change rather than an
+    // outage. Origins match lib/analytics/gtag.ts's loader and GA4's own
+    // collect endpoints; no GTM origin is listed because the container was
+    // removed from app/layout.tsx in this same pass.
+    const ANALYTICS_SCRIPT_ORIGINS = "https://www.googletagmanager.com";
+    const ANALYTICS_CONNECT_ORIGINS =
+      "https://www.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://*.google-analytics.com";
+
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline' ${ANALYTICS_SCRIPT_ORIGINS}`,
       "style-src 'self' 'unsafe-inline'",
-      `img-src 'self' blob: data: ${IMAGE_HOSTS.map((h) => `https://${h}`).join(" ")}`,
+      `img-src 'self' blob: data: https://www.google-analytics.com ${IMAGE_HOSTS.map((h) => `https://${h}`).join(" ")}`,
       "font-src 'self'",
-      "connect-src 'self'",
+      `connect-src 'self' ${ANALYTICS_CONNECT_ORIGINS}`,
       // Google Maps embed on /contact, once COMPANY_INFO.mapEmbedUrl is set.
       "frame-src 'self' https://www.google.com",
       "frame-ancestors 'self'",
@@ -104,6 +117,34 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // R19-07 (2026-09-19): every paginated route hard-404s page 1
+      // (`if (pageNum === 1) notFound()`), deliberately, so that /page/1 can
+      // never become a self-canonical duplicate of the base hub. That call is
+      // right and stays. But a 404 is the wrong response for a URL that has a
+      // perfectly good canonical equivalent: the recheck reached
+      // /project-listing/gurgaon/page/1 and /buy-property/gurgaon/3-bhk/page/1
+      // and got dead ends. A 308 to the base path keeps the canonical story
+      // intact while letting any stray external link, bookmark or hand-typed
+      // guess resolve. Listed before the route files are consulted, so the
+      // notFound() branch is simply never reached for page 1.
+      { source: "/buy-property/page/1", destination: "/buy-property", permanent: true },
+      { source: "/rent-property/page/1", destination: "/rent-property", permanent: true },
+      { source: "/commercial/page/1", destination: "/commercial", permanent: true },
+      { source: "/buy-property/:city/:slug/page/1", destination: "/buy-property/:city/:slug", permanent: true },
+      { source: "/project-listing/:city/page/1", destination: "/project-listing/:city", permanent: true },
+
+      // Audit item 11 (2026-09-19): /plots-and-lands was a noindex "Coming
+      // Soon" placeholder linked from the homepage and the blog, while
+      // /buy-property/gurgaon/plots is a real, server-rendered facet over the
+      // plots Homz actually brokers (propertyType "plot" in the sale feed --
+      // see BUY_FACETS and lib/search/searchModes.ts). Sending the friendly
+      // URL to the page that has the inventory is strictly better than a
+      // dead end, and retires the placeholder without losing the link.
+      {
+        source: "/plots-and-lands",
+        destination: "/buy-property/gurgaon/plots",
+        permanent: true,
+      },
       // /contact-us 404'd outright; /contact is the one real contact page.
       {
         source: "/contact-us",

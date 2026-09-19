@@ -58,8 +58,11 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
   if (!project) return null;
 
   const coords = resolveCoordinate(cityKey, project.sector, project.micro_market);
-  const landmarks = nearbyLandmarks(coords.lat, coords.lng);
-  const connectivity = nearbyConnectivity(cityKey, coords.lat, coords.lng);
+  // R19-04: coords.precision must be passed through — at "cityAnchor" the
+  // coordinate is the city centre, not this project, and both helpers return
+  // empty rather than presenting city-centre distances as the project's.
+  const landmarks = nearbyLandmarks(coords.lat, coords.lng, coords.precision);
+  const connectivity = nearbyConnectivity(cityKey, coords.lat, coords.lng, coords.precision);
 
   const content = await generateProjectContent(project, landmarks, connectivity).catch(() => ({
     location_intelligence: "",
@@ -159,6 +162,7 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
         priceData={priceData}
         priceList={project.price_list}
         possessionText={project.possession_text}
+        projectStatus={project.project_status}
       />
 
       {/* Investment tools — EMI / rental yield / acquisition cost calculators */}

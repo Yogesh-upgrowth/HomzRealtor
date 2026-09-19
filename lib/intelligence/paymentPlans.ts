@@ -68,6 +68,22 @@ const PROJECT_PAYMENT_PLANS: Record<string, PaymentPlanTier[]> = {
   ],
 };
 
-export function getPaymentPlans(slug: string): PaymentPlanTier[] {
-  return PROJECT_PAYMENT_PLANS[slug] || DEFAULT_PLANS;
+// R19-04 (2026-09-19): DEFAULT_PLANS was returned for every project whatever
+// its possession status, so Ready-to-Move projects (M3M Latitude, DLF The
+// Summit) were offered a "Construction-Linked Plan" tied to milestones that
+// are already complete and a "Possession-Linked Plan" deferring payment to a
+// possession date that has already passed. Both are impossible terms for a
+// completed project. Only plans that can actually apply are returned now;
+// nothing new is invented, the inapplicable ones are simply withheld.
+const PLANS_REQUIRING_CONSTRUCTION = new Set(["clp", "possession-linked"]);
+
+export function getPaymentPlans(
+  slug: string,
+  status?: string | null
+): PaymentPlanTier[] {
+  const plans = PROJECT_PAYMENT_PLANS[slug] || DEFAULT_PLANS;
+  if (status === "Ready to Move") {
+    return plans.filter((p) => !PLANS_REQUIRING_CONSTRUCTION.has(p.id));
+  }
+  return plans;
 }
