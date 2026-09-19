@@ -7,10 +7,18 @@
 // this component just turns URL search params into a filters object and
 // renders whatever page of results comes back.
 
-import React, { Suspense, useCallback, useEffect, useRef, useState, useTransition } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import HomesCard from "@/components/HomeCards";
 import PromoBanner from "@/components/Common/PromoBanner";
 import LoadError from "@/components/Common/LoadError";
@@ -30,6 +38,7 @@ import {
 } from "@/lib/scraping/homzbackend";
 import { PROPERTY_TYPE_LABELS, type ListingFacets, type ListingFilters } from "@/lib/listings/filters";
 import { canonicalCitySlug } from "@/lib/intelligence/projects";
+import { POSSESSION_OPTIONS, budgetOptionsFor, validateKeyword } from "@/lib/search/searchModes";
 import { validImages } from "@/lib/intelligence/view-model";
 import { salvageAreaText } from "@/lib/intelligence/normalize";
 
@@ -212,6 +221,38 @@ function PropertyListingInner({
 
   const clearFilter = (key: string) => setParam(key, null);
 
+  // Keyword box. `q` used to be settable only from the homepage hero — on the
+  // listing pages themselves it was a read-only chip, so a visitor who landed
+  // here (or cleared the chip) had no way to search a locality at all.
+  const keywordFieldId = useId();
+  const [keyword, setKeyword] = useState(q);
+  const [keywordError, setKeywordError] = useState<string | null>(null);
+
+  // Keeps the box in step with the URL — clearing the "q" chip, hitting Back,
+  // or opening a shared link must all be reflected in the input, not just in
+  // the results below it.
+  useEffect(() => {
+    setKeyword(q);
+    setKeywordError(null);
+  }, [q]);
+
+  const submitKeyword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = keyword.trim();
+    const error = validateKeyword(trimmed);
+    if (error) {
+      setKeywordError(error);
+      return;
+    }
+    setKeywordError(null);
+    setParam("q", trimmed || null);
+  };
+
+  // Commercial inventory has no bedroom count — offering a BHK filter there
+  // (the feed does carry stray bedroom values on a few mixed-use records)
+  // asks for something that can only narrow results to noise.
+  const showBedrooms = category !== "Commercial";
+
   const isMobile = useIsMobile();
   const cardsPerPage = isMobile ? 4 : 8;
 
@@ -343,6 +384,54 @@ function PropertyListingInner({
             </div>
           )}
 
+          {/* Keyword search — same validation rules as the homepage hero
+              (validateKeyword), so a one-character search is rejected with
+              the same message wherever it's typed instead of quietly
+              reloading an unchanged page. */}
+          <form onSubmit={submitKeyword} noValidate className="w-full max-w-xl">
+            <div className="flex items-stretch gap-2">
+              <div
+                className={`flex flex-1 items-center gap-2.5 rounded-xl border bg-[#1a1a1d] px-4 py-2.5 transition-colors ${
+                  keywordError
+                    ? "border-[#e2564d]"
+                    : "border-white/10 focus-within:border-[#D9B268]"
+                }`}
+              >
+                <Search size={16} className="shrink-0 text-gray-500" />
+                <input
+                  id={keywordFieldId}
+                  value={keyword}
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                    setKeywordError(null);
+                  }}
+                  placeholder="Search by locality, sector or project"
+                  aria-label="Search by locality, sector or project"
+                  aria-invalid={Boolean(keywordError)}
+                  aria-describedby={keywordError ? `${keywordFieldId}-error` : undefined}
+                  autoComplete="off"
+                  className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-xl bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] px-5 text-sm font-bold text-[#1c1608] transition hover:brightness-105"
+              >
+                Search
+              </button>
+            </div>
+            {keywordError && (
+              <p
+                id={`${keywordFieldId}-error`}
+                role="alert"
+                className="mt-2 flex items-center gap-1.5 text-[12.5px] font-semibold text-[#ef8079]"
+              >
+                <AlertCircle size={14} className="shrink-0" />
+                {keywordError}
+              </p>
+            )}
+          </form>
+
           {/* Filters */}
           <div className="flex flex-wrap items-center justify-center gap-3">
             {facets.propertyTypes.length > 0 && (
@@ -361,7 +450,7 @@ function PropertyListingInner({
               </select>
             )}
 
-            {(facets.bedrooms.length > 0 || facets.rk.length > 0) && (
+            {showBedrooms && (facets.bedrooms.length > 0 || facets.rk.length > 0) && (
               <select
                 aria-label="Bedrooms (BHK)"
                 value={bedrooms}
@@ -383,29 +472,20 @@ function PropertyListingInner({
               </select>
             )}
 
+            {/* Budget scale (crore vs. per-month) follows the category, from
+                the same option lists the hero panel uses — see
+                lib/search/searchModes.ts. */}
             <select
               aria-label="Budget"
               value={budget}
               onChange={(e) => setParam("budget", e.target.value || null)}
               className={selectClass}
             >
-              <option value="">Any Budget</option>
-              {isRentScale ? (
-                <>
-                  <option value="under-25k">Under ₹25k/mo</option>
-                  <option value="25k-50k">₹25k - ₹50k/mo</option>
-                  <option value="50k-1l">₹50k - ₹1L/mo</option>
-                  <option value="1l-3l">₹1L - ₹3L/mo</option>
-                  <option value="above-3l">Above ₹3L/mo</option>
-                </>
-              ) : (
-                <>
-                  <option value="under-50l">Under 50 L</option>
-                  <option value="50l-1cr">50 L - 1 Cr</option>
-                  <option value="1cr-2cr">1 Cr - 2 Cr</option>
-                  <option value="above-2cr">Above 2 Cr</option>
-                </>
-              )}
+              {budgetOptionsFor(category).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.value === "" ? (isRentScale ? "Any Rent Budget" : "Any Budget") : o.label}
+                </option>
+              ))}
             </select>
 
             <select
@@ -414,10 +494,11 @@ function PropertyListingInner({
               onChange={(e) => setParam("possession", e.target.value || null)}
               className={selectClass}
             >
-              <option value="">Any Possession Status</option>
-              <option value="ready-to-move">Ready to Move</option>
-              <option value="under-construction">Under Construction</option>
-              <option value="new-launch">New Launch</option>
+              {POSSESSION_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.value === "" ? "Any Possession Status" : o.label}
+                </option>
+              ))}
             </select>
 
             {category === "Sale" && (
