@@ -10,7 +10,8 @@
     "set-user-role": "node scripts/set-user-role.mjs",
     "generate:osm-pois": "node scripts/generate-osm-pois.mjs",
     "verify:agent-readiness": "node scripts/verify-agent-readiness.mjs",
-    "check:sitemap": "node scripts/check-sitemap-404s.mjs"
+    "check:sitemap": "node scripts/check-sitemap-404s.mjs",
+    "report:listing-quality": "node scripts/listing-quality-report.mjs"
   },
   "dependencies": {
     "@next/third-parties": "16.2.10",
