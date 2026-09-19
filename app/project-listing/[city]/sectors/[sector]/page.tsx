@@ -11,6 +11,9 @@ import {
   getSectorsForCity,
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
+import SectorIntelligence from "@/components/Project/SectorIntelligence";
+import { buildSectorContext, buildSectorFaqs } from "@/lib/intelligence/sectorContext";
+import { formatInr } from "@/lib/intelligence/normalize";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
@@ -121,6 +124,12 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   const projects = await getProjectsForSector(city, sector).catch(() => []);
   const sectorLabel = matchedSector.sector;
 
+  // Audit item 7: computed sector intelligence -- rates, connectivity, social
+  // infrastructure, builder mix -- from Homz's own catalogue, so the page
+  // carries substance rather than a card grid. See lib/intelligence/sectorContext.ts.
+  const sectorCtx = buildSectorContext(cityKey, sectorLabel, projects);
+  const sectorFaqs = buildSectorFaqs(sectorLabel, name, sectorCtx, formatInr);
+
   const withImages = projects.filter((p) => p.images.length > 0);
   const residential = projects.filter(
     (p) => p.property_category === "Residential"
@@ -216,6 +225,21 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
             },
           ]
         : []),
+      // Audit item 7: FAQPage from the computed sector figures. Only questions
+      // the data can actually answer are emitted (see buildSectorFaqs), so the
+      // markup never asserts a rate or a count the page does not show.
+      ...(sectorFaqs.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: sectorFaqs.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
     ],
   };
 
@@ -278,6 +302,8 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
           )}
         </div>
       </section>
+
+      <SectorIntelligence sectorLabel={sectorLabel} cityName={name} ctx={sectorCtx} />
 
       {/* Project grid (reuses the shared card component) */}
       {withImages.length > 0 ? (
@@ -353,6 +379,30 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
             >
               View all sectors →
             </Link>
+          </div>
+        </section>
+      )}
+
+      {sectorFaqs.length > 0 && (
+        <section
+          aria-labelledby="sector-faq"
+          className="w-full max-w-7xl mx-auto px-4 mt-12"
+        >
+          <h2 id="sector-faq" className="mb-4 text-2xl font-bold text-white">
+            Common questions about {sectorLabel}
+          </h2>
+          <div className="space-y-3">
+            {sectorFaqs.map((f) => (
+              <details
+                key={f.q}
+                className="rounded-[20px] border border-white/[0.07] bg-[#141416] p-5"
+              >
+                <summary className="cursor-pointer text-[15px] font-semibold text-white">
+                  {f.q}
+                </summary>
+                <p className="mt-3 text-[14px] leading-relaxed text-gray-400">{f.a}</p>
+              </details>
+            ))}
           </div>
         </section>
       )}
