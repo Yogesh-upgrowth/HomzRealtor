@@ -60,8 +60,8 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "HARERA agent / channel-partner registration number",
     lands: "lib/seo/companyInfo.ts → hararaAgentNumber",
     shape: '"HARERA/GGM/XXXX/2026"',
-    why: "A visible RERA registration is the single strongest trust signal in Indian real estate and is already wired into Organization.identifier.",
-    done: false,
+    why: "Supplied 2026-09-19: HRERA-PKL-REA-2548-2024, valid to 26 Feb 2029. Held by Sunita Singhvi personally rather than by the entity, so every surface that prints it names the holder -- the HARERA portal shows that name and a mismatch would undo the trust signal.",
+    done: true,
   },
   {
     key: "identity.gst",
@@ -86,7 +86,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     lands: "lib/seo/companyInfo.ts → hours (display) and openingHours (schema)",
     shape: '{ days: ["Mo","Tu","We","Th","Fr","Sa"], opens: "10:00", closes: "19:00" }',
     why: "openingHoursSpecification is reconciled against the profile. A mismatch is worse than an omission.",
-    done: false,
+    done: true,
   },
   {
     key: "identity.googleBusinessUrl",
@@ -103,7 +103,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     need: "Controlled social profile URLs (Instagram, Facebook, LinkedIn, YouTube, Justdial)",
     lands: "lib/seo/companyInfo.ts → social.*",
     why: 'sameAs disambiguates this brand from the other "Homz" entities (HOMZ Real Estate CA, Houzz, the HOMZ ETF). Only list profiles Homz actually controls.',
-    done: false,
+    done: true,
   },
   {
     key: "identity.team",
@@ -112,7 +112,7 @@ export const OWNER_INPUTS: OwnerInput[] = [
     lands: "lib/seo/companyInfo.ts → team[]",
     shape: '[{ name: "...", role: "Principal Advisor", reraId: "..." }]',
     why: "A high-stakes purchase site with no human attached is an E-E-A-T gap. Renders as Organization.employee and can then byline content.",
-    done: false,
+    done: true,
   },
   {
     key: "identity.napConsistency",

@@ -90,6 +90,11 @@ const organizationSchema = {
       "@type": ["RealEstateAgent", "Organization"],
       "@id": "https://www.homzrealtor.com/#organization",
       name: "HomzRealtor",
+      // 2026-09-19: legalName was in COMPANY_INFO but nothing emitted it, so
+      // the registered operator stayed invisible to Google despite being on
+      // file. Conditional, so it disappears again rather than rendering empty
+      // if the field is ever cleared.
+      ...(COMPANY_INFO.legalName ? { legalName: COMPANY_INFO.legalName } : {}),
       url: "https://www.homzrealtor.com",
       logo: "https://www.homzrealtor.com/android-icon-192x192.png",
       description:
@@ -184,12 +189,24 @@ const organizationSchema = {
             },
           }
         : {}),
+      // HARERA agent registration. 2026-09-19: the number is now real, and the
+      // holder is named alongside it because the registration belongs to an
+      // individual (Sunita Singhvi) rather than to the entity -- see
+      // lib/seo/companyInfo.ts. A checker who looks the number up on the
+      // HARERA portal sees that name, so the markup states it rather than
+      // letting the number imply the company is the registered agent.
       ...(COMPANY_INFO.hararaAgentNumber
         ? {
             identifier: {
               "@type": "PropertyValue",
-              propertyID: "HARERA",
+              propertyID: "HARERA real estate agent registration",
               value: COMPANY_INFO.hararaAgentNumber,
+              ...(COMPANY_INFO.hareraHolder
+                ? { description: `Registered to ${COMPANY_INFO.hareraHolder}` }
+                : {}),
+              ...(COMPANY_INFO.hareraValidUntil
+                ? { validThrough: COMPANY_INFO.hareraValidUntil }
+                : {}),
             },
           }
         : {}),

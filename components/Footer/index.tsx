@@ -67,7 +67,10 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
             {COMPANY_INFO.officeAddress && <p>{COMPANY_INFO.officeAddress}</p>}
             {COMPANY_INFO.gstNumber && <p>GST: {COMPANY_INFO.gstNumber}</p>}
             {COMPANY_INFO.hararaAgentNumber && (
-              <p>HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}</p>
+              <p>
+                HARERA Agent Reg. No.: {COMPANY_INFO.hararaAgentNumber}
+                {COMPANY_INFO.hareraHolder ? ` (registered to ${COMPANY_INFO.hareraHolder})` : ""}
+              </p>
             )}
           </div>
           {hasSocialLinks() && (
