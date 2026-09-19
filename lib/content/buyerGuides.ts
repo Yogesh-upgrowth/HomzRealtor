@@ -206,7 +206,7 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       },
       {
         paragraphs: [
-          "Getting this list organised before your first branch visit or online application is the single biggest thing a first-time buyer can do to move from application to sanction faster. HomzRealtor's in-house loan desk works with multiple banks and NBFCs and can pre-check your documents before you formally apply.",
+          "Getting this list organised before your first branch visit or online application is the single biggest thing a first-time buyer can do to move from application to sanction faster. Ask your HomzRealtor advisor to run through it with you before you formally apply, an hour spent on the paperwork now is worth more than any rate you will negotiate later.",
         ],
       },
     ],

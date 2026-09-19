@@ -27,7 +27,7 @@ import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
 import devImg from "@/public/totalUnit.svg";
-import customer from "@/assets/images/customer.png";
+import customer from "@/assets/images/customer.jpg";
 import { slugify } from "@/components/utils/slugify";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import { useListingsPage, type InitialListingsData } from "@/hooks/useListingsPage";

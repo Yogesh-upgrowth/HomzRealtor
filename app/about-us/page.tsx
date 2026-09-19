@@ -2,7 +2,7 @@ import PromoBanner from "@/components/Common/PromoBanner";
 import ContentSection from "@/components/About/ContentSection";
 import AboutSections from "@/components/About/AboutSections";
 import aboutPageData from "@/context/utils/AboutPageData";
-import customer from "@/assets/images/customer.png";
+import customer from "@/assets/images/customer.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {

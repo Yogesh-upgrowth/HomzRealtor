@@ -18,7 +18,7 @@ import {
   slugify as toSlug,
 } from "@/lib/intelligence/normalize";
 import { deriveStatusFromText, validImages } from "@/lib/intelligence/view-model";
-import customer from "@/assets/images/customer.png";
+import customer from "@/assets/images/customer.jpg";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import { useHomzProjects } from "@/hooks/useHomzProjects";
 import { categorySegment, type RawHomzProject } from "@/lib/scraping/homzbackend";

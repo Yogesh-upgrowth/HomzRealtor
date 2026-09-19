@@ -10,7 +10,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import ConsentBanner from "@/components/Analytics/ConsentBanner";
-import ogImage from "@/assets/images/herobg.png";
+import ogImage from "@/assets/images/herobg.jpg";
 import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
 
