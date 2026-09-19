@@ -36,7 +36,7 @@ export function buildLocationSummary(
       const dist = c.distance_km != null ? `${c.distance_km.toFixed(1)} km` : null;
       const time = c.travel_time ? `about ${c.travel_time} by road` : null;
       const tail = [dist, time].filter(Boolean).join(", ");
-      return `${c.label}${tail ? ` — ${tail}` : ""}`;
+      return `${c.label}${tail ? `, ${tail}` : ""}`;
     });
     blocks.push(`Connectivity at a glance: ${sentences.join("; ")}.`);
   }
@@ -103,7 +103,7 @@ export function buildMarketSummary(
     blocks.push(`Current pricing for ${project.project_name}: ${project.price_text}.`);
   } else {
     blocks.push(
-      `Pricing for ${project.project_name} is available on request — reach out for the latest quote.`
+      `Pricing for ${project.project_name} is available on request, reach out for the latest quote.`
     );
   }
 

@@ -46,7 +46,7 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     sections: [
       {
         paragraphs: [
-          "Under-construction homes are usually priced lower than ready-to-move units in the same project or micro-market, and buyers often get a longer, more flexible payment schedule instead of paying the full amount upfront. That combination — a lower entry price plus appreciation between booking and possession — is the main reason investors and end-users alike keep buying before the building is finished. But it also means you're relying on a developer's execution, not a finished product you can walk through, so the due-diligence steps matter more than they would for a ready flat.",
+          "Under-construction homes are usually priced lower than ready-to-move units in the same project or micro-market, and buyers often get a longer, more flexible payment schedule instead of paying the full amount upfront. That combination, a lower entry price plus appreciation between booking and possession, is the main reason investors and end-users alike keep buying before the building is finished. But it also means you're relying on a developer's execution, not a finished product you can walk through, so the due-diligence steps matter more than they would for a ready flat.",
         ],
       },
       {
@@ -58,37 +58,37 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       {
         heading: "Understand the payment plan you're signing up for",
         paragraphs: [
-          "Most under-construction projects offer either a construction-linked plan (you pay in instalments tied to actual building milestones — foundation, slab casting, brick work, and so on) or a time-linked plan (fixed instalments on fixed dates regardless of progress). Construction-linked plans generally protect the buyer better, since a stalled project means your payments pause too; time-linked plans put more of that risk on you. Read the payment schedule in the agreement itself, not just the sales brochure, since verbal promises from a sales team aren't binding.",
+          "Most under-construction projects offer either a construction-linked plan (you pay in instalments tied to actual building milestones, foundation, slab casting, brick work, and so on) or a time-linked plan (fixed instalments on fixed dates regardless of progress). Construction-linked plans generally protect the buyer better, since a stalled project means your payments pause too; time-linked plans put more of that risk on you. Read the payment schedule in the agreement itself, not just the sales brochure, since verbal promises from a sales team aren't binding.",
         ],
       },
       {
         heading: "Check what's actually included in the price",
         paragraphs: [
-          "The quoted base price rarely includes everything. Preferential Location Charges (PLC) for a specific floor or facing, car parking, club membership, GST, stamp duty and registration, and maintenance deposits are typically charged separately — ask for a complete cost sheet before booking so you're comparing like-for-like across projects.",
+          "The quoted base price rarely includes everything. Preferential Location Charges (PLC) for a specific floor or facing, car parking, club membership, GST, stamp duty and registration, and maintenance deposits are typically charged separately, ask for a complete cost sheet before booking so you're comparing like-for-like across projects.",
         ],
       },
       {
         heading: "Read the builder-buyer agreement carefully",
         paragraphs: [
-          "This is the document that actually governs your purchase, not the brochure. Look specifically for the clause on compensation if possession is delayed beyond the committed date — RERA mandates that buyers are entitled to a penalty interest in such cases — as well as the exact carpet area being sold (RERA requires sale on carpet area, not the older, larger-sounding super built-up area) and the process for cancellation and refund if you need to exit.",
+          "This is the document that actually governs your purchase, not the brochure. Look specifically for the clause on compensation if possession is delayed beyond the committed date, RERA mandates that buyers are entitled to a penalty interest in such cases, as well as the exact carpet area being sold (RERA requires sale on carpet area, not the older, larger-sounding super built-up area) and the process for cancellation and refund if you need to exit.",
         ],
       },
       {
         heading: "Factor in GST and possession-time costs",
         paragraphs: [
-          "Under-construction purchases attract GST on the base price (5% for most units, 1% for those qualifying as affordable housing), which completed, ready-to-move properties don't. Budget for this separately from stamp duty and registration, calculated later, at possession, on the circle rate value at that time — not your original booking price. You'll also typically owe periodic maintenance and, on some projects, a one-time infrastructure or club charge that isn't always itemised upfront, so ask for it in writing.",
+          "Under-construction purchases attract GST on the base price (5% for most units, 1% for those qualifying as affordable housing), which completed, ready-to-move properties don't. Budget for this separately from stamp duty and registration, calculated later, at possession, on the circle rate value at that time, not your original booking price. You'll also typically owe periodic maintenance and, on some projects, a one-time infrastructure or club charge that isn't always itemised upfront, so ask for it in writing.",
         ],
       },
       {
         heading: "Track construction progress yourself",
         paragraphs: [
-          "RERA requires registered projects to upload quarterly progress reports to the state portal, covering construction completed against the promised schedule. Checking these yourself every few months — rather than relying solely on the sales team — gives an independent early signal if a project is falling behind, well before a delay becomes a dispute.",
+          "RERA requires registered projects to upload quarterly progress reports to the state portal, covering construction completed against the promised schedule. Checking these yourself every few months, rather than relying solely on the sales team, gives an independent early signal if a project is falling behind, well before a delay becomes a dispute.",
         ],
       },
       {
         heading: "The bottom line",
         paragraphs: [
-          "Under-construction property can be a genuinely good deal when the developer has a credible delivery track record and the project is RERA-registered with a realistic timeline. The homework — checking RERA status, reading the payment plan and the builder-buyer agreement, pricing in every additional charge, and monitoring quarterly progress — is what separates a good investment from a multi-year headache. If you're unsure how to read any of these documents, HomzRealtor's advisory team can walk through them with you before you sign.",
+          "Under-construction property can be a genuinely good deal when the developer has a credible delivery track record and the project is RERA-registered with a realistic timeline. The homework, checking RERA status, reading the payment plan and the builder-buyer agreement, pricing in every additional charge, and monitoring quarterly progress, is what separates a good investment from a multi-year headache. If you're unsure how to read any of these documents, HomzRealtor's advisory team can walk through them with you before you sign.",
         ],
       },
     ],
@@ -103,25 +103,25 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     sections: [
       {
         paragraphs: [
-          "The Real Estate (Regulation and Development) Act, 2016 — RERA — was introduced to fix a real problem: buyers had almost no legal protection against delayed possession, misleading project sizes, or developers diverting funds from one project to another. In Haryana, the state authority that enforces it for Gurgaon and the rest of the state is HRERA (Haryana Real Estate Regulatory Authority), with a dedicated Gurugram bench. If you're buying in Gurgaon, HRERA's rules are the ones that actually apply to your purchase.",
+          "The Real Estate (Regulation and Development) Act, 2016 (RERA), was introduced to fix a real problem: buyers had almost no legal protection against delayed possession, misleading project sizes, or developers diverting funds from one project to another. In Haryana, the state authority that enforces it for Gurgaon and the rest of the state is HRERA (Haryana Real Estate Regulatory Authority), with a dedicated Gurugram bench. If you're buying in Gurgaon, HRERA's rules are the ones that actually apply to your purchase.",
         ],
       },
       {
         heading: "What RERA registration actually guarantees",
         paragraphs: [
-          "A project can't legally be advertised, marketed or sold until it's registered with HRERA. Registration requires the developer to disclose the sanctioned layout plan, the promised possession date, and details of the land title — and to deposit at least 70% of money collected from buyers in a separate escrow account that can only be used for that project's construction and land cost. That escrow rule is the single biggest structural change RERA made: it's designed to stop developers from using one project's booking money to fund a different, unrelated project.",
+          "A project can't legally be advertised, marketed or sold until it's registered with HRERA. Registration requires the developer to disclose the sanctioned layout plan, the promised possession date, and details of the land title, and to deposit at least 70% of money collected from buyers in a separate escrow account that can only be used for that project's construction and land cost. That escrow rule is the single biggest structural change RERA made: it's designed to stop developers from using one project's booking money to fund a different, unrelated project.",
         ],
       },
       {
         heading: "Carpet area, not super built-up area",
         paragraphs: [
-          "Before RERA, developers commonly quoted price per square foot on \"super built-up area,\" a figure that could include a share of lobbies, lift shafts and common walls, making the flat sound bigger than its actual usable space. RERA requires sale agreements to state the carpet area — the actual usable floor space within the walls — so two projects' prices can finally be compared on the same basis.",
+          "Before RERA, developers commonly quoted price per square foot on \"super built-up area,\" a figure that could include a share of lobbies, lift shafts and common walls, making the flat sound bigger than its actual usable space. RERA requires sale agreements to state the carpet area, the actual usable floor space within the walls, so two projects' prices can finally be compared on the same basis.",
         ],
       },
       {
         heading: "What happens if possession is delayed",
         paragraphs: [
-          "If a developer misses the RERA-registered possession date, the buyer is entitled to either withdraw from the project with a full refund plus interest, or continue and receive monthly interest compensation for every month of delay, at a rate prescribed by the state authority. This right exists whether or not it was mentioned in your builder-buyer agreement — RERA overrides a weaker clause in the contract.",
+          "If a developer misses the RERA-registered possession date, the buyer is entitled to either withdraw from the project with a full refund plus interest, or continue and receive monthly interest compensation for every month of delay, at a rate prescribed by the state authority. This right exists whether or not it was mentioned in your builder-buyer agreement, RERA overrides a weaker clause in the contract.",
         ],
       },
       {
@@ -133,7 +133,7 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       {
         heading: "Filing a complaint, if you ever need to",
         paragraphs: [
-          "If a developer breaches the agreement — an unreasonable delay, a change to the sanctioned plan without consent, or diversion of funds — HRERA has an adjudicating officer specifically empowered to hear buyer complaints, and cases are meant to be disposed of within 60 days, far faster than a typical civil suit. You don't need a lawyer to file the initial complaint, though most buyers bring one in for anything beyond a straightforward delay claim.",
+          "If a developer breaches the agreement, an unreasonable delay, a change to the sanctioned plan without consent, or diversion of funds, HRERA has an adjudicating officer specifically empowered to hear buyer complaints, and cases are meant to be disposed of within 60 days, far faster than a typical civil suit. You don't need a lawyer to file the initial complaint, though most buyers bring one in for anything beyond a straightforward delay claim.",
         ],
       },
       {
@@ -144,7 +144,7 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       },
       {
         paragraphs: [
-          "RERA doesn't eliminate risk in under-construction buying, but it gives Gurgaon buyers a real paper trail and legal recourse that simply didn't exist before 2016. Making the RERA check a standard first step — before you get attached to a floor plan or a sales pitch — is one of the simplest ways to protect a purchase this large.",
+          "RERA doesn't eliminate risk in under-construction buying, but it gives Gurgaon buyers a real paper trail and legal recourse that simply didn't exist before 2016. Making the RERA check a standard first step, before you get attached to a floor plan or a sales pitch, is one of the simplest ways to protect a purchase this large.",
         ],
       },
     ],
@@ -159,23 +159,23 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     sections: [
       {
         paragraphs: [
-          "A home loan application moves faster when your paperwork is complete and consistent the first time you submit it — most delays come from mismatched addresses, missing income proof, or documents that don't match across forms, not from the bank's processing time itself. Here's what to have ready before you approach a lender.",
+          "A home loan application moves faster when your paperwork is complete and consistent the first time you submit it, most delays come from mismatched addresses, missing income proof, or documents that don't match across forms, not from the bank's processing time itself. Here's what to have ready before you approach a lender.",
         ],
       },
       {
         heading: "Identity and address proof",
         paragraphs: [
-          "PAN card (mandatory for any loan application in India), Aadhaar card, and a second government-issued ID such as a passport or voter ID. If your current address differs from what's on your Aadhaar, carry a recent utility bill or rent agreement as address proof — lenders will ask for one that's dated within the last two to three months.",
+          "PAN card (mandatory for any loan application in India), Aadhaar card, and a second government-issued ID such as a passport or voter ID. If your current address differs from what's on your Aadhaar, carry a recent utility bill or rent agreement as address proof, lenders will ask for one that's dated within the last two to three months.",
         ],
       },
       {
-        heading: "Income proof — salaried applicants",
+        heading: "Income proof: salaried applicants",
         paragraphs: [
-          "Last 3 months' salary slips, Form 16 or income tax returns for the last 2-3 years, and bank statements for the last 6 months showing salary credits. If you've recently changed jobs, keep your offer letter and previous employer's relieving letter handy — lenders often ask for continuity of employment history.",
+          "Last 3 months' salary slips, Form 16 or income tax returns for the last 2-3 years, and bank statements for the last 6 months showing salary credits. If you've recently changed jobs, keep your offer letter and previous employer's relieving letter handy, lenders often ask for continuity of employment history.",
         ],
       },
       {
-        heading: "Income proof — self-employed applicants",
+        heading: "Income proof: self-employed applicants",
         paragraphs: [
           "Income tax returns for the last 3 years along with computation of income, audited profit and loss statement and balance sheet (typically the last 2-3 years), GST returns if applicable, and business bank statements for the last 6-12 months. Self-employed applicants generally face more documentation scrutiny than salaried ones, so having a consistent, complete set upfront meaningfully speeds up approval.",
         ],
@@ -189,19 +189,19 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       {
         heading: "Co-applicant documents",
         paragraphs: [
-          "Adding a co-applicant — typically a spouse or parent — can increase your eligible loan amount, since the bank considers combined income. Whoever is added as co-applicant needs to submit the full identity, address and income document set in their own name too, not just sign the form, and will be equally liable for repayment for the life of the loan.",
+          "Adding a co-applicant, typically a spouse or parent, can increase your eligible loan amount, since the bank considers combined income. Whoever is added as co-applicant needs to submit the full identity, address and income document set in their own name too, not just sign the form, and will be equally liable for repayment for the life of the loan.",
         ],
       },
       {
         heading: "Understand loan-to-value and your down payment",
         paragraphs: [
-          "Lenders in India typically finance 75-90% of the property's value depending on the loan amount, meaning you'll need to fund the remaining 10-25% yourself as a down payment, on top of stamp duty, registration and any GST due. Keep bank statements showing this down payment amount as genuine, traceable savings — a large last-minute cash deposit just before applying often draws additional questions from the underwriting team about its source.",
+          "Lenders in India typically finance 75-90% of the property's value depending on the loan amount, meaning you'll need to fund the remaining 10-25% yourself as a down payment, on top of stamp duty, registration and any GST due. Keep bank statements showing this down payment amount as genuine, traceable savings, a large last-minute cash deposit just before applying often draws additional questions from the underwriting team about its source.",
         ],
       },
       {
         heading: "A few things that trip up first-time applicants",
         paragraphs: [
-          "Keep your name spelling and date of birth identical across PAN, Aadhaar and bank records — even a minor mismatch can stall verification. Check your credit score (CIBIL) before applying, since a low score may mean a higher interest rate or a co-applicant requirement. And avoid taking on new credit card debt or another loan in the months before applying, since it changes your debt-to-income ratio right when the lender is evaluating it. Once your sanction letter arrives, read the processing fee, prepayment charges and interest reset clauses before signing — these vary meaningfully between lenders even at similar headline rates.",
+          "Keep your name spelling and date of birth identical across PAN, Aadhaar and bank records, even a minor mismatch can stall verification. Check your credit score (CIBIL) before applying, since a low score may mean a higher interest rate or a co-applicant requirement. And avoid taking on new credit card debt or another loan in the months before applying, since it changes your debt-to-income ratio right when the lender is evaluating it. Once your sanction letter arrives, read the processing fee, prepayment charges and interest reset clauses before signing, these vary meaningfully between lenders even at similar headline rates.",
         ],
       },
       {
@@ -221,7 +221,7 @@ export const BUYER_GUIDES: BuyerGuide[] = [
     sections: [
       {
         paragraphs: [
-          "Rental yield — annual rent as a percentage of the property's value — is a different metric from capital appreciation, and the two don't always move together. Gurgaon's overall residential rental yield has typically hovered in the 2-3.5% range in recent years, but certain micro-markets consistently outperform that average because of one shared factor: a dense, walkable concentration of white-collar jobs that keeps tenant demand steady even when the broader market cools.",
+          "Rental yield, annual rent as a percentage of the property's value, is a different metric from capital appreciation, and the two don't always move together. Gurgaon's overall residential rental yield has typically hovered in the 2-3.5% range in recent years, but certain micro-markets consistently outperform that average because of one shared factor: a dense, walkable concentration of white-collar jobs that keeps tenant demand steady even when the broader market cools.",
         ],
       },
       {
@@ -239,31 +239,31 @@ export const BUYER_GUIDES: BuyerGuide[] = [
       {
         heading: "3. Sohna Road",
         paragraphs: [
-          "Sohna Road benefits from a large, relatively affordable housing stock and proximity to both established commercial hubs and newer business parks along the corridor. That affordability draws a big pool of mid-level executive and dual-income tenants, and a large, liquid rental market tends to support steadier yields than a thin, ultra-premium one — there are simply more comparable transactions here to anchor a fair asking rent against.",
+          "Sohna Road benefits from a large, relatively affordable housing stock and proximity to both established commercial hubs and newer business parks along the corridor. That affordability draws a big pool of mid-level executive and dual-income tenants, and a large, liquid rental market tends to support steadier yields than a thin, ultra-premium one, there are simply more comparable transactions here to anchor a fair asking rent against.",
         ],
       },
       {
         heading: "4. Sector 62 & 65 (NH-48 / Golf Course Road junction belt)",
         paragraphs: [
-          "This stretch sits within easy reach of Udyog Vihar and the broader NH-48 commercial belt, home to a mix of IT/ITES firms and corporate offices. Housing here draws a steady base of company-leased and employee tenants, which tends to mean lower vacancy periods between tenancies — a factor that matters as much for effective yield as the headline rent does, since a flat sitting empty for even one extra month can erase a meaningful chunk of a year's rental return.",
+          "This stretch sits within easy reach of Udyog Vihar and the broader NH-48 commercial belt, home to a mix of IT/ITES firms and corporate offices. Housing here draws a steady base of company-leased and employee tenants, which tends to mean lower vacancy periods between tenancies, a factor that matters as much for effective yield as the headline rent does, since a flat sitting empty for even one extra month can erase a meaningful chunk of a year's rental return.",
         ],
       },
       {
         heading: "5. New Gurgaon (Sectors 81-95, Dwarka Expressway corridor)",
         paragraphs: [
-          "New Gurgaon's appeal for yield-focused buyers is its lower entry price relative to the established southern corridors, combined with the Dwarka Expressway's improving connectivity to both Gurgaon and Delhi's airport-side commercial districts. As more of that infrastructure comes online and occupancy in these newer townships matures, the area has room to close the rental gap with older micro-markets while still being bought in at a lower base — the trade-off is that some pockets are still building up their tenant base, so vacancy periods can run longer than in an established corridor until that catches up.",
+          "New Gurgaon's appeal for yield-focused buyers is its lower entry price relative to the established southern corridors, combined with the Dwarka Expressway's improving connectivity to both Gurgaon and Delhi's airport-side commercial districts. As more of that infrastructure comes online and occupancy in these newer townships matures, the area has room to close the rental gap with older micro-markets while still being bought in at a lower base, the trade-off is that some pockets are still building up their tenant base, so vacancy periods can run longer than in an established corridor until that catches up.",
         ],
       },
       {
         heading: "How to read this list",
         paragraphs: [
-          "These rankings reflect the structural demand drivers behind each corridor — employment proximity, rental market depth, and the balance between entry price and achievable rent — not a single fixed yield figure, since actual returns shift with each project's pricing and unit mix. Treat this as a shortlist of corridors worth investigating property-by-property, not a guarantee for any specific unit.",
+          "These rankings reflect the structural demand drivers behind each corridor, employment proximity, rental market depth, and the balance between entry price and achievable rent, not a single fixed yield figure, since actual returns shift with each project's pricing and unit mix. Treat this as a shortlist of corridors worth investigating property-by-property, not a guarantee for any specific unit.",
         ],
       },
       {
         heading: "What this means if you're buying for rental income",
         paragraphs: [
-          "Yield-focused buying is a different discipline from buying for appreciation: prioritise proximity to a real, established employment cluster over a marginally better address, check actual rented-out comparables in the specific micro-market rather than relying on a builder's projected rental figure, and factor in maintenance charges and vacancy periods when you calculate your real, net yield — not just the advertised gross number. HomzRealtor's advisors can pull comparable rental data for any of these corridors before you commit.",
+          "Yield-focused buying is a different discipline from buying for appreciation: prioritise proximity to a real, established employment cluster over a marginally better address, check actual rented-out comparables in the specific micro-market rather than relying on a builder's projected rental figure, and factor in maintenance charges and vacancy periods when you calculate your real, net yield, not just the advertised gross number. HomzRealtor's advisors can pull comparable rental data for any of these corridors before you commit.",
         ],
       },
     ],
