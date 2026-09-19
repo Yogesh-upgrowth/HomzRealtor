@@ -7,7 +7,7 @@
 // this component just turns URL search params into a filters object and
 // renders whatever page of results comes back.
 
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -149,20 +149,47 @@ function PropertyListingInner({
     q || propertyType || budget || bedrooms || possession || saleType || golf || investmentGrade
   );
 
+  // R19-01 (2026-09-19). MI-04 (2026-09-18) moved this off the render-snapshot
+  // `searchParams` and onto window.location.search, on the stated reasoning
+  // that "history.pushState is synchronous". pushState is, but router.push()
+  // is not: the App Router dispatches the navigation inside a transition and
+  // the history entry is only written when that transition commits, after the
+  // RSC payload for the new URL resolves. So two changes made before the
+  // first commit still both read the pre-navigation URL, and the second push
+  // still clobbers the first -- the recheck reproduced exactly that (pick 10
+  // BHK then Under 25k quickly; the settled URL held only ?budget=under-25k).
+  //
+  // The authoritative value while a navigation is in flight is what we last
+  // asked for, not what the address bar currently shows. pendingSearchRef
+  // holds that, so successive changes merge into one coherent filter set
+  // however fast they arrive. It is released once the committed URL catches
+  // up, and on popstate, so Back/Forward hand authority back to the real URL.
+  const pendingSearchRef = useRef<string | null>(null);
+  // isNavPending drives aria-busy on the results region, so assistive tech is
+  // told the list is updating rather than silently swapping underneath.
+  const [isNavPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (
+      pendingSearchRef.current !== null &&
+      searchParams.toString() === pendingSearchRef.current
+    ) {
+      pendingSearchRef.current = null;
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const releasePending = () => {
+      pendingSearchRef.current = null;
+    };
+    window.addEventListener("popstate", releasePending);
+    return () => window.removeEventListener("popstate", releasePending);
+  }, []);
+
   const setParam = useCallback(
     (key: string, value: string | null) => {
-      // MI-04 (2026-09-18): this used to build the next URL from
-      // `searchParams` -- a snapshot from the last completed render, not
-      // the actual current URL. Two setParam calls fired in quick
-      // succession (e.g. picking a BHK, then a budget, before React had
-      // re-rendered after the first router.push) both read that same stale
-      // snapshot, so the second push silently dropped whatever the first
-      // one had just added -- reproduced in the handoff as "settled URL
-      // retained only budget, BHK reset." window.location.search reflects
-      // the real current URL immediately (history.pushState is
-      // synchronous), including a push that already happened moments ago,
-      // so rapid calls now compose instead of racing.
-      const params = new URLSearchParams(window.location.search);
+      const base = pendingSearchRef.current ?? window.location.search;
+      const params = new URLSearchParams(base);
       if (value) params.set(key, value);
       else params.delete(key);
       // Any filter change invalidates the current page position — drop it
@@ -170,7 +197,10 @@ function PropertyListingInner({
       // used to reset the old local currentPage state.
       if (key !== "page") params.delete("page");
       const query = params.toString();
-      router.push(query ? `/${routeBase}?${query}` : `/${routeBase}`);
+      pendingSearchRef.current = query;
+      startTransition(() => {
+        router.push(query ? `/${routeBase}?${query}` : `/${routeBase}`);
+      });
     },
     [routeBase, router]
   );
@@ -317,6 +347,7 @@ function PropertyListingInner({
           <div className="flex flex-wrap items-center justify-center gap-3">
             {facets.propertyTypes.length > 0 && (
               <select
+                aria-label="Property type"
                 value={propertyType}
                 onChange={(e) => setParam("type", e.target.value || null)}
                 className={selectClass}
@@ -332,6 +363,7 @@ function PropertyListingInner({
 
             {(facets.bedrooms.length > 0 || facets.rk.length > 0) && (
               <select
+                aria-label="Bedrooms (BHK)"
                 value={bedrooms}
                 onChange={(e) => setParam("bedrooms", e.target.value || null)}
                 className={selectClass}
@@ -352,6 +384,7 @@ function PropertyListingInner({
             )}
 
             <select
+              aria-label="Budget"
               value={budget}
               onChange={(e) => setParam("budget", e.target.value || null)}
               className={selectClass}
@@ -376,6 +409,7 @@ function PropertyListingInner({
             </select>
 
             <select
+              aria-label="Possession status"
               value={possession}
               onChange={(e) => setParam("possession", e.target.value || null)}
               className={selectClass}
@@ -388,6 +422,7 @@ function PropertyListingInner({
 
             {category === "Sale" && (
               <select
+                aria-label="Listing type"
                 value={saleType}
                 onChange={(e) => setParam("saleType", e.target.value || null)}
                 className={selectClass}
@@ -418,8 +453,30 @@ function PropertyListingInner({
           </div>
         </div>
 
+        {/* R19-01: a visible result count, and a polite live region so the
+            outcome of a filter change is announced rather than only shown.
+            aria-busy covers both the in-flight navigation (isNavPending) and
+            the in-flight fetch (loading), so assistive tech is told the list
+            is updating instead of reading a half-swapped set. */}
+        <div className="mb-4 text-center" role="status" aria-live="polite">
+          {error ? null : loading || isNavPending ? (
+            <p className="text-[13px] text-gray-500">Updating results…</p>
+          ) : (
+            <p className="text-[13px] text-gray-400">
+              {total === 0
+                ? "No matching listings"
+                : `${total.toLocaleString("en-IN")} ${total === 1 ? "listing" : "listings"}${
+                    hasActiveFilters ? " match your filters" : ""
+                  }`}
+            </p>
+          )}
+        </div>
+
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2"
+          aria-busy={loading || isNavPending}
+        >
           {error ? (
             <div className="col-span-1 md:col-span-2">
               <LoadError message={error} onRetry={retry} />

@@ -137,14 +137,22 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
             </p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-400 whitespace-nowrap">Appreciation p.a.</span>
+            {/* R19-12: was a bare <span>, so this slider had no accessible name
+                at all -- a screen reader announced "slider, 8" with no label
+                and no unit. MI-13 connected labels in the other three
+                calculators and missed this one. */}
+            <label htmlFor="trend-appreciation-rate" className="text-gray-400 whitespace-nowrap">
+              Appreciation p.a.
+            </label>
             <input
+              id="trend-appreciation-rate"
               type="range"
               min={0}
               max={20}
               step={0.5}
               value={rate}
               onChange={(e) => setRate(Number(e.target.value))}
+              aria-valuetext={`${rate} percent per year`}
               className="accent-[#B77D2B]"
             />
             <span className="text-[#CEA44E] font-semibold w-10 text-right">{rate}%</span>

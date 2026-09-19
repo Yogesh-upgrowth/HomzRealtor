@@ -10,17 +10,45 @@ import { sendGaEvent } from "@/lib/analytics/gtag";
 import { resolvePageContext } from "@/lib/analytics/pageContext";
 import { getConsent, subscribeConsent } from "@/lib/analytics/consent";
 
-// GA4 spec (HOMZ-GA4-DYNAMIC-EVENTS-2026-09-15): this is the site's one
-// global enquiry modal, opened from many different places (header, hero,
-// property pages, footer CTAs) via FormContext's openForm(), which
-// currently takes no arguments -- so this component has no way to know
-// *why* it was opened. form_id/lead_type/placement below are therefore a
-// single generic identity for all of them, not per-placement. Passing real
-// context through would mean extending openForm()'s signature and updating
-// every call site -- flagged as a follow-up, not guessed at here.
+// R19-05 / R19-03 (2026-09-19): FORM_ID/LEAD_TYPE/PLACEMENT used to be three
+// hardcoded constants, because openForm() took no arguments and this component
+// genuinely could not tell why it had been opened -- which is why the recheck
+// saw lead_type "callback" reported for a Site Visit trigger. openForm() now
+// carries a LeadIntent (see context/FormContext.tsx) and these are derived from
+// it, falling back to the old values when a call site passes nothing.
 const FORM_ID = "general_enquiry";
-const LEAD_TYPE = "callback";
-const PLACEMENT = "modal";
+const DEFAULT_LEAD_TYPE = "callback";
+const DEFAULT_PLACEMENT = "modal";
+
+// Maps the intent kind onto the GA4 lead_type enum in lib/analytics/schema.ts.
+// Anything unrecognised degrades to the default rather than inventing a value
+// the schema would reject.
+// Values must come from LEAD_TYPE in lib/analytics/schema.ts -- validateEvent()
+// drops an event whose enum field is unrecognised, so an invented label here
+// would silently lose the lead event rather than mislabel it.
+const LEAD_TYPE_BY_KIND: Record<string, string> = {
+  callback: "callback",
+  site_visit: "site_visit_request",
+  price_enquiry: "best_price",
+  general: "property_enquiry",
+};
+
+// Dialog copy follows the same intent, so a visitor who pressed "Schedule Site
+// Visit" is not greeted by a generic callback form.
+const HEADING_BY_KIND: Record<string, { title: string; blurb: string }> = {
+  site_visit: {
+    title: "Schedule a site visit",
+    blurb: "Share your details and an advisor will call to arrange a visit.",
+  },
+  price_enquiry: {
+    title: "Request pricing",
+    blurb: "Share your details and an advisor will send current pricing.",
+  },
+  callback: {
+    title: "Request a callback",
+    blurb: "Share your details and an advisor will call you back.",
+  },
+};
 
 type FormState = {
   name: string;
@@ -45,7 +73,13 @@ export default function FormComponent({
   onSubmit?: (data: FormState) => void;
   initial?: Partial<FormState>;
 }) {
-  const { isOpen, closeForm } = useContext(FormContext);
+  const { isOpen, intent, closeForm } = useContext(FormContext);
+
+  // Resolved once per render from the intent the opener supplied.
+  const leadKind = intent.kind || "callback";
+  const leadType = LEAD_TYPE_BY_KIND[leadKind] || DEFAULT_LEAD_TYPE;
+  const placement = intent.placement || DEFAULT_PLACEMENT;
+  const copy = HEADING_BY_KIND[leadKind] || HEADING_BY_KIND.callback;
   const [portalReady, setPortalReady] = useState(false);
   const pathname = usePathname();
 
@@ -91,9 +125,9 @@ export default function FormComponent({
   const formEventContext = () => ({
     ...resolvePageContext(pathname),
     form_id: FORM_ID,
-    lead_type: LEAD_TYPE,
+    lead_type: leadType,
     contact_method: "web_form",
-    placement: PLACEMENT,
+    placement,
   });
 
   useEffect(() => {
@@ -241,7 +275,20 @@ export default function FormComponent({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        // R19-05: the payload used to be {name,email,phone,terms} only, so a
+        // Site Visit request on a specific project arrived indistinguishable
+        // from a footer callback. EnquiryRail.tsx already sends this shape;
+        // the modal now matches it. Fields are omitted rather than sent empty
+        // when the opener supplied nothing.
+        body: JSON.stringify({
+          ...form,
+          leadType,
+          placement,
+          ...(intent.subject ? { project: intent.subject } : {}),
+          ...(intent.subjectId ? { projectId: intent.subjectId } : {}),
+          source: `modal:${placement}`,
+          pageUrl: typeof window !== "undefined" ? window.location.href : undefined,
+        }),
       });
 
       const data = await response.json();
@@ -343,8 +390,16 @@ export default function FormComponent({
             tabIndex={-1}
             className="mb-3 max-w-[17ch] bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-2xl font-bold text-transparent outline-none md:mb-6 md:max-w-none md:text-3xl"
           >
-            Get a Personalised Property &amp; Loan Estimate
+            {copy.title}
           </h2>
+          {/* R19-05: the recheck flagged "Schedule Site Visit" opening a generic
+              property/loan-estimate dialog. The heading and this line now state
+              what will actually happen -- an advisor calls back to arrange the
+              visit -- rather than implying the visit is booked here. */}
+          <p className="mb-3 text-sm text-gray-400 md:mb-6">
+            {copy.blurb}
+            {intent.subject ? ` About ${intent.subject}.` : ""}
+          </p>
 
           <div className="hidden md:flex flex-col gap-5">
             {HIGHLIGHTS.map((h) => (
@@ -417,9 +472,33 @@ export default function FormComponent({
               className="mt-0.5 h-4 w-4 shrink-0 accent-[#D9B268] cursor-pointer"
             />
 
+            {/* R19-05: "Terms & Conditions" was a styled <span>, not an <a> --
+                it looked like a link, could not be opened, and no privacy
+                policy was referenced anywhere in the dialog. Both pages exist
+                and were already linked from the footer. target=_blank so
+                reading them does not discard a part-filled form. */}
             <span>
               I accept the{" "}
-              <span className="text-[#D9B268] font-medium">Terms &amp; Conditions</span>.
+              <a
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#D9B268] font-medium underline underline-offset-2"
+                onClick={(event) => event.stopPropagation()}
+              >
+                Terms &amp; Conditions
+              </a>{" "}
+              and the{" "}
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#D9B268] font-medium underline underline-offset-2"
+                onClick={(event) => event.stopPropagation()}
+              >
+                Privacy Policy
+              </a>
+              , and agree to be contacted about this enquiry.
             </span>
           </label>
 

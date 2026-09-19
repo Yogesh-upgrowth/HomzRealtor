@@ -166,7 +166,7 @@ export default function Hero({
 
         {/* Vertical "Enquire Now" Button */}
         <button
-          onClick={openForm}
+          onClick={() => openForm({ kind: "general", placement: "hero" })}
           className=" hidden md:block md:absolute top-1/2 right-0 z-30 -translate-y-1/2 -rotate-90 origin-bottom-right whitespace-nowrap bg-white px-8 py-3 text-sm font-bold tracking-widest text-[#B7802D] cursor-pointer hover:bg-gray-200"
         >
           ENQUIRE NOW

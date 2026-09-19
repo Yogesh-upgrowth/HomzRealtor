@@ -30,10 +30,17 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
     const annualGross = monthlyRentValue * 12;
     const effective = monthlyRentValue * Math.max(0, 12 - vacancy);
     const netAnnual = effective - maintenanceValue;
+    // R19-12 (2026-09-19): these used to fall back to the sentinel 0, which
+    // the UI then rendered as a confident "0.00%" in 4xl type -- visually
+    // indistinguishable from a genuinely computed zero yield, on a blank
+    // purchase price. null means "not computable", and the render below shows
+    // a prompt instead of a number.
+    const computable = rPriceValue > 0;
     return {
       annualGross,
-      grossYield: rPriceValue > 0 ? (annualGross / rPriceValue) * 100 : 0,
-      netYield: rPriceValue > 0 ? (netAnnual / rPriceValue) * 100 : 0,
+      computable,
+      grossYield: computable ? (annualGross / rPriceValue) * 100 : null,
+      netYield: computable ? (netAnnual / rPriceValue) * 100 : null,
       netAnnual,
     };
   }, [rPriceValue, monthlyRentValue, maintenanceValue, vacancy]);
@@ -138,15 +145,27 @@ const InvestmentCalculators = ({ title, defaultPrice }: Props) => {
           <div className="flex-1 w-full flex flex-col justify-center gap-4">
             <div className="rounded-xl border border-gray-700 p-5 text-center">
               <p className="text-xs text-gray-400 uppercase tracking-widest">Gross Rental Yield</p>
-              <p className="text-4xl font-bold text-white mt-1">{rental.grossYield.toFixed(2)}%</p>
-              <p className="text-xs text-gray-500 mt-1">{formatInrExact(rental.annualGross) ?? "N/A"} / year</p>
+              {rental.grossYield === null ? (
+                <p className="mt-2 text-sm text-gray-500">Enter a purchase price to calculate</p>
+              ) : (
+                <>
+                  <p className="text-4xl font-bold text-white mt-1">{rental.grossYield.toFixed(2)}%</p>
+                  <p className="text-xs text-gray-500 mt-1">{formatInrExact(rental.annualGross) ?? "N/A"} / year</p>
+                </>
+              )}
             </div>
             <div className="rounded-xl border border-gray-700 p-5 text-center">
               <p className="text-xs text-gray-400 uppercase tracking-widest">Est. Net Rental Yield</p>
-              <p className="text-3xl font-bold text-[#CEA44E] mt-1">{rental.netYield.toFixed(2)}%</p>
-              <p className="text-xs text-gray-500 mt-1">
-                {formatInrExact(rental.netAnnual) ?? "N/A"} / year after maintenance &amp; vacancy
-              </p>
+              {rental.netYield === null ? (
+                <p className="mt-2 text-sm text-gray-500">Enter a purchase price to calculate</p>
+              ) : (
+                <>
+                  <p className="text-3xl font-bold text-[#CEA44E] mt-1">{rental.netYield.toFixed(2)}%</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formatInrExact(rental.netAnnual) ?? "N/A"} / year after maintenance &amp; vacancy
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

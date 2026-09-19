@@ -89,8 +89,14 @@ const Navbar: React.FC = () => {
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto";
+    // R19-02: this used to write `overflow = "auto"` on every close and on
+    // mount, discarding whatever value another overlay had saved --
+    // FormComponent and AuthModal both save and restore the previous value
+    // correctly, and this line silently overrode their restore. Save and
+    // restore like they do, and only touch the property while actually open.
     if (!isMobileMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     const inerted: HTMLElement[] = [];
     if (chromeRef.current) {
@@ -135,6 +141,7 @@ const Navbar: React.FC = () => {
     window.addEventListener("keydown", handleKeydown);
     return () => {
       window.removeEventListener("keydown", handleKeydown);
+      document.body.style.overflow = previousOverflow;
       inerted.forEach((el) => el.removeAttribute("inert"));
       if (previouslyFocusedRef.current && document.body.contains(previouslyFocusedRef.current)) {
         previouslyFocusedRef.current.focus();
@@ -303,13 +310,29 @@ const Navbar: React.FC = () => {
         />
       )}
 
+      {/* R19-02 (2026-09-19): the closed drawer used to stay fully in the DOM
+          with nothing but `translate-x-full` hiding it. A CSS transform does
+          not remove anything from the tab order, so on a 390px viewport the
+          panel sat offscreen at left:390 width:320 with every one of its
+          links and its Close button still reachable by Tab -- the recheck
+          landed on that invisible Close button one Tab after pressing Escape.
+          `role="dialog" aria-modal="true"` were also permanently exposed, so
+          assistive tech saw an open modal on a page that had none.
+          `invisible` (visibility:hidden) is what actually removes the subtree
+          from the tab order and the accessibility tree, and it still animates
+          because visibility is transitionable in step with the transform --
+          the same pattern QuickSearchPanel.tsx already uses correctly. The
+          dialog roles are applied only while open. */}
       <div
         ref={drawerRef}
-        role="dialog"
-        aria-modal="true"
+        role={isMobileMenuOpen ? "dialog" : undefined}
+        aria-modal={isMobileMenuOpen ? "true" : undefined}
         aria-label="Site menu"
+        aria-hidden={isMobileMenuOpen ? undefined : "true"}
         className={`fixed top-0 right-0 bottom-0 z-40 w-[min(320px,84vw)] overflow-y-auto border-l border-white/10 bg-[#131315] pt-28 shadow-[0_30px_90px_rgba(0,0,0,0.6)] transition-transform duration-[350ms] ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "translate-x-full invisible pointer-events-none"
         }`}
       >
         {/* MI-02: a real, visible, labeled close control inside the panel

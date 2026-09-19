@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { useDialogLifecycle } from "@/hooks/useDialogLifecycle";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
@@ -15,22 +16,23 @@ const AuthModal = () => {
     setPortalReady(true);
   }, []);
 
-  useEffect(() => {
-    if (!mode) return;
+  // R19-02 (2026-09-19): this modal previously had Escape and a scroll lock
+  // and nothing else -- no initial focus (so focus stayed on whatever opened
+  // it, typically the mobile menu's Open button behind the overlay), no Tab
+  // trap (Tab from the last control walked straight into the live page
+  // behind), no background inertness, and no focus restoration (Escape left
+  // focus on a removed portal node, which the browser resets to <body>).
+  // The shared hook supplies all of it; the heading inside LoginForm/SignupForm
+  // is not exposed here, so initial focus falls to the first focusable control,
+  // which is the Close button.
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const handleClose = useCallback(() => close(), [close]);
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [close, mode]);
+  useDialogLifecycle({
+    open: Boolean(mode) && portalReady,
+    dialogRef,
+    onClose: handleClose,
+  });
 
   if (!mode || !portalReady) return null;
 
@@ -41,6 +43,7 @@ const AuthModal = () => {
       role="presentation"
     >
       <div
+        ref={dialogRef}
         className="relative max-h-[calc(100dvh-24px)] w-full overflow-y-auto overscroll-contain rounded-t-[28px] border border-b-0 border-white/10 bg-[#141416] px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-10 text-white shadow-[0_-24px_80px_rgba(0,0,0,0.65)] scrollbar-hide md:max-h-[90vh] md:max-w-md md:rounded-[24px] md:border-b md:p-8 md:shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"

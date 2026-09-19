@@ -107,7 +107,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ data }) => {
         {/* Button */}
 
         <button
-          onClick={openForm}
+          onClick={() => openForm({ kind: "general", placement: "property_card", subject: data.title })}
           className="bg-gradient-to-b from-[#FDF094] to-[#B77D2B] hover:bg-yellow-600 text-black font-medium py-2 px-8 rounded-md w-fit hover:cursor-pointer"
         >
           {data.buttonText}
