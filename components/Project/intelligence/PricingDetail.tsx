@@ -117,6 +117,16 @@ const PricingDetail = ({ title, priceList, defaultPrice, possessionText }: Props
     return data;
   }, [base, rate, years, nowYear, preciseYears, possYear]);
 
+  // 2026-09-21: same guard as PriceTrendChart, and the same reasoning — with
+  // no future possession date the horizon fell back to a flat 3 years and the
+  // module rendered an "At Possession" projection for a property that is
+  // already possessed. See the long note in PriceTrendChart.tsx.
+  //
+  // This component is not mounted anywhere today. The guard is here so that
+  // whoever mounts it next does not silently reintroduce the 21 Sep audit's
+  // ready-to-move finding along with it.
+  if (!(possYear && possYear > nowYear)) return null;
+
   const projected = journey[journey.length - 1]?.value ?? base;
   const gain = projected - base;
   const growthPct = base > 0 ? Math.round((projected / base - 1) * 100) : 0;

@@ -120,6 +120,7 @@ const FlatIntelligenceSections = async ({ cityParam, slug }: Props) => {
         priceList={project.price_list}
         defaultPrice={project.min_price_inr}
         possessionText={project.possession_text}
+        projectStatus={project.project_status}
       />
       {priceData && (
         <PriceInsights title={project.project_name} data={priceData} priceList={project.price_list} />

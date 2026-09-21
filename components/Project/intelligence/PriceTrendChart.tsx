@@ -59,6 +59,10 @@ type Props = {
   priceList: PriceRow[];
   defaultPrice: number | null;
   possessionText: string | null;
+  /** The project's construction status. Required to decide whether a
+   *  possession projection is meaningful at all — see the gate in the
+   *  component body. */
+  projectStatus?: string | null;
   // When true, skips the outer section wrapper + heading so this can be
   // nested inside another composite section (e.g. PricingAndPayment) without
   // a duplicate heading. Default false keeps /flat's usage unchanged.
@@ -78,7 +82,14 @@ function InrTooltip({ active, payload, label }: { active?: boolean; payload?: an
 // Projected price journey (current real price → possession estimate). Only the
 // starting point is real (from the listing); the trajectory is an illustrative,
 // user-adjustable appreciation estimate — never presented as historical data.
-const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare = false }: Props) => {
+const PriceTrendChart = ({
+  title,
+  priceList,
+  defaultPrice,
+  possessionText,
+  projectStatus = null,
+  bare = false,
+}: Props) => {
   const configPrices = (Array.isArray(priceList) ? priceList : [])
     .map((r) => parsePriceStr(String(r.price ?? "")))
     .filter((n): n is number => !!n);
@@ -95,6 +106,31 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
   // still needs a horizon, so it falls back to a plain 3-year window rather
   // than being framed as "at possession" for a year that has already happened.
   const futurePossessionYear = possYear && possYear > nowYear ? possYear : null;
+
+  // 21 Sep audit: "A ready-to-move project cannot logically have a future
+  // possession projection." It was right, and the bug was subtler than the
+  // label.
+  //
+  // futurePossessionYear was already correctly null for a Ready to Move
+  // project — but `years` then fell back to a flat 3, so the module still
+  // rendered a three-year curve at an assumed 8% a year under the heading
+  // "projected value at possession", for a property that is already
+  // possessed. The fallback was invented precision on a project whose whole
+  // point is that the wait is over.
+  //
+  // Two conditions now have to hold, matching the audit's status/module
+  // matrix: there must be a genuine future possession date to project TO, and
+  // the project must not be marked Ready to Move. The second catches the
+  // data contradiction where an RTM record still carries a future date —
+  // when a record's own fields disagree, rendering neither reading is the
+  // honest answer.
+  //
+  // Ready-to-move and unknown-status projects therefore show no projection at
+  // all. There is nothing dishonest left to show them: current pricing and
+  // rental analysis are the modules that apply, and both live elsewhere on
+  // the page.
+  const isReadyToMove = /ready\s*to\s*move|\brtm\b|completed|delivered/i.test(projectStatus ?? "");
+  const canProject = Boolean(futurePossessionYear) && !isReadyToMove;
   const years =
     futurePossessionYear && futurePossessionYear - nowYear <= 15 ? futurePossessionYear - nowYear : 3;
   // The exact holding period used for the "at possession" figure — a
@@ -116,7 +152,7 @@ const PriceTrendChart = ({ title, priceList, defaultPrice, possessionText, bare 
     return data;
   }, [base, rate, years, nowYear, preciseYears, futurePossessionYear]);
 
-  if (!base || journey.length === 0) return null;
+  if (!base || journey.length === 0 || !canProject) return null;
 
   const projected = journey[journey.length - 1]?.value ?? base;
   const gain = projected - base;

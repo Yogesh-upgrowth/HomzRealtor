@@ -257,6 +257,17 @@ export function filterProperties(
     );
   }
 
+  // A flat that arrived in the commercial feed typed as a warehouse is not
+  // commercial inventory, and the 21 Sep audit was explicit that these
+  // contaminate the commercial landing pages. dataQuality.ts has already
+  // corrected the record's type and flagged it; this keeps it off the
+  // commercial category surfaces. It stays fully available on its own detail
+  // page and in the residential surfaces -- the listing is real, only its
+  // classification was wrong, and dropping real inventory is not the fix.
+  if (category === "Commercial") {
+    result = result.filter((p) => p.reclassified !== "residential-in-commercial");
+  }
+
   if (category === "Commercial" && investmentGrade) {
     result = result.filter((p) => (p.investmentScore ?? 0) >= INVESTMENT_GRADE_THRESHOLD);
   }

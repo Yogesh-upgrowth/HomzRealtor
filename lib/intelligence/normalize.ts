@@ -1,6 +1,11 @@
 // Normalizes raw homzbackend API records into structured project data.
 // Mirrors scripts/lib/normalize.mjs but as TypeScript for use in server components.
 
+import {
+  projectLooksResidential,
+  stripCompetitorParagraphs,
+} from "./dataQuality";
+
 export const CITY_META: Record<string, { name: string; state: string }> = {
   ggn: { name: "Gurgaon", state: "Haryana" },
   delhi: { name: "Delhi", state: "Delhi" },
@@ -26,12 +31,29 @@ export const KNOWN_BUILDERS = [
 // "*This data is derived by the Square Yards data intelligence team...*"
 // on Emaar Serenity Hills — confirmed live. Rather than editing/replacing
 // that copy (which would mean writing new marketing prose without a real
-// source), this drops only the offending sentence/paragraph, keeping
-// everything else the feed provided untouched.
-const SYNDICATION_MARKERS = [/square\s*yards/i];
-
+// source), this drops only the offending text, keeping everything else the
+// feed provided untouched.
+//
+// 2026-09-21: widened twice, after the 21 Sep audit found
+// "Square Yards exceptional legal team can assist you..." still rendering
+// inside the M3M Latitude description.
+//
+//   - From one pattern to the full competitor set (MagicBricks, 99acres,
+//     Housing.com, NoBroker, PropTiger, CommonFloor and the rest), which is
+//     the sitewide sweep that audit asked for. The old single pattern only
+//     ever caught one of the sources this catalogue aggregates.
+//   - From dropping the whole paragraph to dropping only the sentences that
+//     name a competitor. A paragraph is usually several sentences of
+//     legitimate project description plus one stray line; discarding all of
+//     it lost real content, and that loss is very likely why the "legal team"
+//     sentence survived — it sat in a paragraph whose other sentences were
+//     worth keeping, so a paragraph-level filter could not remove it without
+//     removing them.
+//
+// See lib/intelligence/dataQuality.ts for the patterns and for why the
+// sentence is the smallest safe unit to remove.
 function stripSyndicatedText(paragraphs: string[]): string[] {
-  return paragraphs.filter((p) => !SYNDICATION_MARKERS.some((re) => re.test(p)));
+  return stripCompetitorParagraphs(paragraphs);
 }
 
 // DEV-02 (2026-09-16): confirmed live — ATS Triumph Villas' aboutProject
@@ -389,8 +411,18 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
   const name = raw.projectTitle || "Untitled Project";
   const price = extractPriceRange(raw.price, raw.priceList);
   const size = extractSizeRange(raw.size);
+  // 2026-09-21: widened from BHKType alone to the fuller residential-evidence
+  // set in dataQuality.ts. The 21 Sep audit found residential projects still
+  // presenting as Commercial, and BHKType is frequently absent on exactly the
+  // records that need correcting -- a project whose own copy says "512
+  // spacious homes" or "residential towers" is not ambiguous. Still one-way,
+  // Commercial -> Residential only, for the reason in the note above.
   const effectiveCategory =
-    category === "Commercial" && hasResidentialConfiguration(raw.BHKType) ? "Residential" : category;
+    category === "Commercial" &&
+    (hasResidentialConfiguration(raw.BHKType) ||
+      projectLooksResidential(raw.BHKType, name, raw.aboutProject))
+      ? "Residential"
+      : category;
 
   return {
     slug: slugify(name),

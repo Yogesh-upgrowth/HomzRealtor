@@ -3,7 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { getBuilderBySlug, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+import {
+  getBuilderBySlug,
+  getAllBuilders,
+  canonicalCitySlug,
+  isIndexableDeveloper,
+} from "@/lib/intelligence/projects";
 import { buildDeveloperProfile, buildDeveloperFaqs } from "@/lib/intelligence/developerProfile";
 import { formatInr } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
@@ -54,6 +59,13 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description,
+    // 2026-09-21, per the 21 Sep audit's entity-validation recommendation: a
+    // hub holding a single project is a thin indexable page whose whole
+    // content is one card that already has its own URL. It keeps rendering
+    // and stays crawlable, so the project remains reachable and any already
+    // indexed URL does not start 404ing -- it is simply not offered for
+    // indexing. follow:true so the link equity still flows to the project.
+    ...(isIndexableDeveloper(summary) ? {} : { robots: { index: false, follow: true } }),
     keywords: [
       `${summary.name} projects`,
       `${summary.name} property`,

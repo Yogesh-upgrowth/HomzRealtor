@@ -16,6 +16,7 @@
 
 import { homzDataUrl, type RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { sortByImageFirst, sortByReraFirst, computeFacets, type ListingFacets } from "@/lib/listings/filters";
+import { sanitizeSegment } from "@/lib/intelligence/dataQuality";
 
 const TTL_MS = 60 * 60 * 1000; // 1h — well under the daily export cadence
 // 25000 covers the real max segment total seen live (ggnSaleProperties:
@@ -58,7 +59,14 @@ async function loadSegment(segment: string): Promise<CacheEntry> {
     const res = await fetch(homzDataUrl(segment, 1, UPSTREAM_LIMIT), { cache: "no-store" });
     if (!res.ok) throw new Error(`upstream ${res.status} for segment ${segment}`);
     const payload = await res.json();
-    const data: RawHomzProperty[] = Array.isArray(payload?.results) ? payload.results : [];
+    const raw: RawHomzProperty[] = Array.isArray(payload?.results) ? payload.results : [];
+    // 2026-09-21, per the 21 Sep audit: corrections happen here, at the one
+    // boundary every consumer reads through, so a fix reaches the grid, the
+    // category pages, the sector medians, the sitemap and the structured data
+    // together rather than page by page. Two things are corrected —
+    // competitor prose that leaked into our own copy, and flats carrying
+    // commercial property types. See lib/intelligence/dataQuality.ts.
+    const data = sanitizeSegment(raw);
     const sorted = sortByReraFirst(sortByImageFirst(data));
     const facets = computeFacets(sorted);
     const entry: CacheEntry = { data, sorted, facets, expiresAt: Date.now() + TTL_MS };

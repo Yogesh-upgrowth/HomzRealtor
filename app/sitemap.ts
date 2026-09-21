@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
+import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper } from '@/lib/intelligence/projects'
 import {
   homzDataUrl,
   propertySegment,
@@ -209,8 +209,12 @@ async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
   ]
   try {
     const developers = await getAllBuilders()
+    // Only hubs the developer page itself offers for indexing. 2026-09-21,
+    // per the 21 Sep audit: a hub holding a single project is noindex there
+    // (see isIndexableDeveloper), and a sitemap entry for a noindex URL is a
+    // contradiction Search Console reports as an error.
     developerUrls = developerUrls.concat(
-      developers.map((d) => ({
+      developers.filter(isIndexableDeveloper).map((d) => ({
         url: `${BASE_URL}/developer/${d.slug}`,
         changeFrequency: 'weekly' as const,
         priority: 0.6,

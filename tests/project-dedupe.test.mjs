@@ -8,13 +8,34 @@
 //
 // Run: node --experimental-strip-types tests/project-dedupe.test.mjs
 
-import { mkdtempSync, copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const dir = mkdtempSync(join(tmpdir(), "projdedupe-"));
-copyFileSync("lib/intelligence/normalize.ts", join(dir, "normalize.ts"));
+writeFileSync(
+  join(dir, "normalize.ts"),
+  readFileSync("lib/intelligence/normalize.ts", "utf8").replace(
+    'from "./dataQuality"',
+    'from "./dataQuality.ts"'
+  )
+);
+// normalize.ts imports ./dataQuality (added 2026-09-21 for the competitor-prose
+// and classification corrections), so that sibling has to come along too — with
+// its own "@/" import rewritten to a local stub the same way.
+writeFileSync(
+  join(dir, "homzbackend.ts"),
+  "export type RawHomzProperty = Record<string, any>;\n"
+);
+writeFileSync(
+  join(dir, "dataQuality.ts"),
+  readFileSync("lib/intelligence/dataQuality.ts", "utf8").replace(
+    'from "@/lib/scraping/homzbackend"',
+    'from "./homzbackend.ts"'
+  )
+);
+
 writeFileSync(
   join(dir, "projectDedupe.ts"),
   readFileSync("lib/intelligence/projectDedupe.ts", "utf8").replace(

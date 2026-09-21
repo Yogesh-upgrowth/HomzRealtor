@@ -488,6 +488,32 @@ export function isLinkableBuilder(builder: string | null | undefined): boolean {
   return Boolean(slug && slug.length >= 3);
 }
 
+/**
+ * Projects a developer needs before its hub is worth indexing.
+ *
+ * The 21 Sep audit asked for an entity-validation layer before developer
+ * pages become indexable, having found indexed hubs for "The" and "J". The
+ * name parsing that produced those is already fixed (see extractBuilder's
+ * BUILDER_STOPWORDS and the length floor in isLinkableBuilder), but the other
+ * half of that finding is still true: a hub holding one project is a thin
+ * indexable page whose entire content is a single card that already has its
+ * own page.
+ *
+ * Two, not more. A developer with two Gurgaon projects is a real developer and
+ * the hub genuinely aggregates something. Setting the bar higher would
+ * de-index legitimate smaller builders, which is a different mistake.
+ *
+ * Thin hubs are NOT removed — they keep rendering and stay crawlable so the
+ * project stays reachable. They are noindex,follow and absent from the
+ * sitemap, which is what the audit recommends for thin developer pages and
+ * avoids 404ing URLs Google has already indexed.
+ */
+export const MIN_INDEXABLE_DEVELOPER_PROJECTS = 2;
+
+export function isIndexableDeveloper(summary: Pick<DeveloperSummary, "count">): boolean {
+  return summary.count >= MIN_INDEXABLE_DEVELOPER_PROJECTS;
+}
+
 type DeveloperIndex = Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>;
 
 // Called independently by getAllBuilders(), getBuilderBySlug() (any slug)
