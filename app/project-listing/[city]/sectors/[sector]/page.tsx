@@ -12,6 +12,7 @@ import {
 } from "@/lib/intelligence/projects";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import SectorIntelligence from "@/components/Project/SectorIntelligence";
+import { sectorHubSlug } from "@/lib/listings/facets";
 import { buildSectorContext, buildSectorFaqs } from "@/lib/intelligence/sectorContext";
 import { formatInr } from "@/lib/intelligence/normalize";
 import AppointmentCard from "@/components/Common/Appointment";
@@ -129,6 +130,17 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   // infrastructure, builder mix -- from Homz's own catalogue, so the page
   // carries substance rather than a card grid. See lib/intelligence/sectorContext.ts.
   const sectorCtx = buildSectorContext(cityKey, sectorLabel, projects);
+
+  // Generation time, which on this ISR'd route is exactly when these figures
+  // were read from the catalogue.
+  const sectorAsOf = new Date();
+  const sectorAsOfLabel = sectorAsOf.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  // "Sector 82A" -> "82a", the token the listing hubs use.
+  const sectorTokenForHub = sectorLabel.replace(/^sector\s*/i, "").trim().toLowerCase();
   const sectorFaqs = buildSectorFaqs(sectorLabel, name, sectorCtx, formatInr);
 
   const withImages = projects.filter((p) => p.images.length > 0);
@@ -326,6 +338,42 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
               {commercial.length} Commercial
             </span>
           )}
+        </div>
+
+        {/* 21 Sep audit, section 11: its expansion list for sector pages named
+            "Data update date" and "Methodology", and the rates page carried
+            both while these did not — so a reader had no way to tell how old
+            a median was or what it was computed from. Same wording and the
+            same honesty as /property-rates-in-gurgaon, because it is the same
+            engine underneath. */}
+        <p className="mt-5 max-w-3xl text-[13px] leading-relaxed text-gray-500">
+          Figures computed from HomzRealtor&rsquo;s own catalogue as of{" "}
+          <time dateTime={sectorAsOf.toISOString()}>{sectorAsOfLabel}</time>. These are asking
+          prices, not transacted prices, and a median is only shown once at least four priced
+          projects sit behind it.{" "}
+          <Link href="/property-rates-in-gurgaon" className="text-[#D9B268] hover:underline">
+            Full methodology and every sector&rsquo;s rate
+          </Link>
+          .
+        </p>
+
+        {/* The audit's same list asked for rental inventory on a sector page.
+            Rather than recompute the rental segment here, these link to the
+            listing hubs that now exist per sector and hold the real thing —
+            live units rather than a count of them. */}
+        <div className="mt-5 flex flex-wrap gap-2 text-[13.5px]">
+          <Link
+            href={`/buy-property/gurgaon/${sectorHubSlug(sectorTokenForHub)}`}
+            className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
+          >
+            Property for sale in {sectorLabel}
+          </Link>
+          <Link
+            href={`/rent-property/gurgaon/${sectorHubSlug(sectorTokenForHub)}`}
+            className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
+          >
+            Rentals in {sectorLabel}
+          </Link>
         </div>
       </section>
 

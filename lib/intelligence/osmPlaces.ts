@@ -43,6 +43,26 @@ const IMPLAUSIBLE_BY_CATEGORY: Record<string, RegExp> = {
   // A bank branch or ATM is never a park or a grocery store.
   Parks: /\b(bank|atm)\b/i,
   Supermarkets: /\b(bank|atm|body\s*shop|salon|spa|cosmetics?|pharmacy|chemist|optic(?:al|ians?)?)\b/i,
+  // 21 Sep audit: the Schools list on a project page contained "fitness
+  // centres, sports facilities and tennis clubs". Confirmed in the committed
+  // dataset -- "xtreme tennis academy", "HIRA YOGA TRAINING KENDER" and
+  // "Delhi University Sports Council" all arrive tagged amenity=school
+  // upstream in OSM, so the generator's taxonomy (which is correct: Schools
+  // takes only school/college/university) cannot filter them. Only a name
+  // check can.
+  //
+  // Written as a facility word PAIRED with a facility-type word rather than a
+  // list of banned words, because the single words are all legitimate in real
+  // school names -- a great many Indian schools are "<Something> Academy",
+  // plenty teach music, art and dance, and "sports" appears in school names
+  // too. The pairing is what separates "xtreme tennis academy" from "Ryan
+  // International Academy".
+  //
+  // Validated against the real data before shipping: it removes exactly those
+  // three of 338 Schools entries, and catches none of a control set of 20
+  // real Gurgaon/Delhi school names. Re-check both if the pattern changes.
+  Schools:
+    /\b(tennis|badminton|squash|cricket|football|basketball|swimming|skating|martial\s*arts|karate|taekwondo|yoga|zumba|aerobics|gymnasium|fitness|dance|music|art)\b[\s\w.-]{0,20}\b(academy|centre|center|club|court|complex|studio|training|kender|kendra|classes|council)\b|\b(academy|centre|center|club|studio|training)\b[\s\w.-]{0,20}\b(tennis|badminton|squash|cricket|swimming|yoga|fitness|dance)\b|\bsports?\s*(council|authority|complex|club|centre|center|academy)\b/i,
 };
 
 export function isImplausibleForCategory(name: string, category: string): boolean {

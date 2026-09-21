@@ -71,6 +71,11 @@ const POI_RULES = [
 const IMPLAUSIBLE_BY_CATEGORY = {
   Parks: /\b(bank|atm)\b/i,
   Supermarkets: /\b(bank|atm|body\s*shop|salon|spa|cosmetics?|pharmacy|chemist|optic(?:al|ians?)?)\b/i,
+  // See the long note on the matching entry in lib/intelligence/osmPlaces.ts
+  // for why this is a paired pattern rather than a word list, and for the
+  // validation it was checked against.
+  Schools:
+    /\b(tennis|badminton|squash|cricket|football|basketball|swimming|skating|martial\s*arts|karate|taekwondo|yoga|zumba|aerobics|gymnasium|fitness|dance|music|art)\b[\s\w.-]{0,20}\b(academy|centre|center|club|court|complex|studio|training|kender|kendra|classes|council)\b|\b(academy|centre|center|club|studio|training)\b[\s\w.-]{0,20}\b(tennis|badminton|squash|cricket|swimming|yoga|fitness|dance)\b|\bsports?\s*(council|authority|complex|club|centre|center|academy)\b/i,
 };
 
 function isImplausibleForCategory(name, category) {

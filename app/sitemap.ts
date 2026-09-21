@@ -327,6 +327,10 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/disclaimer`, changeFrequency: 'yearly', priority: 0.3 },
+    // Higher priority than the other policy pages on purpose: this one states
+    // the data methodology and the corrections process, which is trust content
+    // rather than boilerplate.
+    { url: `${BASE_URL}/editorial-policy`, changeFrequency: 'monthly', priority: 0.5 },
     // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
     // it has nothing to earn from a sitemap entry.
     { url: `${BASE_URL}/property-insights`, changeFrequency: 'monthly', priority: 0.5 },

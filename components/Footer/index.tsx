@@ -206,6 +206,14 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Disclaimer
               </Link>
             </li>
+            {/* 21 Sep audit, section 19: a corrections policy and an editorial
+                policy were the two items on its E-E-A-T list that existed
+                nowhere on the site. */}
+            <li>
+              <Link href="/editorial-policy" className={colLinkCls}>
+                Editorial Policy
+              </Link>
+            </li>
             <li>
               {/* MI-18 (2026-09-18): the consent banner only ever asked
                   once -- there was no way to come back and change that

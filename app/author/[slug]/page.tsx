@@ -185,7 +185,10 @@ export default async function AuthorPage({ params }: PageParams) {
               </Link>
               . A corrected guide helps the next reader as much as it helps you.
             </p>
-            <p className="mt-4 text-[13.5px]">
+            <p className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[13.5px]">
+              <Link href="/editorial-policy" className="text-[#D9B268] hover:underline">
+                Editorial and corrections policy
+              </Link>
               <Link href="/about-us#credentials" className="text-[#D9B268] hover:underline">
                 Full registration and company details
               </Link>
