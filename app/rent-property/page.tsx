@@ -1,5 +1,6 @@
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
+import HubDirectory from "@/components/PropertyListing/HubDirectory";
 import { computeFacets, hasActiveListingFilters } from "@/lib/listings/filters";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
 
@@ -65,6 +66,14 @@ export default async function RentPropertyPage({
         initialFacets={initialFacets}
       />
       {!filtered && <ListingPreviewSection category="Rent" skip={8} />}
+      {/* 2026-09-21: the entry point into the sector and corridor hubs.
+          Before these existed, most of the catalogue was reachable only
+          hundreds of pages into a pagination chain — offered to Google in
+          the sitemap and buried by the site's own link graph. Hidden while
+          a filter is active, same as the preview grid above: the visitor
+          has already narrowed the set and a full area index under their
+          results is noise. */}
+      {!filtered && <HubDirectory category="Rent" />}
     </>
   );
 }

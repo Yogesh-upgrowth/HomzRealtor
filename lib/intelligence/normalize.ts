@@ -205,7 +205,10 @@ export function extractPriceRange(priceText?: string | null, priceList?: any[] |
 // Sq.M or acres. A basis this codebase can't confirm (no unit detected in
 // the text) now surfaces as size_unit: null rather than a guessed "sq.ft" --
 // "Area not confirmed" is the honest fallback, not a fabricated one.
-function detectAreaUnit(text: string): string | null {
+// Exported 2026-09-21 for the listing location hubs: they compute a per-sq-ft
+// rate from the listings' own `size` strings, and need the same
+// confirmed-unit-or-nothing rule rather than a second implementation of it.
+export function detectAreaUnit(text: string): string | null {
   if (/sq\.?\s*yd|sqyd|sq\.?\s*yard|square\s*yard/i.test(text)) return "sq.yd";
   if (/sq\.?\s*m(?:eter|etre)?s?\b|sqm\b|square\s*met/i.test(text)) return "sq.m";
   if (/sq\.?\s*ft|sqft|square\s*fee?t/i.test(text)) return "sq.ft";

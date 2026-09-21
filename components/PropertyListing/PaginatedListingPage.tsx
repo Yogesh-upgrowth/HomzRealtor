@@ -29,8 +29,12 @@ import devImg from "@/public/totalUnit.svg";
 
 const SITE = "https://www.homzrealtor.com";
 // Same size as the project pagination pages — light HTML, still a
-// meaningful slice per crawl.
-export const PAGE_SIZE = 24;
+// meaningful slice per crawl. Defined in lib/listings/facets.ts, which is
+// React-free and so importable by app/sitemap.ts; re-exported here under the
+// name every existing caller already uses, so there is one value rather than
+// two that can drift.
+export { LISTING_PAGE_SIZE as PAGE_SIZE } from "@/lib/listings/facets";
+import { LISTING_PAGE_SIZE as PAGE_SIZE } from "@/lib/listings/facets";
 
 // Build-time cap on how many pagination pages generateStaticParams actually
 // enumerates. Confirmed by a real production build: with Sale at ~20,957

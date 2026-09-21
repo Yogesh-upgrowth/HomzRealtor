@@ -8,12 +8,17 @@ import {
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { filterProperties } from '@/lib/listings/filters'
-import { BUY_FACETS } from '@/components/PropertyListing/FacetedListingPage'
+import {
+  buildLocationHubs,
+  LISTING_PAGE_SIZE,
+  staticFacetsFor,
+} from '@/lib/listings/facets'
 import { getAllSorted } from '@/components/PropertyListing/PaginatedListingPage'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
 import { allResolved, SELLER_TERM_KEYS, LANDLORD_TERM_KEYS } from '@/lib/content/ownerPending'
+import { AUTHORS } from '@/lib/content/authors'
 
 // Was `force-dynamic` — that recomputed every segment (full catalogue
 // fetch + JSON parse + facet filtering over tens of thousands of records)
@@ -253,27 +258,41 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
     priority: 0.7,
   }))
 
-  // Content audit B-04 (2026-09-08) — faceted landing pages, Sale only for
-  // now. PAGE_SIZE mirrors FacetedListingPage.tsx's own constant (24);
-  // duplicated here rather than imported to avoid pulling a "use client"-free
-  // React component module into the sitemap's dependency graph for one number.
-  const FACET_PAGE_SIZE = 24
-  const facetUrls: MetadataRoute.Sitemap =
-    category === 'Sale'
-      ? Object.values(BUY_FACETS).flatMap((facet) => {
-          const filtered = filterProperties(properties, facet.filters, category)
-          if (filtered.length === 0) return []
-          const totalPages = Math.max(1, Math.ceil(filtered.length / FACET_PAGE_SIZE))
-          const base = `${BASE_URL}/${routeBase}/gurgaon/${facet.slug}`
-          const lastMod = maxDate(filtered.map((p) => p.updatedAt))
-          return Array.from({ length: totalPages }, (_, i) => ({
-            url: i === 0 ? base : `${base}/page/${i + 1}`,
-            lastModified: lastMod,
-            changeFrequency: 'daily' as const,
-            priority: i === 0 ? 0.75 : 0.6,
-          }))
-        })
-      : []
+  // Landing pages: the hand-written facets (content audit B-04, 2026-09-08)
+  // and, since 2026-09-21, the sector and corridor hubs. Both now come from
+  // lib/listings/facets.ts, which is deliberately React-free so this module
+  // can import it directly — LISTING_PAGE_SIZE included, so the 24 no longer
+  // has to be duplicated here.
+  //
+  // Sale and Rent both carry landing pages now. Rent previously had none at
+  // all: ~13,000 listings whose only entry point was a ~540-page pagination
+  // chain.
+  const staticFacets = Object.values(staticFacetsFor(category))
+
+  // Only hubs that clear MIN_HUB_LISTINGS, because only those actually render
+  // — below the floor the route 404s. A sitemap entry pointing at a 404 is a
+  // Search Console error, and listing hubs we deliberately suppress would be
+  // exactly that.
+  const locationHubs = buildLocationHubs(properties, category).map((h) => h.facet)
+
+  const facetUrls: MetadataRoute.Sitemap = [...staticFacets, ...locationHubs].flatMap(
+    (facet) => {
+      const filtered = filterProperties(properties, facet.filters, category)
+      if (filtered.length === 0) return []
+      const totalPages = Math.max(1, Math.ceil(filtered.length / LISTING_PAGE_SIZE))
+      const base = `${BASE_URL}/${routeBase}/gurgaon/${facet.slug}`
+      const lastMod = maxDate(filtered.map((p) => p.updatedAt))
+      return Array.from({ length: totalPages }, (_, i) => ({
+        url: i === 0 ? base : `${base}/page/${i + 1}`,
+        lastModified: lastMod,
+        changeFrequency: 'daily' as const,
+        // Location hubs outrank the citywide facets on page 1: they are the
+        // pages that serve a real query ("3 BHK in Sector 65") and the pages
+        // that carry area-specific computed content.
+        priority: i === 0 ? (facet.location ? 0.8 : 0.75) : 0.6,
+      }))
+    }
+  )
 
   return [indexUrl, ...facetUrls, ...detailUrls]
 }
@@ -310,6 +329,21 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     ...(pgHasInventory ? [{ url: `${BASE_URL}/pg-property`, changeFrequency: 'daily' as const, priority: 0.6 }] : []),
     // SEO audit M-08 (2026-09-08) — real standalone page, real FAQ content.
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.5 },
+
+    // 2026-09-21: the rates table. A head-term page ("property rates in
+    // gurgaon", "property price sector 65") computed entirely from our own
+    // catalogue, and the master internal-link hub for every area page. High
+    // priority and daily: the figures move as inventory moves.
+    { url: `${BASE_URL}/property-rates-in-gurgaon`, changeFrequency: 'daily', priority: 0.85 },
+
+    // Author profiles. Every guide was bylined to a slug with no page behind
+    // it, so the byline linked nowhere and blogPostSchema's own
+    // author.profileUrl contract could not be satisfied.
+    ...Object.keys(AUTHORS).map((slug) => ({
+      url: `${BASE_URL}/author/${slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
+    })),
 
     // The owner-side journeys. Both were noindex while their commercial terms
     // were unpublished; the owner supplied the fee terms on 2026-09-19 and

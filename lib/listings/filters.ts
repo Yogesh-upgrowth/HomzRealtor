@@ -9,6 +9,7 @@
 
 import type { RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { validImages } from "@/lib/intelligence/view-model";
+import { listingSectorToken, listingCorridorSlug } from "./listingLocation";
 
 export type PropertyCategory = "Sale" | "Rent" | "Pg" | "Commercial";
 
@@ -21,6 +22,14 @@ export type ListingFilters = {
   saleType?: string; // "resale" | "new_launch" — Sale category only
   golf?: boolean;
   investmentGrade?: boolean; // Commercial category only
+  /** Gurgaon sector token ("65", "82a") — see lib/listings/listingLocation.ts.
+   *  Set only by the location hubs (lib/listings/locationHubs.ts), never from
+   *  a query string: it is deliberately absent from LISTING_FILTER_PARAMS
+   *  below, because the sector is expressed as a path segment on its own
+   *  indexable URL rather than as a filter on the citywide hub. */
+  sector?: string;
+  /** Gurgaon corridor slug ("sohna-road"). Same reasoning as `sector`. */
+  corridor?: string;
 };
 
 /** Every query-string key that narrows the result set. `page` is deliberately
@@ -152,8 +161,34 @@ export function filterProperties(
   category: PropertyCategory
 ): RawHomzProperty[] {
   let result = list;
-  const { q, propertyType, bedrooms, budget, possession, saleType, golf, investmentGrade } =
-    filters;
+  const {
+    q,
+    propertyType,
+    bedrooms,
+    budget,
+    possession,
+    saleType,
+    golf,
+    investmentGrade,
+    sector,
+    corridor,
+  } = filters;
+
+  // Location narrowing runs first: it is the most selective filter by a wide
+  // margin (one sector out of ~115), so everything after it works on a much
+  // smaller array.
+  //
+  // Matched through listingLocation.ts rather than a substring test on
+  // `location`. A naive `location.includes("Sector 6")` matches Sector 60,
+  // 61 and 65, and a naive `includes("Sector 65")` misses "Sec 65" and
+  // "Sector-65" — both of which the feed uses.
+  if (sector) {
+    result = result.filter((p) => listingSectorToken(p) === sector);
+  }
+
+  if (corridor) {
+    result = result.filter((p) => listingCorridorSlug(p) === corridor);
+  }
 
   if (q) {
     const needle = q.toLowerCase();
