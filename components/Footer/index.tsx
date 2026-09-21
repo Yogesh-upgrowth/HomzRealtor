@@ -165,6 +165,30 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Contact
               </Link>
             </li>
+            {/* Both added 2026-09-21 after npm run check:orphans measured the
+                internal link graph.
+
+                /faq had exactly ONE inbound link on the whole site, from the
+                credentials block on /about-us — and /about-us is itself only
+                linked from the footer. So a 31-question page carrying FAQPage
+                markup sat two clicks behind a weakly-linked page, in the
+                sitemap and indexable, inheriting almost no internal link
+                equity. Before the credentials block existed it was a complete
+                orphan.
+
+                /property-rates-in-gurgaon was reachable only from the listing
+                hubs and the blog. It is the page most likely to earn links
+                on its own, so it belongs in the sitewide chrome. */}
+            <li>
+              <Link href="/property-rates-in-gurgaon" className={colLinkCls}>
+                Gurgaon Property Rates
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className={colLinkCls}>
+                FAQs
+              </Link>
+            </li>
           </ul>
           <ul className="mt-6 space-y-2.5">
             <li>
