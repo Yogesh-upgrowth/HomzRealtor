@@ -11,7 +11,7 @@ import FormComponent from "@/components/FormComponent";
 import AuthModal from "@/components/Auth/AuthModal";
 import ConsentBanner from "@/components/Analytics/ConsentBanner";
 import ogImage from "@/assets/images/herobg.jpg";
-import { getSectorsForCity, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { getSectorsForCity, getAllBuilders, canonicalCitySlug, isIndexableDeveloper } from "@/lib/intelligence/projects";
 import { COMPANY_INFO } from "@/lib/seo/companyInfo";
 
 const FOOTER_CITY_KEY = "ggn";
@@ -291,7 +291,13 @@ export default async function RootLayout({
     .sort((a, b) => b.count - a.count)
     .slice(0, 6)
     .map((s) => ({ label: s.sector, href: `/project-listing/${canonicalCitySlug(FOOTER_CITY_KEY)}/sectors/${s.slug}` }));
+  // Confirmed developers only (2026-09-21, checklist item 3). These are
+  // sitewide footer links — the strongest internal signal the site has — so
+  // an unconfirmed parser-derived entity must not receive one. getAllBuilders
+  // sorts by project count, so the top six were usually real, but "usually"
+  // is how /developer/the collected links in the first place.
   const topDevelopers = builders
+    .filter(isIndexableDeveloper)
     .slice(0, 6)
     .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
 

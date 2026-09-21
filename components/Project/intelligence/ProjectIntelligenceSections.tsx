@@ -14,9 +14,8 @@ import {
   getBuilderProjects,
   getSectorProjects,
   getSectorAverages,
-  isLinkableBuilder,
+  developerHubSlug,
 } from "@/lib/intelligence/projects";
-import { slugify } from "@/lib/intelligence/normalize";
 import { resolveCoordinate } from "@/lib/intelligence/resolveLocation";
 import { nearbyLandmarks, nearbyConnectivity } from "@/lib/intelligence/osmPlaces";
 import { generateProjectContent, buildFallbackFaqs } from "@/lib/intelligence/content";
@@ -232,9 +231,10 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
           slug={
             // SEO audit 2026-09-07 P1: a short fallback builder name (e.g.
             // "MV", "SS") is real display text but not a real /developer/
-            // page — buildDeveloperIndex excludes it. isLinkableBuilder is
-            // the same gate that index uses.
-            isLinkableBuilder(project.builder) ? slugify(project.builder) : undefined
+            // page — buildDeveloperIndex excludes it. 2026-09-21: the gate and
+            // the slug now come from one helper, which also resolves feed
+            // spellings ("Emaar India") to the canonical hub they merge into.
+            developerHubSlug(project.builder) ?? undefined
           }
           stats={builderStats}
           badges={builderBadges}

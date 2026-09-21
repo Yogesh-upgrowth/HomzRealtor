@@ -16,7 +16,7 @@ import ExpertConsultation from "@/components/Home/ExpertConsultation";
 import FinalCta from "@/components/Home/FinalCta";
 import FloatingWhatsApp from "@/components/Home/FloatingWhatsApp";
 import MobileBottomNav from "@/components/Home/MobileBottomNav";
-import { getAllBuilders, getSectorsForCity, canonicalCitySlug } from "@/lib/intelligence/projects";
+import { getAllBuilders, getSectorsForCity, canonicalCitySlug, isIndexableDeveloper } from "@/lib/intelligence/projects";
 import { getNewLaunchProjects, getFeaturedProjects } from "@/lib/intelligence/homepage";
 import { getGurgaonRealEstateNews } from "@/lib/intelligence/news";
 import { instrumentSerif, manrope } from "@/lib/fonts";
@@ -32,7 +32,9 @@ export default async function Home() {
     getGurgaonRealEstateNews(5).catch(() => []),
   ]);
 
-  const topBuilders = builders.slice(0, 6);
+  // Confirmed developers only — the homepage is the single strongest internal
+  // link source on the site (2026-09-21, checklist item 3).
+  const topBuilders = builders.filter(isIndexableDeveloper).slice(0, 6);
   const gurgaonSlug = canonicalCitySlug(GURGAON_CITY_KEY);
 
 

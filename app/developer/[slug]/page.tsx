@@ -128,11 +128,19 @@ const DeveloperPage = async ({ params }: PageParams) => {
           profile.underConstruction
         } ${profile.underConstruction === 1 ? "is" : "are"} under construction.`
       : "") +
+    (summary.mergedNames.length > 0
+      ? ` Our records spell this developer's name ${
+          summary.mergedNames.length === 1 ? "one other way" : "several other ways"
+        } (${summary.mergedNames.join(", ")}); those projects are counted here rather than on a separate page.`
+      : "") +
     ` Everything below is computed from our own catalogue, and every project is linked by name.`;
 
   // Other developers for internal linking (exclude the current one).
+  // Confirmed entities only (2026-09-21, checklist item 3) — these chips were
+  // the main way unconfirmed parser output accumulated internal links, which
+  // is what made those pages look like endorsed entities to a crawler.
   const others = (await getAllBuilders().catch(() => []))
-    .filter((d) => d.slug !== summary.slug)
+    .filter((d) => d.slug !== summary.slug && isIndexableDeveloper(d))
     .slice(0, 12);
 
   // Answered entirely from the computed profile — only questions the data can
@@ -253,6 +261,29 @@ const DeveloperPage = async ({ params }: PageParams) => {
             </span>
           )}
         </div>
+
+        {/* Checklist item 3: the page says on its face when the entity is not
+            confirmed, rather than only telling Google via a robots tag. A
+            visitor who lands here from an old index entry should not have to
+            guess how much of this is verified. */}
+        {!isIndexableDeveloper(summary) && (
+          <p className="mt-5 max-w-3xl rounded-xl border border-white/[0.08] bg-[#141416] px-5 py-4 text-[13.5px] leading-relaxed text-gray-400">
+            <span className="font-semibold text-gray-200">About this page.</span>{" "}
+            {summary.count < 2
+              ? `We currently list a single project under this name, so there is no portfolio to compare. The project itself is linked below.`
+              : `"${summary.name}" is taken from the project records in our catalogue and has not been confirmed as a developer entity by our team.`}{" "}
+            Nothing here is a claim about the company beyond what our own listings contain. If
+            this is your company, or the name is wrong,{" "}
+            <Link href="/contact" className="text-[#CEA44E] hover:underline">
+              tell us
+            </Link>{" "}
+            and it gets corrected — see our{" "}
+            <Link href="/editorial-policy" className="text-[#CEA44E] hover:underline">
+              corrections policy
+            </Link>
+            .
+          </p>
+        )}
 
         {/* Cities this developer builds in — internal linking */}
         {summary.cities.length > 0 && (

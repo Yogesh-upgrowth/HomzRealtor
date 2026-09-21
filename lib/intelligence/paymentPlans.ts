@@ -1,3 +1,5 @@
+import { allowsPossessionContent } from "./projectStatus";
+
 // Static payment-plan tiers per project. There is no live source for payment-plan
 // terms anywhere in the scraped feed — unlike price/possession/etc, these are
 // business terms that only ever exist as static, hand-authored config, keyed by
@@ -77,12 +79,20 @@ const PROJECT_PAYMENT_PLANS: Record<string, PaymentPlanTier[]> = {
 // nothing new is invented, the inapplicable ones are simply withheld.
 const PLANS_REQUIRING_CONSTRUCTION = new Set(["clp", "possession-linked"]);
 
+// 2026-09-21: was `status === "Ready to Move"`, an exact string match. The
+// feed's projectStatus is free text from an aggregated source, so
+// "Completed", "Delivered" and "RTM" all describe a finished project and all
+// failed that check -- meaning a completed project was still offered a
+// construction-linked plan, which is exactly the finding this gate was added
+// for. allowsPossessionContent also withholds these plans when the status is
+// unknown, because guessing on a missing field is how the original bug
+// happened.
 export function getPaymentPlans(
   slug: string,
   status?: string | null
 ): PaymentPlanTier[] {
   const plans = PROJECT_PAYMENT_PLANS[slug] || DEFAULT_PLANS;
-  if (status === "Ready to Move") {
+  if (!allowsPossessionContent(status)) {
     return plans.filter((p) => !PLANS_REQUIRING_CONSTRUCTION.has(p.id));
   }
   return plans;
