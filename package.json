@@ -16,6 +16,7 @@
     "check:content-stats": "node --experimental-strip-types scripts/check-content-stats.mjs",
     "check:publish-gate": "node --experimental-strip-types scripts/check-publish-gate.mjs",
     "check:canonicals": "node scripts/check-canonicals.mjs",
+    "check:developer-coverage": "node --experimental-strip-types scripts/check-developer-coverage.mjs",
     "report:listing-quality": "node scripts/listing-quality-report.mjs",
     "test:identity": "node tests/listing-identity.test.mjs",
     "test:taxonomy": "node tests/taxonomy.test.mjs",
@@ -29,7 +30,8 @@
     "test:compare-quality": "node --experimental-strip-types tests/compare-quality.test.mjs",
     "test:property-index": "node --experimental-strip-types tests/property-index.test.mjs",
     "test:developer-views": "node --experimental-strip-types tests/developer-views.test.mjs",
-    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics && npm run test:publish-gate && npm run test:compare-quality && npm run test:property-index && npm run test:developer-views",
+    "test:post-developer-links": "node --experimental-strip-types tests/post-developer-links.test.mjs",
+    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics && npm run test:publish-gate && npm run test:compare-quality && npm run test:property-index && npm run test:developer-views && npm run test:post-developer-links",
     "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
     "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },

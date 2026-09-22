@@ -215,7 +215,6 @@ export const bestResidentialProjectsInGurgaon: BlogPostV27 = {
     },
   ],
   internalLinks: [
-    { anchor: "See every DLF project we list in Gurgaon", url: "/developer/dlf" },
     { anchor: "Compare Gurgaon's best buying corridors", url: "/blog/best-areas-to-buy-property-in-gurgaon" },
     { anchor: "See ready-to-move flats specifically", url: "/blog/ready-to-move-flats-in-gurgaon" },
     { anchor: "Browse verified developers building in Gurgaon", url: "/developer" },

@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
 import { authorProfilePath } from "@/lib/content/authors";
 import { hubLinksForPost } from "@/lib/content/postHubLinks";
+import type { DeveloperMention } from "@/lib/content/postDeveloperLinks";
 import { buildArticleJsonLd, safeJsonLd } from "@/lib/seo/blogJsonLd";
 import ReadingProgressBar from "./ReadingProgressBar";
 import BlogImageOrFallback from "./BlogImageOrFallback";
@@ -42,7 +43,16 @@ const markdownOptions = {
 // bg-[#0B0B0C] text-white matches the site's dark shell (app/page.tsx, the
 // project-detail pages) — the blog previously stood out as a light island
 // against it.
-const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
+const BlogPostV27Article = ({
+  post,
+  developers = [],
+}: {
+  post: BlogPostV27;
+  /** Developers this article names that have a live hub, most-mentioned
+   *  first. Derived in the route from the article's own prose — see
+   *  lib/content/postDeveloperLinks.ts. */
+  developers?: DeveloperMention[];
+}) => {
   const pageUrl = `${SITE}${post.head.canonicalUrl.replace(SITE, "")}`;
   const related = post.relatedArticles;
   const hubLinks = hubLinksForPost(
@@ -218,6 +228,33 @@ const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
                   className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
                 >
                   {l.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 2026-09-22: the developers this guide actually discusses, linked to
+            their portfolio hubs. Derived from the article's own prose rather
+            than hand-written per post — 25 guides naming a dozen developers
+            between them is not a job for manual links, and a derived block
+            stays right when an article is revised. */}
+        {developers.length > 0 && (
+          <section className="mt-10" aria-labelledby="developers-covered">
+            <h2 id="developers-covered" className="mb-1 text-xl font-bold text-white">
+              Developers covered in this guide
+            </h2>
+            <p className="mb-4 text-[13px] text-gray-500">
+              Every project we list for each, with current asking prices and possession status.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {developers.map((d) => (
+                <Link
+                  key={d.slug}
+                  href={`/developer/${d.slug}`}
+                  className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
+                >
+                  All {d.name} projects in Gurgaon
                 </Link>
               ))}
             </div>
