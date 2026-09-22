@@ -9,6 +9,7 @@ import ScoreRing from "@/components/Project/listing/ScoreRing";
 import Faq from "@/components/Project/intelligence/Faq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import type { PropertyView } from "@/lib/intelligence/property-view";
+import { INVESTMENT_SCORE_PATH } from "@/lib/intelligence/investmentScoreMeta";
 import SaveToggleButton from "@/components/Common/SaveToggleButton";
 
 const ROUTE_BASE: Record<PropertyView["category"], string> = {
@@ -153,6 +154,20 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
                   </p>
                 )}
               </div>
+              {/* Checklist item 8: the methodology link belongs here too, and
+                  the page it points at is explicit that a listing score is
+                  NOT the project five-factor calculation. */}
+              <p className="mt-4 text-[12px] leading-relaxed text-gray-500">
+                Asking price is not an input to this score, and no yield or appreciation is
+                forecast from it.{" "}
+                <Link
+                  href={INVESTMENT_SCORE_PATH}
+                  className="text-gray-400 underline hover:text-[#D9B268]"
+                >
+                  How our scores are calculated
+                </Link>
+                .
+              </p>
             </div>
           </section>
         )}

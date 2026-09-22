@@ -141,14 +141,17 @@ export function buildInvestmentSummary(
   if (connCount) drivers.push(`${connCount} key connectivity anchors mapped nearby`);
   if (priceData?.micro_market_avg_inr && priceData.project_min_inr) {
     const d = pctDiff(priceData.project_min_inr, priceData.micro_market_avg_inr);
+    // Item 14: "the Sector 82 average" reads as a market price. It is the
+    // average of what our own active inventory is ASKING, which is a
+    // different and weaker thing, and it now says so.
     drivers.push(
-      `entry price ${Math.abs(d)}% ${d >= 0 ? "above" : "below"} the ${priceData.micro_market || project.city_name} average`
+      `entry price ${Math.abs(d)}% ${d >= 0 ? "above" : "below"} the average asking price across our active ${priceData.micro_market || project.city_name} inventory`
     );
   }
   if (drivers.length) blocks.push(`Key factors for investors: ${drivers.join("; ")}.`);
 
   blocks.push(
-    `Weigh these signals against your budget, holding horizon and risk appetite. Figures here are indicative and not a guarantee of returns.`
+    `Every figure here is an asking price from active HomzRealtor inventory, not a recorded transaction price, and no return is projected from it. Weigh these against your budget and holding horizon.`
   );
 
   return blocks.join("\n\n");

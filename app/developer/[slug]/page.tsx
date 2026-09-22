@@ -17,6 +17,7 @@ import Faq from "@/components/Project/intelligence/Faq";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
+import { AskingPriceNote, DataUpdated } from "@/components/Common/DataUpdated";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -96,6 +97,16 @@ const DeveloperPage = async ({ params }: PageParams) => {
   const { summary, projects } = data;
   const withImages = projects.filter((p) => p.images.length > 0);
   const pageUrl = `${SITE}/developer/${summary.slug}`;
+
+  // The most recent feed timestamp across this developer's projects, falling
+  // back to generation time. On an ISR route the generation time is exactly
+  // when this copy of the figures was computed, which is the honest answer
+  // when the feed carries no timestamp.
+  const latestFeedUpdate = projects
+    .map((p) => (p.updated_at ? new Date(p.updated_at) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const dataAsOf = (latestFeedUpdate ?? new Date()).toISOString();
 
   // Audit item 9 (2026-09-19): computed portfolio facts, so the page is about
   // the builder rather than being a nine-card teaser with their name on it.
@@ -327,6 +338,17 @@ const DeveloperPage = async ({ params }: PageParams) => {
       )}
 
       <DeveloperIntelligence name={summary.name} cityLabel={cityLabel} profile={profile} />
+
+      {/* Checklist items 13 and 14 (2026-09-22). The intro above quotes a
+          median entry price with no date and no statement of what kind of
+          price it is — the same gap the sector pages had before the rates
+          page's treatment was carried across. */}
+      <div className="w-full max-w-7xl mx-auto px-4 mt-6">
+        <div className="max-w-3xl space-y-1.5">
+          <DataUpdated date={dataAsOf} label="Portfolio data updated" />
+          {profile.price && <AskingPriceNote scope={`${summary.name}'s portfolio`} />}
+        </div>
+      </div>
 
       {/* The complete index. Every project this builder has on HomzRealtor,
           linked by name, so nothing in the portfolio depends on a query-param

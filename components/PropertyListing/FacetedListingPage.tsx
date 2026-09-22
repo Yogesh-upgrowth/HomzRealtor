@@ -130,6 +130,14 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
     : null;
   const faqs = intel ? buildHubFaqs(locationLabel!, category, intel, formatInr) : [];
 
+  // Checklist item 13: the medians above are computed from `filtered`, so the
+  // honest timestamp is the newest record in that set — not the segment's.
+  const newestFiltered = filtered
+    .map((p) => (p.updatedAt ? new Date(p.updatedAt) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const hubAsOf = (newestFiltered ?? new Date()).toISOString();
+
   // Sibling hubs: the other sectors and corridors with real inventory in this
   // same category. This is what actually collapses crawl depth — every hub is
   // one click from every other, so the whole set is reachable in two clicks
@@ -258,6 +266,7 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
           locationLabel={locationLabel}
           category={category}
           intel={intel}
+          asOf={hubAsOf}
           bedroomHref={(bedrooms) => {
             const slug = `${bedrooms}-bhk`;
             return staticFacetsFor(category)[slug] ? `/${routeBase}/gurgaon/${slug}` : null;

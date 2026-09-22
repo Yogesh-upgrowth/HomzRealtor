@@ -214,6 +214,14 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Editorial Policy
               </Link>
             </li>
+            {/* Checklist item 8 (2026-09-22): the Investment Score
+                methodology. Linked from every project page's score block and
+                from here, so it is reachable without one. */}
+            <li>
+              <Link href="/homz-investment-score-methodology" className={colLinkCls}>
+                Investment Score Methodology
+              </Link>
+            </li>
             <li>
               {/* MI-18 (2026-09-18): the consent banner only ever asked
                   once -- there was no way to come back and change that

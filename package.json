@@ -22,7 +22,8 @@
     "test:listing-hubs": "node --experimental-strip-types tests/listing-hubs.test.mjs",
     "test:data-quality": "node --experimental-strip-types tests/data-quality.test.mjs",
     "test:developers-table": "node --experimental-strip-types tests/developers-table.test.mjs",
-    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table",
+    "test:news-topics": "node --experimental-strip-types tests/news-topics.test.mjs",
+    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics",
     "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
     "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },

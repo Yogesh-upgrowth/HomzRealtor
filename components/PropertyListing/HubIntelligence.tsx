@@ -3,6 +3,7 @@ import type { HubIntel } from "@/lib/listings/hubIntel";
 import type { PropertyCategory } from "@/lib/listings/filters";
 import { isRentScale, PROPERTY_TYPE_LABELS } from "@/lib/listings/filters";
 import { formatInr } from "@/lib/intelligence/normalize";
+import { DataUpdated } from "@/components/Common/DataUpdated";
 
 // What a location hub says about its own sector or corridor (2026-09-21).
 //
@@ -31,10 +32,14 @@ export default function HubIntelligence({
   category,
   intel,
   bedroomHref,
+  asOf,
 }: {
   locationLabel: string;
   category: PropertyCategory;
   intel: HubIntel;
+  /** Checklist item 13: when the figures below were computed. Optional so a
+   *  caller with no timestamp renders no date rather than a wrong one. */
+  asOf?: string;
   /** Builds the citywide BHK hub link for a bedroom count, when one exists.
    *  Returning null leaves the count as plain text rather than a dead link. */
   bedroomHref?: (bedrooms: number) => string | null;
@@ -94,6 +99,7 @@ export default function HubIntelligence({
             )}{" "}
             Confirm the current figure with an advisor before acting on it.
           </p>
+          {asOf && <DataUpdated date={asOf} label="Figures computed" className="mt-2 text-[12.5px] text-gray-500" />}
         </section>
       )}
 

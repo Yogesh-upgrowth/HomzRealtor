@@ -331,6 +331,8 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     // the data methodology and the corrections process, which is trust content
     // rather than boilerplate.
     { url: `${BASE_URL}/editorial-policy`, changeFrequency: 'monthly', priority: 0.5 },
+    // Checklist item 8 (2026-09-22): the Investment Score methodology page.
+    { url: `${BASE_URL}/homz-investment-score-methodology`, changeFrequency: 'monthly', priority: 0.5 },
     // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
     // it has nothing to earn from a sitemap entry.
     { url: `${BASE_URL}/property-insights`, changeFrequency: 'monthly', priority: 0.5 },

@@ -22,6 +22,7 @@ import { propertySegment, type RawHomzProperty } from "@/lib/scraping/homzbacken
 import { validImages } from "@/lib/intelligence/view-model";
 import { salvageAreaText } from "@/lib/intelligence/normalize";
 import { slugForProperty } from "@/lib/intelligence/property-view";
+import { AskingPriceNote, DataUpdated } from "@/components/Common/DataUpdated";
 import areaImg from "@/public/Apartment.svg";
 import unitImg from "@/public/bedroom.svg";
 import statusImg from "@/public/developmentSize.svg";
@@ -167,6 +168,15 @@ export async function ListingPreviewSection({
   if (preview.length === 0) return null;
   const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
 
+  // Newest feed timestamp in the segment, falling back to render time. These
+  // hubs are dynamic, so render time is genuinely when this inventory was
+  // read — not a stale build date.
+  const newest = all
+    .map((p) => (p.updatedAt ? new Date(p.updatedAt) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const asOf = (newest ?? new Date()).toISOString();
+
   return (
     <section className="w-full bg-[#0B0B0C] py-12">
       <div className="w-full max-w-7xl mx-auto px-4">
@@ -185,6 +195,16 @@ export async function ListingPreviewSection({
           {preview.map((p) => (
             <PropertyCardLink key={p.id || p.listingUrl} property={p} routeBase={routeBase} />
           ))}
+        </div>
+
+        {/* Checklist items 13 and 14 (2026-09-22). Item 13 names "Commercial
+            inventory pages" specifically, and this section is the inventory
+            block on all three hubs (buy, rent, commercial) — so one addition
+            here covers every one of them, including the paginated pages that
+            render the same component. */}
+        <div className="mt-6 max-w-3xl space-y-1.5">
+          <DataUpdated date={asOf} label="Inventory updated" />
+          <AskingPriceNote median={false} />
         </div>
       </div>
     </section>
@@ -278,6 +298,12 @@ const PaginatedListingPage = async ({ category, pageNum }: Props) => {
   const start = (pageNum - 1) * PAGE_SIZE;
   const pageProperties = all.slice(start, start + PAGE_SIZE);
 
+  const newestOnPage = pageProperties
+    .map((p) => (p.updatedAt ? new Date(p.updatedAt) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const pageAsOf = (newestOnPage ?? new Date()).toISOString();
+
   const pageUrl = `${SITE}/${routeBase}/page/${pageNum}`;
   // page 1 of this pagination now 404s (its content lives at the base hub
   // URL instead — see app/{buy-property,rent-property,commercial}/page/[page]/page.tsx),
@@ -324,6 +350,13 @@ const PaginatedListingPage = async ({ category, pageNum }: Props) => {
         <p className="mt-4 max-w-3xl text-gray-400 leading-relaxed">
           Showing {pageProperties.length} of {all.length} listings.
         </p>
+        {/* Items 13 and 14 on the paginated pages too — a crawler reaching
+            page 47 of the sale inventory gets the same freshness and
+            asking-price statement as page 1. */}
+        <div className="mt-4 max-w-3xl space-y-1.5">
+          <DataUpdated date={pageAsOf} label="Inventory updated" />
+          <AskingPriceNote median={false} />
+        </div>
       </section>
 
       <section className="w-full max-w-7xl mx-auto px-4 my-10">
