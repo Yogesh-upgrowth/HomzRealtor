@@ -43,39 +43,35 @@ export function generateStaticParams() {
 // 2026-09-22: robots.txt disallows this path again (see its own comment --
 // a crawler started working through the bounded-but-still-large linked-pair
 // set at real volume, pushing Fluid Active CPU toward the Hobby-plan
-// courtesy ceiling), but a disallow only stops crawlers that honor it. This
-// is the backstop for one that doesn't: a hard per-instance cap on how many
-// *new* cache-miss renders this route will do inside a rolling window,
-// shared by generateMetadata and the page below (both call this first).
-// Once spent, further requests are treated exactly like an unlinked pair --
-// cheap noindex metadata / notFound(), no project lookup -- rather than
-// paying for the render. A real pair hit while the budget is exhausted
-// simply renders on its next request once the window rolls over; nothing
-// is permanently lost; the ISR cache for pairs already rendered this week
-// keeps serving those for free regardless.
-const RENDER_BUDGET_WINDOW_MS = 30 * 60 * 1000;
-const MAX_NEW_RENDERS_PER_WINDOW = 40;
-let budgetWindowStart = Date.now();
-let budgetSpent = 0;
-
-function withinRenderBudget(): boolean {
-  const now = Date.now();
-  if (now - budgetWindowStart > RENDER_BUDGET_WINDOW_MS) {
-    budgetWindowStart = now;
-    budgetSpent = 0;
-  }
-  if (budgetSpent >= MAX_NEW_RENDERS_PER_WINDOW) return false;
-  budgetSpent++;
-  return true;
-}
+// courtesy ceiling). A disallow only helps once a crawler re-fetches it and
+// only if it honors it, so a same-day follow-up added a per-instance render
+// budget here as a backstop -- and that backstop did not hold: Fluid Compute
+// scales to multiple concurrent instances under load, each with its own
+// in-memory counter, so the real ceiling was (budget x instance count), not
+// the budget. Confirmed from production logs: 565 real renders on this
+// route in 6h on the deployment carrying that "fix". An in-memory,
+// per-instance counter cannot bound aggregate cost under concurrent
+// scale-out -- there is no cross-instance state here to bound it with
+// short of paid storage, which is the upgrade this is trying to avoid.
+//
+// So: hard-disabled instead. Every request here -- real pair or not --
+// costs nothing beyond this flag check; no getComparePairKeys call, no
+// getProjectBySlug, no render. This is the guaranteed-zero option while
+// robots.txt takes effect and Active CPU settles back under the courtesy
+// ceiling. Flip back to true once that's confirmed; the DEV-03 crawlability
+// reasoning (letting Google see this route's own noindex tag on non-curated
+// pairs) still applies once it's safe to re-enable, and nothing about the
+// gate itself changed -- it still 404s the same way generateStaticParams
+// and revalidate above still expect.
+const COMPARE_PAGES_ENABLED = false;
 
 async function isRealComparePair(cityParam: string, slugA: string, slugB: string): Promise<boolean> {
+  if (!COMPARE_PAGES_ENABLED) return false;
   const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
   const citySlug = canonicalCitySlug(cityKey);
   const [sortedA, sortedB] = [slugA, slugB].sort();
   const keys = await getComparePairKeys();
-  if (!keys.has(`${citySlug}/${sortedA}/${sortedB}`)) return false;
-  return withinRenderBudget();
+  return keys.has(`${citySlug}/${sortedA}/${sortedB}`);
 }
 
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };
