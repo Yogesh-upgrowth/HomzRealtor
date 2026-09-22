@@ -3,7 +3,9 @@
 
 import {
   projectLooksResidential,
+  stripCompetitorDeep,
   stripCompetitorParagraphs,
+  stripCompetitorProse,
 } from "./dataQuality";
 
 export const CITY_META: Record<string, { name: string; state: string }> = {
@@ -453,9 +455,18 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     about: stripSyndicatedText(
       redactEmbeddedRegulatoryIds(Array.isArray(raw.aboutProject) ? raw.aboutProject : [])
     ),
-    amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
-    specifications: Array.isArray(raw.specifications) ? raw.specifications : [],
-    price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
+    // 2026-09-22, checklist item 2 ("all text fields... price section, FAQs,
+    // investment sections, specifications"): these four arrive as structured
+    // data rather than paragraphs, so stripSyndicatedText never saw them and
+    // a syndicated sentence in a specification row or a price-list note
+    // rendered untouched. stripCompetitorDeep walks the structure and drops
+    // any entry whose text was entirely competitor content — see the rules on
+    // it in dataQuality.ts.
+    amenities: stripCompetitorDeep(Array.isArray(raw.amenities) ? raw.amenities : []),
+    specifications: stripCompetitorDeep(
+      Array.isArray(raw.specifications) ? raw.specifications : []
+    ),
+    price_list: stripCompetitorDeep(Array.isArray(raw.priceList) ? raw.priceList : []),
     builder_description: stripSyndicatedText(
       redactEmbeddedRegulatoryIds(
         Array.isArray(raw.builderDescription)
@@ -465,10 +476,15 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
           : []
       )
     ),
-    recent_updates: Array.isArray(raw.recentUpdates) ? raw.recentUpdates : [],
+    recent_updates: stripCompetitorDeep(
+      Array.isArray(raw.recentUpdates) ? raw.recentUpdates : []
+    ),
     master_plan:
       raw.masterPlan && (raw.masterPlan.image || raw.masterPlan.content)
-        ? { image: raw.masterPlan.image, content: raw.masterPlan.content }
+        ? {
+            image: raw.masterPlan.image,
+            content: stripCompetitorProse(raw.masterPlan.content) ?? undefined,
+          }
         : null,
     updated_at: raw.updatedAt || null,
   };

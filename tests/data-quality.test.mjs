@@ -31,6 +31,7 @@ const {
   competitorMentions,
   projectLooksResidential,
   sanitizeListing,
+  stripCompetitorDeep,
   stripCompetitorParagraphs,
   stripCompetitorProse,
 } = await import(pathToFileURL(join(dir, "dataQuality.ts")).href);
@@ -187,6 +188,73 @@ t("prose cleaned in the same pass", sanitized.aboutProject, ["A good home."]);
 // tens of thousands of records and this runs on every cache fill.
 const clean = { propertyType: "apartment", bedrooms: 2, title: "2 BHK", aboutProject: ["Nice."] };
 t("clean records pass through by reference", sanitizeListing(clean) === clean, true);
+
+// --- deep strip over structured fields -----------------------------------
+//
+// Checklist item 2's "all text fields": specification rows, amenity groups,
+// the master-plan caption and the price list are structured data, so the
+// paragraph strip never saw them.
+
+t(
+  "a specification row keeps its clean sentences",
+  stripCompetitorDeep([
+    { heading: "Flooring", value: "Vitrified tiles throughout. Listed on MagicBricks." },
+  ]),
+  [{ heading: "Flooring", value: "Vitrified tiles throughout." }]
+);
+t(
+  "a row whose whole value was competitor text is dropped, not blanked",
+  stripCompetitorDeep([
+    { heading: "Verified by", value: "Square Yards" },
+    { heading: "Flooring", value: "Vitrified tiles." },
+  ]),
+  [{ heading: "Flooring", value: "Vitrified tiles." }]
+);
+t(
+  "nested amenity groups are reached",
+  stripCompetitorDeep([
+    { category: "Safety", amenities: ["CCTV", "Square Yards verified guard"] },
+  ]),
+  [{ category: "Safety", amenities: ["CCTV"] }]
+);
+t(
+  "an entry that loses everything leaves no empty object behind",
+  stripCompetitorDeep([{ value: "99acres" }, { value: "Club house." }]),
+  [{ value: "Club house." }]
+);
+t(
+  "a group whose every item went is dropped, not left as a bare heading",
+  stripCompetitorDeep([
+    { category: "Listings", amenities: ["Square Yards verified", "99acres verified"] },
+    { category: "Safety", amenities: ["CCTV"] },
+  ]),
+  [{ category: "Safety", amenities: ["CCTV"] }]
+);
+t("keys are never stripped, only values", Object.keys(stripCompetitorDeep({ makaan: "A clean line." })), [
+  "makaan",
+]);
+t("a clean string comes back unchanged", stripCompetitorDeep("Plain copy."), "Plain copy.");
+t("numbers and nulls pass through", stripCompetitorDeep([1, null, true]), [1, null, true]);
+
+// Identity: a clean structure must come back by reference, because this runs
+// over every record of a 25k-row segment on each cache fill.
+const cleanSpecs = [{ heading: "Flooring", value: "Vitrified tiles." }];
+t("clean structures pass through by reference", stripCompetitorDeep(cleanSpecs) === cleanSpecs, true);
+
+// And the listing-level wiring that uses it.
+const deepListing = sanitizeListing({
+  propertyType: "apartment",
+  title: "3 BHK Flat in Sector 65",
+  specifications: [{ heading: "Source", value: "PropTiger" }],
+  aiSummary: "A bright corner unit. Data by Square Yards.",
+});
+t("specifications are cleaned on a listing", deepListing.specifications, []);
+t("aiSummary is cleaned on a listing", deepListing.aiSummary, "A bright corner unit.");
+t(
+  "title is left alone — it is identity, not prose",
+  sanitizeListing({ title: "Flat listed on 99acres", propertyType: "apartment" }).title,
+  "Flat listed on 99acres"
+);
 
 // --- project residential evidence ----------------------------------------
 

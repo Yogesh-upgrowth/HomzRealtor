@@ -94,6 +94,81 @@ export function stripCompetitorParagraphs(
     .filter((p): p is string => Boolean(p && p.trim()));
 }
 
+/**
+ * Strip competitor prose from the structured fields, not just the paragraphs.
+ *
+ * Checklist item 2 asks for "all text fields — price section, FAQs,
+ * investment sections, specifications", and the first pass only covered
+ * `aboutProject`, `about` and `builderDescription`. Everything else the feed
+ * sends as structured data — specification rows, amenity labels, the recent-
+ * updates feed, the master-plan caption, price-list notes — passed through
+ * untouched, and any of them can carry the same syndicated sentence.
+ *
+ * Rules, and the reasoning for each:
+ *
+ *   - Strings are sentence-stripped, same as prose.
+ *   - A short LABEL that is entirely a competitor mention ("Square Yards
+ *     Verified") strips to nothing. Returning "" would render an empty table
+ *     row or a blank chip, so the whole entry is dropped instead: `null` for
+ *     a scalar, and the element is removed from its array.
+ *   - An object loses ONE string field entirely, and the whole object goes.
+ *     Keeping the rest renders a half-record: a specification row that is a
+ *     heading with no value is a blank table row, which is worse than the
+ *     row's absence. It also means a record part of which was pure competitor
+ *     content is not treated as trustworthy in its remaining parts. This
+ *     discards a little more than the minimum, deliberately.
+ *   - Nothing is invented to fill a hole. A specification row whose value was
+ *     entirely competitor text is not worth keeping with a guessed value.
+ *   - Keys are never touched, only values. A key is our own schema.
+ *
+ * Returns the input unchanged (by reference) when nothing matched, so this is
+ * cheap on the overwhelming majority of records that are clean.
+ */
+export function stripCompetitorDeep<T>(value: T): T {
+  if (typeof value === "string") {
+    if (competitorMentions(value).length === 0) return value;
+    return stripCompetitorProse(value) as unknown as T;
+  }
+
+  if (Array.isArray(value)) {
+    let changed = false;
+    const out: unknown[] = [];
+    for (const item of value) {
+      const next = stripCompetitorDeep(item);
+      if (next !== item) changed = true;
+      // A string that stripped to nothing, or an object that lost every field
+      // it had, leaves no row worth rendering.
+      if (next === null || next === undefined) continue;
+      if (typeof next === "object" && !Array.isArray(next) && Object.keys(next).length === 0) {
+        continue;
+      }
+      out.push(next);
+    }
+    return (changed ? out : value) as unknown as T;
+  }
+
+  if (value && typeof value === "object") {
+    let changed = false;
+    const out: Record<string, unknown> = {};
+    for (const [key, v] of Object.entries(value as Record<string, unknown>)) {
+      const next = stripCompetitorDeep(v);
+      if (next !== v) changed = true;
+      // A string field that survived nothing takes the record with it — see
+      // the half-record rule above. So does a list that emptied out: an
+      // amenity group whose every amenity was competitor text is a heading
+      // over nothing.
+      if (next === null && typeof v === "string") return null as unknown as T;
+      if (Array.isArray(v) && v.length > 0 && Array.isArray(next) && next.length === 0) {
+        return null as unknown as T;
+      }
+      out[key] = next;
+    }
+    return (changed ? out : value) as unknown as T;
+  }
+
+  return value;
+}
+
 // ----------------------------------------------------------- classification
 
 /** Property types that only describe commercial space. */
@@ -186,14 +261,43 @@ export function classifyListing(p: RawHomzProperty): ListingClassification {
  * contamination the audit describes) and so the QA report can count them
  * without re-deriving the judgement.
  */
+/**
+ * Every listing field that can carry free text from the source.
+ *
+ * 2026-09-22, checklist item 2 ("Check ALL text fields, not just the
+ * description: price section, FAQs, investment sections, specifications").
+ * The first pass covered aboutProject and builderDescription only. A
+ * specification row reading "Square Yards verified" or an aiSummary carrying
+ * the provider's own sentence rendered untouched, on the same page that had
+ * just been cleaned.
+ *
+ * `title` and `location` are deliberately absent. They are identity fields:
+ * blanking a title leaves a listing with no name and no heading, which breaks
+ * the page rather than cleaning it. A competitor name appearing there is a
+ * feed-level problem for check-data-quality.mjs to report, not something to
+ * paper over at render time.
+ */
+const LISTING_TEXT_FIELDS = [
+  "aboutProject",
+  "builderDescription",
+  "specifications",
+  "amenities",
+  "masterPlan",
+  "aiSummary",
+] as const;
+
 export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
   const cls = classifyListing(p);
-  const aboutRaw = p.aboutProject;
-  const needsProse =
-    (Array.isArray(aboutRaw) && aboutRaw.some((s) => competitorMentions(s).length > 0)) ||
-    competitorMentions(p.builderDescription).length > 0;
 
-  if (!cls.misclassified && !needsProse) return p;
+  const dirty = LISTING_TEXT_FIELDS.filter((f) => {
+    const v = p[f];
+    if (v == null) return false;
+    // A cheap scan of the field's own text, so a clean record (the large
+    // majority) costs one regex pass per field and no object rebuilding.
+    return competitorMentions(typeof v === "string" ? v : JSON.stringify(v)).length > 0;
+  });
+
+  if (!cls.misclassified && dirty.length === 0) return p;
 
   const next: RawHomzProperty = { ...p };
 
@@ -203,10 +307,32 @@ export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
     next.reclassified = "residential-in-commercial";
   }
 
-  if (needsProse) {
-    if (Array.isArray(aboutRaw)) next.aboutProject = stripCompetitorParagraphs(aboutRaw);
-    const bd = stripCompetitorProse(p.builderDescription);
-    next.builderDescription = bd ?? undefined;
+  // Handled field by field rather than through one loop: each has its own
+  // shape, and a generic assignment back into RawHomzProperty widens every
+  // one of them to the union of all of them.
+  for (const field of dirty) {
+    switch (field) {
+      case "aboutProject":
+        next.aboutProject = Array.isArray(p.aboutProject)
+          ? stripCompetitorParagraphs(p.aboutProject)
+          : undefined;
+        break;
+      case "builderDescription":
+        next.builderDescription = stripCompetitorProse(p.builderDescription) ?? undefined;
+        break;
+      case "aiSummary":
+        next.aiSummary = stripCompetitorProse(p.aiSummary) ?? null;
+        break;
+      case "specifications":
+        next.specifications = stripCompetitorDeep(p.specifications);
+        break;
+      case "amenities":
+        next.amenities = stripCompetitorDeep(p.amenities);
+        break;
+      case "masterPlan":
+        next.masterPlan = stripCompetitorDeep(p.masterPlan) ?? undefined;
+        break;
+    }
   }
 
   return next;

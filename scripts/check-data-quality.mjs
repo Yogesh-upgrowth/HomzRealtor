@@ -82,13 +82,34 @@ function competitorsIn(text) {
   return COMPETITORS.filter(([re]) => re.test(s)).map(([, label]) => label);
 }
 
+// 2026-09-22: widened past the three prose fields. Checklist item 2 asks for
+// "ALL text fields, not just the description: price section, FAQs, investment
+// sections, specifications", and the correction layer now covers the
+// structured ones (stripCompetitorDeep). This check has to look where the
+// correction looks, or it reports clean on exactly the fields that were the
+// gap. Structured values are flattened to text rather than walked, since all
+// this needs is whether a competitor name survives anywhere in the record.
+const TEXT_FIELDS = [
+  "aboutProject",
+  "about",
+  "builderDescription",
+  "specifications",
+  "amenities",
+  "masterPlan",
+  "aiSummary",
+  "priceList",
+  "recentUpdates",
+];
+
+function flattenText(v, out) {
+  if (typeof v === "string") out.push(v);
+  else if (Array.isArray(v)) for (const x of v) flattenText(x, out);
+  else if (v && typeof v === "object") for (const x of Object.values(v)) flattenText(x, out);
+}
+
 function proseOf(record) {
   const bits = [];
-  for (const key of ["aboutProject", "about", "builderDescription"]) {
-    const v = record[key];
-    if (Array.isArray(v)) bits.push(...v.filter((x) => typeof x === "string"));
-    else if (typeof v === "string") bits.push(v);
-  }
+  for (const key of TEXT_FIELDS) flattenText(record[key], bits);
   return bits.join(" \u0000 ");
 }
 
