@@ -54,11 +54,22 @@ const BASE_URL = 'https://www.homzrealtor.com'
 //
 // The item's suggested structure also splits projects across numbered files.
 // Not done, and deliberately: Google's limit is 50,000 URLs or 50MB
-// uncompressed per file, and the largest segment here (Sale, ~21,000) is well
-// inside both. Splitting below the limit would add files without adding any
-// information Search Console does not already give per segment. If Sale grows
-// past 50,000 this needs revisiting — buy-1.xml, buy-2.xml — and the check in
-// scripts/check-sitemap-404s.mjs will say so before Google does.
+// uncompressed per file, and the largest segment here is inside both. Splitting
+// below the limit would add files without adding any information Search Console
+// does not already give per segment.
+//
+// The headroom is real but not unlimited, and smaller than a raw listing count
+// suggests: the buy segment is ~21,000 detail URLs PLUS one page-1 URL per
+// facet and location hub PLUS every /page/N in each of those chains, which is
+// several thousand more. If it grows past 50,000 this needs revisiting —
+// buy-1.xml, buy-2.xml, with the new ids added to lib/seo/sitemapSegments.ts so
+// the <sitemapindex> and the reconciliation script pick them up together.
+//
+// npm run check:sitemap reports every segment's URL count and byte size against
+// both limits on each run, and flags at 40,000 / 40MB so there is room to split
+// deliberately. (Until 2026-09-22 this comment claimed that check existed when
+// it did not — the script counted URLs per segment and compared them to
+// nothing.)
 type SegmentId = SitemapSegmentId
 
 export async function generateSitemaps() {

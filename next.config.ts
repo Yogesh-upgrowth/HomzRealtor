@@ -94,7 +94,7 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    // /sitemap.xml must serve a real <sitemapindex> listing the 7 child
+    // /sitemap.xml must serve a real <sitemapindex> listing the child
     // sitemaps (Google Search Console expects it at this exact conventional
     // URL). It can't be a literal app/sitemap.xml/route.ts file though —
     // Next.js/Turbopack reserves that exact filename for its own metadata-

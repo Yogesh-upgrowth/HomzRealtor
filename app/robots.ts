@@ -107,8 +107,10 @@ export default function robots(): MetadataRoute.Robots {
       })),
     ],
     // SEO audit H-05 (2026-09-08): app/sitemap.ts uses generateSitemaps() to
-    // split the sitemap into 7 segments so Search Console can report
-    // indexation per segment. This used to list all 7 segment URLs directly
+    // split the sitemap into segments (7 at the time, 8 since 'comparisons'
+    // was added 2026-09-22 — the live list is lib/seo/sitemapSegments.ts) so
+    // Search Console can report indexation per segment. This used to list every
+    // segment URL directly
     // here (a Google-supported equivalent to a formal index, used because a
     // real <sitemapindex> at /sitemap.xml kept failing Vercel's Turbopack
     // build — see app/sitemap-index.xml/route.ts's comment for that history).
