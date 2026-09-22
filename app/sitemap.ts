@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper, getIndexableComparePairs } from '@/lib/intelligence/projects'
+import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper, getIndexableComparePairs, getIndexableDeveloperViews } from '@/lib/intelligence/projects'
 import {
   homzDataUrl,
   propertySegment,
@@ -237,6 +237,18 @@ async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
         url: `${BASE_URL}/developer/${d.slug}`,
         changeFrequency: 'weekly' as const,
         priority: 0.6,
+      }))
+    )
+    // 2026-09-22: the Developer x Intent child pages that cleared their own
+    // threshold. Same function the page uses, so the sitemap cannot list a URL
+    // that turns out to be noindex.
+    const childViews = await getIndexableDeveloperViews().catch(() => [])
+    developerUrls = developerUrls.concat(
+      childViews.map(({ slug, view, updatedAt }) => ({
+        url: `${BASE_URL}/developer/${slug}/${view}`,
+        lastModified: toDate(updatedAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.55,
       }))
     )
   } catch {

@@ -211,6 +211,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
     },
   ],
   internalLinks: [
+    { anchor: "See every DLF project we list in Gurgaon", url: "/developer/dlf" },
     { anchor: "See Golf Course Road's full price landscape", url: "/blog/golf-course-road-property-price-trends" },
     { anchor: "Compare luxury Gurgaon-wide, not just Golf Course Road", url: "/blog/luxury-apartments-in-gurgaon" },
     { anchor: "Browse Gurgaon sector listings", url: "/project-listing/gurgaon/sectors" },

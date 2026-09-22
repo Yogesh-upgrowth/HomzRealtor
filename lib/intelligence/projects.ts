@@ -5,6 +5,7 @@ import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
 import { isExcludedProject } from "./excludedProjects";
 import { scoreComparePair } from "./compareQuality";
+import { availableDeveloperViews } from "./developerViews";
 import { normalizeAmenities } from "./view-model";
 import {
   canonicalDeveloperByName,
@@ -407,6 +408,38 @@ export async function getIndexableComparePairs(): Promise<
       slugB,
       updatedAt: dates.sort().reverse()[0] ?? null,
     });
+  }
+  return out;
+}
+
+/**
+ * Every indexable developer child page, for the sitemap (2026-09-22).
+ *
+ * The page decides indexability per request with decideViewIndexable(); this
+ * applies the same function across all developers so the sitemap and the pages
+ * agree. A URL listed here is never one Google finds noindex on arrival.
+ *
+ * Gated on the parent too: a child of a noindex developer hub is not offered,
+ * because a child cannot be a stronger entity than the developer it belongs to.
+ */
+export async function getIndexableDeveloperViews(): Promise<
+  { slug: string; view: string; updatedAt: string | null }[]
+> {
+  const map = await buildDeveloperIndex();
+  const out: { slug: string; view: string; updatedAt: string | null }[] = [];
+
+  for (const entry of map.values()) {
+    if (!isIndexableDeveloper(entry.summary)) continue;
+    for (const available of availableDeveloperViews(entry.projects)) {
+      if (!available.indexable) continue;
+      const matched = entry.projects.filter(available.view.filter);
+      const dates = matched.map((p) => p.updated_at).filter(Boolean) as string[];
+      out.push({
+        slug: entry.summary.slug,
+        view: available.view.slug,
+        updatedAt: dates.sort().reverse()[0] ?? null,
+      });
+    }
   }
   return out;
 }

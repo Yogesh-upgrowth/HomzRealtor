@@ -201,6 +201,12 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     { anchor: "Read the full Golf Course Road luxury breakdown", url: "/blog/luxury-apartments-on-golf-course-road" },
     { anchor: "Compare all Gurgaon buying corridors", url: "/blog/best-areas-to-buy-property-in-gurgaon" },
     { anchor: "Browse all live Gurgaon project listings", url: "/project-listing/gurgaon" },
+    // 2026-09-22: this guide names DLF as the ₹5 Cr+ leader and previously
+    // sent that reader nowhere. The link is to the developer hub rather than
+    // /developer/dlf/luxury because a static editorial link cannot know live
+    // inventory — the hub's own intent navigation is computed and routes on
+    // to the luxury view when it exists.
+    { anchor: "See every DLF project we list in Gurgaon", url: "/developer/dlf" },
   ],
   faqs: [
     {

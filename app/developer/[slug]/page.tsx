@@ -18,6 +18,12 @@ import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 import { AskingPriceNote, DataUpdated } from "@/components/Common/DataUpdated";
+import DeveloperIntentNav from "@/components/Developer/DeveloperIntentNav";
+import DeveloperPriceTable from "@/components/Developer/DeveloperPriceTable";
+import DeveloperLocations from "@/components/Developer/DeveloperLocations";
+import DeveloperEntity from "@/components/Developer/DeveloperEntity";
+import { availableDeveloperViews } from "@/lib/intelligence/developerViews";
+import { developerProfileFacts } from "@/lib/content/developerProfiles";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -48,14 +54,17 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       ? `${cityNames.slice(0, -1).join(", ")} & ${cityNames[cityNames.length - 1]}`
       : cityNames[0] || "Delhi NCR";
 
-  const title = `${summary.name} Projects, Price, Properties & Developments in ${cityLabel}`;
+  // 2026-09-22: the title now leads with the head term this page is meant to
+  // own ("{Developer} Projects in Gurgaon") and adds the two highest-intent
+  // modifiers. The old form led with the brand and buried the query.
+  const title = `${summary.name} Projects in ${cityLabel}: Prices & New Launches`;
   const description =
     `Explore ${summary.count} ${summary.name} ${summary.count === 1 ? "project" : "projects"} ` +
-    `across ${cityLabel} on HomzRealtor` +
+    `in ${cityLabel}` +
     (summary.residential && summary.commercial
-      ? `: ${summary.residential} residential and ${summary.commercial} commercial developments.`
+      ? ` including ${summary.residential} residential and ${summary.commercial} commercial developments.`
       : ".") +
-    ` Compare prices, floor plans, amenities and locations, and enquire directly.`;
+    ` Compare current asking prices, sectors, possession status and RERA registration on HomzRealtor.`;
 
   return {
     title,
@@ -111,6 +120,16 @@ const DeveloperPage = async ({ params }: PageParams) => {
   // Audit item 9 (2026-09-19): computed portfolio facts, so the page is about
   // the builder rather than being a nine-card teaser with their name on it.
   const profile = buildDeveloperProfile(projects, canonicalCitySlug);
+
+  // 2026-09-22, Developer x Intent architecture. The views this developer has
+  // enough inventory to fill, and the corridors among them good enough to have
+  // their own indexable page — the locations table links to those rather than
+  // to a generic corridor hub.
+  const views = availableDeveloperViews(projects);
+  const facts = developerProfileFacts(summary.slug);
+  const linkedCorridors = new Set(
+    views.filter((v) => v.view.kind === "corridor" && v.indexable).map((v) => v.view.slug)
+  );
 
   const cityNames = summary.cities.map((c) => c.name);
   const cityLabel =
@@ -177,9 +196,18 @@ const DeveloperPage = async ({ params }: PageParams) => {
         // Organization.areaServed: ["Gurgaon"]. A property developer is an
         // Organization; areaServed here is the developer's own project
         // footprint, which is a fact about them, not a Homz service claim.
+        //
+        // 2026-09-22: `url` was this page. That was wrong in a way that
+        // matters for entity resolution — it told Google the developer's
+        // canonical home is our URL. Where we hold the official site it is now
+        // url + sameAs, and this page identifies itself as a CollectionPage
+        // ABOUT that organisation rather than as the organisation.
         "@type": "Organization",
-        name: summary.name,
-        url: pageUrl,
+        "@id": `${pageUrl}#developer`,
+        name: facts?.officialName ?? summary.name,
+        ...(facts
+          ? { url: facts.officialWebsite, sameAs: [facts.officialWebsite] }
+          : {}),
         areaServed: summary.cities.map((c) => ({
           "@type": "City",
           name: c.name,
@@ -187,9 +215,13 @@ const DeveloperPage = async ({ params }: PageParams) => {
       },
       {
         "@type": "CollectionPage",
-        name: `${summary.name} Projects`,
+        name: `${summary.name} Projects in ${cityLabel}`,
         description: intro,
         url: pageUrl,
+        about: { "@id": `${pageUrl}#developer` },
+        // Homz publishes the page; the developer is its subject. Keeping these
+        // distinct is the whole point of the change above.
+        publisher: { "@id": `${SITE}/#organization` },
       },
       // CollectionPage alone doesn't enumerate the developer's projects —
       // ItemList does, and it matches exactly what the page renders. That
@@ -273,6 +305,16 @@ const DeveloperPage = async ({ params }: PageParams) => {
           )}
         </div>
 
+        {/* Developer x Intent navigation (2026-09-22). Crawlable anchors, not
+            a client filter: a filter that only exists after hydration is
+            invisible to a crawler, so the child pages would never be found. */}
+        <DeveloperIntentNav
+          developerName={summary.name}
+          developerSlug={summary.slug}
+          views={views}
+          totalCount={summary.count}
+        />
+
         {/* Checklist item 3: the page says on its face when the entity is not
             confirmed, rather than only telling Google via a robots tag. A
             visitor who lands here from an old index entry should not have to
@@ -350,6 +392,21 @@ const DeveloperPage = async ({ params }: PageParams) => {
         </div>
       </div>
 
+      <DeveloperPriceTable
+        developerName={summary.name}
+        projects={projects}
+        citySlug={canonicalCitySlug("ggn")}
+        asOf={dataAsOf}
+      />
+
+      <DeveloperLocations
+        developerName={summary.name}
+        developerSlug={summary.slug}
+        projects={projects}
+        linkedCorridors={linkedCorridors}
+        citySlug={canonicalCitySlug("ggn")}
+      />
+
       {/* The complete index. Every project this builder has on HomzRealtor,
           linked by name, so nothing in the portfolio depends on a query-param
           view to be reachable. Grouped by city where the builder spans more
@@ -385,6 +442,8 @@ const DeveloperPage = async ({ params }: PageParams) => {
       )}
 
       <Faq title={summary.name} items={faqs} />
+
+      <DeveloperEntity developerName={summary.name} facts={facts} />
 
       {/* Other developers — internal linking + crawlability */}
       {others.length > 0 && (

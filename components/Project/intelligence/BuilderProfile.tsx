@@ -77,12 +77,18 @@ const BuilderProfile = ({ builder, text, slug, stats, badges }: Props) => {
           </div>
         )}
 
+        {/* 2026-09-22: every project page now points at the developer hub with
+            the hub's own head term as anchor text, not a generic "view all".
+            With ~109 DLF project pages, ~57 M3M and ~55 Emaar, this is the
+            single largest source of internal authority those hubs have — and
+            descriptive anchor text is what tells Google which query the
+            destination answers. */}
         {slug && (
           <Link
             href={`/developer/${slug}`}
             className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FDF094] to-[#B77D2B] px-5 py-2 text-sm font-semibold text-black hover:opacity-90 transition-opacity"
           >
-            View all projects by {builder} →
+            View all {builder} projects in Gurgaon →
           </Link>
         )}
       </div>
