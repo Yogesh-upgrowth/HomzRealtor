@@ -222,6 +222,12 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Investment Score Methodology
               </Link>
             </li>
+            {/* Checklist item 20 (2026-09-22): the monthly index. */}
+            <li>
+              <Link href="/gurgaon-property-index" className={colLinkCls}>
+                Gurgaon Property Index
+              </Link>
+            </li>
             <li>
               {/* MI-18 (2026-09-18): the consent banner only ever asked
                   once -- there was no way to come back and change that
