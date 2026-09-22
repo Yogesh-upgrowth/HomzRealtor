@@ -21,6 +21,20 @@ import { getNewLaunchProjects, getFeaturedProjects } from "@/lib/intelligence/ho
 import { getGurgaonRealEstateNews } from "@/lib/intelligence/news";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 
+// Checklist item 17 (2026-09-22). The homepage had no canonical of its own —
+// it inherited `alternates.canonical: "/"` from the root layout, which worked
+// but made it the one page in the site relying on that inheritance.
+//
+// The inheritance itself is the thing worth naming: because the root layout
+// declares a canonical, ANY route that forgets to set its own silently
+// declares the homepage as its canonical, which is far worse than having no
+// canonical at all. Every other route does override it today, and
+// scripts/check-canonicals.mjs now fails the moment one does not. Stating it
+// here means nothing depends on that inheritance by accident.
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 const GURGAON_CITY_KEY = "ggn";
 
 export default async function Home() {

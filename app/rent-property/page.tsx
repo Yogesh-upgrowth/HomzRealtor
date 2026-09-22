@@ -1,32 +1,53 @@
+import type { Metadata } from "next";
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
 import HubDirectory from "@/components/PropertyListing/HubDirectory";
-import { computeFacets, hasActiveListingFilters } from "@/lib/listings/filters";
+import { computeFacets, hasActiveListingFilters, isIndexableListingUrl } from "@/lib/listings/filters";
 import discoverImage2 from "@/assets/images/discoverImage2.jpg";
 
 const title = "Rent Property in Gurgaon, Price, Photos & Floor Plans";
 const description =
   "Browse verified rental listings in Gurgaon: apartments, builder floors, and more. Filter by property type, BHK, budget, and possession status.";
 
-export const metadata = {
-  title,
-  description,
-  alternates: {
-    canonical: "/rent-property",
-  },
-  openGraph: {
+// Checklist item 18 (2026-09-22): arbitrary filter, sort and search URLs are
+// not offered for indexing. Static metadata could not express that — it had no
+// access to the query string — so this is a generateMetadata now.
+//
+// THE CANONICAL IS DROPPED ON A FILTERED URL, and that is the part worth
+// reading twice. Emitting noindex on a URL whose canonical points at a page we
+// DO want indexed is a conflicting signal: Google may follow the canonical and
+// apply the noindex to the target, taking the clean hub down with it. So a
+// filtered URL gets noindex,follow and no canonical tag at all, while the
+// clean URL keeps its canonical exactly as before. `follow` throughout — every
+// listing link on a filtered page is a real destination.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const indexable = isIndexableListingUrl(await searchParams);
+  const base: Metadata = {
     title,
     description,
-    images: [
-      {
-        url: discoverImage2.src,
-        width: discoverImage2.width,
-        height: discoverImage2.height,
-        alt: "Rent property in Gurgaon",
-      },
-    ],
-  },
-};
+    alternates: {
+      canonical: "/rent-property",
+    },
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: discoverImage2.src,
+          width: discoverImage2.width,
+          height: discoverImage2.height,
+          alt: "Rent property in Gurgaon",
+        },
+      ],
+    },
+  };
+  if (indexable) return base;
+  return { ...base, alternates: undefined, robots: { index: false, follow: true } };
+}
 
 // See app/buy-property/page.tsx for why this is needed.
 export const dynamic = "force-dynamic";

@@ -1,32 +1,53 @@
+import type { Metadata } from "next";
 import PropertyListingPage from "@/components/PropertyListing/PropertyListingPage";
 import { PropertyHubJsonLd, ListingPreviewSection, getAllSorted } from "@/components/PropertyListing/PaginatedListingPage";
 import HubDirectory from "@/components/PropertyListing/HubDirectory";
-import { computeFacets, hasActiveListingFilters } from "@/lib/listings/filters";
+import { computeFacets, hasActiveListingFilters, isIndexableListingUrl } from "@/lib/listings/filters";
 import discoverImage1 from "@/assets/images/discoverImage1.jpg";
 
 const title = "Buy Property in Gurgaon, Price, Photos & Floor Plans";
 const description =
   "Resale and new-launch properties for sale in Gurgaon: filter by property type, BHK, budget, and possession status.";
 
-export const metadata = {
-  title,
-  description,
-  alternates: {
-    canonical: "/buy-property",
-  },
-  openGraph: {
+// Checklist item 18 (2026-09-22): arbitrary filter, sort and search URLs are
+// not offered for indexing. Static metadata could not express that — it had no
+// access to the query string — so this is a generateMetadata now.
+//
+// THE CANONICAL IS DROPPED ON A FILTERED URL, and that is the part worth
+// reading twice. Emitting noindex on a URL whose canonical points at a page we
+// DO want indexed is a conflicting signal: Google may follow the canonical and
+// apply the noindex to the target, taking the clean hub down with it. So a
+// filtered URL gets noindex,follow and no canonical tag at all, while the
+// clean URL keeps its canonical exactly as before. `follow` throughout — every
+// listing link on a filtered page is a real destination.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const indexable = isIndexableListingUrl(await searchParams);
+  const base: Metadata = {
     title,
     description,
-    images: [
-      {
-        url: discoverImage1.src,
-        width: discoverImage1.width,
-        height: discoverImage1.height,
-        alt: "Buy property in Gurgaon",
-      },
-    ],
-  },
-};
+    alternates: {
+      canonical: "/buy-property",
+    },
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: discoverImage1.src,
+          width: discoverImage1.width,
+          height: discoverImage1.height,
+          alt: "Buy property in Gurgaon",
+        },
+      ],
+    },
+  };
+  if (indexable) return base;
+  return { ...base, alternates: undefined, robots: { index: false, follow: true } };
+}
 
 // Forces per-request rendering instead of a static shell — PropertyListingPage
 // is a client component that reads useSearchParams(), and without this,

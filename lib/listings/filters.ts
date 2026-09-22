@@ -63,6 +63,36 @@ export function hasActiveListingFilters(
   });
 }
 
+/**
+ * Should this URL be offered to Google? (2026-09-22, checklist item 18.)
+ *
+ * "Pages created from arbitrary user filtering should generally not be
+ * indexed unless deliberately curated," with `?sort=price-low`,
+ * `?bhk=3&status=ready&developer=m3m`, `?minPrice=` and `?maxPrice=` as the
+ * named examples.
+ *
+ * Broader than hasActiveListingFilters() on purpose, and separate from it for
+ * a reason: that function answers "has the visitor narrowed the results",
+ * which drives the empty-state and ItemList logic, and `sort` does not narrow
+ * anything. Indexing is a different question — a sorted view is a duplicate of
+ * the unsorted one under a different URL, which is precisely the bloat item 18
+ * is about. So any query parameter other than `page` makes a URL
+ * non-indexable, including ones we do not recognise: an unknown parameter is
+ * more likely a tracking tag or a hand-edited URL than a curated view, and the
+ * curated views (/buy-property/gurgaon/3-bhk and the sector and corridor hubs)
+ * are all PATHS, never query strings. They are unaffected by this.
+ */
+export function isIndexableListingUrl(
+  searchParams: Record<string, string | string[] | undefined> | undefined
+): boolean {
+  if (!searchParams) return true;
+  return !Object.entries(searchParams).some(([key, value]) => {
+    if (key === "page") return false;
+    const first = Array.isArray(value) ? value[0] : value;
+    return typeof first === "string" && first.trim() !== "";
+  });
+}
+
 export type FacetOption = { value: string; label: string; count: number };
 export type ListingFacets = {
   propertyTypes: FacetOption[];
