@@ -14,6 +14,7 @@
     "check:orphans": "node scripts/check-orphan-pages.mjs",
     "check:data-quality": "node scripts/check-data-quality.mjs",
     "check:content-stats": "node --experimental-strip-types scripts/check-content-stats.mjs",
+    "check:publish-gate": "node --experimental-strip-types scripts/check-publish-gate.mjs",
     "report:listing-quality": "node scripts/listing-quality-report.mjs",
     "test:identity": "node tests/listing-identity.test.mjs",
     "test:taxonomy": "node tests/taxonomy.test.mjs",
@@ -23,7 +24,8 @@
     "test:data-quality": "node --experimental-strip-types tests/data-quality.test.mjs",
     "test:developers-table": "node --experimental-strip-types tests/developers-table.test.mjs",
     "test:news-topics": "node --experimental-strip-types tests/news-topics.test.mjs",
-    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics",
+    "test:publish-gate": "node --experimental-strip-types tests/publish-gate.test.mjs",
+    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics && npm run test:publish-gate",
     "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
     "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },

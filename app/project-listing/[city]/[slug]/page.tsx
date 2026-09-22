@@ -10,6 +10,7 @@ import EnquiryRail from "@/components/Project/listing/EnquiryRail";
 import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
+import { reviewProject, robotsFor } from "@/lib/intelligence/publishGate";
 import { getProjectBySlug, getProjectBySlugResolved, canonicalCitySlug } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
@@ -129,10 +130,19 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   // sharing purposes only (on-page display is unaffected).
   const image = rawImage?.replace(/aio=[^&]*/i, "aio=w-1200;h-630;");
 
+  // Checklist item 9 (2026-09-22): the pre-publish QA gate. A record that
+  // fails validation after the correction layer has had its go is withheld
+  // from indexing rather than offered to Google — noindex,follow, so the page
+  // still renders and its links still carry. See lib/intelligence/publishGate.ts
+  // for why "withheld from indexing" is what "Draft / Needs Review" maps to in
+  // a feed-driven site with no publish step.
+  const review = reviewProject(project);
+
   return {
     title,
     description,
     keywords,
+    ...(robotsFor(review) ? { robots: robotsFor(review) } : {}),
     alternates: {
       canonical: canonicalUrl,
     },

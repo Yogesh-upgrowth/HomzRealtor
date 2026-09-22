@@ -20,6 +20,7 @@
 
 import { fetchProperties, propertySegment, type PropertyCategory } from "@/lib/scraping/homzbackend";
 import { resolvePropertyView, slugForProperty, type PropertyView } from "./property-view";
+import { reviewListing, type PublishState } from "./publishGate";
 import { buildListingContext, type ListingContext } from "./listingContext";
 import {
   buildListingNarrative,
@@ -54,6 +55,10 @@ export type ListingRecord = {
    *  hotlinked from the source portal's CDN. Drives the media migration's
    *  progress reporting and lets the UI mark own photography. */
   ownedMedia: boolean;
+  /** Checklist item 9: the pre-publish QA verdict for this record, evaluated
+   *  AFTER the correction layer. A non-indexable record still renders — it is
+   *  simply not offered to Google. See lib/intelligence/publishGate.ts. */
+  review: PublishState;
 };
 
 export async function getListingRecord(
@@ -126,5 +131,6 @@ export async function getListingRecord(
     postingPriceRange: postingPriceRange(group),
     verification,
     ownedMedia: media.owned || (view.heroImage != null && !isHotlinked(view.heroImage)),
+    review: reviewListing(match),
   };
 }

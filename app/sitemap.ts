@@ -7,6 +7,8 @@ import {
   type RawHomzProperty,
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
+import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
+import { sanitizeSegment } from '@/lib/intelligence/dataQuality'
 import { filterProperties } from '@/lib/listings/filters'
 import {
   buildLocationHubs,
@@ -84,6 +86,10 @@ async function fetchProjectEntries(): Promise<ProjectEntry[]> {
         for (const p of projects) {
           const key = `${citySlug}/${p.slug}`
           if (seen.has(key)) continue
+          // Checklist items 9 and 15: a project the pre-publish gate blocks
+          // emits noindex on its own page, so listing it here would put the
+          // sitemap and the page in direct contradiction.
+          if (!reviewProject(p).indexable) continue
           seen.add(key)
           entries.push({ slug: p.slug, city: citySlug, updatedAt: p.updated_at })
         }
@@ -237,7 +243,18 @@ async function fetchPropertyEntries(category: PropertyCategory): Promise<RawHomz
       next: { revalidate: 3600 },
     })
     const json = await res.json()
-    return (json?.results || []).filter((p: RawHomzProperty) => !!p?.title)
+    const raw: RawHomzProperty[] = (json?.results || []).filter((p: RawHomzProperty) => !!p?.title)
+    // 2026-09-22. This fetch bypassed lib/listings/segmentCache.ts, so the
+    // sitemap was built from UNCORRECTED records while the pages were built
+    // from corrected ones — a flat reclassified out of Commercial was still
+    // listed under the commercial segment here. Sanitising first puts the two
+    // back in agreement.
+    const corrected = sanitizeSegment(raw)
+    // Checklist items 9 and 15: a record the pre-publish gate blocks is
+    // noindex on its own page, and a sitemap entry for a noindex URL is a
+    // contradiction Search Console reports as an error. Same rule the thin
+    // developer hubs already follow.
+    return corrected.filter((p) => reviewListing(p).indexable)
   } catch {
     return []
   }

@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getListingRecord } from "@/lib/intelligence/get-listing-record";
 import { buildPropertyTitle } from "@/lib/intelligence/property-view";
+import { robotsFor } from "@/lib/intelligence/publishGate";
 import PropertyDetailView from "@/components/PropertyListing/PropertyDetailView";
 import PropertyJsonLd from "@/components/PropertyListing/PropertyJsonLd";
 import HomzRecordSections from "@/components/PropertyListing/HomzRecordSections";
@@ -41,6 +42,11 @@ export function makePropertyDetailPage(category: PropertyCategory) {
       // Composed from structured fields + computed sector comparison, never
       // paraphrased from the source listing — see listingNarrative.ts.
       description: record.metaDescription,
+      // Checklist item 9 (2026-09-22): a record that still fails validation
+      // after the correction layer is withheld from indexing rather than
+      // offered to Google. noindex,follow — the page renders and its links
+      // still carry. See lib/intelligence/publishGate.ts.
+      ...(robotsFor(record.review) ? { robots: robotsFor(record.review) } : {}),
       alternates: { canonical: `/${routeBase}/${city}/${slug}` },
       openGraph: {
         title,
