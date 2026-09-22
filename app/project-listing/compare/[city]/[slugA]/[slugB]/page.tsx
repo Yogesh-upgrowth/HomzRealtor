@@ -37,13 +37,43 @@ export function generateStaticParams() {
 // (sub-millisecond, grouped-computation, cached) check against the pairs
 // actually linked from real project pages — anything outside that set
 // 404s here, before either expensive getProjectBySlug lookup ever runs.
-// robots.txt no longer blocks this path as of the same date.
+//
+// 2026-09-22: robots.txt disallows this path again (see its own comment --
+// a crawler started working through the bounded-but-still-large linked-pair
+// set at real volume, pushing Fluid Active CPU toward the Hobby-plan
+// courtesy ceiling), but a disallow only stops crawlers that honor it. This
+// is the backstop for one that doesn't: a hard per-instance cap on how many
+// *new* cache-miss renders this route will do inside a rolling window,
+// shared by generateMetadata and the page below (both call this first).
+// Once spent, further requests are treated exactly like an unlinked pair --
+// cheap noindex metadata / notFound(), no project lookup -- rather than
+// paying for the render. A real pair hit while the budget is exhausted
+// simply renders on its next request once the window rolls over; nothing
+// is permanently lost; the ISR cache for pairs already rendered this week
+// keeps serving those for free regardless.
+const RENDER_BUDGET_WINDOW_MS = 30 * 60 * 1000;
+const MAX_NEW_RENDERS_PER_WINDOW = 40;
+let budgetWindowStart = Date.now();
+let budgetSpent = 0;
+
+function withinRenderBudget(): boolean {
+  const now = Date.now();
+  if (now - budgetWindowStart > RENDER_BUDGET_WINDOW_MS) {
+    budgetWindowStart = now;
+    budgetSpent = 0;
+  }
+  if (budgetSpent >= MAX_NEW_RENDERS_PER_WINDOW) return false;
+  budgetSpent++;
+  return true;
+}
+
 async function isRealComparePair(cityParam: string, slugA: string, slugB: string): Promise<boolean> {
   const cityKey = CITY_PARAM_MAP[cityParam.toLowerCase()] || cityParam;
   const citySlug = canonicalCitySlug(cityKey);
   const [sortedA, sortedB] = [slugA, slugB].sort();
   const keys = await getComparePairKeys();
-  return keys.has(`${citySlug}/${sortedA}/${sortedB}`);
+  if (!keys.has(`${citySlug}/${sortedA}/${sortedB}`)) return false;
+  return withinRenderBudget();
 }
 
 type PageParams = { params: Promise<{ city: string; slugA: string; slugB: string }> };

@@ -89,13 +89,20 @@ export default function robots(): MetadataRoute.Robots {
         // render (cheap, cached, sub-millisecond check); everything else
         // 404s before either expensive project lookup runs. See that
         // route's own comment.
-        // Audit item 11 (2026-09-19): the private trees carried no noindex
-        // and no disallow. They now declare robots:{index:false,follow:false}
-        // in their own layouts; these entries stop crawl budget being spent
-        // reaching them at all. Both together, deliberately -- a disallowed
-        // URL's noindex tag is never read, so the meta tag is what actually
-        // de-indexes anything already in the index, and this saves the fetch.
-        disallow: ["/api/", "/account/", "/dashboard/", "/admin/"],
+        //
+        // Re-blocked 2026-09-22: even bounded to real linked pairs, that set
+        // is still large (~9 pairs x ~7,500 projects), and a crawler started
+        // working through it at real volume this day -- 92% of the entire
+        // prior week's compare-page renders happened in a single 24h window,
+        // each one a cache-miss render, pushing Fluid Active CPU toward the
+        // Hobby-plan courtesy ceiling. The DEV-03 noindex-visibility argument
+        // for keeping this crawlable is real but secondary to not tripping
+        // the usage pause; revisit unblocking once the account has headroom
+        // again (see docs/seo/implementation-status.md's CPU baseline
+        // section). The route also caps its own render volume per window
+        // now regardless of this block (see its own comment) as a backstop
+        // against crawlers that don't honor robots.txt.
+        disallow: ["/api/", "/account/", "/dashboard/", "/admin/", "/project-listing/compare/"],
       },
       ...allowedAiAgents.map((userAgent) => ({
         userAgent,
