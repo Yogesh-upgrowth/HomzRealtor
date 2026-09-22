@@ -152,3 +152,49 @@ export function hubLinksForPost(
   // least relevant.
   return out.slice(0, 6);
 }
+
+/** The shape postsForHub needs from a post. Structural, so the caller can
+ *  pass BLOG_POSTS_V27 straight in. */
+export type PostLike = {
+  meta: { slug: string; h1: string; primaryKeyword: string; updatedAt: string; tags?: string[] };
+};
+
+/**
+ * The reverse direction: which posts point at a given hub (2026-09-22).
+ *
+ * Checklist item 23 asks corridor hubs to aggregate "articles" alongside the
+ * data. The mapping for that already exists — it is the RULES table above,
+ * read backwards. Deriving it rather than writing a second table means a new
+ * post or a new rule updates both directions at once, and the hub can never
+ * link to a post that would not link back.
+ *
+ * POSTS ARE PASSED IN rather than imported. This module is deliberately free
+ * of the blog registry — importing it would pull all 25 post files into
+ * everything that reads the hub map, and it immediately broke the
+ * listing-hubs test harness, which copies this file alone. The caller has the
+ * registry already.
+ *
+ * `ALWAYS` links are deliberately excluded: every post carries those, so
+ * including them would list all 25 guides on /buy-property and tell a reader
+ * nothing.
+ */
+export function postsForHub(
+  href: string,
+  posts: PostLike[]
+): { slug: string; title: string; href: string }[] {
+  const matching = posts.filter((post) => {
+    const haystack = [post.meta.slug, post.meta.primaryKeyword, ...(post.meta.tags ?? [])]
+      .join(" ")
+      .toLowerCase();
+    return RULES.some((rule) => rule.match.test(haystack) && rule.links.some((l) => l.href === href));
+  });
+
+  return matching
+    .sort((a, b) => b.meta.updatedAt.localeCompare(a.meta.updatedAt))
+    .slice(0, 6)
+    .map((post) => ({
+      slug: post.meta.slug,
+      title: post.meta.h1,
+      href: `/blog/${post.meta.slug}`,
+    }));
+}

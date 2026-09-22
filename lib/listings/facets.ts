@@ -73,6 +73,42 @@ export const LISTING_PAGE_SIZE = 24;
  */
 export const MIN_HUB_LISTINGS = 8;
 
+/**
+ * The sectors checklist item 22 names as priorities.
+ *
+ * "Make important sector pages even stronger. For priority sectors such as
+ * 56, 57, 65, 67, 70, 79, 82, 84, 85, 89, 102, 106, 109, 111, 113 add
+ * consistently: [median asking price, price range, active listings, project
+ * count, new launch count, ready-to-move count, top developers, connectivity,
+ * schools, hospitals, offices, nearby infrastructure, top projects, FAQs,
+ * data update date]."
+ *
+ * What this list actually controls: these hubs are exempt from
+ * MIN_HUB_LISTINGS, the same way the hand-written corridor hubs are. Every
+ * other sector hub is derived and 404s below the floor, which is what keeps
+ * the long tail from becoming doorway pages. These fifteen are named, searched
+ * by name, and linked from editorial content — a page that vanishes the week
+ * its inventory dips below eight is worse than a thin one, because the link
+ * pointing at it breaks and the URL drops out of the index.
+ *
+ * They still get the full treatment rather than a stub: the content bullets
+ * above are supplied by hubIntel (price, connectivity, schools, hospitals),
+ * areaProjects (project counts, status mix, developers, top projects), the
+ * FAQ builder, and the data-updated stamp — so an exempt hub with six
+ * listings still has real content, just less inventory.
+ *
+ * "Offices" is the one bullet with no direct answer: the OSM dataset carries
+ * no office category. The business-hub distances in hubIntel's anchors
+ * (Cyber City, Udyog Vihar) answer the question a buyer is actually asking.
+ */
+export const PRIORITY_SECTOR_TOKENS = new Set([
+  "56", "57", "65", "67", "70", "79", "82", "84", "85", "89", "102", "106", "109", "111", "113",
+]);
+
+export function isPrioritySector(token: string | null | undefined): boolean {
+  return Boolean(token && PRIORITY_SECTOR_TOKENS.has(String(token).toLowerCase()));
+}
+
 export const ROUTE_BASE_BY_CATEGORY: Record<PropertyCategory, string> = {
   Sale: "buy-property",
   Rent: "rent-property",

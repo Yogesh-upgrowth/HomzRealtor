@@ -23,6 +23,10 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAllSorted, PropertyCardLink } from "./PaginatedListingPage";
 import HubIntelligence from "./HubIntelligence";
+import AreaProjectsSection from "./AreaProjectsSection";
+import { getAreaProjects } from "@/lib/listings/areaProjects";
+import { postsForHub } from "@/lib/content/postHubLinks";
+import { BLOG_POSTS_V27 } from "@/lib/content/blogRegistry";
 import Faq from "@/components/Project/intelligence/Faq";
 import { type PropertyCategory } from "@/lib/listings/filters";
 import { formatInr } from "@/lib/intelligence/normalize";
@@ -32,6 +36,7 @@ import {
   buildLocationHubs,
   facetProperties,
   LISTING_PAGE_SIZE,
+  isPrioritySector,
   MIN_HUB_LISTINGS,
   ROUTE_BASE_BY_CATEGORY,
   staticFacetsFor,
@@ -104,7 +109,20 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
   // Empty hubs of either kind are still kept out of the sitemap, the hub
   // directory and the sibling links — rendering on request and advertising
   // are different things.
-  if (facet.location?.kind === "sector" && filtered.length < MIN_HUB_LISTINGS) notFound();
+  //
+  // 2026-09-22, checklist item 22: the fifteen named priority sectors are
+  // exempt, on the same reasoning as the corridor hubs. They are searched by
+  // name and linked from editorial content, so a page that vanishes the week
+  // its inventory dips below eight breaks those links and drops the URL from
+  // the index — worse than a thinner page. They still carry the full content
+  // treatment; see PRIORITY_SECTOR_TOKENS.
+  if (
+    facet.location?.kind === "sector" &&
+    !isPrioritySector(facet.location.token) &&
+    filtered.length < MIN_HUB_LISTINGS
+  ) {
+    notFound();
+  }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / LISTING_PAGE_SIZE));
   if (pageNum > totalPages) notFound();
@@ -137,6 +155,17 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
     .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
     .sort((a, b) => b.getTime() - a.getTime())[0];
   const hubAsOf = (newestFiltered ?? new Date()).toISOString();
+
+  // Checklist items 22 and 23: the project-side facts (project count, status
+  // mix, top developers, top projects, and a corridor's sectors). Page 1 only,
+  // same reasoning as the intelligence block above. Null when the area has no
+  // projects, so the section is absent rather than a row of zeroes.
+  const areaProjects = showIntel && facet.location ? await getAreaProjects(facet.location) : null;
+
+  // Item 23's "articles": the editorial pieces written about this area. The
+  // map already exists for the reverse direction (a post linking out to its
+  // hubs); this reads it backwards so a hub links to the writing about it.
+  const relatedPosts = locationLabel ? postsForHub(`/${routeBase}/gurgaon/${facet.slug}`, BLOG_POSTS_V27) : [];
 
   // Sibling hubs: the other sectors and corridors with real inventory in this
   // same category. This is what actually collapses crawl depth — every hub is
@@ -272,6 +301,34 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
             return staticFacetsFor(category)[slug] ? `/${routeBase}/gurgaon/${slug}` : null;
           }}
         />
+      )}
+
+      {areaProjects && locationLabel && (
+        <AreaProjectsSection label={locationLabel} data={areaProjects} routeBase={routeBase} />
+      )}
+
+      {/* Checklist item 23: the writing about this area, linked from it. The
+          post-to-hub map read backwards, so the two directions cannot drift. */}
+      {relatedPosts.length > 0 && locationLabel && (
+        <div className="w-full max-w-7xl mx-auto px-4">
+          <section aria-labelledby="hub-reading" className="mt-10">
+            <h2 id="hub-reading" className="mb-4 text-xl font-bold text-white">
+              What we have written about {locationLabel}
+            </h2>
+            <ul className="space-y-2.5">
+              {relatedPosts.map((post) => (
+                <li key={post.slug} className="border-b border-white/[0.05] pb-2.5 last:border-b-0">
+                  <Link
+                    href={post.href}
+                    className="text-[14.5px] text-gray-300 transition hover:text-[#CEA44E]"
+                  >
+                    {post.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       )}
 
       {faqs.length > 0 && <Faq title={locationLabel ?? facet.label} items={faqs} />}
