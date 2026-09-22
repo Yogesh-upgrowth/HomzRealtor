@@ -9,9 +9,8 @@ import {
   canonicalCitySlug,
   getProjectsForCity,
   getSectorsForCity,
-  isLinkableBuilder,
+  developerHubSlug,
 } from "@/lib/intelligence/projects";
-import { slugify } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
@@ -136,11 +135,19 @@ const CityLandingPage = async ({ params }: PageParams) => {
   const residential = projects.filter((p) => p.property_category === "Residential");
   const commercial = projects.filter((p) => p.property_category === "Commercial");
   // SEO audit 2026-09-07 P1: only link a builder chip when it clears the
-  // same eligibility gate /developer/[slug] itself uses (isLinkableBuilder) —
-  // otherwise a short fallback name like "MV" or "SS" rendered a link that
-  // 404'd, since getBuilderBySlug excludes those from its index.
+  // same eligibility gate /developer/[slug] itself uses — otherwise a short
+  // fallback name like "MV" or "SS" rendered a link that 404'd, since
+  // getBuilderBySlug excludes those from its index.
+  // 2026-09-21: was a Set of raw builder names later slugified at render.
+  // Deduping on the canonical hub slug instead means "Emaar" and "Emaar
+  // India" produce one chip pointing at one page, not two chips racing each
+  // other, and an invalid name (the /developer/the class) produces none.
   const builders = Array.from(
-    new Set(projects.map((p) => p.builder).filter(isLinkableBuilder))
+    new Map(
+      projects
+        .map((p) => [developerHubSlug(p.builder), p.builder] as const)
+        .filter((pair): pair is readonly [string, string] => Boolean(pair[0]))
+    ).entries()
   ).slice(0, 8);
   const microMarkets = Array.from(
     new Set(projects.map((p) => p.micro_market).filter(Boolean) as string[])
@@ -320,13 +327,13 @@ const CityLandingPage = async ({ params }: PageParams) => {
             </Link>
           </div>
           <div className="flex flex-wrap gap-2">
-            {builders.map((b) => (
+            {builders.map(([builderSlug, label]) => (
               <Link
-                key={b as string}
-                href={`/developer/${slugify(b as string)}`}
+                key={builderSlug}
+                href={`/developer/${builderSlug}`}
                 className="rounded-full bg-black px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-[#CEA44E] border border-transparent hover:border-[#B77D2B] transition"
               >
-                {b}
+                {label}
               </Link>
             ))}
           </div>

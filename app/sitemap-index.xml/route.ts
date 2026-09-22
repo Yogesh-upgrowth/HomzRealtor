@@ -14,14 +14,16 @@
 // `next build` (Turbopack, matching Vercel exactly) before shipping this
 // version.
 import { NextResponse } from "next/server";
+import { SITEMAP_SEGMENT_IDS } from "@/lib/seo/sitemapSegments";
 
 const BASE_URL = "https://www.homzrealtor.com";
 
-// Must match app/sitemap.ts's own SEGMENT_IDS exactly — duplicated here
-// (rather than imported) since app/sitemap.ts's generateSitemaps() export
-// is a Next.js route-config convention, not a plain function this route
-// handler can safely import from without pulling in that whole module.
-const SEGMENT_IDS = ["projects", "sectors", "developers", "buy", "rent", "commercial", "content"] as const;
+// Shared with app/sitemap.ts (2026-09-22). This used to be a second
+// hand-maintained copy carrying a comment that it "must match app/sitemap.ts's
+// own SEGMENT_IDS exactly" — which is a comment asking a reader to do what a
+// shared constant does for free. The original objection, that
+// generateSitemaps() is a route-config convention, applies to that EXPORT and
+// not to importing a plain constant module with no Next semantics.
 
 export const revalidate = 3600;
 
@@ -29,7 +31,7 @@ export async function GET() {
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    SEGMENT_IDS.map((id) => `  <sitemap><loc>${BASE_URL}/sitemap/${id}.xml</loc></sitemap>`).join("\n") +
+    SITEMAP_SEGMENT_IDS.map((id) => `  <sitemap><loc>${BASE_URL}/sitemap/${id}.xml</loc></sitemap>`).join("\n") +
     `\n</sitemapindex>\n`;
 
   return new NextResponse(body, {

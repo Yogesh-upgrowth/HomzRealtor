@@ -21,16 +21,101 @@ export type NewsItem = {
   image: string | null;
   sourceName: string | null;
   publishedAt: string | null;
+  /** The allow-listed topic this article matched. Set by relevantItems(); an
+   *  item with no topic never reaches a caller. */
+  topic?: string;
 };
 
-// NewsData's own topical relevance is loose — q=Gurgaon alone surfaces
-// traffic-accident, civic and hospitality stories that merely mention the
-// city. Broad infra terms like "expressway"/"construction" turned out to
-// false-positive on exactly that (a fatal-accident story mentioning "DME"
-// in its body, a streetlight-funds corruption story) — this re-filters to
-// vocabulary that only shows up in genuine property-market coverage.
-const REAL_ESTATE_RE =
-  /real estate|realty market|\brealty\b|\bpropert(y|ies)\b|housing project|housing sale|residential project|residential market|commercial project|apartment project|builder floor|circle rate|\brera\b|possession of (flats|homes|apartments|units)|new launch project|luxury housing|affordable housing|\breit(s)?\b|office space/i;
+// The allow-list of topics this module will show (2026-09-22).
+//
+// Checklist item 12: "Restrict Homepage Latest News to Gurgaon property
+// topics. Only allow categories such as: Gurgaon Real Estate, Gurgaon
+// Infrastructure, Dwarka Expressway, Golf Course Extension Road, New Gurgaon,
+// HARERA, Gurgaon Metro, RRTS, Developer News, Project Launches, Housing
+// Finance, Office Leasing, Property Regulation. Exclude crime stories,
+// celebrity property, generic Delhi news, unrelated national stories,
+// sensational content."
+//
+// This replaces a single broad "is it real-estate vocabulary" regex. The
+// difference that matters is the shape: an article now has to match a NAMED
+// topic, and the topic it matched is carried on the item — so the module can
+// say what it let through rather than just asserting relevance. A story that
+// matches nothing on this list does not appear, whatever else it mentions.
+//
+// Order matters only for the label, not for admission: the first match names
+// the item, so the specific corridors sit above the general Gurgaon category.
+export type NewsTopic = { label: string; match: RegExp };
+
+export const NEWS_TOPICS: NewsTopic[] = [
+  { label: "Dwarka Expressway", match: /\bdwarka\s*express\s*way\b/i },
+  {
+    label: "Golf Course Extension Road",
+    match: /golf\s*course\s*(extension|ext\.?)\s*road/i,
+  },
+  { label: "Golf Course Road", match: /golf\s*course\s*road/i },
+  { label: "New Gurgaon", match: /\bnew\s*gur(gaon|ugram)\b/i },
+  { label: "HARERA", match: /\bha?rera\b|real estate regulatory authority/i },
+  {
+    label: "Gurgaon Metro",
+    match: /\b(gurgaon|gurugram)\b[^.]{0,60}\bmetro\b|\bmetro\b[^.]{0,60}\b(gurgaon|gurugram)\b|rapid metro/i,
+  },
+  { label: "RRTS", match: /\brrts\b|regional rapid transit|namo bharat/i },
+  {
+    label: "Housing Finance",
+    match: /home loan|housing finance|\bhfc\b|loan against property|repo rate[^.]{0,40}(home|housing)|mortgage/i,
+  },
+  {
+    label: "Office Leasing",
+    match: /office leasing|office space (absorption|take-?up|demand|leased)|grade a office|co-?working (space|deal)|leasing volume/i,
+  },
+  {
+    label: "Property Regulation",
+    match: /circle rate|stamp duty|collector rate|land pooling|property tax|building bye-?laws|occupancy certificate|\bcla\b registration|apartment ownership act|land acquisition/i,
+  },
+  {
+    label: "Project Launches",
+    // "unveils a new residential project" has words between the verb and the
+    // noun, so an adjacent-word pattern missed it and the story fell through
+    // to Developer News. Both labels are defensible for that headline, but a
+    // launch is the more specific fact, so the verb is allowed a short gap.
+    match: /new launch|pre-?launch|(unveils?|launch(es|ed)?|debuts?|announces?)\b[^.]{0,40}\b(project|towers?|phase)\b|breaks? ground/i,
+  },
+  {
+    label: "Developer News",
+    match: /\b(dlf|m3m|signature global|godrej properties|emaar|sobha|birla estates|tata realty|adani realty|bptp|vatika|elan group|smart world|central park|whiteland|krisumi|experion|anant raj)\b/i,
+  },
+  {
+    label: "Gurgaon Infrastructure",
+    match: /\b(gurgaon|gurugram)\b[^.]{0,80}\b(expressway|elevated corridor|underpass|flyover|sewer|water supply|road widening|\bnh-?\d+\b|peripheral road)\b/i,
+  },
+  {
+    label: "Gurgaon Real Estate",
+    match: /\b(gurgaon|gurugram)\b[^.]{0,80}\b(real estate|realty|propert(y|ies)|housing|apartment|flats?|residential|commercial space|plots?)\b/i,
+  },
+  {
+    label: "Indian Real Estate",
+    match: /real estate|realty market|\brealty\b|residential market|housing sales|\breit(s)?\b|affordable housing|luxury housing/i,
+  },
+];
+
+/**
+ * Categories the item names as excluded, plus the shapes that carry them.
+ *
+ * Checked BEFORE the allow-list, because the overlap is exactly where the
+ * problem lives: a murder in a Gurgaon condominium matches "Gurgaon Real
+ * Estate" on vocabulary alone, and a Bollywood flat purchase matches
+ * "Project Launches". Neither belongs in a property-market feed.
+ */
+const BLOCKED_RE =
+  // crime
+  /\b(murder|murdered|killed|kill(ing)?|rape|raped|assault|molest|shot dead|stabb(ed|ing)|suicide|body found|arrest(ed)?|held for|booked for|fir\b|police (case|complaint)|fraud(ster)?|cheat(ed|ing)|duped|scam|extortion|kidnap|robbery|loot(ed)?|snatch(ing|ed)|smuggl|drugs?\b|narcotic|gang|shootout|firing|encounter)\b|/.source +
+  // celebrity property
+  /\b(actor|actress|cricketer|bollywood|star kid|singer|celebrity|influencer)\b[^.]{0,60}\b(buys?|bought|purchas|sells?|sold|rents?|flat|apartment|villa|bungalow|mansion|property)\b|/.source +
+  /\b(buys?|bought|purchas\w*|sells?|sold)\b[^.]{0,40}\b(for|worth)\b[^.]{0,30}\bcrore\b[^.]{0,40}\b(actor|actress|cricketer|bollywood|singer|celebrity)\b|/.source +
+  // sensational framing
+  /\b(shocking|horrifying|you won't believe|viral video|goes viral|caught on camera|watch:|big blow|bombshell|slams?|lashes out|war of words)\b/.source;
+
+const BLOCKED = new RegExp(BLOCKED_RE, "i");
 
 // Genuinely Gurgaon-specific property-market news is rare on any given day —
 // tested live, an 8-page pagination of q=Gurgaon (84 total results, the
@@ -111,14 +196,21 @@ async function fetchRaw(q: string): Promise<RawArticle[]> {
   return all;
 }
 
+/** The first allow-listed topic an article matches, or null. */
+export function classifyHeadline(text: string): string | null {
+  if (BLOCKED.test(text)) return null;
+  return NEWS_TOPICS.find((t) => t.match.test(text))?.label ?? null;
+}
+
 function relevantItems(raw: RawArticle[]): NewsItem[] {
   const items: NewsItem[] = [];
   for (const article of raw) {
     const item = toNewsItem(article);
     if (!item) continue;
     if (NOISE_RE.test(item.sourceName || "")) continue;
-    if (!REAL_ESTATE_RE.test(`${item.title} ${item.description || ""}`)) continue;
-    items.push(item);
+    const topic = classifyHeadline(`${item.title} ${item.description || ""}`);
+    if (!topic) continue;
+    items.push({ ...item, topic });
   }
   return items;
 }
@@ -137,9 +229,23 @@ export async function getGurgaonRealEstateNews(limit = 5): Promise<NewsItem[]> {
     const ncrOnly = (items: NewsItem[]) =>
       items.filter((i) => NCR_RE.test(`${i.title} ${i.description || ""}`));
 
+    // Item 12's closing rule, and it is the part worth being deliberate
+    // about: "If there are only three relevant property stories, show three
+    // rather than filling the module with irrelevant content." So nothing
+    // here pads. The list is whatever cleared the topic allow-list, in
+    // Gurgaon-first order, and the section renders however many that is —
+    // including none, in which case it hides itself entirely.
+    //
+    // Within that, the generic "Indian Real Estate" catch-all sorts last, so
+    // a national REIT story never displaces a Dwarka Expressway one.
+    const rank = (i: NewsItem) => (i.topic === "Indian Real Estate" ? 1 : 0);
+
     const seen = new Set<string>();
     const items: NewsItem[] = [];
-    for (const item of [...relevantItems(gurgaonRaw), ...ncrOnly(relevantItems(marketRaw))]) {
+    const candidates = [...relevantItems(gurgaonRaw), ...ncrOnly(relevantItems(marketRaw))].sort(
+      (a, b) => rank(a) - rank(b)
+    );
+    for (const item of candidates) {
       if (seen.has(item.title)) continue;
       seen.add(item.title);
       items.push(item);

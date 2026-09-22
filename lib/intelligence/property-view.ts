@@ -239,11 +239,17 @@ function priceValue(property: RawHomzProperty): {
 function buildScoreView(property: RawHomzProperty): PropertyScoreView | null {
   const score = property.investmentScore;
   if (score == null) return null;
-  const grade = score >= 80 ? "Excellent" : score >= 65 ? "Strong" : score >= 50 ? "Good" : "Fair";
+  // 2026-09-22, checklist item 7. "Excellent / Strong" graded an investment,
+  // and "worth a closer look" / "higher-risk opportunity" recommended one, on
+  // the strength of a single backend number with no factor breakdown behind
+  // it. Both now describe the number and say where it came from — see
+  // LISTING_SCORE_NOTE on why this score is not the project five-factor one.
+  const grade =
+    score >= 80 ? "Top band" : score >= 65 ? "Upper band" : score >= 50 ? "Middle band" : "Lower band";
   const verdict =
-    score >= 65
-      ? "Scores well on the fundamentals we track for this listing: worth a closer look."
-      : "An early-stage or higher-risk opportunity by our scoring: worth weighing against your specific goals.";
+    `${score}/100 from our listing enrichment pipeline, which scores each listing as one number ` +
+    `rather than the five-factor breakdown used on project pages. It reads the listing's own ` +
+    `attributes and location, not its asking price, so it says nothing about whether the price is fair.`;
   return {
     score,
     grade,

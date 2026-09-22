@@ -6,6 +6,8 @@ import { ChevronRight } from "lucide-react";
 import { BLOG_CATEGORIES, type BlogCategory } from "@/lib/content/blogPostSchema";
 import { BLOG_POSTS_V27, getBlogPostV27BySlug, getBlogPostsV27ByCategory } from "@/lib/content/blogRegistry";
 import BlogPostV27Article from "@/components/Blog/BlogPostV27Article";
+import { getAllBuilders } from "@/lib/intelligence/projects";
+import { developersMentionedIn } from "@/lib/content/postDeveloperLinks";
 import BlogImageOrFallback from "@/components/Blog/BlogImageOrFallback";
 
 type PageParams = { params: Promise<{ slug: string }> };
@@ -198,7 +200,13 @@ const BlogPostPage = async ({ params }: PageParams) => {
 
   const v27 = getBlogPostV27BySlug(slug);
   if (v27) {
-    return <BlogPostV27Article post={v27} />;
+    // 2026-09-22: developer hub links, derived from what the article actually
+    // names rather than hand-written per post. Matched against the LIVE
+    // builder list so a derived link can never point at a hub that 404s —
+    // see lib/content/postDeveloperLinks.ts. Best-effort: a feed failure
+    // costs the link block, not the article.
+    const builders = await getAllBuilders().catch(() => []);
+    return <BlogPostV27Article post={v27} developers={developersMentionedIn(v27, builders)} />;
   }
 
   notFound();

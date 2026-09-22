@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import FacetedListingPage, { BUY_FACETS, getFacetPageCount } from "@/components/PropertyListing/FacetedListingPage";
+import FacetedListingPage, { getFacetPageCount } from "@/components/PropertyListing/FacetedListingPage";
+import { BUY_FACETS, resolveFacet } from "@/lib/listings/facets";
 import { MAX_STATIC_PAGES, MAX_REASONABLE_PAGE } from "@/components/PropertyListing/PaginatedListingPage";
 
 const SITE = "https://www.homzrealtor.com";
@@ -19,7 +20,7 @@ export const revalidate = 604800;
 export async function generateStaticParams() {
   const results = await Promise.all(
     Object.keys(BUY_FACETS).map(async (slug) => {
-      const totalPages = await getFacetPageCount(BUY_FACETS[slug]);
+      const totalPages = await getFacetPageCount(BUY_FACETS[slug], "Sale");
       const staticCount = Math.max(0, Math.min(totalPages, MAX_STATIC_PAGES + 1) - 1);
       // Page 1 is served at the base [city]/[slug] URL, not .../page/1.
       return Array.from({ length: staticCount }, (_, i) => ({
@@ -44,7 +45,7 @@ type PageParams = { params: Promise<{ city: string; slug: string; page: string }
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { city, slug, page } = await params;
-  const facet = city === "gurgaon" ? BUY_FACETS[slug] : undefined;
+  const facet = city === "gurgaon" ? resolveFacet("Sale", slug) : undefined;
   const pageNum = parsePageNumber(page);
   if (!facet || !pageNum) return {};
 
@@ -58,11 +59,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 const FacetPagePaginated = async ({ params }: PageParams) => {
   const { city, slug, page } = await params;
-  const facet = city === "gurgaon" ? BUY_FACETS[slug] : undefined;
+  const facet = city === "gurgaon" ? resolveFacet("Sale", slug) : undefined;
   const pageNum = parsePageNumber(page);
   if (!facet || !pageNum) notFound();
   if (pageNum === 1) notFound(); // canonical URL for page 1 is the base facet path
-  return <FacetedListingPage facet={facet} pageNum={pageNum} />;
+  return <FacetedListingPage facet={facet} pageNum={pageNum} category="Sale" />;
 };
 
 export default FacetPagePaginated;

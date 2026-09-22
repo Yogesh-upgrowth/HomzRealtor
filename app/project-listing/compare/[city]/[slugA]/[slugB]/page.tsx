@@ -4,6 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { notFound, permanentRedirect } from "next/navigation";
 import ProjectCompare from "@/components/Project/compare/ProjectCompare";
 import ProjectCompareJsonLd from "@/components/Project/compare/ProjectCompareJsonLd";
+import CompareNarrative from "@/components/Project/compare/CompareNarrative";
+import { scoreComparePair } from "@/lib/intelligence/compareQuality";
 import { getProjectBySlug, canonicalCitySlug, CITY_PARAM_MAP, getComparePairKeys } from "@/lib/intelligence/projects";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord } from "@/lib/intelligence/normalize";
@@ -85,21 +87,23 @@ function sortedSlugs(slugA: string, slugB: string): [string, string] {
 // SEO audit H-01 (2026-09-08): with 1,165 projects the reachable
 // city/slugA/slugB space is ~10^6 near-identical pages — every valid pair
 // was indexable by default, none in the sitemap, pure index bloat diluting
-// crawl budget. noindex,follow is now the default (still crawlable, so a
-// stale/retired pair still 404s and deindexes — see the ISR comment below);
-// `follow` keeps link equity flowing to the two real project pages either
-// side compares. A hand-picked set of genuinely-searched pairs (e.g. two
-// prominent builders in the same sector) can be promoted to indexable by
-// adding "city/sortedSlugA/sortedSlugB" here — each one then needs real,
-// unique intro copy (not just this template) and a sitemap entry to be a
-// real win rather than the same bloat on a shorter list.
-const INDEXABLE_COMPARE_PAIRS = new Set<string>([
-  // "gurgaon/dlf-the-camellias/m3m-golf-estate",
-]);
-
-function isIndexableCompare(city: string, sortedA: string, sortedB: string): boolean {
-  return INDEXABLE_COMPARE_PAIRS.has(`${city}/${sortedA}/${sortedB}`);
-}
+// crawl budget. noindex,follow became the default; `follow` keeps link equity
+// flowing to the two real project pages either side compares.
+//
+// 2026-09-22, checklist item 10. That fix left an INDEXABLE_COMPARE_PAIRS
+// allow-list for hand-picked promotions, and it was empty — so the route was
+// safe and also producing exactly zero indexable comparison pages. The item is
+// explicit that these "can become excellent high-intent SEO pages", so safe is
+// not the goal. A hand-curated list was never going to be filled in either,
+// because nobody can tell which of ~10^6 pairs deserve it without computing
+// something.
+//
+// lib/intelligence/compareQuality.ts computes it: the item's five conditions
+// as five scored criteria, two of them hard gates (category mismatch and unit-
+// type mismatch — the item's own "commercial mall vs residential apartment"
+// and "luxury apartment vs warehouse" examples). At or above the threshold the
+// page is indexable and enters the sitemap; below it, nothing changes from
+// today — it renders, stays crawlable, and passes its follow links on.
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { city, slugA, slugB } = await params;
@@ -149,7 +153,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const image = validImages(projectA.images || [])[0] || validImages(projectB.images || [])[0];
 
   const truncatedDescription = truncateAtWord(description);
-  const indexable = isIndexableCompare(canonicalCity, sortedA, sortedB);
+  const { indexable } = scoreComparePair(projectA, projectB);
 
   return {
     title,
@@ -158,9 +162,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     alternates: {
       canonical: canonicalUrl,
     },
-    // Default noindex,follow — see INDEXABLE_COMPARE_PAIRS above. `follow`
-    // is deliberate: even a noindex compare page should still pass link
-    // equity to the two real project pages it links to.
+    // Indexable only above the quality threshold — see the note above.
+    // `follow` either way is deliberate: even a noindex compare page should
+    // still pass link equity to the two real project pages it links to.
     robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {
       title,
@@ -204,6 +208,13 @@ const ComparePage = async ({ params }: PageParams) => {
   const canonicalCity = canonicalCitySlug(projectA.city_key);
   const pageUrl = `https://www.homzrealtor.com/project-listing/compare/${canonicalCity}/${sortedA}/${sortedB}`;
 
+  const quality = scoreComparePair(projectA, projectB);
+  const feedDates = [projectA.updated_at, projectB.updated_at]
+    .map((d) => (d ? new Date(d) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((x, y) => y.getTime() - x.getTime());
+  const compareAsOf = (feedDates[0] ?? new Date()).toISOString();
+
   return (
     // flow-root contains ProjectCompare's own trailing bottom margin (mb-10)
     // inside this div — without it, that margin escaped past lg:pb-0 on
@@ -241,6 +252,18 @@ const ComparePage = async ({ params }: PageParams) => {
       </section>
 
       <ProjectCompare viewA={viewA} viewB={viewB} />
+
+      {/* Checklist item 11: everything a comparison needs beyond the table.
+          Written from the two records, so no two comparison pages read the
+          same. */}
+      <CompareNarrative
+        a={projectA}
+        b={projectB}
+        hrefA={`/project-listing/${viewA.citySlug}/${viewA.slug}`}
+        hrefB={`/project-listing/${viewB.citySlug}/${viewB.slug}`}
+        quality={quality}
+        asOf={compareAsOf}
+      />
     </div>
   );
 };

@@ -165,6 +165,30 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
                 Contact
               </Link>
             </li>
+            {/* Both added 2026-09-21 after npm run check:orphans measured the
+                internal link graph.
+
+                /faq had exactly ONE inbound link on the whole site, from the
+                credentials block on /about-us — and /about-us is itself only
+                linked from the footer. So a 31-question page carrying FAQPage
+                markup sat two clicks behind a weakly-linked page, in the
+                sitemap and indexable, inheriting almost no internal link
+                equity. Before the credentials block existed it was a complete
+                orphan.
+
+                /property-rates-in-gurgaon was reachable only from the listing
+                hubs and the blog. It is the page most likely to earn links
+                on its own, so it belongs in the sitewide chrome. */}
+            <li>
+              <Link href="/property-rates-in-gurgaon" className={colLinkCls}>
+                Gurgaon Property Rates
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className={colLinkCls}>
+                FAQs
+              </Link>
+            </li>
           </ul>
           <ul className="mt-6 space-y-2.5">
             <li>
@@ -180,6 +204,28 @@ export default function Footer({ topSectors = [], topDevelopers = [] }: FooterPr
             <li>
               <Link href="/disclaimer" className={colLinkCls}>
                 Disclaimer
+              </Link>
+            </li>
+            {/* 21 Sep audit, section 19: a corrections policy and an editorial
+                policy were the two items on its E-E-A-T list that existed
+                nowhere on the site. */}
+            <li>
+              <Link href="/editorial-policy" className={colLinkCls}>
+                Editorial Policy
+              </Link>
+            </li>
+            {/* Checklist item 8 (2026-09-22): the Investment Score
+                methodology. Linked from every project page's score block and
+                from here, so it is reachable without one. */}
+            <li>
+              <Link href="/homz-investment-score-methodology" className={colLinkCls}>
+                Investment Score Methodology
+              </Link>
+            </li>
+            {/* Checklist item 20 (2026-09-22): the monthly index. */}
+            <li>
+              <Link href="/gurgaon-property-index" className={colLinkCls}>
+                Gurgaon Property Index
               </Link>
             </li>
             <li>

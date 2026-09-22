@@ -9,6 +9,7 @@
 
 import type { RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { validImages } from "@/lib/intelligence/view-model";
+import { listingSectorToken, listingCorridorSlug } from "./listingLocation";
 
 export type PropertyCategory = "Sale" | "Rent" | "Pg" | "Commercial";
 
@@ -21,6 +22,14 @@ export type ListingFilters = {
   saleType?: string; // "resale" | "new_launch" — Sale category only
   golf?: boolean;
   investmentGrade?: boolean; // Commercial category only
+  /** Gurgaon sector token ("65", "82a") — see lib/listings/listingLocation.ts.
+   *  Set only by the location hubs (lib/listings/locationHubs.ts), never from
+   *  a query string: it is deliberately absent from LISTING_FILTER_PARAMS
+   *  below, because the sector is expressed as a path segment on its own
+   *  indexable URL rather than as a filter on the citywide hub. */
+  sector?: string;
+  /** Gurgaon corridor slug ("sohna-road"). Same reasoning as `sector`. */
+  corridor?: string;
 };
 
 /** Every query-string key that narrows the result set. `page` is deliberately
@@ -49,6 +58,36 @@ export function hasActiveListingFilters(
   if (!searchParams) return false;
   return LISTING_FILTER_PARAMS.some((key) => {
     const value = searchParams[key];
+    const first = Array.isArray(value) ? value[0] : value;
+    return typeof first === "string" && first.trim() !== "";
+  });
+}
+
+/**
+ * Should this URL be offered to Google? (2026-09-22, checklist item 18.)
+ *
+ * "Pages created from arbitrary user filtering should generally not be
+ * indexed unless deliberately curated," with `?sort=price-low`,
+ * `?bhk=3&status=ready&developer=m3m`, `?minPrice=` and `?maxPrice=` as the
+ * named examples.
+ *
+ * Broader than hasActiveListingFilters() on purpose, and separate from it for
+ * a reason: that function answers "has the visitor narrowed the results",
+ * which drives the empty-state and ItemList logic, and `sort` does not narrow
+ * anything. Indexing is a different question — a sorted view is a duplicate of
+ * the unsorted one under a different URL, which is precisely the bloat item 18
+ * is about. So any query parameter other than `page` makes a URL
+ * non-indexable, including ones we do not recognise: an unknown parameter is
+ * more likely a tracking tag or a hand-edited URL than a curated view, and the
+ * curated views (/buy-property/gurgaon/3-bhk and the sector and corridor hubs)
+ * are all PATHS, never query strings. They are unaffected by this.
+ */
+export function isIndexableListingUrl(
+  searchParams: Record<string, string | string[] | undefined> | undefined
+): boolean {
+  if (!searchParams) return true;
+  return !Object.entries(searchParams).some(([key, value]) => {
+    if (key === "page") return false;
     const first = Array.isArray(value) ? value[0] : value;
     return typeof first === "string" && first.trim() !== "";
   });
@@ -152,8 +191,34 @@ export function filterProperties(
   category: PropertyCategory
 ): RawHomzProperty[] {
   let result = list;
-  const { q, propertyType, bedrooms, budget, possession, saleType, golf, investmentGrade } =
-    filters;
+  const {
+    q,
+    propertyType,
+    bedrooms,
+    budget,
+    possession,
+    saleType,
+    golf,
+    investmentGrade,
+    sector,
+    corridor,
+  } = filters;
+
+  // Location narrowing runs first: it is the most selective filter by a wide
+  // margin (one sector out of ~115), so everything after it works on a much
+  // smaller array.
+  //
+  // Matched through listingLocation.ts rather than a substring test on
+  // `location`. A naive `location.includes("Sector 6")` matches Sector 60,
+  // 61 and 65, and a naive `includes("Sector 65")` misses "Sec 65" and
+  // "Sector-65" — both of which the feed uses.
+  if (sector) {
+    result = result.filter((p) => listingSectorToken(p) === sector);
+  }
+
+  if (corridor) {
+    result = result.filter((p) => listingCorridorSlug(p) === corridor);
+  }
 
   if (q) {
     const needle = q.toLowerCase();
@@ -220,6 +285,17 @@ export function filterProperties(
     result = result.filter((p) =>
       `${p.location || ""} ${(p.aboutProject || []).join(" ")}`.toLowerCase().includes("golf")
     );
+  }
+
+  // A flat that arrived in the commercial feed typed as a warehouse is not
+  // commercial inventory, and the 21 Sep audit was explicit that these
+  // contaminate the commercial landing pages. dataQuality.ts has already
+  // corrected the record's type and flagged it; this keeps it off the
+  // commercial category surfaces. It stays fully available on its own detail
+  // page and in the residential surfaces -- the listing is real, only its
+  // classification was wrong, and dropping real inventory is not the fix.
+  if (category === "Commercial") {
+    result = result.filter((p) => p.reclassified !== "residential-in-commercial");
   }
 
   if (category === "Commercial" && investmentGrade) {

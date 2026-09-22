@@ -2,6 +2,9 @@ import Link from "next/link";
 import Markdown from "markdown-to-jsx";
 import { ChevronRight } from "lucide-react";
 import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
+import { authorProfilePath } from "@/lib/content/authors";
+import { hubLinksForPost } from "@/lib/content/postHubLinks";
+import type { DeveloperMention } from "@/lib/content/postDeveloperLinks";
 import { buildArticleJsonLd, safeJsonLd } from "@/lib/seo/blogJsonLd";
 import ReadingProgressBar from "./ReadingProgressBar";
 import BlogImageOrFallback from "./BlogImageOrFallback";
@@ -12,6 +15,7 @@ import FaqAccordion from "./FaqAccordion";
 import TakeawayCard from "./TakeawayCard";
 import DominantCta from "./DominantCta";
 import CredibilityFooter from "./CredibilityFooter";
+import DataProvenance from "./DataProvenance";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -39,9 +43,23 @@ const markdownOptions = {
 // bg-[#0B0B0C] text-white matches the site's dark shell (app/page.tsx, the
 // project-detail pages) — the blog previously stood out as a light island
 // against it.
-const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
+const BlogPostV27Article = ({
+  post,
+  developers = [],
+}: {
+  post: BlogPostV27;
+  /** Developers this article names that have a live hub, most-mentioned
+   *  first. Derived in the route from the article's own prose — see
+   *  lib/content/postDeveloperLinks.ts. */
+  developers?: DeveloperMention[];
+}) => {
   const pageUrl = `${SITE}${post.head.canonicalUrl.replace(SITE, "")}`;
   const related = post.relatedArticles;
+  const hubLinks = hubLinksForPost(
+    post.meta.slug,
+    post.meta.primaryKeyword,
+    post.meta.tags ?? []
+  );
   const halfIndex = Math.ceil(post.sections.length / 2);
 
   return (
@@ -74,8 +92,24 @@ const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
 
         {/* Byline: author, fact-checked badge, dates — all REQUIRED VISIBLE per the schema's rendering contract */}
         <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+          {/* 2026-09-21: the byline is a link now that the author profile
+              pages exist (app/author/[slug]). It used to be inert text, so the
+              one place a reader could check who wrote this went nowhere.
+              authorProfilePath returns null when there is no page for that
+              name, and the byline falls back to plain text rather than
+              pointing at a 404. */}
           <span>
-            By <span className="font-medium text-gray-200">{post.author.name}</span>
+            By{" "}
+            {authorProfilePath(post.author.name) ? (
+              <Link
+                href={authorProfilePath(post.author.name)!}
+                className="font-medium text-gray-200 underline decoration-gray-700 decoration-1 underline-offset-2 transition hover:text-[#CEA44E] hover:decoration-[#CEA44E]"
+              >
+                {post.author.name}
+              </Link>
+            ) : (
+              <span className="font-medium text-gray-200">{post.author.name}</span>
+            )}
           </span>
           <span aria-hidden="true">·</span>
           <span className="inline-flex items-center rounded-full bg-[#B77D2B]/15 px-2.5 py-0.5 text-xs font-semibold text-[#CEA44E]">
@@ -168,6 +202,65 @@ const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
           <DominantCta cta={post.bottomCta} />
         </div>
 
+        {/* 2026-09-21: live inventory for whatever this guide is about.
+            Before this, these 25 guides carried 11 generic /buy-property
+            links between them, 3 links to a facet page, and nothing at all
+            pointing at rentals or at any area page — so a reader who had just
+            read about Dwarka Expressway was sent to the citywide hub to filter
+            from scratch, and the site's main link-earning asset passed almost
+            no equity to the pages that convert. Targets are derived from the
+            post's own slug, keyword and tags (lib/content/postHubLinks.ts),
+            and every one of them is a page that exists regardless of current
+            inventory, so this stays safe on a statically rendered post. */}
+        {hubLinks.length > 0 && (
+          <section className="mt-10" aria-labelledby="live-inventory">
+            <h2 id="live-inventory" className="mb-1 text-xl font-bold text-white">
+              See what is available now
+            </h2>
+            <p className="mb-4 text-[13px] text-gray-500">
+              Live listings and current asking rates from our own catalogue.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {hubLinks.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 2026-09-22: the developers this guide actually discusses, linked to
+            their portfolio hubs. Derived from the article's own prose rather
+            than hand-written per post — 25 guides naming a dozen developers
+            between them is not a job for manual links, and a derived block
+            stays right when an article is revised. */}
+        {developers.length > 0 && (
+          <section className="mt-10" aria-labelledby="developers-covered">
+            <h2 id="developers-covered" className="mb-1 text-xl font-bold text-white">
+              Developers covered in this guide
+            </h2>
+            <p className="mb-4 text-[13px] text-gray-500">
+              Every project we list for each, with current asking prices and possession status.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {developers.map((d) => (
+                <Link
+                  key={d.slug}
+                  href={`/developer/${d.slug}`}
+                  className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 transition hover:border-[#B77D2B] hover:text-[#CEA44E]"
+                >
+                  All {d.name} projects in Gurgaon
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {related.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-4 text-xl font-bold text-white">Related Articles</h2>
@@ -189,6 +282,10 @@ const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
             </div>
           </section>
         )}
+
+        {/* Checklist item 24: the five questions every data-led guide should
+            answer, rendered from what the post declares. */}
+        <DataProvenance post={post} />
 
         <div className="mt-10 mb-16">
           <CredibilityFooter post={post} />

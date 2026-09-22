@@ -4,7 +4,15 @@
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
 import { isExcludedProject } from "./excludedProjects";
+import { scoreComparePair } from "./compareQuality";
+import { availableDeveloperViews } from "./developerViews";
 import { normalizeAmenities } from "./view-model";
+import {
+  canonicalDeveloperByName,
+  developerStatusFor,
+  isInvalidDeveloperSlug,
+  type DeveloperStatus,
+} from "@/lib/content/developers";
 import { fetchProjects, categorySegment } from "@/lib/scraping/homzbackend";
 
 const ALL_CITY_KEYS = ["ggn", "delhi", "faridabad", "gNoida", "noida"];
@@ -361,6 +369,81 @@ export async function getComparePairKeys(): Promise<Set<string>> {
   }
 }
 
+/**
+ * The comparison pairs good enough to index, for the sitemap.
+ *
+ * Checklist item 10 closes with "keep low-value comparison pages out of XML
+ * sitemaps". The route decides indexability per request with
+ * scoreComparePair(); this applies the same function to the whole linked pair
+ * set so the sitemap and the pages agree, rather than the sitemap listing URLs
+ * that turn out to be noindex when Google fetches them.
+ *
+ * Runs over the pair set that already exists (a few thousand keys, not the
+ * ~10^6 combinatorial space), and only over projects already in memory.
+ */
+export async function getIndexableComparePairs(): Promise<
+  { citySlug: string; slugA: string; slugB: string; updatedAt: string | null }[]
+> {
+  const [keys, allCities] = await Promise.all([
+    getComparePairKeys(),
+    Promise.all(ALL_CITY_KEYS.map((k) => getProjectsForCity(k))),
+  ]);
+
+  const bySlug = new Map<string, NormalizedProject>();
+  for (const p of allCities.flat()) {
+    bySlug.set(`${canonicalCitySlug(p.city_key)}/${p.slug}`, p);
+  }
+
+  const out: { citySlug: string; slugA: string; slugB: string; updatedAt: string | null }[] = [];
+  for (const key of keys) {
+    const [citySlug, slugA, slugB] = key.split("/");
+    const a = bySlug.get(`${citySlug}/${slugA}`);
+    const b = bySlug.get(`${citySlug}/${slugB}`);
+    if (!a || !b) continue;
+    if (!scoreComparePair(a, b).indexable) continue;
+    const dates = [a.updated_at, b.updated_at].filter(Boolean) as string[];
+    out.push({
+      citySlug,
+      slugA,
+      slugB,
+      updatedAt: dates.sort().reverse()[0] ?? null,
+    });
+  }
+  return out;
+}
+
+/**
+ * Every indexable developer child page, for the sitemap (2026-09-22).
+ *
+ * The page decides indexability per request with decideViewIndexable(); this
+ * applies the same function across all developers so the sitemap and the pages
+ * agree. A URL listed here is never one Google finds noindex on arrival.
+ *
+ * Gated on the parent too: a child of a noindex developer hub is not offered,
+ * because a child cannot be a stronger entity than the developer it belongs to.
+ */
+export async function getIndexableDeveloperViews(): Promise<
+  { slug: string; view: string; updatedAt: string | null }[]
+> {
+  const map = await buildDeveloperIndex();
+  const out: { slug: string; view: string; updatedAt: string | null }[] = [];
+
+  for (const entry of map.values()) {
+    if (!isIndexableDeveloper(entry.summary)) continue;
+    for (const available of availableDeveloperViews(entry.projects)) {
+      if (!available.indexable) continue;
+      const matched = entry.projects.filter(available.view.filter);
+      const dates = matched.map((p) => p.updated_at).filter(Boolean) as string[];
+      out.push({
+        slug: entry.summary.slug,
+        view: available.view.slug,
+        updatedAt: dates.sort().reverse()[0] ?? null,
+      });
+    }
+  }
+  return out;
+}
+
 // Price intelligence helpers
 
 export type PriceInsightsData = {
@@ -463,6 +546,12 @@ export type DeveloperSummary = {
   residential: number;
   commercial: number;
   cities: { slug: string; name: string }[]; // canonical city slug + display name
+  /** Whether this entity is confirmed — see lib/content/developers.ts. Only
+   *  "verified" is offered to Google; "unverified" renders but is noindex. */
+  status: DeveloperStatus;
+  /** Feed spellings folded into this hub, when more than one mapped here.
+   *  Kept so the page can say so rather than silently absorbing a name. */
+  mergedNames: string[];
 };
 
 // Skip junk names the first-word builder heuristic (extractBuilder in
@@ -481,11 +570,74 @@ export type DeveloperSummary = {
 // buildDeveloperIndex, and therefore getBuilderBySlug, would never serve.
 // Exporting this instead of duplicating the length check keeps every
 // builder-name-to-link decision behind one gate.
+//
+// 2026-09-21, checklist item 4 ("Remove internal links" to malformed developer
+// pages): the length floor let through anything three characters long, so a
+// title beginning "The Melia" still produced a /developer/the chip. The
+// canonical table's invalid list is now consulted here, which is the one gate
+// every builder-name-to-link decision already passes through — so an invalid
+// name renders as plain text sitewide instead of as a link to a page that
+// middleware.ts then has to 410.
 export function isLinkableBuilder(builder: string | null | undefined): boolean {
   if (!builder || builder === "Unknown") return false;
   if (builder.trim().length < 3) return false;
   const slug = slugify(builder);
-  return Boolean(slug && slug.length >= 3);
+  if (!slug || slug.length < 3) return false;
+  return !isInvalidDeveloperSlug(slug);
+}
+
+/**
+ * The /developer/<slug> a raw feed builder name should link to, or null when
+ * it should not be linked at all.
+ *
+ * Every internal link previously did `isLinkableBuilder(b) ? slugify(b) : …`,
+ * which was correct until buildDeveloperIndex started bucketing on the
+ * canonical id: slugify("Emaar India") is "emaar-india", a slug the index no
+ * longer holds. Those links would take the middleware 301 and still arrive,
+ * but an internal link should point at the canonical URL directly rather than
+ * spending a redirect hop and diluting the signal. One helper, so the linking
+ * decision and the bucketing decision cannot drift again.
+ */
+export function developerHubSlug(builder: string | null | undefined): string | null {
+  if (!isLinkableBuilder(builder)) return null;
+  const canonical = canonicalDeveloperByName(builder as string);
+  return canonical ? canonical.id : slugify(builder as string);
+}
+
+/**
+ * Projects a developer needs before its hub is worth indexing.
+ *
+ * The 21 Sep audit asked for an entity-validation layer before developer
+ * pages become indexable, having found indexed hubs for "The" and "J". The
+ * name parsing that produced those is already fixed (see extractBuilder's
+ * BUILDER_STOPWORDS and the length floor in isLinkableBuilder), but the other
+ * half of that finding is still true: a hub holding one project is a thin
+ * indexable page whose entire content is a single card that already has its
+ * own page.
+ *
+ * Two, not more. A developer with two Gurgaon projects is a real developer and
+ * the hub genuinely aggregates something. Setting the bar higher would
+ * de-index legitimate smaller builders, which is a different mistake.
+ *
+ * Thin hubs are NOT removed — they keep rendering and stay crawlable so the
+ * project stays reachable. They are noindex,follow and absent from the
+ * sitemap, which is what the audit recommends for thin developer pages and
+ * avoids 404ing URLs Google has already indexed.
+ */
+export const MIN_INDEXABLE_DEVELOPER_PROJECTS = 2;
+
+/**
+ * Indexable means confirmed, not merely populous.
+ *
+ * Checklist item 3: "Do NOT allow a project import to automatically create an
+ * indexable developer page." The project count alone could never satisfy that
+ * — a parser artefact appearing at the front of forty titles cleared the old
+ * bar comfortably. The count is now one of two conditions, both applied in
+ * developerStatusFor(): the slug must be in the canonical table AND carry the
+ * minimum inventory. Everything else renders noindex,follow.
+ */
+export function isIndexableDeveloper(summary: Pick<DeveloperSummary, "status">): boolean {
+  return summary.status === "verified";
 }
 
 type DeveloperIndex = Map<string, { summary: DeveloperSummary; projects: NormalizedProject[] }>;
@@ -527,23 +679,40 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
     for (const p of projects) {
       const builder = p.builder;
       if (!isLinkableBuilder(builder)) continue;
-      const slug = slugify(builder);
+
+      // Checklist item 3: resolve the feed's spelling to the canonical
+      // developer before bucketing. Without this, "Emaar", "Emaar India" and
+      // "Emaar MGF" are three hubs, each too thin to rank, each claiming to
+      // be the developer's page. The alias table decides; an unrecognised
+      // name still gets its own bucket (it is very likely a real developer
+      // the curated list has not caught up with) but is stamped "unverified"
+      // below and therefore never offered for indexing.
+      const canonical = canonicalDeveloperByName(builder);
+      const slug = canonical ? canonical.id : slugify(builder);
+      const displayName = canonical ? canonical.canonicalName : builder;
 
       let entry = map.get(slug);
       if (!entry) {
         entry = {
           summary: {
-            name: builder,
+            name: displayName,
             slug,
             count: 0,
             withImages: 0,
             residential: 0,
             commercial: 0,
             cities: [],
+            // Filled in once every project has been counted — the status
+            // depends on the final count.
+            status: "unverified",
+            mergedNames: [],
           },
           projects: [],
         };
         map.set(slug, entry);
+      }
+      if (builder !== displayName && !entry.summary.mergedNames.includes(builder)) {
+        entry.summary.mergedNames.push(builder);
       }
 
       entry.projects.push(p);
@@ -561,6 +730,15 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
         });
       }
     }
+  }
+
+  // Status needs the final project count, so it is stamped after the pass.
+  for (const entry of map.values()) {
+    entry.summary.status = developerStatusFor(
+      entry.summary.slug,
+      entry.summary.count,
+      MIN_INDEXABLE_DEVELOPER_PROJECTS
+    );
   }
 
   return map;

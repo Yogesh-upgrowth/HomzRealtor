@@ -1,4 +1,5 @@
 import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
+import { authorByName, authorProfilePath } from "@/lib/content/authors";
 
 // hero/og images across every v2.7 post are still placeholders on this
 // domain (see each post file's header comment) — used by the render
@@ -52,12 +53,28 @@ export function buildBlogPostingJsonLd(post: BlogPostV27, url: string) {
     wordCount: computeStructuredDataWordCount(post),
     articleSection: post.meta.category,
     inLanguage: post.head.lang,
-    author: {
-      "@type": post.author.name === "Homz Realtor Editorial Team" ? "Organization" : "Person",
-      name: post.author.name,
-      ...(post.author.profileUrl ? { url: post.author.profileUrl } : {}),
-      ...(authorSameAs.length ? { sameAs: authorSameAs } : {}),
-    },
+    author: (() => {
+      // 2026-09-21: the author profile pages exist now (app/author/[slug]),
+      // so the byline can carry a real `url` and the schema type comes from
+      // the profile rather than a name comparison. authorProfilePath returns
+      // null when no page exists for that name, so `url` is still never a
+      // placeholder — which is what authorSchema.profileUrl requires. A post
+      // that sets profileUrl explicitly keeps it.
+      const profile = authorByName(post.author.name);
+      const path = authorProfilePath(post.author.name);
+      return {
+        "@type":
+          profile?.schemaType ??
+          (post.author.name === "Homz Realtor Editorial Team" ? "Organization" : "Person"),
+        name: post.author.name,
+        ...(post.author.profileUrl
+          ? { url: post.author.profileUrl }
+          : path
+          ? { url: `${SITE}${path}` }
+          : {}),
+        ...(authorSameAs.length ? { sameAs: authorSameAs } : {}),
+      };
+    })(),
     reviewedBy: {
       "@type": "Organization",
       name: post.reviewer.name,

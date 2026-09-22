@@ -475,6 +475,52 @@ export function validateBlogPostBusinessRules(post: BlogPostV27): BusinessRuleRe
     errors.push({ path: "eeat.sources", message: "at least 2 sources are required" });
   }
 
+  // Checklist item 24 (2026-09-22): "Every important article should answer:
+  // What data are we using? When was it collected? How many listings/projects
+  // are included? Are these asking prices or transaction prices? What can't we
+  // conclude from the dataset?"
+  //
+  // Three of the five are already structurally required above
+  // (firstHandDataNote, productDataHook.dateRange and counts, lastVerifiedAt).
+  // These two are not, and they were the ones missing in practice: of the 25
+  // guides published before this check existed, 20 never said anywhere that
+  // their prices were asking prices, and every one of them quotes medians.
+  //
+  // WARNINGS, NOT ERRORS, and the reason is specific rather than a hedge. The
+  // twenty existing posts would all fail, and the honest fix for them is not
+  // to have a build gate force new sentences into published fact-checked copy
+  // — components/Blog/DataProvenance.tsx answers both questions on every post
+  // from declared data instead. This flags a new post that leans on its
+  // template rather than saying it itself, which is a real thing to know at
+  // review time without being a reason to refuse a build.
+  const prose = [
+    post.eeat.firstHandDataNote,
+    ...post.sections.map((s) => s.contentMarkdown),
+    ...post.faqs.map((f) => f.a),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  if (!/asking price|asking-price|transacted price|transaction price|registr/.test(prose)) {
+    warnings.push({
+      path: "eeat",
+      message:
+        "item 24: nothing in this post says whether its prices are asking or transacted prices. The DataProvenance block states it, but a guide quoting medians should say so in its own words too.",
+    });
+  }
+
+  if (
+    !/cannot|can't|does not (tell|establish|mean)|we do not claim|no verified|not a guarantee|limitation/.test(
+      prose
+    )
+  ) {
+    warnings.push({
+      path: "eeat",
+      message:
+        "item 24: this post never states what its dataset cannot show. A guide that only says what it proves reads as overclaiming.",
+    });
+  }
+
   const expectedReadingTime = computeReadingTimeMinutes(post);
   if (Math.abs(expectedReadingTime - post.meta.readingTimeMinutes) > 1) {
     warnings.push({

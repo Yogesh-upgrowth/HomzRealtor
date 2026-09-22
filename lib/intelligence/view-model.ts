@@ -13,6 +13,7 @@
 import { formatInr, KNOWN_BUILDERS, type NormalizedProject } from "./normalize";
 import type { ConnectivityItem, LandmarksMap } from "./osmPlaces";
 import { reraPortalFor } from "./rera";
+import { SCORE_CEILING, SCORE_FLOOR, scoreBand } from "./investmentScoreMeta";
 
 /** `status` is only set on the RERA chip (active/lapsed/unverified/
  *  not_registered) — see components/Common/ReraBadge.tsx — so it can be
@@ -455,27 +456,49 @@ function buildInvestmentScore(
     label: "Entry Timing",
     earned: timing,
     max: 15,
+    // Item 7: "upside", "appreciation runway" and "capital-appreciation
+    // potential" are forecasts. Nothing in this score projects a price, so
+    // these now state the possession fact the points were actually awarded
+    // for — the user's own preferred phrasing, "No Construction-Completion
+    // Wait", is exactly this.
     note:
       status === "Ready to Move"
-        ? "Ready inventory means immediate rental/usage upside."
+        ? "Ready inventory: no construction-completion wait."
         : status === "New Launch"
-        ? "Early-stage entry with appreciation runway."
-        : "Under-construction pricing with capital-appreciation potential.",
+        ? "New launch: full construction period still ahead."
+        : status === "Under Construction"
+        ? "Under construction: possession date not yet reached."
+        : "Construction status not stated in our data.",
   });
 
   const earned = factors.reduce((s, f) => s + f.earned, 0);
   const max = factors.reduce((s, f) => s + f.max, 0);
-  const score = Math.max(58, Math.min(96, Math.round((earned / max) * 100)));
+  const score = Math.max(SCORE_FLOOR, Math.min(SCORE_CEILING, Math.round((earned / max) * 100)));
 
-  const grade = score >= 85 ? "Excellent" : score >= 75 ? "Strong" : score >= 65 ? "Good" : "Fair";
+  // 2026-09-22, checklist item 7: "change subjective financial wording such as
+  // Low-Risk Asset / Excellent Investment / Compelling Investment / Very Safe
+  // into factual/product-oriented language... Let the underlying metrics
+  // support the conclusion instead of making broad investment/risk claims."
+  //
+  // The grade used to read "Excellent / Strong / Good / Fair", which is a
+  // verdict on an investment we are in no position to give — nothing in the
+  // five factors reads a price, a yield or a transaction. It is now a band on
+  // our own published scale, with the thresholds stated on the methodology
+  // page so the label carries nothing the reader cannot check.
+  const grade = scoreBand(score);
+
+  // And the verdict is now the measurement: which factor scored highest,
+  // which lowest, out of what. A reader can disagree with our weighting from
+  // this sentence alone, which they could not do with "a compelling option
+  // for both end-users and investors".
+  const ranked = [...factors].sort((a, b) => b.earned / b.max - a.earned / a.max);
+  const best = ranked[0];
+  const worst = ranked[ranked.length - 1];
   const verdict =
-    score >= 85
-      ? `${project.project_name} scores highly across location, developer and product quality, a compelling option for both end-users and investors.`
-      : score >= 75
-      ? `${project.project_name} presents a strong overall proposition in ${project.city_name}, with several factors working in its favour.`
-      : score >= 65
-      ? `${project.project_name} offers good fundamentals in ${project.city_name}, suitable for buyers prioritising ${status === "Ready to Move" ? "immediate possession" : "long-term appreciation"}.`
-      : `${project.project_name} is an early-stage opportunity in ${project.city_name} worth evaluating against your specific goals.`;
+    `${project.project_name} scores ${score}/100 on the Homz Investment Score. ` +
+    `Its strongest component is ${best.label} at ${best.earned} of ${best.max}; ` +
+    `its weakest is ${worst.label} at ${worst.earned} of ${worst.max}. ` +
+    `The score measures what our catalogue knows about the project, not what it is worth at its asking price.`;
 
   return { score, grade, verdict, factors };
 }
@@ -586,12 +609,18 @@ function buildPersonaReasons(
       note: `Close to ${c.business.label}.`,
     });
   }
+  // Item 7: this badge read "Low-Risk Asset", which is a risk rating on an
+  // asset, from a list-membership check. It now says what the check found.
+  // "Not on our verified list" is not a criticism of the developer — it is a
+  // statement about our data, and it reads that way deliberately.
   investor.push({
     icon: "ShieldCheck",
-    label: isKnownBuilder(project.builder) ? "Low-Risk Asset" : "Emerging Opportunity",
+    label: isKnownBuilder(project.builder)
+      ? "Developer on our verified list"
+      : "Developer not on our verified list",
     note: isKnownBuilder(project.builder)
-      ? `Backed by ${project.builder}, a developer with a delivery track record.`
-      : `Early access with ${project.builder}, an emerging developer in ${project.city_name}.`,
+      ? `${project.builder} is on the list of developers we have confirmed.`
+      : `We have not confirmed ${project.builder} as a developer entity. That is a gap in our records, not a finding about the company.`,
   });
   if (project.rera_status === "active") {
     investor.push({ icon: "BadgeCheck", label: "RERA Registered", note: "Government-verified project." });
@@ -599,26 +628,33 @@ function buildPersonaReasons(
     investor.push({ icon: "AlertTriangle", label: "RERA Lapsed", note: "Registration on file has expired." });
   }
 
-  const endUser: Badge[] = [
-    { icon: "MapPin", label: "Prime Location", note: `Heart of ${loc}.` },
-  ];
+  // Item 7, same principle applied to the end-user badges: "Prime Location /
+  // Heart of Sector 82" is a claim we have nothing behind — every project in
+  // the catalogue got it, including the ones on the outer edge of a corridor.
+  // It now states the location instead of grading it.
+  const endUser: Badge[] = [{ icon: "MapPin", label: "Location", note: loc }];
   if (amenityCount > 0) {
     endUser.push({
       icon: "Sparkles",
-      label: "Lifestyle",
-      note: `${amenityCount}+ amenities at your doorstep.`,
+      label: "Amenities",
+      note: `${amenityCount} listed by the developer.`,
     });
   }
+  // "Curated fashion, F&B & experiences" and "Thoughtfully designed for
+  // everyday life" described no project in particular — the same two
+  // sentences rendered on 2,098 pages. Replaced with the category fact.
   endUser.push(
     isCommercial
-      ? { icon: "Gem", label: "High-Street Retail", note: "Curated fashion, F&B & experiences." }
-      : { icon: "TreePine", label: "Comfortable Living", note: "Thoughtfully designed for everyday life." }
+      ? { icon: "Gem", label: "Commercial", note: "Retail, office or mixed-use space." }
+      : { icon: "TreePine", label: "Residential", note: "Homes for owner-occupation or letting." }
   );
   if (c.metro || c.airport) {
     endUser.push({
       icon: "TrainFront",
-      label: "Well Connected",
-      note: [c.metro && "metro", c.airport && "airport"].filter(Boolean).join(" & ") + " nearby.",
+      label: "Transport",
+      note:
+        [c.metro && "metro", c.airport && "airport"].filter(Boolean).join(" and ") +
+        " resolvable from this location.",
     });
   }
 

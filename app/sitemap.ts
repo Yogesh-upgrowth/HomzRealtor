@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders } from '@/lib/intelligence/projects'
+import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper, getIndexableComparePairs, getIndexableDeveloperViews } from '@/lib/intelligence/projects'
 import {
   homzDataUrl,
   propertySegment,
@@ -7,13 +7,21 @@ import {
   type RawHomzProperty,
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
+import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
+import { sanitizeSegment } from '@/lib/intelligence/dataQuality'
 import { filterProperties } from '@/lib/listings/filters'
-import { BUY_FACETS } from '@/components/PropertyListing/FacetedListingPage'
+import {
+  buildLocationHubs,
+  LISTING_PAGE_SIZE,
+  staticFacetsFor,
+} from '@/lib/listings/facets'
 import { getAllSorted } from '@/components/PropertyListing/PaginatedListingPage'
 import { BUYER_GUIDES } from '@/lib/content/buyerGuides'
 import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
 import { allResolved, SELLER_TERM_KEYS, LANDLORD_TERM_KEYS } from '@/lib/content/ownerPending'
+import { AUTHORS } from '@/lib/content/authors'
+import { SITEMAP_SEGMENT_IDS, type SitemapSegmentId } from '@/lib/seo/sitemapSegments'
 
 // Was `force-dynamic` — that recomputed every segment (full catalogue
 // fetch + JSON parse + facet filtering over tens of thousands of records)
@@ -38,11 +46,23 @@ const BASE_URL = 'https://www.homzrealtor.com'
 // /sitemap/sectors.xml, etc. Next also doesn't auto-build a <sitemapindex>
 // referencing them — they're registered individually in app/robots.ts's
 // sitemap field instead, which Google treats as equivalent for discovery.
-const SEGMENT_IDS = ['projects', 'sectors', 'developers', 'buy', 'rent', 'commercial', 'content'] as const
-type SegmentId = (typeof SEGMENT_IDS)[number]
+// 2026-09-22, checklist item 16 ("Split sitemap logically if it is large...
+// this makes Search Console debugging much easier"). 'comparisons' is new: the
+// pairs that clear the quality threshold in item 10 now have somewhere to go,
+// and keeping them in their own file means their indexation rate is readable
+// on its own rather than mixed into the projects number.
+//
+// The item's suggested structure also splits projects across numbered files.
+// Not done, and deliberately: Google's limit is 50,000 URLs or 50MB
+// uncompressed per file, and the largest segment here (Sale, ~21,000) is well
+// inside both. Splitting below the limit would add files without adding any
+// information Search Console does not already give per segment. If Sale grows
+// past 50,000 this needs revisiting — buy-1.xml, buy-2.xml — and the check in
+// scripts/check-sitemap-404s.mjs will say so before Google does.
+type SegmentId = SitemapSegmentId
 
 export async function generateSitemaps() {
-  return SEGMENT_IDS.map((id) => ({ id }))
+  return SITEMAP_SEGMENT_IDS.map((id) => ({ id }))
 }
 
 // Sale/Rent/Pg/Commercial listing pages — same city scope as the Projects
@@ -79,6 +99,10 @@ async function fetchProjectEntries(): Promise<ProjectEntry[]> {
         for (const p of projects) {
           const key = `${citySlug}/${p.slug}`
           if (seen.has(key)) continue
+          // Checklist items 9 and 15: a project the pre-publish gate blocks
+          // emits noindex on its own page, so listing it here would put the
+          // sitemap and the page in direct contradiction.
+          if (!reviewProject(p).indexable) continue
           seen.add(key)
           entries.push({ slug: p.slug, city: citySlug, updatedAt: p.updated_at })
         }
@@ -204,11 +228,27 @@ async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
   ]
   try {
     const developers = await getAllBuilders()
+    // Only hubs the developer page itself offers for indexing. 2026-09-21,
+    // per the 21 Sep audit: a hub holding a single project is noindex there
+    // (see isIndexableDeveloper), and a sitemap entry for a noindex URL is a
+    // contradiction Search Console reports as an error.
     developerUrls = developerUrls.concat(
-      developers.map((d) => ({
+      developers.filter(isIndexableDeveloper).map((d) => ({
         url: `${BASE_URL}/developer/${d.slug}`,
         changeFrequency: 'weekly' as const,
         priority: 0.6,
+      }))
+    )
+    // 2026-09-22: the Developer x Intent child pages that cleared their own
+    // threshold. Same function the page uses, so the sitemap cannot list a URL
+    // that turns out to be noindex.
+    const childViews = await getIndexableDeveloperViews().catch(() => [])
+    developerUrls = developerUrls.concat(
+      childViews.map(({ slug, view, updatedAt }) => ({
+        url: `${BASE_URL}/developer/${slug}/${view}`,
+        lastModified: toDate(updatedAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.55,
       }))
     )
   } catch {
@@ -228,7 +268,18 @@ async function fetchPropertyEntries(category: PropertyCategory): Promise<RawHomz
       next: { revalidate: 3600 },
     })
     const json = await res.json()
-    return (json?.results || []).filter((p: RawHomzProperty) => !!p?.title)
+    const raw: RawHomzProperty[] = (json?.results || []).filter((p: RawHomzProperty) => !!p?.title)
+    // 2026-09-22. This fetch bypassed lib/listings/segmentCache.ts, so the
+    // sitemap was built from UNCORRECTED records while the pages were built
+    // from corrected ones — a flat reclassified out of Commercial was still
+    // listed under the commercial segment here. Sanitising first puts the two
+    // back in agreement.
+    const corrected = sanitizeSegment(raw)
+    // Checklist items 9 and 15: a record the pre-publish gate blocks is
+    // noindex on its own page, and a sitemap entry for a noindex URL is a
+    // contradiction Search Console reports as an error. Same rule the thin
+    // developer hubs already follow.
+    return corrected.filter((p) => reviewListing(p).indexable)
   } catch {
     return []
   }
@@ -253,27 +304,41 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
     priority: 0.7,
   }))
 
-  // Content audit B-04 (2026-09-08) — faceted landing pages, Sale only for
-  // now. PAGE_SIZE mirrors FacetedListingPage.tsx's own constant (24);
-  // duplicated here rather than imported to avoid pulling a "use client"-free
-  // React component module into the sitemap's dependency graph for one number.
-  const FACET_PAGE_SIZE = 24
-  const facetUrls: MetadataRoute.Sitemap =
-    category === 'Sale'
-      ? Object.values(BUY_FACETS).flatMap((facet) => {
-          const filtered = filterProperties(properties, facet.filters, category)
-          if (filtered.length === 0) return []
-          const totalPages = Math.max(1, Math.ceil(filtered.length / FACET_PAGE_SIZE))
-          const base = `${BASE_URL}/${routeBase}/gurgaon/${facet.slug}`
-          const lastMod = maxDate(filtered.map((p) => p.updatedAt))
-          return Array.from({ length: totalPages }, (_, i) => ({
-            url: i === 0 ? base : `${base}/page/${i + 1}`,
-            lastModified: lastMod,
-            changeFrequency: 'daily' as const,
-            priority: i === 0 ? 0.75 : 0.6,
-          }))
-        })
-      : []
+  // Landing pages: the hand-written facets (content audit B-04, 2026-09-08)
+  // and, since 2026-09-21, the sector and corridor hubs. Both now come from
+  // lib/listings/facets.ts, which is deliberately React-free so this module
+  // can import it directly — LISTING_PAGE_SIZE included, so the 24 no longer
+  // has to be duplicated here.
+  //
+  // Sale and Rent both carry landing pages now. Rent previously had none at
+  // all: ~13,000 listings whose only entry point was a ~540-page pagination
+  // chain.
+  const staticFacets = Object.values(staticFacetsFor(category))
+
+  // Only hubs that clear MIN_HUB_LISTINGS, because only those actually render
+  // — below the floor the route 404s. A sitemap entry pointing at a 404 is a
+  // Search Console error, and listing hubs we deliberately suppress would be
+  // exactly that.
+  const locationHubs = buildLocationHubs(properties, category).map((h) => h.facet)
+
+  const facetUrls: MetadataRoute.Sitemap = [...staticFacets, ...locationHubs].flatMap(
+    (facet) => {
+      const filtered = filterProperties(properties, facet.filters, category)
+      if (filtered.length === 0) return []
+      const totalPages = Math.max(1, Math.ceil(filtered.length / LISTING_PAGE_SIZE))
+      const base = `${BASE_URL}/${routeBase}/gurgaon/${facet.slug}`
+      const lastMod = maxDate(filtered.map((p) => p.updatedAt))
+      return Array.from({ length: totalPages }, (_, i) => ({
+        url: i === 0 ? base : `${base}/page/${i + 1}`,
+        lastModified: lastMod,
+        changeFrequency: 'daily' as const,
+        // Location hubs outrank the citywide facets on page 1: they are the
+        // pages that serve a real query ("3 BHK in Sector 65") and the pages
+        // that carry area-specific computed content.
+        priority: i === 0 ? (facet.location ? 0.8 : 0.75) : 0.6,
+      }))
+    }
+  )
 
   return [indexUrl, ...facetUrls, ...detailUrls]
 }
@@ -304,12 +369,35 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/disclaimer`, changeFrequency: 'yearly', priority: 0.3 },
+    // Higher priority than the other policy pages on purpose: this one states
+    // the data methodology and the corrections process, which is trust content
+    // rather than boilerplate.
+    { url: `${BASE_URL}/editorial-policy`, changeFrequency: 'monthly', priority: 0.5 },
+    // Checklist item 8 (2026-09-22): the Investment Score methodology page.
+    { url: `${BASE_URL}/homz-investment-score-methodology`, changeFrequency: 'monthly', priority: 0.5 },
+    // Checklist item 20: the monthly Gurgaon Property Index.
+    { url: `${BASE_URL}/gurgaon-property-index`, changeFrequency: 'monthly', priority: 0.7 },
     // Not /api-docs — it's noindex,follow (see app/api-docs/page.tsx), so
     // it has nothing to earn from a sitemap entry.
     { url: `${BASE_URL}/property-insights`, changeFrequency: 'monthly', priority: 0.5 },
     ...(pgHasInventory ? [{ url: `${BASE_URL}/pg-property`, changeFrequency: 'daily' as const, priority: 0.6 }] : []),
     // SEO audit M-08 (2026-09-08) — real standalone page, real FAQ content.
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.5 },
+
+    // 2026-09-21: the rates table. A head-term page ("property rates in
+    // gurgaon", "property price sector 65") computed entirely from our own
+    // catalogue, and the master internal-link hub for every area page. High
+    // priority and daily: the figures move as inventory moves.
+    { url: `${BASE_URL}/property-rates-in-gurgaon`, changeFrequency: 'daily', priority: 0.85 },
+
+    // Author profiles. Every guide was bylined to a slug with no page behind
+    // it, so the byline linked nowhere and blogPostSchema's own
+    // author.profileUrl contract could not be satisfied.
+    ...Object.keys(AUTHORS).map((slug) => ({
+      url: `${BASE_URL}/author/${slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
+    })),
 
     // The owner-side journeys. Both were noindex while their commercial terms
     // were unpublished; the owner supplied the fee terms on 2026-09-19 and
@@ -354,6 +442,19 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
   ]
 }
 
+// Checklist items 10 and 16: only the comparisons that clear the quality
+// threshold. Both the page and this list call scoreComparePair(), so a URL
+// here is never one Google will find noindex on arrival.
+async function buildComparisonsSegment(): Promise<MetadataRoute.Sitemap> {
+  const pairs = await getIndexableComparePairs().catch(() => [])
+  return pairs.map(({ citySlug, slugA, slugB, updatedAt }) => ({
+    url: `${BASE_URL}/project-listing/compare/${citySlug}/${slugA}/${slugB}`,
+    lastModified: toDate(updatedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
+  }))
+}
+
 export default async function sitemap({ id }: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
   const segment = (await id) as SegmentId
 
@@ -364,6 +465,8 @@ export default async function sitemap({ id }: { id: Promise<string> }): Promise<
       return buildSectorsSegment()
     case 'developers':
       return buildDevelopersSegment()
+    case 'comparisons':
+      return buildComparisonsSegment()
     case 'buy':
       return buildPropertyCategorySegment('Sale')
     case 'rent':

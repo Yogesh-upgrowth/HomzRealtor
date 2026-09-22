@@ -3,7 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { getBuilderBySlug, getAllBuilders, canonicalCitySlug } from "@/lib/intelligence/projects";
+import {
+  getBuilderBySlug,
+  getAllBuilders,
+  canonicalCitySlug,
+  isIndexableDeveloper,
+} from "@/lib/intelligence/projects";
 import { buildDeveloperProfile, buildDeveloperFaqs } from "@/lib/intelligence/developerProfile";
 import { formatInr } from "@/lib/intelligence/normalize";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
@@ -12,6 +17,13 @@ import Faq from "@/components/Project/intelligence/Faq";
 import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
+import { AskingPriceNote, DataUpdated } from "@/components/Common/DataUpdated";
+import DeveloperIntentNav from "@/components/Developer/DeveloperIntentNav";
+import DeveloperPriceTable from "@/components/Developer/DeveloperPriceTable";
+import DeveloperLocations from "@/components/Developer/DeveloperLocations";
+import DeveloperEntity from "@/components/Developer/DeveloperEntity";
+import { availableDeveloperViews } from "@/lib/intelligence/developerViews";
+import { developerProfileFacts } from "@/lib/content/developerProfiles";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -42,18 +54,28 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       ? `${cityNames.slice(0, -1).join(", ")} & ${cityNames[cityNames.length - 1]}`
       : cityNames[0] || "Delhi NCR";
 
-  const title = `${summary.name} Projects, Price, Properties & Developments in ${cityLabel}`;
+  // 2026-09-22: the title now leads with the head term this page is meant to
+  // own ("{Developer} Projects in Gurgaon") and adds the two highest-intent
+  // modifiers. The old form led with the brand and buried the query.
+  const title = `${summary.name} Projects in ${cityLabel}: Prices & New Launches`;
   const description =
     `Explore ${summary.count} ${summary.name} ${summary.count === 1 ? "project" : "projects"} ` +
-    `across ${cityLabel} on HomzRealtor` +
+    `in ${cityLabel}` +
     (summary.residential && summary.commercial
-      ? `: ${summary.residential} residential and ${summary.commercial} commercial developments.`
+      ? ` including ${summary.residential} residential and ${summary.commercial} commercial developments.`
       : ".") +
-    ` Compare prices, floor plans, amenities and locations, and enquire directly.`;
+    ` Compare current asking prices, sectors, possession status and RERA registration on HomzRealtor.`;
 
   return {
     title,
     description,
+    // 2026-09-21, per the 21 Sep audit's entity-validation recommendation: a
+    // hub holding a single project is a thin indexable page whose whole
+    // content is one card that already has its own URL. It keeps rendering
+    // and stays crawlable, so the project remains reachable and any already
+    // indexed URL does not start 404ing -- it is simply not offered for
+    // indexing. follow:true so the link equity still flows to the project.
+    ...(isIndexableDeveloper(summary) ? {} : { robots: { index: false, follow: true } }),
     keywords: [
       `${summary.name} projects`,
       `${summary.name} property`,
@@ -85,9 +107,29 @@ const DeveloperPage = async ({ params }: PageParams) => {
   const withImages = projects.filter((p) => p.images.length > 0);
   const pageUrl = `${SITE}/developer/${summary.slug}`;
 
+  // The most recent feed timestamp across this developer's projects, falling
+  // back to generation time. On an ISR route the generation time is exactly
+  // when this copy of the figures was computed, which is the honest answer
+  // when the feed carries no timestamp.
+  const latestFeedUpdate = projects
+    .map((p) => (p.updated_at ? new Date(p.updated_at) : null))
+    .filter((d): d is Date => Boolean(d) && !Number.isNaN(d!.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const dataAsOf = (latestFeedUpdate ?? new Date()).toISOString();
+
   // Audit item 9 (2026-09-19): computed portfolio facts, so the page is about
   // the builder rather than being a nine-card teaser with their name on it.
   const profile = buildDeveloperProfile(projects, canonicalCitySlug);
+
+  // 2026-09-22, Developer x Intent architecture. The views this developer has
+  // enough inventory to fill, and the corridors among them good enough to have
+  // their own indexable page — the locations table links to those rather than
+  // to a generic corridor hub.
+  const views = availableDeveloperViews(projects);
+  const facts = developerProfileFacts(summary.slug);
+  const linkedCorridors = new Set(
+    views.filter((v) => v.view.kind === "corridor" && v.indexable).map((v) => v.view.slug)
+  );
 
   const cityNames = summary.cities.map((c) => c.name);
   const cityLabel =
@@ -116,11 +158,19 @@ const DeveloperPage = async ({ params }: PageParams) => {
           profile.underConstruction
         } ${profile.underConstruction === 1 ? "is" : "are"} under construction.`
       : "") +
+    (summary.mergedNames.length > 0
+      ? ` Our records spell this developer's name ${
+          summary.mergedNames.length === 1 ? "one other way" : "several other ways"
+        } (${summary.mergedNames.join(", ")}); those projects are counted here rather than on a separate page.`
+      : "") +
     ` Everything below is computed from our own catalogue, and every project is linked by name.`;
 
   // Other developers for internal linking (exclude the current one).
+  // Confirmed entities only (2026-09-21, checklist item 3) — these chips were
+  // the main way unconfirmed parser output accumulated internal links, which
+  // is what made those pages look like endorsed entities to a crawler.
   const others = (await getAllBuilders().catch(() => []))
-    .filter((d) => d.slug !== summary.slug)
+    .filter((d) => d.slug !== summary.slug && isIndexableDeveloper(d))
     .slice(0, 12);
 
   // Answered entirely from the computed profile — only questions the data can
@@ -146,9 +196,18 @@ const DeveloperPage = async ({ params }: PageParams) => {
         // Organization.areaServed: ["Gurgaon"]. A property developer is an
         // Organization; areaServed here is the developer's own project
         // footprint, which is a fact about them, not a Homz service claim.
+        //
+        // 2026-09-22: `url` was this page. That was wrong in a way that
+        // matters for entity resolution — it told Google the developer's
+        // canonical home is our URL. Where we hold the official site it is now
+        // url + sameAs, and this page identifies itself as a CollectionPage
+        // ABOUT that organisation rather than as the organisation.
         "@type": "Organization",
-        name: summary.name,
-        url: pageUrl,
+        "@id": `${pageUrl}#developer`,
+        name: facts?.officialName ?? summary.name,
+        ...(facts
+          ? { url: facts.officialWebsite, sameAs: [facts.officialWebsite] }
+          : {}),
         areaServed: summary.cities.map((c) => ({
           "@type": "City",
           name: c.name,
@@ -156,9 +215,13 @@ const DeveloperPage = async ({ params }: PageParams) => {
       },
       {
         "@type": "CollectionPage",
-        name: `${summary.name} Projects`,
+        name: `${summary.name} Projects in ${cityLabel}`,
         description: intro,
         url: pageUrl,
+        about: { "@id": `${pageUrl}#developer` },
+        // Homz publishes the page; the developer is its subject. Keeping these
+        // distinct is the whole point of the change above.
+        publisher: { "@id": `${SITE}/#organization` },
       },
       // CollectionPage alone doesn't enumerate the developer's projects —
       // ItemList does, and it matches exactly what the page renders. That
@@ -242,6 +305,39 @@ const DeveloperPage = async ({ params }: PageParams) => {
           )}
         </div>
 
+        {/* Developer x Intent navigation (2026-09-22). Crawlable anchors, not
+            a client filter: a filter that only exists after hydration is
+            invisible to a crawler, so the child pages would never be found. */}
+        <DeveloperIntentNav
+          developerName={summary.name}
+          developerSlug={summary.slug}
+          views={views}
+          totalCount={summary.count}
+        />
+
+        {/* Checklist item 3: the page says on its face when the entity is not
+            confirmed, rather than only telling Google via a robots tag. A
+            visitor who lands here from an old index entry should not have to
+            guess how much of this is verified. */}
+        {!isIndexableDeveloper(summary) && (
+          <p className="mt-5 max-w-3xl rounded-xl border border-white/[0.08] bg-[#141416] px-5 py-4 text-[13.5px] leading-relaxed text-gray-400">
+            <span className="font-semibold text-gray-200">About this page.</span>{" "}
+            {summary.count < 2
+              ? `We currently list a single project under this name, so there is no portfolio to compare. The project itself is linked below.`
+              : `"${summary.name}" is taken from the project records in our catalogue and has not been confirmed as a developer entity by our team.`}{" "}
+            Nothing here is a claim about the company beyond what our own listings contain. If
+            this is your company, or the name is wrong,{" "}
+            <Link href="/contact" className="text-[#CEA44E] hover:underline">
+              tell us
+            </Link>{" "}
+            and it gets corrected — see our{" "}
+            <Link href="/editorial-policy" className="text-[#CEA44E] hover:underline">
+              corrections policy
+            </Link>
+            .
+          </p>
+        )}
+
         {/* Cities this developer builds in — internal linking */}
         {summary.cities.length > 0 && (
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-400">
@@ -285,6 +381,32 @@ const DeveloperPage = async ({ params }: PageParams) => {
 
       <DeveloperIntelligence name={summary.name} cityLabel={cityLabel} profile={profile} />
 
+      {/* Checklist items 13 and 14 (2026-09-22). The intro above quotes a
+          median entry price with no date and no statement of what kind of
+          price it is — the same gap the sector pages had before the rates
+          page's treatment was carried across. */}
+      <div className="w-full max-w-7xl mx-auto px-4 mt-6">
+        <div className="max-w-3xl space-y-1.5">
+          <DataUpdated date={dataAsOf} label="Portfolio data updated" />
+          {profile.price && <AskingPriceNote scope={`${summary.name}'s portfolio`} />}
+        </div>
+      </div>
+
+      <DeveloperPriceTable
+        developerName={summary.name}
+        projects={projects}
+        citySlug={canonicalCitySlug("ggn")}
+        asOf={dataAsOf}
+      />
+
+      <DeveloperLocations
+        developerName={summary.name}
+        developerSlug={summary.slug}
+        projects={projects}
+        linkedCorridors={linkedCorridors}
+        citySlug={canonicalCitySlug("ggn")}
+      />
+
       {/* The complete index. Every project this builder has on HomzRealtor,
           linked by name, so nothing in the portfolio depends on a query-param
           view to be reachable. Grouped by city where the builder spans more
@@ -320,6 +442,8 @@ const DeveloperPage = async ({ params }: PageParams) => {
       )}
 
       <Faq title={summary.name} items={faqs} />
+
+      <DeveloperEntity developerName={summary.name} facts={facts} />
 
       {/* Other developers — internal linking + crawlability */}
       {others.length > 0 && (

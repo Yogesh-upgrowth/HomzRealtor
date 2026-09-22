@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { makePropertyDetailPage } from "@/components/PropertyListing/propertyDetailRoute";
-import FacetedListingPage, { BUY_FACETS } from "@/components/PropertyListing/FacetedListingPage";
+import FacetedListingPage from "@/components/PropertyListing/FacetedListingPage";
+import { resolveFacet } from "@/lib/listings/facets";
 
 // ISR — without this every crawl/visit re-executes the origin function
 // uncached. revalidate alone doesn't activate it for a dynamic segment —
@@ -32,8 +33,32 @@ export const revalidate = 604800;
 // Next.js prefers the more specific static segment at that path depth.
 // Checking the known, finite facet-slug set first, inside this same route,
 // is what avoids that.
+
+// Returns [] — changed 2026-09-21, and this was a real bug rather than a
+// tidy-up.
+//
+// This used to list the six BUY_FACETS slugs. Listing any params here makes
+// Next attempt to prerender them at build time, and the render path reads the
+// segment through lib/listings/segmentCache.ts, which fetches with
+// `cache: "no-store"` on purpose (Next's data cache silently drops responses
+// over 2MB; a real segment is 5-48MB). Next cannot prerender through a
+// no-store fetch, so it demoted this entire route to fully dynamic — measured
+// in the build output as `ƒ /buy-property/[city]/[slug]`, not `●`.
+//
+// The cost of that was not the six facet pages. It was the ~21,000 Sale
+// listing detail pages served by this same route: every one of them was being
+// server-rendered per request, uncached, rather than rendered once and held
+// for the revalidate window above. That is precisely the origin load that got
+// this project paused by Vercel on 2026-09-09, and the revalidate constant
+// above — set to a week specifically to avoid it — was doing nothing.
+//
+// An empty list still activates on-demand ISR for every param (verified — see
+// app/project-listing/[city]/page.tsx's comment). Nothing is prerendered, which
+// is no loss because nothing was being prerendered before either, and every
+// path on the route is now cached after its first hit. The sector and corridor
+// hubs rely on the same behaviour.
 export function generateStaticParams() {
-  return Object.keys(BUY_FACETS).map((slug) => ({ city: "gurgaon", slug }));
+  return [];
 }
 
 const SITE = "https://www.homzrealtor.com";
@@ -43,11 +68,15 @@ type PageParams = { params: Promise<{ city: string; slug: string }> };
 
 export async function generateMetadata(props: PageParams): Promise<Metadata> {
   const { city, slug } = await props.params;
-  const facet = city === "gurgaon" ? BUY_FACETS[slug] : undefined;
+  const facet = city === "gurgaon" ? resolveFacet("Sale", slug) : undefined;
   if (facet) {
     const url = `${SITE}/buy-property/${city}/${slug}`;
+    // Location hubs already carry the place in their label ("Property for Sale
+    // in Sector 65, Gurgaon"), so the keyword tail the static facets need
+    // would just pad the title past the SERP truncation point.
+    const title = facet.location ? facet.label : `${facet.label}, Price, Photos & Details`;
     return {
-      title: `${facet.label}, Price, Photos & Details`,
+      title,
       description: facet.description,
       alternates: { canonical: url },
       openGraph: { title: facet.label, description: facet.description, url, type: "website" },
@@ -58,9 +87,9 @@ export async function generateMetadata(props: PageParams): Promise<Metadata> {
 
 const Page = async (props: PageParams) => {
   const { city, slug } = await props.params;
-  const facet = city === "gurgaon" ? BUY_FACETS[slug] : undefined;
+  const facet = city === "gurgaon" ? resolveFacet("Sale", slug) : undefined;
   if (facet) {
-    return <FacetedListingPage facet={facet} pageNum={1} />;
+    return <FacetedListingPage facet={facet} pageNum={1} category="Sale" />;
   }
   return DetailPage(props);
 };

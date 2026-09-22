@@ -1,6 +1,13 @@
 // Normalizes raw homzbackend API records into structured project data.
 // Mirrors scripts/lib/normalize.mjs but as TypeScript for use in server components.
 
+import {
+  projectLooksResidential,
+  stripCompetitorDeep,
+  stripCompetitorParagraphs,
+  stripCompetitorProse,
+} from "./dataQuality";
+
 export const CITY_META: Record<string, { name: string; state: string }> = {
   ggn: { name: "Gurgaon", state: "Haryana" },
   delhi: { name: "Delhi", state: "Delhi" },
@@ -26,12 +33,29 @@ export const KNOWN_BUILDERS = [
 // "*This data is derived by the Square Yards data intelligence team...*"
 // on Emaar Serenity Hills — confirmed live. Rather than editing/replacing
 // that copy (which would mean writing new marketing prose without a real
-// source), this drops only the offending sentence/paragraph, keeping
-// everything else the feed provided untouched.
-const SYNDICATION_MARKERS = [/square\s*yards/i];
-
+// source), this drops only the offending text, keeping everything else the
+// feed provided untouched.
+//
+// 2026-09-21: widened twice, after the 21 Sep audit found
+// "Square Yards exceptional legal team can assist you..." still rendering
+// inside the M3M Latitude description.
+//
+//   - From one pattern to the full competitor set (MagicBricks, 99acres,
+//     Housing.com, NoBroker, PropTiger, CommonFloor and the rest), which is
+//     the sitewide sweep that audit asked for. The old single pattern only
+//     ever caught one of the sources this catalogue aggregates.
+//   - From dropping the whole paragraph to dropping only the sentences that
+//     name a competitor. A paragraph is usually several sentences of
+//     legitimate project description plus one stray line; discarding all of
+//     it lost real content, and that loss is very likely why the "legal team"
+//     sentence survived — it sat in a paragraph whose other sentences were
+//     worth keeping, so a paragraph-level filter could not remove it without
+//     removing them.
+//
+// See lib/intelligence/dataQuality.ts for the patterns and for why the
+// sentence is the smallest safe unit to remove.
 function stripSyndicatedText(paragraphs: string[]): string[] {
-  return paragraphs.filter((p) => !SYNDICATION_MARKERS.some((re) => re.test(p)));
+  return stripCompetitorParagraphs(paragraphs);
 }
 
 // DEV-02 (2026-09-16): confirmed live — ATS Triumph Villas' aboutProject
@@ -205,7 +229,10 @@ export function extractPriceRange(priceText?: string | null, priceList?: any[] |
 // Sq.M or acres. A basis this codebase can't confirm (no unit detected in
 // the text) now surfaces as size_unit: null rather than a guessed "sq.ft" --
 // "Area not confirmed" is the honest fallback, not a fabricated one.
-function detectAreaUnit(text: string): string | null {
+// Exported 2026-09-21 for the listing location hubs: they compute a per-sq-ft
+// rate from the listings' own `size` strings, and need the same
+// confirmed-unit-or-nothing rule rather than a second implementation of it.
+export function detectAreaUnit(text: string): string | null {
   if (/sq\.?\s*yd|sqyd|sq\.?\s*yard|square\s*yard/i.test(text)) return "sq.yd";
   if (/sq\.?\s*m(?:eter|etre)?s?\b|sqm\b|square\s*met/i.test(text)) return "sq.m";
   if (/sq\.?\s*ft|sqft|square\s*fee?t/i.test(text)) return "sq.ft";
@@ -386,8 +413,18 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
   const name = raw.projectTitle || "Untitled Project";
   const price = extractPriceRange(raw.price, raw.priceList);
   const size = extractSizeRange(raw.size);
+  // 2026-09-21: widened from BHKType alone to the fuller residential-evidence
+  // set in dataQuality.ts. The 21 Sep audit found residential projects still
+  // presenting as Commercial, and BHKType is frequently absent on exactly the
+  // records that need correcting -- a project whose own copy says "512
+  // spacious homes" or "residential towers" is not ambiguous. Still one-way,
+  // Commercial -> Residential only, for the reason in the note above.
   const effectiveCategory =
-    category === "Commercial" && hasResidentialConfiguration(raw.BHKType) ? "Residential" : category;
+    category === "Commercial" &&
+    (hasResidentialConfiguration(raw.BHKType) ||
+      projectLooksResidential(raw.BHKType, name, raw.aboutProject))
+      ? "Residential"
+      : category;
 
   return {
     slug: slugify(name),
@@ -418,9 +455,18 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
     about: stripSyndicatedText(
       redactEmbeddedRegulatoryIds(Array.isArray(raw.aboutProject) ? raw.aboutProject : [])
     ),
-    amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
-    specifications: Array.isArray(raw.specifications) ? raw.specifications : [],
-    price_list: Array.isArray(raw.priceList) ? raw.priceList : [],
+    // 2026-09-22, checklist item 2 ("all text fields... price section, FAQs,
+    // investment sections, specifications"): these four arrive as structured
+    // data rather than paragraphs, so stripSyndicatedText never saw them and
+    // a syndicated sentence in a specification row or a price-list note
+    // rendered untouched. stripCompetitorDeep walks the structure and drops
+    // any entry whose text was entirely competitor content — see the rules on
+    // it in dataQuality.ts.
+    amenities: stripCompetitorDeep(Array.isArray(raw.amenities) ? raw.amenities : []),
+    specifications: stripCompetitorDeep(
+      Array.isArray(raw.specifications) ? raw.specifications : []
+    ),
+    price_list: stripCompetitorDeep(Array.isArray(raw.priceList) ? raw.priceList : []),
     builder_description: stripSyndicatedText(
       redactEmbeddedRegulatoryIds(
         Array.isArray(raw.builderDescription)
@@ -430,10 +476,15 @@ export function normalizeProject(raw: any, cityKey: string, category: string): N
           : []
       )
     ),
-    recent_updates: Array.isArray(raw.recentUpdates) ? raw.recentUpdates : [],
+    recent_updates: stripCompetitorDeep(
+      Array.isArray(raw.recentUpdates) ? raw.recentUpdates : []
+    ),
     master_plan:
       raw.masterPlan && (raw.masterPlan.image || raw.masterPlan.content)
-        ? { image: raw.masterPlan.image, content: raw.masterPlan.content }
+        ? {
+            image: raw.masterPlan.image,
+            content: stripCompetitorProse(raw.masterPlan.content) ?? undefined,
+          }
         : null,
     updated_at: raw.updatedAt || null,
   };

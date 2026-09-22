@@ -82,6 +82,12 @@ export type RawHomzProperty = {
    *  Resale-vs-New-Launch sub-filter within the Sale category reads this. */
   listingType?: string;
   isCommercial?: boolean;
+  /** Set by lib/intelligence/dataQuality.ts when a correction was applied to
+   *  this record at the segment boundary — currently only
+   *  "residential-in-commercial", a flat that arrived typed as a warehouse or
+   *  retail shop. Carried so the commercial category pages can exclude it and
+   *  the QA report can count it without re-deriving the judgement. */
+  reclassified?: "residential-in-commercial";
   reraId?: string;
   /** See the matching comment on RawHomzProject — same badge semantics. */
   reraStatus?: string;
