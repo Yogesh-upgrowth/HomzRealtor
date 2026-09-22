@@ -24,6 +24,11 @@ import DeveloperLocations from "@/components/Developer/DeveloperLocations";
 import DeveloperEntity from "@/components/Developer/DeveloperEntity";
 import { availableDeveloperViews } from "@/lib/intelligence/developerViews";
 import { developerProfileFacts } from "@/lib/content/developerProfiles";
+import { editorialFaqsFor, publishedEditorialFor } from "@/lib/content/editorial/registry";
+import EditorialSections from "@/components/Editorial/EditorialSections";
+import EditorialTradeoffs from "@/components/Editorial/EditorialTradeoffs";
+import EditorialByline from "@/components/Editorial/EditorialByline";
+import PageProvenance from "@/components/Editorial/PageProvenance";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -173,9 +178,19 @@ const DeveloperPage = async ({ params }: PageParams) => {
     .filter((d) => d.slug !== summary.slug && isIndexableDeveloper(d))
     .slice(0, 12);
 
+  // Homz Content Standard v1 (2026-09-22): the editorial slot for this
+  // developer. Null for every developer today — no Layer C copy is written
+  // yet — and the components below render nothing when it is. See
+  // lib/content/editorial/developerPages.ts.
+  const editorial = publishedEditorialFor("developer", summary.slug);
+
   // Answered entirely from the computed profile — only questions the data can
-  // actually answer are emitted, since these feed FAQPage markup.
-  const faqs = buildDeveloperFaqs(summary.name, cityLabel, profile, formatInr);
+  // actually answer are emitted, since these feed FAQPage markup. Written
+  // questions are appended after them.
+  const faqs = [
+    ...buildDeveloperFaqs(summary.name, cityLabel, profile, formatInr),
+    ...editorialFaqsFor("developer", summary.slug),
+  ];
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -441,6 +456,12 @@ const DeveloperPage = async ({ params }: PageParams) => {
         </section>
       )}
 
+      {/* Homz Content Standard v1 — the written analysis, when there is any.
+          Renders nothing until a writer's copy is registered and scores 90+. */}
+      <EditorialByline page={editorial} />
+      <EditorialSections page={editorial} />
+      <EditorialTradeoffs page={editorial} subject={summary.name} />
+
       <Faq title={summary.name} items={faqs} />
 
       <DeveloperEntity developerName={summary.name} facts={facts} />
@@ -470,6 +491,10 @@ const DeveloperPage = async ({ params }: PageParams) => {
           </div>
         </section>
       )}
+
+      {/* "About this page's data" + Sources. Ships with or without editorial
+          copy: everything it declares is true of the computed figures above. */}
+      <PageProvenance snapshotAt={dataAsOf} page={editorial} />
 
       <AppointmentCard
         bgImage={bgImg}

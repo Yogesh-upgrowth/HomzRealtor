@@ -19,6 +19,11 @@ import AppointmentCard from "@/components/Common/Appointment";
 import bgImg from "@/public/appointmentBG.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 import { resolveCoordinate } from "@/lib/intelligence/resolveLocation";
+import { editorialFaqsFor, publishedEditorialFor } from "@/lib/content/editorial/registry";
+import EditorialSections from "@/components/Editorial/EditorialSections";
+import EditorialTradeoffs from "@/components/Editorial/EditorialTradeoffs";
+import EditorialByline from "@/components/Editorial/EditorialByline";
+import PageProvenance from "@/components/Editorial/PageProvenance";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -141,7 +146,22 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
   });
   // "Sector 82A" -> "82a", the token the listing hubs use.
   const sectorTokenForHub = sectorLabel.replace(/^sector\s*/i, "").trim().toLowerCase();
-  const sectorFaqs = buildSectorFaqs(sectorLabel, name, sectorCtx, formatInr);
+
+  // Homz Content Standard v1 (2026-09-22): the editorial slot for this sector.
+  // Null for every sector today — no Layer C copy is written yet — and the
+  // components below render nothing when it is. See
+  // lib/content/editorial/sectorPages.ts for how a written sector lands here.
+  // Keyed on matchedSector.slug — the catalogue's own slugify() of the sector
+  // name, which is what /sectors/[sector] routes on — so a registry key can
+  // never drift from the URL it is meant to attach to.
+  const editorial = publishedEditorialFor("sector", matchedSector.slug);
+
+  // Computed questions first, written ones after: the computed set answers
+  // what a searcher arrives with, the written set answers what needs a person.
+  const sectorFaqs = [
+    ...buildSectorFaqs(sectorLabel, name, sectorCtx, formatInr),
+    ...editorialFaqsFor("sector", matchedSector.slug),
+  ];
 
   const withImages = projects.filter((p) => p.images.length > 0);
   const residential = projects.filter(
@@ -377,7 +397,14 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
         </div>
       </section>
 
+      <EditorialByline page={editorial} />
+
       <SectorIntelligence sectorLabel={sectorLabel} cityName={name} ctx={sectorCtx} />
+
+      {/* Homz Content Standard v1 — the written analysis, when there is any.
+          Renders nothing until a writer's copy is registered and scores 90+. */}
+      <EditorialSections page={editorial} />
+      <EditorialTradeoffs page={editorial} subject={sectorLabel} />
 
       {/* Project grid (reuses the shared card component) */}
       {withImages.length > 0 ? (
@@ -480,6 +507,10 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
           </div>
         </section>
       )}
+
+      {/* "About this page's data" + Sources. Ships with or without editorial
+          copy: everything it declares is true of the computed figures above. */}
+      <PageProvenance snapshotAt={sectorAsOf} page={editorial} />
 
       <AppointmentCard
         bgImage={bgImg}
