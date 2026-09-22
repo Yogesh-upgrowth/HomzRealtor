@@ -13,6 +13,7 @@
     "check:sitemap": "node scripts/check-sitemap-404s.mjs",
     "check:orphans": "node scripts/check-orphan-pages.mjs",
     "check:data-quality": "node scripts/check-data-quality.mjs",
+    "check:content-stats": "node --experimental-strip-types scripts/check-content-stats.mjs",
     "report:listing-quality": "node scripts/listing-quality-report.mjs",
     "test:identity": "node tests/listing-identity.test.mjs",
     "test:taxonomy": "node tests/taxonomy.test.mjs",
