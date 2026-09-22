@@ -14,6 +14,7 @@ import FaqAccordion from "./FaqAccordion";
 import TakeawayCard from "./TakeawayCard";
 import DominantCta from "./DominantCta";
 import CredibilityFooter from "./CredibilityFooter";
+import DataProvenance from "./DataProvenance";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -244,6 +245,10 @@ const BlogPostV27Article = ({ post }: { post: BlogPostV27 }) => {
             </div>
           </section>
         )}
+
+        {/* Checklist item 24: the five questions every data-led guide should
+            answer, rendered from what the post declares. */}
+        <DataProvenance post={post} />
 
         <div className="mt-10 mb-16">
           <CredibilityFooter post={post} />
