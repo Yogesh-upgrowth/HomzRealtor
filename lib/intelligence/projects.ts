@@ -4,6 +4,7 @@
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
 import { isExcludedProject } from "./excludedProjects";
+import { scoreComparePair } from "./compareQuality";
 import { normalizeAmenities } from "./view-model";
 import {
   canonicalDeveloperByName,
@@ -365,6 +366,49 @@ export async function getComparePairKeys(): Promise<Set<string>> {
   } finally {
     if (comparePairsInFlight === request) comparePairsInFlight = null;
   }
+}
+
+/**
+ * The comparison pairs good enough to index, for the sitemap.
+ *
+ * Checklist item 10 closes with "keep low-value comparison pages out of XML
+ * sitemaps". The route decides indexability per request with
+ * scoreComparePair(); this applies the same function to the whole linked pair
+ * set so the sitemap and the pages agree, rather than the sitemap listing URLs
+ * that turn out to be noindex when Google fetches them.
+ *
+ * Runs over the pair set that already exists (a few thousand keys, not the
+ * ~10^6 combinatorial space), and only over projects already in memory.
+ */
+export async function getIndexableComparePairs(): Promise<
+  { citySlug: string; slugA: string; slugB: string; updatedAt: string | null }[]
+> {
+  const [keys, allCities] = await Promise.all([
+    getComparePairKeys(),
+    Promise.all(ALL_CITY_KEYS.map((k) => getProjectsForCity(k))),
+  ]);
+
+  const bySlug = new Map<string, NormalizedProject>();
+  for (const p of allCities.flat()) {
+    bySlug.set(`${canonicalCitySlug(p.city_key)}/${p.slug}`, p);
+  }
+
+  const out: { citySlug: string; slugA: string; slugB: string; updatedAt: string | null }[] = [];
+  for (const key of keys) {
+    const [citySlug, slugA, slugB] = key.split("/");
+    const a = bySlug.get(`${citySlug}/${slugA}`);
+    const b = bySlug.get(`${citySlug}/${slugB}`);
+    if (!a || !b) continue;
+    if (!scoreComparePair(a, b).indexable) continue;
+    const dates = [a.updated_at, b.updated_at].filter(Boolean) as string[];
+    out.push({
+      citySlug,
+      slugA,
+      slugB,
+      updatedAt: dates.sort().reverse()[0] ?? null,
+    });
+  }
+  return out;
 }
 
 // Price intelligence helpers

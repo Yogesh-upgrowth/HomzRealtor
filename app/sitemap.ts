@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper } from '@/lib/intelligence/projects'
+import { getSectorsForCity, getProjectsForCity, canonicalCitySlug, getAllBuilders, isIndexableDeveloper, getIndexableComparePairs } from '@/lib/intelligence/projects'
 import {
   homzDataUrl,
   propertySegment,
@@ -21,6 +21,7 @@ import { BLOG_POSTS_V27 } from '@/lib/content/blogRegistry'
 import { BLOG_CATEGORIES } from '@/lib/content/blogPostSchema'
 import { allResolved, SELLER_TERM_KEYS, LANDLORD_TERM_KEYS } from '@/lib/content/ownerPending'
 import { AUTHORS } from '@/lib/content/authors'
+import { SITEMAP_SEGMENT_IDS, type SitemapSegmentId } from '@/lib/seo/sitemapSegments'
 
 // Was `force-dynamic` — that recomputed every segment (full catalogue
 // fetch + JSON parse + facet filtering over tens of thousands of records)
@@ -45,11 +46,23 @@ const BASE_URL = 'https://www.homzrealtor.com'
 // /sitemap/sectors.xml, etc. Next also doesn't auto-build a <sitemapindex>
 // referencing them — they're registered individually in app/robots.ts's
 // sitemap field instead, which Google treats as equivalent for discovery.
-const SEGMENT_IDS = ['projects', 'sectors', 'developers', 'buy', 'rent', 'commercial', 'content'] as const
-type SegmentId = (typeof SEGMENT_IDS)[number]
+// 2026-09-22, checklist item 16 ("Split sitemap logically if it is large...
+// this makes Search Console debugging much easier"). 'comparisons' is new: the
+// pairs that clear the quality threshold in item 10 now have somewhere to go,
+// and keeping them in their own file means their indexation rate is readable
+// on its own rather than mixed into the projects number.
+//
+// The item's suggested structure also splits projects across numbered files.
+// Not done, and deliberately: Google's limit is 50,000 URLs or 50MB
+// uncompressed per file, and the largest segment here (Sale, ~21,000) is well
+// inside both. Splitting below the limit would add files without adding any
+// information Search Console does not already give per segment. If Sale grows
+// past 50,000 this needs revisiting — buy-1.xml, buy-2.xml — and the check in
+// scripts/check-sitemap-404s.mjs will say so before Google does.
+type SegmentId = SitemapSegmentId
 
 export async function generateSitemaps() {
-  return SEGMENT_IDS.map((id) => ({ id }))
+  return SITEMAP_SEGMENT_IDS.map((id) => ({ id }))
 }
 
 // Sale/Rent/Pg/Commercial listing pages — same city scope as the Projects
@@ -415,6 +428,19 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
   ]
 }
 
+// Checklist items 10 and 16: only the comparisons that clear the quality
+// threshold. Both the page and this list call scoreComparePair(), so a URL
+// here is never one Google will find noindex on arrival.
+async function buildComparisonsSegment(): Promise<MetadataRoute.Sitemap> {
+  const pairs = await getIndexableComparePairs().catch(() => [])
+  return pairs.map(({ citySlug, slugA, slugB, updatedAt }) => ({
+    url: `${BASE_URL}/project-listing/compare/${citySlug}/${slugA}/${slugB}`,
+    lastModified: toDate(updatedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
+  }))
+}
+
 export default async function sitemap({ id }: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
   const segment = (await id) as SegmentId
 
@@ -425,6 +451,8 @@ export default async function sitemap({ id }: { id: Promise<string> }): Promise<
       return buildSectorsSegment()
     case 'developers':
       return buildDevelopersSegment()
+    case 'comparisons':
+      return buildComparisonsSegment()
     case 'buy':
       return buildPropertyCategorySegment('Sale')
     case 'rent':

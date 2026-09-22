@@ -25,7 +25,8 @@
     "test:developers-table": "node --experimental-strip-types tests/developers-table.test.mjs",
     "test:news-topics": "node --experimental-strip-types tests/news-topics.test.mjs",
     "test:publish-gate": "node --experimental-strip-types tests/publish-gate.test.mjs",
-    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics && npm run test:publish-gate",
+    "test:compare-quality": "node --experimental-strip-types tests/compare-quality.test.mjs",
+    "test": "npm run test:identity && npm run test:taxonomy && npm run test:developer-profile && npm run test:project-dedupe && npm run test:listing-hubs && npm run test:data-quality && npm run test:developers-table && npm run test:news-topics && npm run test:publish-gate && npm run test:compare-quality",
     "check:owner-inputs": "node scripts/check-owner-inputs.mjs",
     "migrate:listing-media": "node scripts/migrate-listing-media.mjs"
   },
