@@ -31,7 +31,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Golf Course Road", "luxury apartments", "Gurgaon", "premium real estate"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 9,
   },
   author: {
@@ -48,14 +48,14 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every figure in this guide comes from HomzRealtor's live Golf Course Road catalogue, filtered to listings priced at ₹5 Cr or above and snapshotted on 4 September 2026.",
+      "Every figure in this guide comes from HomzRealtor's live Golf Course Road catalogue, filtered to listings priced at ₹5 Cr or above and snapshotted on 23 September 2026.",
     productDataHook: {
       propertyCount: 43,
       localityCount: 6,
-      avgPropertyPriceInr: 43800000,
+      avgPropertyPriceInr: 34300000,
       priceByLocality: [
-        { locality: "Sector 54", avgPriceInr: 43800000 },
-        { locality: "Golf Course Road overall", avgPriceInr: 43800000 },
+        { locality: "Sector 54", avgPriceInr: 34300000 },
+        { locality: "Golf Course Road overall", avgPriceInr: 34300000 },
       ],
       topLocalitiesReferenced: ["Sector 54", "Sector 53", "Sector 28", "Sector 42", "Sector 43"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -73,11 +73,11 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Luxury Apartments on Golf Course Road, Gurgaon",
@@ -100,7 +100,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
       "43 listings priced at ₹5 Cr or above are live on Golf Course Road today, out of 65 total residential projects on the corridor. Sector 54 leads with 9 of those listings, and DLF alone accounts for 18 of the 43, nearly half of the corridor's entire luxury supply.",
   },
   introduction:
-    "Golf Course Road is Gurgaon's default answer to \"where are the luxury apartments,\" and the live numbers support that reputation: 43 of the corridor's 65 residential projects, two in three, price at ₹5 Cr or above. That concentration isn't spread evenly across the corridor, though. A handful of sectors and one developer in particular account for a disproportionate share of what's actually available. This guide breaks down exactly where Golf Course Road's luxury apartments sit today, who's building them, and what separates a genuinely luxury listing here from one that's merely expensive.\n\nEvery figure below is specific to Golf Course Road, drawn from the same live HomzRealtor catalogue snapshot dated 4 September 2026 used across our Gurgaon corridor guides. For the broader citywide picture, see our separate luxury apartments in Gurgaon guide.",
+    "Golf Course Road is Gurgaon's default answer to \"where are the luxury apartments,\" and the live numbers support that reputation: 43 of the corridor's 65 residential projects, two in three, price at ₹5 Cr or above. That concentration isn't spread evenly across the corridor, though. A handful of sectors and one developer in particular account for a disproportionate share of what's actually available. This guide breaks down exactly where Golf Course Road's luxury apartments sit today, who's building them, and what separates a genuinely luxury listing here from one that's merely expensive.\n\nEvery figure below is specific to Golf Course Road, drawn from the same live HomzRealtor catalogue snapshot dated 23 September 2026 used across our Gurgaon corridor guides. For the broader citywide picture, see our separate luxury apartments in Gurgaon guide.",
   sections: [
     {
       id: "how-much-of-golf-course-road-is-luxury",
@@ -150,7 +150,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
       id: "price-range-within-luxury",
       h2: "What's the Price Range Within This Luxury Segment?",
       contentMarkdown:
-        "Golf Course Road's overall price ceiling reaches ₹68.79 Cr, and the corridor's ₹4.38 Cr median is itself pulled up by this luxury concentration. For context, that median sits well above the citywide Gurgaon median of ₹2.18 Cr across all corridors, underscoring how much the luxury segment specifically shapes Golf Course Road's overall price positioning. Within the ₹5 Cr-plus band specifically, pricing varies widely by sector, unit size and configuration, 4 BHK listings account for 32 of the corridor's residential configurations, the single largest share, consistent with larger-format luxury living being the corridor's dominant product rather than compact premium units.\n\n5 BHK listings (9 total) and larger super-luxury configurations sit at the very top of the range, typically in Sector 54 and Sector 53, while smaller 3 BHK luxury units (14 listings corridor-wide) offer a comparatively more accessible entry into the ₹5 Cr-plus band. If your budget sits closer to ₹5 Cr than ₹15 Cr, a 3 BHK configuration is the more realistic starting point for a genuine Golf Course Road luxury purchase.\n\nThe corridor's ₹68.79 Cr ceiling represents a small number of outlier listings rather than a typical luxury purchase, most of the 43 luxury listings sit meaningfully closer to the ₹5-15 Cr range than to the corridor's absolute maximum. Treat any single headline price you encounter while browsing as one data point in a fairly wide range, not the corridor's representative luxury price.",
+        "Golf Course Road's overall price ceiling reaches ₹68.79 Cr, and the corridor's ₹3.43 Cr median is itself pulled up by this luxury concentration. For context, that median sits well above the citywide Gurgaon median of ₹1.73 Cr across all corridors, underscoring how much the luxury segment specifically shapes Golf Course Road's overall price positioning. Within the ₹5 Cr-plus band specifically, pricing varies widely by sector, unit size and configuration, 4 BHK listings account for 32 of the corridor's residential configurations, the single largest share, consistent with larger-format luxury living being the corridor's dominant product rather than compact premium units.\n\n5 BHK listings (9 total) and larger super-luxury configurations sit at the very top of the range, typically in Sector 54 and Sector 53, while smaller 3 BHK luxury units (14 listings corridor-wide) offer a comparatively more accessible entry into the ₹5 Cr-plus band. If your budget sits closer to ₹5 Cr than ₹15 Cr, a 3 BHK configuration is the more realistic starting point for a genuine Golf Course Road luxury purchase.\n\nThe corridor's ₹68.79 Cr ceiling represents a small number of outlier listings rather than a typical luxury purchase, most of the 43 luxury listings sit meaningfully closer to the ₹5-15 Cr range than to the corridor's absolute maximum. Treat any single headline price you encounter while browsing as one data point in a fairly wide range, not the corridor's representative luxury price.",
       media: [
         {
           type: "diagram",
@@ -175,7 +175,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
       id: "who-should-buy-luxury-here",
       h2: "Who Should Actually Buy a Luxury Apartment on Golf Course Road?",
       contentMarkdown:
-        "End-users who want fully mature social infrastructure, established schools, hospitals and retail, not a promise attached to a launch, are the natural buyers here, especially since 92 of the corridor's 103 total listings are already ready to move. Investors chasing appreciation from infrastructure growth are better served by Dwarka Expressway or Golf Course Extension Road, where far more new supply is still entering the market; Golf Course Road's luxury segment is a certainty play, not a growth play.\n\nFamilies relocating for schooling or work, and buyers who've already owned in Gurgaon and are upgrading rather than entering the market for the first time, are also a natural fit, both groups typically prioritise moving in on a known date over the potential upside of a still-developing corridor. Buyers primarily seeking rental yield, by contrast, may find the entry price here harder to justify against corridors with lower purchase costs and comparable rental demand, the yield math on a ₹5 Cr-plus purchase rarely competes well with a lower-entry-price unit on a growth corridor, even before accounting for the somewhat lower vacancy risk a more established, amenity-rich address typically offers over a longer holding period.",
+        "End-users who want fully mature social infrastructure, established schools, hospitals and retail, not a promise attached to a launch, are the natural buyers here, especially since 92 of the corridor's 102 total listings are already ready to move. Investors chasing appreciation from infrastructure growth are better served by Dwarka Expressway or Golf Course Extension Road, where far more new supply is still entering the market; Golf Course Road's luxury segment is a certainty play, not a growth play.\n\nFamilies relocating for schooling or work, and buyers who've already owned in Gurgaon and are upgrading rather than entering the market for the first time, are also a natural fit, both groups typically prioritise moving in on a known date over the potential upside of a still-developing corridor. Buyers primarily seeking rental yield, by contrast, may find the entry price here harder to justify against corridors with lower purchase costs and comparable rental demand, the yield math on a ₹5 Cr-plus purchase rarely competes well with a lower-entry-price unit on a growth corridor, even before accounting for the somewhat lower vacancy risk a more established, amenity-rich address typically offers over a longer holding period.",
     },
     {
       id: "verifying-a-luxury-listing",
@@ -238,7 +238,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
     },
     {
       q: "Is most Golf Course Road luxury inventory ready to move?",
-      a: "Yes, across the whole corridor, 92 of 103 total listings (luxury and non-luxury combined) are ready to move, with only 9 under construction and 2 new launches. Very little fresh luxury supply is entering the pipeline.",
+      a: "Yes, across the whole corridor, 92 of 102 total listings (luxury and non-luxury combined) are ready to move, with only 9 under construction and 2 new launches. Very little fresh luxury supply is entering the pipeline.",
     },
     {
       q: "How do I verify a luxury project's RERA status before buying?",
@@ -246,7 +246,7 @@ export const luxuryApartmentsOnGolfCourseRoad: BlogPostV27 = {
     },
     {
       q: "Is Golf Course Road's luxury segment growing or shrinking?",
-      a: "No historical dataset exists to honestly answer that with a trend claim. What's clear from the current snapshot is that new-launch activity on Golf Course Road is minimal (2 of 103 listings), so the luxury segment today is mostly existing, mature stock rather than a fast-expanding pipeline.",
+      a: "No historical dataset exists to honestly answer that with a trend claim. What's clear from the current snapshot is that new-launch activity on Golf Course Road is minimal (2 of 102 listings), so the luxury segment today is mostly existing, mature stock rather than a fast-expanding pipeline.",
     },
   ],
   conclusion: {

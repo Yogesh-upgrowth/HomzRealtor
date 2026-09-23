@@ -23,13 +23,13 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
     metaDescription:
       "Explore the most active projects on Dwarka Expressway, real builder data, possession status and price ranges from HomzRealtor's live Gurgaon catalogue.",
     standfirst:
-      "439 live projects, five major builders and a corridor that's mostly ready to move already: here's what the data actually shows.",
+      "436 live projects, five major builders and a corridor that's mostly ready to move already: here's what the data actually shows.",
     primaryKeyword: "projects on Dwarka Expressway",
     secondaryKeywords: ["Dwarka Expressway builders", "Dwarka Expressway ready to move", "NH-248BB Gurgaon"],
     category: "buying-guides",
     tags: ["Dwarka Expressway", "Gurgaon", "new projects"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 9,
   },
   author: {
@@ -38,7 +38,7 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue, cross-checked against HARERA and official infrastructure sources.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -47,12 +47,12 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every builder count, possession-status figure and price range in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted on 4 September 2026.",
+      "Every builder count, possession-status figure and price range in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted on 23 September 2026.",
     productDataHook: {
-      propertyCount: 439,
+      propertyCount: 436,
       localityCount: 60,
-      avgPropertyPriceInr: 18300000,
-      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 18300000 }],
+      avgPropertyPriceInr: 13650000,
+      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 13650000 }],
       topLocalitiesReferenced: ["Sector 102", "Sector 37D", "Sector 103", "Sector 92", "Sector 89"],
       dateRange: "Live catalogue snapshot, September 2026",
     },
@@ -62,15 +62,15 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
       { label: "Dwarka Expressway (NH-248BB), route and completion overview", url: "https://en.wikipedia.org/wiki/Dwarka_Expressway", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and independently links to official government sources; it does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Best Projects on Dwarka Expressway (2026 Guide)",
-    ogDescription: "439 live projects, real builder data and possession status from HomzRealtor's Gurgaon catalogue.",
+    ogDescription: "436 live projects, real builder data and possession status from HomzRealtor's Gurgaon catalogue.",
     ogImage: "https://static.squareyards.com/resources/images/gurgaon/project-image/ganga-kashi-residences-project-apartment-exteriors1-7950.jpg",
     ogImageAlt: "Ganga Kashi Residences, a residential development in Sector 89, Gurgaon",
   },
@@ -86,16 +86,16 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
   quickAnswer: {
     question: "What are the best projects on Dwarka Expressway right now?",
     answer:
-      "HomzRealtor's live catalogue tracks 439 projects on Dwarka Expressway, 299 residential, 140 commercial, led by Signature Global, Vatika, M3M and BPTP. Most residential stock (249 of 299) is already ready to move, at a median price of ₹1.83 Cr across the corridor.",
+      "HomzRealtor's live catalogue tracks 436 projects on Dwarka Expressway, 378 residential, 58 commercial, led by Signature Global, Vatika, M3M and BPTP. Most residential stock (310 of 378) is already ready to move, at a median price of ₹1.37 Cr across the corridor.",
   },
   introduction:
-    "Dwarka Expressway (NH-248BB) has gone from a construction zone to a fully operational, eight-lane highway, and the project count along it reflects that. HomzRealtor's live catalogue currently tracks 439 projects on Dwarka Expressway, more than any other Gurgaon corridor, split roughly two-thirds residential to one-third commercial. Rather than naming a fixed \"top 10\" that goes stale as projects launch and sell out, this guide walks through what the live data actually shows: which builders are most active, how much of the corridor is already ready to move, what it costs, and how to shortlist and verify a specific project before booking. Every figure below is sourced from the same live catalogue HomzRealtor's own listing pages use, snapshotted on 4 September 2026, not from generic corridor marketing copy.",
+    "Dwarka Expressway (NH-248BB) has gone from a construction zone to a fully operational, eight-lane highway, and the project count along it reflects that. HomzRealtor's live catalogue currently tracks 436 projects on Dwarka Expressway, more than any other Gurgaon corridor, and residential now outweighs commercial by a considerably wider margin than a simple two-thirds/one-third split, 378 residential against 58 commercial. Rather than naming a fixed \"top 10\" that goes stale as projects launch and sell out, this guide walks through what the live data actually shows: which builders are most active, how much of the corridor is already ready to move, what it costs, and how to shortlist and verify a specific project before booking. Every figure below is sourced from the same live catalogue HomzRealtor's own listing pages use, snapshotted on 4 September 2026, not from generic corridor marketing copy.",
   sections: [
     {
       id: "why-dwarka-expressway",
       h2: "Why Are So Many Buyers Looking at Dwarka Expressway?",
       contentMarkdown:
-        "The expressway itself is the reason. NH-248BB, including a 3.6 km shallow tunnel near IGI Airport and an elevated stretch through several sectors, has been fully operational since June 2025, connecting Mahipalpur in Delhi to Kherki Daula in Gurgaon. The Union Cabinet has since approved a further 8.1 km extension linking the expressway to Vasant Kunj, signalling continued investment rather than a one-off completion. That connectivity has pulled in enough developer activity that Dwarka Expressway now accounts for more live HomzRealtor listings (439) than any other single Gurgaon corridor tracked in this guide.\n\nBeyond the highway itself, the corridor benefits from proximity to IGI Airport and improving access to Delhi's western commercial districts, which has made it attractive to both end-users commuting into Delhi and investors betting on continued infrastructure spend. Developer activity along the corridor has followed accordingly, with projects ranging from budget apartments under ₹50 Lakh to premium commercial developments well above ₹2 Cr, giving the corridor a genuinely wide buyer base rather than appealing to one narrow segment. That range of options is exactly why this guide leans on live catalogue data rather than a fixed shortlist, what counts as the \"best\" project depends heavily on which of those segments you're actually shopping in.",
+        "The expressway itself is the reason. NH-248BB, including a 3.6 km shallow tunnel near IGI Airport and an elevated stretch through several sectors, has been fully operational since June 2025, connecting Mahipalpur in Delhi to Kherki Daula in Gurgaon. The Union Cabinet has since approved a further 8.1 km extension linking the expressway to Vasant Kunj, signalling continued investment rather than a one-off completion. That connectivity has pulled in enough developer activity that Dwarka Expressway now accounts for more live HomzRealtor listings (436) than any other single Gurgaon corridor tracked in this guide.\n\nBeyond the highway itself, the corridor benefits from proximity to IGI Airport and improving access to Delhi's western commercial districts, which has made it attractive to both end-users commuting into Delhi and investors betting on continued infrastructure spend. Developer activity along the corridor has followed accordingly, with projects ranging from budget apartments under ₹50 Lakh to premium commercial developments well above ₹2 Cr, giving the corridor a genuinely wide buyer base rather than appealing to one narrow segment. That range of options is exactly why this guide leans on live catalogue data rather than a fixed shortlist, what counts as the \"best\" project depends heavily on which of those segments you're actually shopping in.",
     },
     {
       id: "best-active-builders",
@@ -121,13 +121,13 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
       id: "possession-status",
       h2: "How Much of Dwarka Expressway Is Ready to Move?",
       contentMarkdown:
-        "Of the corridor's 299 residential projects, 249 are currently marked ready to move, 40 are under construction and 10 are new launches. That's a notably higher ready-to-move share than a purely growth-stage corridor would suggest, Dwarka Expressway has matured enough that most of its residential stock is already built, not just planned.\n\nFor buyers who need to move in on a known date, that 83% ready-to-move share means there's genuine, substantial choice without having to take on construction-timeline risk. For investors specifically chasing early-stage appreciation, the smaller 17% still under construction or newly launched is the more relevant slice, smaller in absolute terms, but still 50 live projects across the corridor's 60 sectors, which is far from a scarce opportunity.\n\nOn the commercial side specifically, possession-status data isn't broken out separately in this guide, but the same general pattern applies: a corridor this mature tends to have proportionally more completed commercial space than a genuinely early-stage growth corridor would.",
+        "Of the corridor's 378 residential projects, 310 are currently marked ready to move, with the remaining 68 under construction or newly launched. That's a notably higher ready-to-move share than a purely growth-stage corridor would suggest, Dwarka Expressway has matured enough that most of its residential stock is already built, not just planned.\n\nFor buyers who need to move in on a known date, that 82% ready-to-move share means there's genuine, substantial choice without having to take on construction-timeline risk. For investors specifically chasing early-stage appreciation, the smaller 18% still under construction or newly launched is the more relevant slice, smaller in absolute terms, but still a meaningful pool spread across the corridor's 60 sectors, far from a scarce opportunity.\n\nOn the commercial side specifically, possession-status data isn't broken out separately in this guide, but the same general pattern applies: a corridor this mature tends to have proportionally more completed commercial space than a genuinely early-stage growth corridor would.",
     },
     {
       id: "price-landscape",
       h2: "What Do Projects on Dwarka Expressway Cost?",
       contentMarkdown:
-        "The corridor's median listed price is ₹1.83 Cr, making it one of the more affordable of Gurgaon's major corridors compared with Golf Course Road's ₹4.38 Cr median. Budget-wise, the split leans toward the higher bands: roughly a quarter of residential listings sit above ₹2 Cr, another third in the ₹1-2 Cr band, and the remainder split between ₹50L-1Cr and under ₹50L.\n\nThat spread means the corridor genuinely serves multiple buyer segments rather than a single price point, a first-time buyer targeting under ₹1 Cr and an investor targeting a ₹2 Cr+ commercial unit can both find real, live options on the same corridor. As with possession status, price varies meaningfully by sector, so use the corridor median as a starting reference rather than a number you can apply uniformly across all 60 sectors of a corridor this large and varied.",
+        "The corridor's median listed price is ₹1.37 Cr, making it one of the more affordable of Gurgaon's major corridors compared with Golf Course Road's ₹3.43 Cr median. Budget-wise, the split leans toward the higher bands: roughly a quarter of residential listings sit above ₹2 Cr, another third in the ₹1-2 Cr band, and the remainder split between ₹50L-1Cr and under ₹50L.\n\nThat spread means the corridor genuinely serves multiple buyer segments rather than a single price point, a first-time buyer targeting under ₹1 Cr and an investor targeting a ₹2 Cr+ commercial unit can both find real, live options on the same corridor. As with possession status, price varies meaningfully by sector, so use the corridor median as a starting reference rather than a number you can apply uniformly across all 60 sectors of a corridor this large and varied.",
       media: [
         {
           type: "table",
@@ -146,7 +146,7 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
       id: "de-new-gurgaon-overlap",
       h2: "Dwarka Expressway and New Gurgaon: The Same Corridor, Different Names",
       contentMarkdown:
-        "Worth knowing before you search: \"New Gurgaon\" (Sectors 81-115) overlaps heavily with Dwarka Expressway. 560 live listings sit within that sector range, but 351 of them are marketed under the Dwarka Expressway name rather than New Gurgaon, only 209 carry no other corridor label. If a search for \"New Gurgaon\" projects comes up short, broadening to Dwarka Expressway listings in the same sector range will surface considerably more inventory.\n\nThis matters practically, not just semantically: a buyer who searches only \"New Gurgaon\" and stops there is seeing roughly a third of the actual live inventory across that geography. Treating the two labels as one combined search, rather than two separate markets to compare, is the more accurate way to shop this part of Gurgaon, and it applies whether you're browsing casually or doing serious project-by-project due diligence.",
+        "Worth knowing before you search: \"New Gurgaon\" (Sectors 81-115) overlaps heavily with Dwarka Expressway. HomzRealtor's own corridor matching now finds only 9 projects carrying the New Gurgaon label distinctly, against 436 catalogued as Dwarka Expressway, most of which sit inside that same Sectors 81-115 range. If a search for \"New Gurgaon\" projects comes up short, broadening to Dwarka Expressway listings in the same sector range will surface considerably more inventory.\n\nThis matters practically, not just semantically: a buyer who searches only \"New Gurgaon\" and stops there is seeing a small fraction of the actual live inventory across that geography. Treating the two labels as one combined search, rather than two separate markets to compare, is the more accurate way to shop this part of Gurgaon, and it applies whether you're browsing casually or doing serious project-by-project due diligence.",
       media: [
         {
           type: "diagram",
@@ -170,7 +170,7 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
       id: "how-to-shortlist",
       h2: "How Should You Shortlist a Project on Dwarka Expressway?",
       contentMarkdown:
-        "Start with sector and possession status rather than builder name alone: sectors closer to NH-48 tend to have more mature infrastructure, while sectors further from it may still be catching up even if the expressway itself is complete. With 249 of 299 residential projects already ready to move; there's enough finished stock that buyers who want to avoid construction-timeline risk entirely have real options, not just a handful.\n\nOnce you've narrowed to a sector, compare projects on configuration mix, carpet area and amenities rather than headline price alone, corridor-wide medians hide meaningful project-to-project variation. If your search is coming up thin under the \"Dwarka Expressway\" label specifically, remember the corridor overlaps substantially with sectors also marketed as \"New Gurgaon\"; broadening your search across both labels in the same sector range will surface considerably more real inventory to compare, without meaningfully changing the underlying market you're actually shopping in.",
+        "Start with sector and possession status rather than builder name alone: sectors closer to NH-48 tend to have more mature infrastructure, while sectors further from it may still be catching up even if the expressway itself is complete. With 310 of 378 residential projects already ready to move; there's enough finished stock that buyers who want to avoid construction-timeline risk entirely have real options, not just a handful.\n\nOnce you've narrowed to a sector, compare projects on configuration mix, carpet area and amenities rather than headline price alone, corridor-wide medians hide meaningful project-to-project variation. If your search is coming up thin under the \"Dwarka Expressway\" label specifically, remember the corridor overlaps substantially with sectors also marketed as \"New Gurgaon\"; broadening your search across both labels in the same sector range will surface considerably more real inventory to compare, without meaningfully changing the underlying market you're actually shopping in.",
     },
     {
       id: "budget-and-configuration-mix",
@@ -195,22 +195,22 @@ export const bestProjectsOnDwarkaExpressway: BlogPostV27 = {
     { anchor: "See verified developers building in Gurgaon", url: "/developer" },
   ],
   faqs: [
-    { q: "How many live projects does HomzRealtor track on Dwarka Expressway?", a: "439 as of a September 2026 catalogue snapshot, 299 residential and 140 commercial, spread across 60 sectors. This makes it the single largest Gurgaon corridor tracked in our catalogue. The count changes as projects launch, sell out or are added, so treat it as a snapshot rather than a fixed figure that will hold indefinitely." },
+    { q: "How many live projects does HomzRealtor track on Dwarka Expressway?", a: "436 as of a September 2026 catalogue snapshot, 378 residential and 58 commercial, spread across 60 sectors. This makes it the single largest Gurgaon corridor tracked in our catalogue. The count changes as projects launch, sell out or are added, so treat it as a snapshot rather than a fixed figure that will hold indefinitely." },
     { q: "Which builders are most active on Dwarka Expressway?", a: "By live project count, Signature Global leads with 26 projects, followed by Vatika (19), M3M (14), and BPTP and SS Group (11 each). This spread across five well-established names reflects genuine competition among several developers rather than one dominant builder controlling the corridor's supply." },
-    { q: "Is most of Dwarka Expressway ready to move or still under construction?", a: "Mostly ready to move. 249 of the corridor's 299 residential projects are currently marked ready to move, with 40 under construction and 10 as new launches, based on HomzRealtor's live September 2026 catalogue. That's a notably mature possession-status mix for a corridor still associated with new development." },
-    { q: "What is the median property price on Dwarka Expressway?", a: "₹1.83 Cr across the corridor as of September 2026, making it one of Gurgaon's more affordable major corridors compared with established areas like Golf Course Road, which carries a ₹4.38 Cr median. Individual project pricing varies by sector and possession status, so treat this as a reference point, not a fixed budget." },
-    { q: "Is Dwarka Expressway the same as New Gurgaon?", a: "Mostly overlapping, not identical. \"New Gurgaon\" generally refers to Sectors 81-115, and most live listings in that sector range, 351 of 560, are actually marketed under the Dwarka Expressway name instead. Only 209 listings carry the New Gurgaon label distinctly, so the two names largely describe the same growth corridor." },
+    { q: "Is most of Dwarka Expressway ready to move or still under construction?", a: "Mostly ready to move. 310 of the corridor's 378 residential projects are currently marked ready to move, with the remaining 68 under construction or newly launched, based on HomzRealtor's live September 2026 catalogue. That's a notably mature possession-status mix for a corridor still associated with new development." },
+    { q: "What is the median property price on Dwarka Expressway?", a: "₹1.37 Cr across the corridor as of September 2026, making it one of Gurgaon's more affordable major corridors compared with established areas like Golf Course Road, which carries a ₹3.43 Cr median. Individual project pricing varies by sector and possession status, so treat this as a reference point, not a fixed budget." },
+    { q: "Is Dwarka Expressway the same as New Gurgaon?", a: "Mostly overlapping, not identical. \"New Gurgaon\" generally refers to Sectors 81-115, and the overwhelming majority of live listings in that sector range are actually catalogued under the Dwarka Expressway name instead. Only 9 projects carry the New Gurgaon label distinctly, against 436 for Dwarka Expressway, so the two names largely describe the same growth corridor." },
     { q: "How do I check if a Dwarka Expressway project's RERA registration is genuine?", a: "Search the project name or registration number directly on the Haryana RERA (HARERA) portal at haryanarera.gov.in, which shows verified registration status, sanctioned layout approvals, quarterly construction progress reports and promoter information, the only source that reliably settles the question, regardless of how well-known the developer is." },
-    { q: "Which sectors on Dwarka Expressway have the most live projects?", a: "By live project count on HomzRealtor, Sector 102 leads with 26 listings, followed by Sector 37D (24), Sector 103 and Sector 92 (21 each), and Sector 89 (19). These five sectors account for a disproportionate share of the corridor's total 439 live projects as of September 2026." },
-    { q: "Are commercial projects also common on Dwarka Expressway?", a: "Yes, 140 of the corridor's 439 live projects are commercial, roughly a third of total inventory, reflecting a genuinely mixed-use development pattern along the expressway rather than a purely residential market. This mix is broadly similar to what HomzRealtor sees across most other major Gurgaon corridors." },
+    { q: "Which sectors on Dwarka Expressway have the most live projects?", a: "By live project count on HomzRealtor, Sector 102 leads with 26 listings, followed by Sector 37D (24), Sector 103 and Sector 92 (21 each), and Sector 89 (19). These five sectors account for a disproportionate share of the corridor's total 436 live projects as of September 2026." },
+    { q: "Are commercial projects also common on Dwarka Expressway?", a: "Yes, 58 of the corridor's 436 live projects are commercial, roughly one in eight, reflecting a residential-heavy but genuinely mixed-use development pattern along the expressway." },
   ],
   conclusion: {
     heading: "The short version",
     lead: "Dwarka Expressway carries Gurgaon's largest live project count, led by five established builders, with most residential stock already ready to move at a comparatively affordable median price.",
     checklist: [
-      "439 live projects, 60 sectors, ₹1.83 Cr median price.",
+      "436 live projects, 60 sectors, ₹1.37 Cr median price.",
       "Signature Global, Vatika, M3M, BPTP and SS Group lead by project count.",
-      "249 of 299 residential projects are ready to move today.",
+      "310 of 378 residential projects are ready to move today.",
       "Always verify RERA status on the HARERA portal before booking.",
     ],
     closer: "Corridor-wide numbers are a starting point, check the specific sector and project before shortlisting.",

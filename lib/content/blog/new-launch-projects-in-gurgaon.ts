@@ -29,7 +29,7 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Gurgaon", "New Launch", "Dwarka Expressway", "New Gurgaon"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
 
   },
@@ -39,7 +39,7 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -48,9 +48,9 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "This guide counts every residential project in HomzRealtor's live Gurgaon catalogue currently marked \"New Launch\", 58 out of 1,463, as of a 4 September 2026 snapshot, rather than describing the market in general terms.",
+      "This guide counts every residential project in HomzRealtor's live Gurgaon catalogue currently marked \"New Launch\", 79 out of 1,761, as of a 23 September 2026 snapshot, rather than describing the market in general terms.",
     productDataHook: {
-      propertyCount: 58,
+      propertyCount: 79,
       localityCount: 6,
       dateRange: "Live catalogue snapshot, September 2026",
       topLocalitiesReferenced: ["Dwarka Expressway", "New Gurgaon", "Golf Course Extension Road"],
@@ -68,11 +68,11 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "New Launch Projects in Gurgaon: What's Live Now (2026)",
@@ -92,42 +92,42 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
   quickAnswer: {
     question: "Where are the new launch projects in Gurgaon right now?",
     answer:
-      "HomzRealtor's live catalogue shows only 58 residential new-launch projects across all of Gurgaon as of September 2026, a small slice of the 1,463 total residential listings. Dwarka Expressway (10) and New Gurgaon (8) carry the most, with the rest spread thinly across other corridors and secondary pockets.",
+      "HomzRealtor's live catalogue shows only 79 residential new-launch projects across all of Gurgaon as of September 2026, a small slice of the 1,761 total residential listings. Dwarka Expressway (18) carries the most among named corridors, though the single largest slice (47) doesn't carry any of the six major corridor names in its listing text; New Gurgaon's own count has fallen to just 3 following a corridor-labelling correction.",
   },
   introduction:
-    "\"New launch\" gets used loosely in Gurgaon real estate marketing, so it's worth being precise: on HomzRealtor's live catalogue, only 58 of 1,463 residential projects are actually flagged new launch today, against 1,190 that are ready to move and 191 under construction. That's a genuinely small, concentrated segment, not the flood of fresh inventory some listings pages imply. This guide shows exactly where that 58-project pool sits by corridor, what new-launch pricing and payment structures typically mean for a buyer, and the specific risks worth checking before booking into a project that hasn't broken ground yet, using real counts rather than general market commentary.",
+    "\"New launch\" gets used loosely in Gurgaon real estate marketing, so it's worth being precise: on HomzRealtor's live catalogue, only 79 of 1,761 residential projects are actually flagged new launch today, against 1,438 that are ready to move and 220 under construction. That's a genuinely small, concentrated segment, not the flood of fresh inventory some listings pages imply. This guide shows exactly where that 79-project pool sits by corridor, what new-launch pricing and payment structures typically mean for a buyer, and the specific risks worth checking before booking into a project that hasn't broken ground yet, using real counts rather than general market commentary.",
   sections: [
     {
       id: "why-new-launches-carry-more-risk",
       h2: "Why Do New Launches Carry More Risk Than Ready Stock?",
       contentMarkdown:
-        "A new-launch project is sold against a disclosed RERA timeline rather than a finished, walkable building. The upside is real, new-launch pricing typically undercuts nearby ready-to-move stock, and payment plans are usually staged rather than front-loaded, but so is the downside: possession dates slip, and the only protection a buyer has is the project's own RERA registration and disclosed construction milestones. Gurgaon's current catalogue reflects that trade-off directly: new launches are a small 4% of residential listings, while ready-to-move stock (which carries none of that timeline risk) makes up 81%.\n\nThat imbalance is itself useful information. A market this heavily weighted toward completed inventory isn't short of supply; it's mature. Developers here aren't launching purely to capture demand that has nowhere else to go; they're launching selectively, into corridors where land is still available and infrastructure is still catching up. That's worth keeping in mind before assuming a new launch is automatically the \"smart early buy\", in an established corridor with almost no new launches left, like Golf Course Road, the absence of new supply is a sign of scarcity, not a gap you're getting in ahead of.",
+        "A new-launch project is sold against a disclosed RERA timeline rather than a finished, walkable building. The upside is real, new-launch pricing typically undercuts nearby ready-to-move stock, and payment plans are usually staged rather than front-loaded, but so is the downside: possession dates slip, and the only protection a buyer has is the project's own RERA registration and disclosed construction milestones. Gurgaon's current catalogue reflects that trade-off directly: new launches are a small 4% of residential listings, while ready-to-move stock (which carries none of that timeline risk) makes up 82%.\n\nThat imbalance is itself useful information. A market this heavily weighted toward completed inventory isn't short of supply; it's mature. Developers here aren't launching purely to capture demand that has nowhere else to go; they're launching selectively, into corridors where land is still available and infrastructure is still catching up. That's worth keeping in mind before assuming a new launch is automatically the \"smart early buy\", in an established corridor with almost no new launches left, like Golf Course Road, the absence of new supply is a sign of scarcity, not a gap you're getting in ahead of.",
     },
     {
       id: "where-new-launch-projects-are",
       h2: "Where Are the New Launch Projects in Gurgaon Right Now?",
       contentMarkdown:
-        "Of the 58 live new-launch residential projects on HomzRealtor, most sit in two corridors: Dwarka Expressway and New Gurgaon. That's consistent with where the city's active construction and land availability actually is, the established corridors like Golf Course Road have almost none. If you're specifically shopping for new-launch inventory rather than being open to any possession status, these two corridors are effectively where the search starts and ends for most of the available pool.",
+        "Of the 79 live new-launch residential projects on HomzRealtor, the single largest named-corridor concentration is Dwarka Expressway, though a larger slice still doesn't carry any of the six major corridor names at all. That's consistent with where the city's active construction and land availability actually is, the established corridors like Golf Course Road have almost none. If you're specifically shopping for new-launch inventory rather than being open to any possession status, Dwarka Expressway and a wide scatter of smaller, unbranded pockets are effectively where the search starts and ends for most of the available pool.",
       subsections: [
         {
-          h3: "Dwarka Expressway: 10 New Launches",
+          h3: "Dwarka Expressway: 18 New Launches",
           contentMarkdown:
-            "The single largest concentration of new-launch stock, out of 439 total live projects in the corridor. With NH-248BB now fully operational, this remains the corridor developers are most actively launching into.",
+            "The single largest named-corridor concentration of new-launch stock, out of 436 total live projects in the corridor. With NH-248BB now fully operational, this remains the corridor developers are most actively launching into.",
         },
         {
-          h3: "New Gurgaon: 8 New Launches",
+          h3: "New Gurgaon: 3 New Launches",
           contentMarkdown:
-            "Out of 209 distinct New Gurgaon listings (Sectors 81-115, excluding those already labelled Dwarka Expressway), 8 are new launches, a meaningful share given the corridor's smaller overall base.",
+            "Out of just 9 distinct New Gurgaon listings that carry no other corridor label today, down sharply from the 209 this catalogue showed as recently as early September, 3 are new launches. That collapse reflects a corridor-labelling correction, not a wave of delistings, see our dedicated New Gurgaon investment guide for the full explanation.",
         },
         {
           h3: "Golf Course Extension Road: 4 New Launches",
           contentMarkdown:
-            "A modest but real number out of 251 total live projects, this corridor is mostly built out, so 4 new launches represents genuine remaining land availability rather than a wave of activity.",
+            "A modest but real number out of 248 total live projects, this corridor is mostly built out, so 4 new launches represents genuine remaining land availability rather than a wave of activity.",
         },
         {
-          h3: "Elsewhere in Gurgaon: 36 New Launches",
+          h3: "Elsewhere in Gurgaon: 54 New Launches",
           contentMarkdown:
-            "The remaining 36 new-launch projects (Southern Peripheral Road: 2, Sohna Road: 2, Golf Course Road: 2, and 30 that don't carry any of the six major corridor names in their listing text) are spread across smaller or less heavily branded pockets of the city. Don't assume a project without a recognisable corridor name is lower quality, check the specific sector and RERA registration instead. That 30-project \"unmatched\" group is itself a useful reminder that a lot of real activity in Gurgaon happens outside the handful of corridor names that dominate marketing copy.",
+            "The remaining 54 new-launch projects (Southern Peripheral Road: 3, Sohna Road: 2, Golf Course Road: 2, and 47 that don't carry any of the six major corridor names in their listing text) are spread across smaller or less heavily branded pockets of the city. Don't assume a project without a recognisable corridor name is lower quality, check the specific sector and RERA registration instead. That 47-project \"unmatched\" group, now the largest single bucket in this breakdown, is itself a useful reminder that a lot of real activity in Gurgaon happens outside the handful of corridor names that dominate marketing copy.",
         },
       ],
     },
@@ -135,13 +135,13 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
       id: "how-many-new-launches-does-gurgaon-have",
       h2: "How Big Is Gurgaon's New-Launch Segment, Really?",
       contentMarkdown:
-        "58 out of 1,463 residential projects, about 4% of live inventory. For comparison, 1,190 (81%) are ready to move and 191 (13%) are under construction. That split says something useful about Gurgaon as a market: it's a mature, largely built-out city rather than one dominated by fresh launches, and the corridors still adding meaningful new supply (Dwarka Expressway, New Gurgaon) are exactly the ones with room left to build.\n\nCompare that to a genuinely early-stage market, where new launches might make up a third or more of active listings, Gurgaon isn't that. What this means practically is that a \"new launch\" here is a specific, deliberate choice among many possession-status options, not the default way most buyers are entering the market. Most transactions are still happening on completed or near-complete stock.\n\nThat also means new-launch inventory tends to move quickly once it does appear, a small, concentrated pool of buyers specifically seeking early-stage pricing in a limited number of eligible projects creates real competition for the available units, more so than in a market flooded with fresh supply.",
+        "79 out of 1,761 residential projects, about 4% of live inventory. For comparison, 1,438 (82%) are ready to move and 220 (12%) are under construction. That split says something useful about Gurgaon as a market: it's a mature, largely built-out city rather than one dominated by fresh launches, and the corridors still adding meaningful new supply (Dwarka Expressway, New Gurgaon) are exactly the ones with room left to build.\n\nCompare that to a genuinely early-stage market, where new launches might make up a third or more of active listings, Gurgaon isn't that. What this means practically is that a \"new launch\" here is a specific, deliberate choice among many possession-status options, not the default way most buyers are entering the market. Most transactions are still happening on completed or near-complete stock.\n\nThat also means new-launch inventory tends to move quickly once it does appear, a small, concentrated pool of buyers specifically seeking early-stage pricing in a limited number of eligible projects creates real competition for the available units, more so than in a market flooded with fresh supply.",
     },
     {
       id: "what-new-launch-pricing-means",
       h2: "What Does New-Launch Pricing Actually Mean for Your Budget?",
       contentMarkdown:
-        "New-launch units are typically priced below what a comparable ready-to-move unit in the same corridor commands, and payment plans are usually staged against construction milestones rather than paid upfront. On Dwarka Expressway, where most new launches sit, the corridor's overall median price is around ₹1.83 Cr, new-launch units specifically tend to price at or below that median, since builders price early-stage inventory to move. Treat any number quoted to you as project-specific, not corridor-wide, and always ask for the payment schedule in writing before booking.\n\nThe discount versus ready stock isn't free money, either; it's compensation for the risk you're taking on. A construction-linked plan typically ties 10-20% to booking, further tranches to slab and structure milestones, and the balance to possession, so your actual cash outflow is spread over the build period rather than concentrated upfront the way a ready-to-move purchase usually is.\n\nOne cost that's easy to miss: GST applies to the unbilled (under-construction) portion of a new-launch purchase, unlike a possession-ready unit, which is typically exempt. Factor that difference into your real budget comparison rather than looking at the headline per-square-foot rate alone, it can meaningfully narrow the apparent savings versus buying ready-to-move.",
+        "New-launch units are typically priced below what a comparable ready-to-move unit in the same corridor commands, and payment plans are usually staged against construction milestones rather than paid upfront. On Dwarka Expressway, where most named-corridor new launches sit, the corridor's overall median price is around ₹1.37 Cr, new-launch units specifically tend to price at or below that median, since builders price early-stage inventory to move. Treat any number quoted to you as project-specific, not corridor-wide, and always ask for the payment schedule in writing before booking.\n\nThe discount versus ready stock isn't free money, either; it's compensation for the risk you're taking on. A construction-linked plan typically ties 10-20% to booking, further tranches to slab and structure milestones, and the balance to possession, so your actual cash outflow is spread over the build period rather than concentrated upfront the way a ready-to-move purchase usually is.\n\nOne cost that's easy to miss: GST applies to the unbilled (under-construction) portion of a new-launch purchase, unlike a possession-ready unit, which is typically exempt. Factor that difference into your real budget comparison rather than looking at the headline per-square-foot rate alone, it can meaningfully narrow the apparent savings versus buying ready-to-move.",
     },
     {
       id: "risks-to-check-before-booking",
@@ -161,20 +161,20 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
       id: "new-launch-vs-established-corridors",
       h2: "New Launch on a Growth Corridor vs an Established One?",
       contentMarkdown:
-        "The 58 new launches on HomzRealtor split into two very different kinds of bets. On Dwarka Expressway and in New Gurgaon, new launches are riding an active infrastructure story, NH-248BB's completion, ongoing sector development, and a corridor still filling in its social infrastructure. That's genuine upside potential, but it comes with genuine construction and connectivity risk that hasn't fully resolved yet.\n\nThe handful of new launches on established corridors like Golf Course Road (just 2) or Golf Course Extension Road (4) tell a different story: these are almost certainly small infill projects on the last available parcels in an already-mature, already-serviced corridor. The risk profile there is lower, the surrounding infrastructure is proven, but so is the growth upside, since the corridor's value has largely already been priced in by the market. Neither approach is wrong; they're different trades between certainty and appreciation potential.",
+        "The 79 new launches on HomzRealtor split into two very different kinds of bets. On Dwarka Expressway and in New Gurgaon, new launches are riding an active infrastructure story, NH-248BB's completion, ongoing sector development, and a corridor still filling in its social infrastructure. That's genuine upside potential, but it comes with genuine construction and connectivity risk that hasn't fully resolved yet.\n\nThe handful of new launches on established corridors like Golf Course Road (just 2) or Golf Course Extension Road (4) tell a different story: these are almost certainly small infill projects on the last available parcels in an already-mature, already-serviced corridor. The risk profile there is lower, the surrounding infrastructure is proven, but so is the growth upside, since the corridor's value has largely already been priced in by the market. Neither approach is wrong; they're different trades between certainty and appreciation potential.",
       media: [
         {
           type: "diagram",
           diagramKind: "bar_chart",
-          alt: "Bar chart showing the number of new-launch residential projects by Gurgaon corridor, led by Dwarka Expressway and New Gurgaon",
+          alt: "Bar chart showing the number of new-launch residential projects by Gurgaon corridor, led by Dwarka Expressway",
           caption: "New-launch residential projects by corridor (HomzRealtor live catalogue, September 2026)",
           data: {
             unit: "count",
             bars: [
-              { label: "Dwarka Expressway", value: 10 },
-              { label: "New Gurgaon", value: 8 },
+              { label: "Dwarka Expressway", value: 18 },
               { label: "Golf Course Extension Road", value: 4 },
-              { label: "Southern Peripheral Road", value: 2 },
+              { label: "Southern Peripheral Road", value: 3 },
+              { label: "New Gurgaon", value: 3 },
               { label: "Sohna Road", value: 2 },
               { label: "Golf Course Road", value: 2 },
             ],
@@ -205,7 +205,7 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
   faqs: [
     {
       q: "How many new launch projects does Gurgaon have right now?",
-      a: "58 residential projects are currently marked \"New Launch\" in HomzRealtor's live Gurgaon catalogue, out of 1,463 total residential listings, about 4%. Most sit on Dwarka Expressway (10) and in New Gurgaon (8), with the rest spread across other corridors.",
+      a: "79 residential projects are currently marked \"New Launch\" in HomzRealtor's live Gurgaon catalogue, out of 1,761 total residential listings, about 4%. Dwarka Expressway (18) leads among named corridors, with New Gurgaon down to just 3 and the largest remaining slice (47) not carrying a major corridor name at all.",
     },
     {
       q: "Is it safe to buy a new launch project in Gurgaon?",
@@ -213,11 +213,11 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
     },
     {
       q: "Which Gurgaon corridor has the most new launch activity?",
-      a: "Dwarka Expressway, with 10 of the city's 58 live new-launch residential projects, consistent with it being the corridor with the most active construction and remaining developable land following NH-248BB's completion.",
+      a: "Dwarka Expressway, with 18 of the city's 79 live new-launch residential projects, consistent with it being the corridor with the most active construction and remaining developable land following NH-248BB's completion.",
     },
     {
       q: "Are new launch prices lower than ready-to-move flats in Gurgaon?",
-      a: "Generally yes, new-launch pricing typically sits at or below the corridor's overall median as an incentive for buyers to take on construction-timeline risk. On Dwarka Expressway, where most launches are concentrated, the corridor median is around ₹1.83 Cr.",
+      a: "Generally yes, new-launch pricing typically sits at or below the corridor's overall median as an incentive for buyers to take on construction-timeline risk. On Dwarka Expressway, where most named-corridor launches are concentrated, the corridor median is around ₹1.37 Cr.",
     },
     {
       q: "What payment plans are common for new launch projects?",
@@ -229,19 +229,19 @@ export const newLaunchProjectsInGurgaon: BlogPostV27 = {
     },
     {
       q: "Is Gurgaon still launching new projects, or is the market built out?",
-      a: "Both, depending on corridor. Established areas like Golf Course Road have almost no new launches left (2 of 103 total live projects), while growth corridors like Dwarka Expressway and New Gurgaon still have meaningful new supply coming.",
+      a: "Both, depending on corridor. Established areas like Golf Course Road have almost no new launches left (2 of 102 total live projects), while growth corridors like Dwarka Expressway still have meaningful new supply coming, though New Gurgaon's own distinct count has shrunk sharply.",
     },
     {
       q: "Should I wait for a new launch or buy ready-to-move instead?",
-      a: "It depends on your timeline and risk tolerance. New launches typically cost less but carry construction risk; ready-to-move stock (81% of Gurgaon's residential catalogue) costs more but removes that uncertainty entirely. There's no universally \"better\" choice; it's a trade-off you're making deliberately either way.",
+      a: "It depends on your timeline and risk tolerance. New launches typically cost less but carry construction risk; ready-to-move stock (82% of Gurgaon's residential catalogue) costs more but removes that uncertainty entirely. There's no universally \"better\" choice; it's a trade-off you're making deliberately either way.",
     },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Gurgaon's new-launch segment is small, 58 of 1,463 residential projects, and concentrated on Dwarka Expressway and in New Gurgaon.",
+    lead: "Gurgaon's new-launch segment is small, 79 of 1,761 residential projects, and led by Dwarka Expressway, with the rest scattered thinly across other corridors.",
     checklist: [
       "Only ~4% of Gurgaon's residential catalogue is genuinely new launch today.",
-      "Dwarka Expressway (10) and New Gurgaon (8) carry the most new-launch activity.",
+      "Dwarka Expressway (18) carries the most among named corridors; New Gurgaon has fallen to just 3.",
       "New-launch pricing trades a lower entry cost for real construction-timeline risk.",
       "Always verify RERA registration on the HARERA portal before booking.",
     ],

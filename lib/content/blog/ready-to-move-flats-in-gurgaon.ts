@@ -21,7 +21,7 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
     title: "Ready to Move Flats in Gurgaon: Where They Actually Are",
     h1: "Ready to Move Flats in Gurgaon (2026)",
     metaDescription:
-      "81% of Gurgaon's residential catalogue is ready to move. See exactly which corridors carry the most, with real prices and no construction-timeline risk.",
+      "82% of Gurgaon's residential catalogue is ready to move. See exactly which corridors carry the most, with real prices and no construction-timeline risk.",
     standfirst:
       "Most of Gurgaon's residential inventory is already built: here's where the ready-to-move stock actually sits, and what it costs.",
     primaryKeyword: "ready to move flats in Gurgaon",
@@ -29,7 +29,7 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Gurgaon", "Ready to Move", "Possession", "Golf Course Road"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -38,7 +38,7 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -47,9 +47,9 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "This guide is built from HomzRealtor's live catalogue: 1,190 of the 1,463 residential projects tracked in Gurgaon, 81%, are currently marked Ready to Move, as of a 4 September 2026 snapshot.",
+      "This guide is built from HomzRealtor's live catalogue: 1,438 of the 1,761 residential projects tracked in Gurgaon, 82%, are currently marked Ready to Move, as of a 23 September 2026 snapshot.",
     productDataHook: {
-      propertyCount: 1190,
+      propertyCount: 1438,
       localityCount: 6,
       dateRange: "Live catalogue snapshot, September 2026",
       topLocalitiesReferenced: ["Dwarka Expressway", "Golf Course Extension Road", "New Gurgaon", "Golf Course Road"],
@@ -67,11 +67,11 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Ready to Move Flats in Gurgaon: Where They Actually Are",
@@ -91,10 +91,10 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
   quickAnswer: {
     question: "Where can I find ready to move flats in Gurgaon?",
     answer:
-      "1,190 of HomzRealtor's 1,463 tracked residential projects in Gurgaon, 81%, are ready to move today. Dwarka Expressway (249) and Golf Course Extension Road (150) carry the largest ready-to-move pools, while established Golf Course Road, though pricier, is almost entirely built out and move-in ready.",
+      "1,438 of HomzRealtor's 1,761 tracked residential projects in Gurgaon, 82%, are ready to move today. Dwarka Expressway (310) and Golf Course Extension Road (184) carry the largest ready-to-move pools, while established Golf Course Road, though pricier, is almost entirely built out and move-in ready.",
   },
   introduction:
-    "If avoiding construction-timeline risk matters more to you than shaving a few lakh off the price, Gurgaon has a lot to choose from: 1,190 of the 1,463 residential projects in HomzRealtor's live catalogue, 81%, are already marked ready to move, versus just 191 under construction and 58 new launches. That's a mature, largely finished market, not one where you're mostly betting on a developer's timeline. This guide breaks down exactly where that ready-to-move stock sits by corridor, what it costs, how financing and taxes differ from an under-construction purchase, and how to actually verify a listing is genuinely move-in ready before you visit, using HomzRealtor's own live catalogue rather than general commentary about the city.",
+    "If avoiding construction-timeline risk matters more to you than shaving a few lakh off the price, Gurgaon has a lot to choose from: 1,438 of the 1,761 residential projects in HomzRealtor's live catalogue, 82%, are already marked ready to move, versus just 220 under construction and 79 new launches. That's a mature, largely finished market, not one where you're mostly betting on a developer's timeline. This guide breaks down exactly where that ready-to-move stock sits by corridor, what it costs, how financing and taxes differ from an under-construction purchase, and how to actually verify a listing is genuinely move-in ready before you visit, using HomzRealtor's own live catalogue rather than general commentary about the city.",
   sections: [
     {
       id: "why-ready-to-move-matters",
@@ -109,24 +109,24 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
         "Ready-to-move inventory isn't evenly spread, it concentrates in corridors that have been active longest, since it takes years for a project to move from launch to completed handover. Here's the real breakdown across HomzRealtor's live catalogue, corridor by corridor, so you can see exactly where the largest pools of move-in-ready stock actually sit before you start shortlisting.",
       subsections: [
         {
-          h3: "Dwarka Expressway: 249 Ready to Move Flats",
+          h3: "Dwarka Expressway: 310 Ready to Move Flats",
           contentMarkdown:
-            "The single largest pool of ready-to-move stock in the city, out of 439 total live projects in the corridor, despite being a growth corridor, a meaningful share of Dwarka Expressway's early-phase projects have already completed construction.",
+            "The single largest pool of ready-to-move stock in the city, out of 378 total residential live projects in the corridor (82%), despite being a growth corridor, a meaningful share of Dwarka Expressway's early-phase projects have already completed construction.",
         },
         {
-          h3: "Golf Course Extension Road: 150 Ready to Move Flats",
+          h3: "Golf Course Extension Road: 184 Ready to Move Flats",
           contentMarkdown:
-            "Out of 251 total live projects, 150 are ready to move, the corridor's maturity shows here, with the majority of its residential base already built and handed over.",
+            "Out of 210 total residential live projects, 184 are ready to move (88%), the corridor's maturity shows here, with the majority of its residential base already built and handed over.",
         },
         {
-          h3: "New Gurgaon: 96 Ready to Move Flats",
+          h3: "New Gurgaon: 3 Ready to Move Flats",
           contentMarkdown:
-            "96 of the 141 residential listings in the distinct New Gurgaon bucket (Sectors 81-115, excluding overlap with Dwarka Expressway) are already move-in ready, a solid share for a still-developing corridor.",
+            "Only 3 of the 6 residential listings in the distinct New Gurgaon bucket (Sectors 81-115, excluding overlap with Dwarka Expressway) are already move-in ready, a 50% share, but from a tiny base, this specific listing set collapsed from 209 distinct listings to just 9 (6 residential) following a corridor-labelling correction, so treat this as directional rather than a reliable read on the wider sector range.",
         },
         {
-          h3: "Golf Course Road: 56 Ready to Move Flats",
+          h3: "Golf Course Road: 83 Ready to Move Flats",
           contentMarkdown:
-            "A smaller absolute number, but out of only 65 total residential listings in the corridor, 56 ready to move (86%) is the highest ready-to-move share of any corridor in this guide, consistent with Golf Course Road being Gurgaon's most built-out, established address.",
+            "A smaller absolute number, but out of only 92 total residential listings in the corridor, 83 ready to move (90%) is the highest ready-to-move share of any corridor in this guide, consistent with Golf Course Road being Gurgaon's most built-out, established address.",
         },
       ],
     },
@@ -134,19 +134,19 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
       id: "price-of-ready-to-move-stock",
       h2: "How Much Does a Ready to Move Flat in Gurgaon Cost?",
       contentMarkdown:
-        "Ready-to-move pricing tracks each corridor's overall median closely, since it's the dominant possession status in most corridors. Expect roughly ₹1.83 Cr on Dwarka Expressway, ₹1.92 Cr in New Gurgaon, ₹2.92 Cr on Golf Course Extension Road, and ₹4.38 Cr on Golf Course Road, the same corridor price hierarchy that holds across Gurgaon generally, since ready-to-move stock is the majority of listings almost everywhere.\n\nBecause ready-to-move stock dominates the sample in most corridors, these corridor medians are, practically speaking, ready-to-move prices, they aren't being pulled down by a large pool of cheaper pre-launch stock the way a corridor with heavier new-launch activity might be. That makes the numbers a reasonably direct guide to what you'll actually pay for a finished unit today.",
+        "Ready-to-move pricing tracks each corridor's overall median closely, since it's the dominant possession status in most corridors. Expect roughly ₹1.37 Cr on Dwarka Expressway, ₹1.95 Cr in New Gurgaon, ₹2.42 Cr on Golf Course Extension Road, and ₹3.43 Cr on Golf Course Road, the same corridor price hierarchy that holds across Gurgaon generally, since ready-to-move stock is the majority of listings almost everywhere.\n\nBecause ready-to-move stock dominates the sample in most corridors, these corridor medians are, practically speaking, ready-to-move prices, they aren't being pulled down by a large pool of cheaper pre-launch stock the way a corridor with heavier new-launch activity might be. That makes the numbers a reasonably direct guide to what you'll actually pay for a finished unit today.",
       media: [
         {
           type: "table",
           caption: "Ready-to-move residential listings by corridor (HomzRealtor live catalogue, September 2026)",
           headers: ["Corridor", "Ready to Move Count", "Corridor Median Price"],
           rows: [
-            ["Dwarka Expressway", "249", "₹1.83 Cr"],
-            ["Golf Course Extension Road", "150", "₹2.92 Cr"],
-            ["New Gurgaon", "96", "₹1.92 Cr"],
-            ["Golf Course Road", "56", "₹4.38 Cr"],
-            ["Southern Peripheral Road", "53", "₹2.34 Cr"],
-            ["Sohna Road", "39", "₹2.11 Cr"],
+            ["Dwarka Expressway", "310", "₹1.37 Cr"],
+            ["Golf Course Extension Road", "184", "₹2.42 Cr"],
+            ["Golf Course Road", "83", "₹3.43 Cr"],
+            ["Southern Peripheral Road", "65", "₹1.79 Cr"],
+            ["Sohna Road", "51", "₹1.58 Cr"],
+            ["New Gurgaon", "3", "₹1.95 Cr"],
           ],
         },
       ],
@@ -177,18 +177,18 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
           data: {
             unit: "count",
             bars: [
-              { label: "Dwarka Expressway", value: 249 },
-              { label: "Golf Course Extension Road", value: 150 },
-              { label: "New Gurgaon", value: 96 },
-              { label: "Golf Course Road", value: 56 },
-              { label: "Southern Peripheral Road", value: 53 },
-              { label: "Sohna Road", value: 39 },
+              { label: "Dwarka Expressway", value: 310 },
+              { label: "Golf Course Extension Road", value: 184 },
+              { label: "Golf Course Road", value: 83 },
+              { label: "Southern Peripheral Road", value: 65 },
+              { label: "Sohna Road", value: 51 },
+              { label: "New Gurgaon", value: 3 },
             ],
           },
         },
       ],
       contentMarkdown:
-        "Not automatically, it depends on what you're optimising for. Ready-to-move stock costs more per square foot on average but removes timeline risk entirely; under-construction stock (191 residential listings citywide) can offer meaningfully lower entry pricing if you're comfortable waiting and have verified the developer's track record. Neither is objectively \"better\", match the choice to your own timeline and risk tolerance rather than defaulting to one.\n\nA useful middle ground worth knowing about: late-stage under-construction projects, close to their disclosed possession date with visible structural progress, often capture much of ready-to-move's certainty at a price still below the fully finished premium. Ask for the current RERA quarterly progress report before assuming \"under construction\" automatically means years away.\n\nThe right answer also depends on how you value your own time and stress tolerance during the buying process itself, a ready-to-move purchase is typically a shorter, simpler transaction end-to-end, while an under-construction purchase means ongoing monitoring of construction progress, periodic site visits, and staying on top of a multi-year payment schedule. That process overhead is a real cost, even if it doesn't show up as a line item anywhere.",
+        "Not automatically, it depends on what you're optimising for. Ready-to-move stock costs more per square foot on average but removes timeline risk entirely; under-construction stock (220 residential listings citywide) can offer meaningfully lower entry pricing if you're comfortable waiting and have verified the developer's track record. Neither is objectively \"better\", match the choice to your own timeline and risk tolerance rather than defaulting to one.\n\nA useful middle ground worth knowing about: late-stage under-construction projects, close to their disclosed possession date with visible structural progress, often capture much of ready-to-move's certainty at a price still below the fully finished premium. Ask for the current RERA quarterly progress report before assuming \"under construction\" automatically means years away.\n\nThe right answer also depends on how you value your own time and stress tolerance during the buying process itself, a ready-to-move purchase is typically a shorter, simpler transaction end-to-end, while an under-construction purchase means ongoing monitoring of construction progress, periodic site visits, and staying on top of a multi-year payment schedule. That process overhead is a real cost, even if it doesn't show up as a line item anywhere.",
     },
     {
       id: "resale-vs-builder-ready-to-move",
@@ -225,11 +225,11 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
   faqs: [
     {
       q: "How many ready to move flats are there in Gurgaon?",
-      a: "1,190 residential projects in HomzRealtor's live Gurgaon catalogue are marked Ready to Move, 81% of the 1,463 total residential listings, as of a September 2026 snapshot. Dwarka Expressway and Golf Course Extension Road carry the largest pools.",
+      a: "1,438 residential projects in HomzRealtor's live Gurgaon catalogue are marked Ready to Move, 82% of the 1,761 total residential listings, as of a September 2026 snapshot. Dwarka Expressway and Golf Course Extension Road carry the largest pools.",
     },
     {
       q: "Which Gurgaon corridor has the highest share of ready-to-move stock?",
-      a: "Golf Course Road, where 56 of 65 residential listings (86%) are ready to move, the highest proportion of any corridor in this guide, reflecting how built-out and established the area already is, with almost no new construction left to wait out before you can move in.",
+      a: "Golf Course Road, where 83 of 92 residential listings (90%) are ready to move, the highest proportion of any corridor in this guide, reflecting how built-out and established the area already is, with almost no new construction left to wait out before you can move in.",
     },
     {
       q: "Are ready to move flats more expensive than under-construction ones?",
@@ -241,7 +241,7 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
     },
     {
       q: "Is Dwarka Expressway a good option for a ready-to-move flat?",
-      a: "Yes, it has the largest ready-to-move pool in the city (249 listings) at a comparatively affordable ₹1.83 Cr corridor median, combining immediate possession with growth-corridor pricing that established areas like Golf Course Road no longer offer at anywhere near the same price point.",
+      a: "Yes, it has the largest ready-to-move pool in the city (310 listings) at a comparatively affordable ₹1.37 Cr corridor median, combining immediate possession with growth-corridor pricing that established areas like Golf Course Road no longer offer at anywhere near the same price point.",
     },
     {
       q: "Can I get a ready to move flat in Gurgaon under ₹1 Crore?",
@@ -253,16 +253,16 @@ export const readyToMoveFlatsInGurgaon: BlogPostV27 = {
     },
     {
       q: "Why do some corridors have almost no ready-to-move flats?",
-      a: "Newer or smaller corridors like Sohna Road (39 ready-to-move out of 42 total, in this case actually high-share) or growth-stage pockets still under active development naturally carry a lower absolute count simply because their total live inventory is smaller.",
+      a: "Newer or smaller corridors like Sohna Road (51 ready-to-move out of 54 total residential listings, in this case actually high-share) or growth-stage pockets still under active development naturally carry a lower absolute count simply because their total live inventory is smaller.",
     },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "81% of Gurgaon's residential catalogue is ready to move, concentrated on Dwarka Expressway and Golf Course Extension Road.",
+    lead: "82% of Gurgaon's residential catalogue is ready to move, concentrated on Dwarka Expressway and Golf Course Extension Road.",
     checklist: [
-      "1,190 of 1,463 residential listings citywide are ready to move today.",
-      "Dwarka Expressway (249) and Golf Course Extension Road (150) lead on ready-to-move count.",
-      "Golf Course Road has the highest ready-to-move share (86%) of any corridor.",
+      "1,438 of 1,761 residential listings citywide are ready to move today.",
+      "Dwarka Expressway (310) and Golf Course Extension Road (184) lead on ready-to-move count.",
+      "Golf Course Road has the highest ready-to-move share (90%) of any corridor.",
       "Always confirm the Occupancy Certificate, not just the Completion Certificate.",
     ],
     closer: "Ready to move buys certainty, not just a finished building, verify the OC before you pay for it.",

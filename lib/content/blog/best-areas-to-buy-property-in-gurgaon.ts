@@ -40,7 +40,7 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Gurgaon", "Dwarka Expressway", "New Gurgaon", "Golf Course Road", "property investment"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 9,
   },
   author: {
@@ -49,7 +49,7 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue, cross-checked against HARERA and official infrastructure sources.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -58,18 +58,18 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every project count, sector figure and price range in this guide comes from HomzRealtor's own live catalogue of 2,098 Gurgaon projects, queried and snapshotted on 4 September 2026, not generic corridor descriptions.",
+      "Every project count, sector figure and price range in this guide comes from HomzRealtor's own live catalogue of 2,081 Gurgaon projects, queried and snapshotted on 23 September 2026, not generic corridor descriptions.",
     productDataHook: {
-      propertyCount: 2098,
-      localityCount: 133,
-      avgPropertyPriceInr: 21800000,
+      propertyCount: 2081,
+      localityCount: 131,
+      avgPropertyPriceInr: 17300000,
       priceByLocality: [
-        { locality: "Dwarka Expressway", avgPriceInr: 18300000 },
-        { locality: "New Gurgaon (Sectors 81-115, distinct from Dwarka Expressway)", avgPriceInr: 19200000 },
+        { locality: "Dwarka Expressway", avgPriceInr: 13650000 },
+        { locality: "New Gurgaon (Sectors 81-115, distinct from Dwarka Expressway)", avgPriceInr: 19450000 },
         { locality: "Sohna Road", avgPriceInr: 21100000 },
         { locality: "Southern Peripheral Road", avgPriceInr: 23400000 },
-        { locality: "Golf Course Extension Road", avgPriceInr: 29150000 },
-        { locality: "Golf Course Road", avgPriceInr: 43800000 },
+        { locality: "Golf Course Extension Road", avgPriceInr: 24200000 },
+        { locality: "Golf Course Road", avgPriceInr: 34300000 },
       ],
       topLocalitiesReferenced: ["Sector 56", "Sector 43", "Sector 65", "Sector 48", "Sector 33", "Sector 102"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -92,11 +92,11 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and independently links to official government sources; it does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Best Areas to Buy Property in Gurgaon (2026 Guide)",
@@ -117,16 +117,16 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
   quickAnswer: {
     question: "Where are the best areas to buy property in Gurgaon in 2026?",
     answer:
-      "Dwarka Expressway and New Gurgaon lead on inventory and growth potential; Golf Course Road and its Extension lead on price and prestige; Sohna Road and Southern Peripheral Road offer better value with solid connectivity. HomzRealtor's live catalogue shows real listings across all six corridors today, spanning roughly ₹1.8 Cr to ₹4.4 Cr in median price.",
+      "Dwarka Expressway and New Gurgaon lead on inventory and growth potential; Golf Course Road and its Extension lead on price and prestige; Sohna Road and Southern Peripheral Road offer better value with solid connectivity. HomzRealtor's live catalogue shows real listings across all six corridors today, spanning roughly ₹1.4 Cr to ₹3.4 Cr in median price.",
   },
   introduction:
-    "Buyers shortlisting property in Gurgaon usually end up choosing between the same handful of corridors, Dwarka Expressway, New Gurgaon, Golf Course Road, Golf Course Extension Road, Sohna Road and Southern Peripheral Road (SPR), and each one genuinely suits a different kind of buyer. Rather than describing these areas in the abstract, this guide is built directly from HomzRealtor's live catalogue of 2,098 Gurgaon projects: real project counts, real median prices and real possession-status splits per corridor, snapshotted in September 2026. If you're weighing where to buy, the honest answer depends on your budget, your timeline and whether you're buying to live in or to hold as an investment, this guide walks through each corridor on those terms, then compares them directly so you can shortlist with real numbers instead of sector reputation alone.",
+    "Buyers shortlisting property in Gurgaon usually end up choosing between the same handful of corridors, Dwarka Expressway, New Gurgaon, Golf Course Road, Golf Course Extension Road, Sohna Road and Southern Peripheral Road (SPR), and each one genuinely suits a different kind of buyer. Rather than describing these areas in the abstract, this guide is built directly from HomzRealtor's live catalogue of 2,081 Gurgaon projects: real project counts, real median prices and real possession-status splits per corridor, snapshotted in September 2026. If you're weighing where to buy, the honest answer depends on your budget, your timeline and whether you're buying to live in or to hold as an investment, this guide walks through each corridor on those terms, then compares them directly so you can shortlist with real numbers instead of sector reputation alone.",
   sections: [
     {
       id: "why-buy-property-in-gurgaon",
       h2: "Why Is Gurgaon Such a Strong Real Estate Market?",
       contentMarkdown:
-        "Gurgaon's demand is driven by employment, not just speculation. Cyber City, Udyog Vihar and the Golf Course Road corporate belt hold one of North India's densest concentrations of MNC, IT and consulting offices, which keeps end-user demand for nearby housing consistently high. NH-48 connects the city directly to Delhi and IGI Airport, and the Dwarka Expressway (NH-248BB), fully operational since June 2025, complete with a 3.6 km shallow tunnel near the airport and an elevated stretch through several sectors, has opened up an entire new growth corridor along the city's western edge. The Union Cabinet has since approved a further 8.1 km extension connecting the expressway to Vasant Kunj in Delhi, which points to continued infrastructure investment in the corridor rather than a one-off completion.\n\nThat combination of jobs, connectivity and active new supply is why HomzRealtor's own catalogue currently tracks 2,098 residential and commercial projects live across the city, spread across 133 distinct sectors, genuine market depth, not a handful of headline projects. Roughly 70% of that catalogue is residential (1,463 projects) and 30% commercial (635 projects), reflecting a city that's still building out both housing and workplace supply at the same time, rather than one that's purely residential or purely commercial.",
+        "Gurgaon's demand is driven by employment, not just speculation. Cyber City, Udyog Vihar and the Golf Course Road corporate belt hold one of North India's densest concentrations of MNC, IT and consulting offices, which keeps end-user demand for nearby housing consistently high. NH-48 connects the city directly to Delhi and IGI Airport, and the Dwarka Expressway (NH-248BB), fully operational since June 2025, complete with a 3.6 km shallow tunnel near the airport and an elevated stretch through several sectors, has opened up an entire new growth corridor along the city's western edge. The Union Cabinet has since approved a further 8.1 km extension connecting the expressway to Vasant Kunj in Delhi, which points to continued infrastructure investment in the corridor rather than a one-off completion.\n\nThat combination of jobs, connectivity and active new supply is why HomzRealtor's own catalogue currently tracks 2,081 residential and commercial projects live across the city, spread across 131 distinct sectors, genuine market depth, not a handful of headline projects. Roughly 85% of that catalogue is residential (1,761 projects) and 15% commercial (320 projects), reflecting a city whose housing supply now dwarfs its commercial pipeline, a wider gap than the roughly 70/30 split this catalogue showed as recently as early September, as reclassification of misfiled records and deduplication corrected the category split.",
     },
     {
       id: "best-growth-corridors",
@@ -137,22 +137,22 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
         {
           h3: "Dwarka Expressway: Best for Growth and Infrastructure",
           contentMarkdown:
-            "439 projects are currently live on HomzRealtor along Dwarka Expressway (299 residential, 140 commercial) across 60 distinct sectors, with a median listed price around ₹1.83 Cr. Signature Global, Vatika, M3M and BPTP are among the most active developers in the corridor. With NH-248BB now fully operational; this is the corridor with the strongest infrastructure-driven growth story in Gurgaon today, though it also means a meaningful share of inventory is still under construction rather than ready to move.",
+            "436 projects are currently live on HomzRealtor along Dwarka Expressway (378 residential, 58 commercial) across 60 distinct sectors, with a median listed price around ₹1.37 Cr. Signature Global, Vatika, M3M and BPTP are among the most active developers in the corridor. With NH-248BB now fully operational; this is the corridor with the strongest infrastructure-driven growth story in Gurgaon today, though it also means a meaningful share of inventory is still under construction rather than ready to move.",
         },
         {
           h3: "New Gurgaon: Best for Emerging Residential Investment",
           contentMarkdown:
-            "\"New Gurgaon\" is commonly used for Sectors 81 through 115, a zone that covers 560 live HomzRealtor listings in total, but most of those are marketed under the Dwarka Expressway name instead, since the two corridors overlap geographically. Only 209 listings (141 residential, 68 commercial) in that sector range carry no other corridor label, with a median price around ₹1.92 Cr. Read that as a genuinely active pocket of the market, not a separate one from Dwarka Expressway; see the direct comparison further down this guide.",
+            "\"New Gurgaon\" is commonly used for Sectors 81 through 115, and the area overlaps heavily with Dwarka Expressway geographically. In HomzRealtor's own catalogue, only 9 live listings (6 residential, 3 commercial) carry an explicit \"New Gurgaon\" corridor label distinct from Dwarka Expressway, with a median price around ₹1.95 Cr. The overwhelming majority of inventory in that sector range is marketed and found under the Dwarka Expressway name instead; see the direct comparison further down this guide.",
         },
         {
           h3: "Golf Course Road: Best for Luxury Living",
           contentMarkdown:
-            "Golf Course Road is Gurgaon's most established premium corridor: 103 live projects (65 residential, 38 commercial) across 23 sectors, with a median listed price of ₹4.38 Cr, the highest of any corridor in this guide. Land is scarce here, so new launches are rare; most available inventory is resale or late-stage under-construction stock in an already-mature, high-demand micro-market.",
+            "Golf Course Road is Gurgaon's most established premium corridor: 102 live projects (65 residential, 38 commercial) across 23 sectors, with a median listed price of ₹3.43 Cr, the highest of any corridor in this guide. Land is scarce here, so new launches are rare; most available inventory is resale or late-stage under-construction stock in an already-mature, high-demand micro-market.",
         },
         {
           h3: "Golf Course Extension Road: Best for Premium Apartments",
           contentMarkdown:
-            "251 projects are live on the Extension (169 residential, 82 commercial) across 39 sectors, with a median price of roughly ₹2.92 Cr, positioned between Golf Course Road's established luxury pricing and Dwarka Expressway's growth-stage affordability. It's the corridor most buyers land on when they want Golf Course Road's premium positioning without paying the full Golf Course Road price.",
+            "248 projects are live on the Extension (169 residential, 82 commercial) across 39 sectors, with a median price of roughly ₹2.42 Cr, positioned between Golf Course Road's established luxury pricing and Dwarka Expressway's growth-stage affordability. It's the corridor most buyers land on when they want Golf Course Road's premium positioning without paying the full Golf Course Road price.",
         },
       ],
     },
@@ -178,19 +178,19 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
       id: "price-comparison-by-location",
       h2: "How Do Property Prices Compare Across Gurgaon's Micro-Markets?",
       contentMarkdown:
-        "Across HomzRealtor's full Gurgaon catalogue, the citywide median listed price is roughly ₹2.18 Cr, but that single number hides a wide spread by corridor. Dwarka Expressway is the most affordable of the six at a ₹1.83 Cr median, while Golf Course Road sits well over double that at ₹4.38 Cr. The table below lines up all six corridors side by side.",
+        "Across HomzRealtor's full Gurgaon catalogue, the citywide median listed price is roughly ₹1.73 Cr, but that single number hides a wide spread by corridor. Dwarka Expressway is the most affordable of the six at a ₹1.37 Cr median, while Golf Course Road sits well over double that at ₹3.43 Cr. The table below lines up all six corridors side by side.",
       media: [
         {
           type: "table",
           caption: "Median listed price by Gurgaon corridor (HomzRealtor live catalogue, September 2026)",
           headers: ["Corridor", "Live Projects", "Sectors", "Median Price"],
           rows: [
-            ["Dwarka Expressway", "439", "60", "₹1.83 Cr"],
-            ["New Gurgaon (distinct listings only)", "209", "34", "₹1.92 Cr"],
+            ["Dwarka Expressway", "436", "60", "₹1.37 Cr"],
+            ["New Gurgaon (distinct listings only)", "9", "8", "₹1.95 Cr"],
             ["Sohna Road", "66", "28", "₹2.11 Cr"],
             ["Southern Peripheral Road", "97", "23", "₹2.34 Cr"],
-            ["Golf Course Extension Road", "251", "39", "₹2.92 Cr"],
-            ["Golf Course Road", "103", "23", "₹4.38 Cr"],
+            ["Golf Course Extension Road", "248", "39", "₹2.42 Cr"],
+            ["Golf Course Road", "102", "23", "₹3.43 Cr"],
           ],
         },
       ],
@@ -199,7 +199,7 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
       id: "best-area-by-budget",
       h2: "Which Gurgaon Area Fits Your Budget?",
       contentMarkdown:
-        "If you're anchoring a search by budget rather than by corridor name, the median prices above are the more useful starting point than sector reputation. Buyers targeting under ₹2 Cr will find the deepest inventory on Dwarka Expressway and in New Gurgaon, where medians sit under ₹2 Cr and a meaningful share of listings price below that line entirely. Sohna Road and SPR sit just above ₹2 Cr and offer a middle ground. Golf Course Extension Road at a ₹2.92 Cr median is realistic for buyers comfortable in the ₹2.5-3.5 Cr range, while Golf Course Road, at a ₹4.38 Cr median, is squarely a premium-budget corridor, treat any listing there priced well under that as worth extra scrutiny rather than a bargain.",
+        "If you're anchoring a search by budget rather than by corridor name, the median prices above are the more useful starting point than sector reputation. Buyers targeting under ₹2 Cr will find the deepest inventory on Dwarka Expressway and in New Gurgaon, where medians sit under ₹2 Cr and a meaningful share of listings price below that line entirely. Sohna Road and SPR sit just above ₹2 Cr and offer a middle ground. Golf Course Extension Road at a ₹2.42 Cr median is realistic for buyers comfortable in the ₹2-3 Cr range, while Golf Course Road, at a ₹3.43 Cr median, is squarely a premium-budget corridor, treat any listing there priced well under that as worth extra scrutiny rather than a bargain.",
       media: [
         {
           type: "diagram",
@@ -209,12 +209,12 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
           data: {
             unit: "INR",
             bars: [
-              { label: "Dwarka Expressway", value: 18300000 },
-              { label: "New Gurgaon", value: 19200000 },
+              { label: "Dwarka Expressway", value: 13650000 },
+              { label: "New Gurgaon", value: 19450000 },
               { label: "Sohna Road", value: 21100000 },
               { label: "Southern Peripheral Road", value: 23400000 },
-              { label: "Golf Course Extension Road", value: 29150000 },
-              { label: "Golf Course Road", value: 43800000 },
+              { label: "Golf Course Extension Road", value: 24200000 },
+              { label: "Golf Course Road", value: 34300000 },
             ],
           },
         },
@@ -224,13 +224,13 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
       id: "who-should-buy-where",
       h2: "Who Should Buy Where: End-Users or Investors?",
       contentMarkdown:
-        "End-users who want established social infrastructure, schools, hospitals, retail already built out and operating, are usually best served by Golf Course Road or its Extension, even at the price premium, because there's little construction-timeline risk left to absorb: with only 65 residential projects live on Golf Course Road against 439 on Dwarka Expressway; this is a corridor with far less new construction to wait out. Investors looking for appreciation potential tend to favour Dwarka Expressway and New Gurgaon instead: both corridors still carry a meaningful share of under-construction and new-launch stock citywide (191 under construction and 58 new launches out of 1,463 residential listings), which is exactly where early-stage price growth tends to happen as infrastructure like NH-248BB matures around it.\n\nSohna Road and SPR suit buyers who want a genuine middle ground, established enough to have real social infrastructure, priced well below Golf Course Road, without the still-developing feel of the newest Dwarka Expressway sectors. First-time buyers on a tighter timeline should weigh the 81% ready-to-move share across Gurgaon's residential catalogue against each corridor's own mix, Golf Course Road and Golf Course Extension Road skew more ready-to-move than the growth corridors do.",
+        "End-users who want established social infrastructure, schools, hospitals, retail already built out and operating, are usually best served by Golf Course Road or its Extension, even at the price premium, because there's little construction-timeline risk left to absorb: with only 65 residential projects live on Golf Course Road against 436 on Dwarka Expressway; this is a corridor with far less new construction to wait out. Investors looking for appreciation potential tend to favour Dwarka Expressway and New Gurgaon instead: both corridors still carry a meaningful share of under-construction and new-launch stock citywide (220 under construction and 79 new launches out of 1,761 residential listings), which is exactly where early-stage price growth tends to happen as infrastructure like NH-248BB matures around it.\n\nSohna Road and SPR suit buyers who want a genuine middle ground, established enough to have real social infrastructure, priced well below Golf Course Road, without the still-developing feel of the newest Dwarka Expressway sectors. First-time buyers on a tighter timeline should weigh the 82% ready-to-move share across Gurgaon's residential catalogue against each corridor's own mix, Golf Course Road and Golf Course Extension Road skew more ready-to-move than the growth corridors do.",
     },
     {
       id: "dwarka-expressway-vs-new-gurgaon",
       h2: "Dwarka Expressway vs New Gurgaon: What's the Real Difference?",
       contentMarkdown:
-        "This is worth addressing directly, because the two names get used almost interchangeably and the overlap is real, not just marketing language. \"New Gurgaon\" typically refers to Sectors 81 through 115, and 560 live HomzRealtor listings sit inside that sector range in total. But only 209 of those are marketed with no other corridor name attached, the remaining 351 are labelled Dwarka Expressway instead, because the two corridors cover overlapping geography. So in practice, most of what falls inside the \"New Gurgaon\" sector range is being marketed and found under the Dwarka Expressway name, not a separate \"New Gurgaon\" one.\n\nThe more useful distinction isn't corridor name but sector number and specific project: sectors closer to NH-48 and the Delhi border tend to carry the Dwarka Expressway label more consistently in project marketing, while the further sectors (into the high-90s and 100s, extending toward Sohna) skew toward the \"New Gurgaon\" framing instead. Don't let the label alone drive your decision, check the specific sector and project instead, and treat both names as pointing at broadly the same growth corridor rather than two competing choices.",
+        "This is worth addressing directly, because the two names get used almost interchangeably and the overlap is real, not just marketing language. \"New Gurgaon\" typically refers to Sectors 81 through 115, and that zone overlaps heavily with the Dwarka Expressway corridor geographically. In HomzRealtor's own catalogue, only 9 live listings carry an explicit \"New Gurgaon\" corridor label distinct from Dwarka Expressway, because most projects in that sector range are marketed and found under the Dwarka Expressway name instead. So in practice, \"New Gurgaon\" as a separately-labelled corridor is a small slice of what buyers usually mean by the term; most of that geography reads as Dwarka Expressway in the live catalogue.\n\nThe more useful distinction isn't corridor name but sector number and specific project: sectors closer to NH-48 and the Delhi border tend to carry the Dwarka Expressway label more consistently in project marketing, while the further sectors (into the high-90s and 100s, extending toward Sohna) skew toward the \"New Gurgaon\" framing instead. Don't let the label alone drive your decision, check the specific sector and project instead, and treat both names as pointing at broadly the same growth corridor rather than two competing choices.",
       media: [
         {
           type: "callout",
@@ -263,7 +263,7 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
   faqs: [
     {
       q: "What is the average price of property in Gurgaon in 2026?",
-      a: "Across HomzRealtor's live Gurgaon catalogue, the citywide median listed price is around ₹2.18 Cr as of September 2026. It varies widely by corridor, from a ₹1.83 Cr median on Dwarka Expressway to a ₹4.38 Cr median on Golf Course Road, so a citywide average is only a starting point, not a budget you can apply to every sector.",
+      a: "Across HomzRealtor's live Gurgaon catalogue, the citywide median listed price is around ₹1.73 Cr as of September 2026. It varies widely by corridor, from a ₹1.37 Cr median on Dwarka Expressway to a ₹3.43 Cr median on Golf Course Road, so a citywide average is only a starting point, not a budget you can apply to every sector.",
     },
     {
       q: "Which is the best area to buy property in Gurgaon for investment?",
@@ -271,11 +271,11 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
     },
     {
       q: "Is Golf Course Road still worth buying into?",
-      a: "Yes, if your priority is established infrastructure over growth potential. It carries the highest median price of any Gurgaon corridor in this guide (₹4.38 Cr) precisely because land is scarce and social infrastructure is already mature, it suits end-users more than investors chasing appreciation.",
+      a: "Yes, if your priority is established infrastructure over growth potential. It carries the highest median price of any Gurgaon corridor in this guide (₹3.43 Cr) precisely because land is scarce and social infrastructure is already mature, it suits end-users more than investors chasing appreciation.",
     },
     {
       q: "How many verified projects does HomzRealtor list in Gurgaon right now?",
-      a: "2,098 projects as of a September 2026 catalogue snapshot, 1,463 residential and 635 commercial, spread across 133 distinct sectors. This figure changes as projects launch, sell out or are added, so treat it as a snapshot rather than a fixed count.",
+      a: "2,081 projects as of a September 2026 catalogue snapshot, 1,761 residential and 320 commercial, spread across 131 distinct sectors. This figure changes as projects launch, sell out or are added, so treat it as a snapshot rather than a fixed count.",
     },
     {
       q: "What's the actual difference between Dwarka Expressway and New Gurgaon?",
@@ -283,7 +283,7 @@ export const bestAreasToBuyPropertyInGurgaon: BlogPostV27 = {
     },
     {
       q: "Are there ready-to-move flats available across Gurgaon?",
-      a: "Yes, 1,190 of the 1,463 residential listings in HomzRealtor's Gurgaon catalogue (about 81%) are currently marked ready to move, with 191 under construction and 58 as new launches. Ready-to-move share varies by corridor, with established areas like Golf Course Road skewing higher.",
+      a: "Yes, 1,438 of the 1,761 residential listings in HomzRealtor's Gurgaon catalogue (about 82%) are currently marked ready to move, with 220 under construction and 79 as new launches. Ready-to-move share varies by corridor, with established areas like Golf Course Road skewing higher.",
     },
     {
       q: "Which Gurgaon corridor has the most budget-friendly listings?",

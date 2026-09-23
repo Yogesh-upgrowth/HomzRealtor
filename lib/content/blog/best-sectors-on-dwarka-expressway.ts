@@ -25,7 +25,7 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
     category: "locality-guides",
     tags: ["Dwarka Expressway", "Gurgaon", "sectors"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -34,7 +34,7 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue, cross-checked against HARERA and official infrastructure sources.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -43,12 +43,12 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every sector figure in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted 4 September 2026.",
+      "Every sector figure in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted 23 September 2026.",
     productDataHook: {
-      propertyCount: 439,
+      propertyCount: 436,
       localityCount: 60,
-      avgPropertyPriceInr: 18300000,
-      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 18300000 }],
+      avgPropertyPriceInr: 13650000,
+      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 13650000 }],
       topLocalitiesReferenced: ["Sector 102", "Sector 37D", "Sector 103", "Sector 92", "Sector 89"],
       dateRange: "Live catalogue snapshot, September 2026",
     },
@@ -58,11 +58,11 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
       { label: "Dwarka Expressway (NH-248BB), route and completion overview", url: "https://en.wikipedia.org/wiki/Dwarka_Expressway", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and independently links to official government sources; it does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Best Sectors on Dwarka Expressway (2026 Guide)",
@@ -91,13 +91,13 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
       id: "why-sector-matters",
       h2: "Why Does the Specific Sector Matter More Than the Corridor Name?",
       contentMarkdown:
-        "\"Dwarka Expressway\" spans 60 distinct sectors, and conditions vary meaningfully within that range, proximity to NH-48, how built-out the immediate social infrastructure is, and whether a sector skews ready-to-move or still under construction. Treating the whole corridor as one undifferentiated market misses that a sector five minutes from the Delhi border can look very different from one deep into the corridor's newer stretches.\n\nThis is why HomzRealtor's own project pages let you filter down to sector level rather than stopping at corridor level, a corridor-wide statistic like the ₹1.83 Cr median price is a useful orientation point, but the sector you actually buy in is what determines your day-to-day experience of the area, from commute time to which schools and hospitals are realistically nearby.",
+        "\"Dwarka Expressway\" spans 60 distinct sectors, and conditions vary meaningfully within that range, proximity to NH-48, how built-out the immediate social infrastructure is, and whether a sector skews ready-to-move or still under construction. Treating the whole corridor as one undifferentiated market misses that a sector five minutes from the Delhi border can look very different from one deep into the corridor's newer stretches.\n\nThis is why HomzRealtor's own project pages let you filter down to sector level rather than stopping at corridor level, a corridor-wide statistic like the ₹1.37 Cr median price is a useful orientation point, but the sector you actually buy in is what determines your day-to-day experience of the area, from commute time to which schools and hospitals are realistically nearby.",
     },
     {
       id: "top-sectors-by-listings",
       h2: "Which Sectors Have the Most Live Listings on Dwarka Expressway?",
       contentMarkdown:
-        "Five sectors account for a disproportionate share of the corridor's 439 live projects: worth knowing if you want the widest selection to compare within a single sector. Together, these five sectors alone account for roughly a quarter of the corridor's total live inventory, out of 60 sectors that carry at least one listing.",
+        "Five sectors account for a disproportionate share of the corridor's 436 live projects: worth knowing if you want the widest selection to compare within a single sector. Together, these five sectors alone account for roughly a quarter of the corridor's total live inventory, out of 60 sectors that carry at least one listing.",
       subsections: [
         { h3: "Sector 102 and Sector 37D Lead the Corridor", contentMarkdown: "The two most active sectors by live listing count on HomzRealtor's Dwarka Expressway catalogue, with 26 and 24 live listings respectively, offering the widest project-to-project comparison within a single sector for buyers who want maximum choice." },
         { h3: "Sector 103 and Sector 92 Follow Closely", contentMarkdown: "Close behind in listing volume at 21 each, both within the sector range that also overlaps with the \"New Gurgaon\" naming convention (Sectors 81-115): worth checking listings under both corridor labels if you're specifically interested in these sectors." },
@@ -124,7 +124,7 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
       id: "sector-price-positioning",
       h2: "How Do Prices Vary Across Dwarka Expressway Sectors?",
       contentMarkdown:
-        "The corridor's overall median is ₹1.83 Cr, but individual sectors can sit meaningfully above or below that depending on how developed the immediate area is and how much ready-to-move stock exists there versus under-construction. Rather than quoting a specific number per sector, which shifts as listings turn over, check the live price range for your shortlisted sector directly before anchoring a budget.\n\nAs a general pattern across the corridor, sectors closer to NH-48 and more established parts of the city tend to command a premium over sectors further along the corridor's newer stretches, though builder reputation and individual project quality can outweigh that pattern on any specific listing. Use the sector-level price range as a starting filter, then compare specific projects within your shortlisted sectors on their own merits.",
+        "The corridor's overall median is ₹1.37 Cr, but individual sectors can sit meaningfully above or below that depending on how developed the immediate area is and how much ready-to-move stock exists there versus under-construction. Rather than quoting a specific number per sector, which shifts as listings turn over, check the live price range for your shortlisted sector directly before anchoring a budget.\n\nAs a general pattern across the corridor, sectors closer to NH-48 and more established parts of the city tend to command a premium over sectors further along the corridor's newer stretches, though builder reputation and individual project quality can outweigh that pattern on any specific listing. Use the sector-level price range as a starting filter, then compare specific projects within your shortlisted sectors on their own merits.",
       media: [
         {
           type: "table",
@@ -144,7 +144,7 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
       id: "possession-status-by-area",
       h2: "Are the Top Dwarka Expressway Sectors Ready to Move or Still Building?",
       contentMarkdown:
-        "Corridor-wide, 249 of 299 residential projects are ready to move, a high share overall, but that doesn't mean every high-volume sector skews the same way. Sectors within the overlapping New Gurgaon range (including several of the top five above) tend to carry a somewhat higher share of under-construction and new-launch stock than sectors closer to NH-48, since development there has generally started more recently.\n\nIf possession timeline is your primary constraint, check a specific sector's ready-to-move share directly rather than relying on the corridor-wide 83% figure, a sector that skews newer can look meaningfully different from that overall average, in either direction depending on when its development wave began.",
+        "Corridor-wide, 310 of 378 residential projects are ready to move, a high share overall, but that doesn't mean every high-volume sector skews the same way. Sectors within the overlapping New Gurgaon range (including several of the top five above) tend to carry a somewhat higher share of under-construction and new-launch stock than sectors closer to NH-48, since development there has generally started more recently.\n\nIf possession timeline is your primary constraint, check a specific sector's ready-to-move share directly rather than relying on the corridor-wide 82% figure, a sector that skews newer can look meaningfully different from that overall average, in either direction depending on when its development wave began.",
     },
     {
       id: "budget-and-configuration-across-sectors",
@@ -219,7 +219,7 @@ export const bestSectorsOnDwarkaExpressway: BlogPostV27 = {
     { q: "Which Dwarka Expressway sector has the most listings?", a: "Sector 102, with 26 live listings as of HomzRealtor's September 2026 catalogue, followed closely by Sector 37D at 24. Together, these two sectors offer the widest single-sector comparison shopping on the corridor for buyers who want maximum choice within one location." },
     { q: "Is a sector with more listings a better place to buy?", a: "Not necessarily, a high listing count means more projects to compare within that sector, not automatically better value, infrastructure or appreciation potential than a lower-volume sector. Use listing count as a secondary filter after you've narrowed down by your own practical needs first." },
     { q: "How many sectors does Dwarka Expressway span?", a: "60 distinct sectors carry at least one live Dwarka Expressway listing on HomzRealtor as of September 2026, though listing volume is heavily concentrated in a handful of them, the top five sectors alone account for roughly a quarter of the corridor's total inventory." },
-    { q: "Are Dwarka Expressway sectors mostly ready to move?", a: "Corridor-wide, yes, 249 of 299 residential projects are ready to move. Individual sectors within the overlapping New Gurgaon range tend to skew slightly more toward under-construction stock, so check a specific sector's mix directly rather than relying on the corridor average." },
+    { q: "Are Dwarka Expressway sectors mostly ready to move?", a: "Corridor-wide, yes, 310 of 378 residential projects are ready to move. Individual sectors within the overlapping New Gurgaon range tend to skew slightly more toward under-construction stock, so check a specific sector's mix directly rather than relying on the corridor average." },
     { q: "What's the difference between Sector 102 and Sector 89 on Dwarka Expressway?", a: "Both are among the corridor's top five sectors by listing volume, but Sector 89 sits further along the corridor's newer development stretch while Sector 102 leads overall listing count, check specific project possession status and price in each before comparing directly." },
     { q: "Do Dwarka Expressway sector numbers overlap with New Gurgaon?", a: "Yes, significantly, several of the corridor's most active sectors, including Sector 92, Sector 99 and others in the 80s-90s range, fall within the sector range commonly called New Gurgaon (Sectors 81-115), so listings there may be marketed under either corridor name." },
     { q: "How do I verify a specific sector's projects before buying?", a: "Check the individual project's RERA registration and disclosed possession date on the Haryana RERA (HARERA) portal, sector-level popularity doesn't confirm any single project within it is compliant, so always verify at the project level regardless of how active the sector is." },

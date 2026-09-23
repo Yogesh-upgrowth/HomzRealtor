@@ -22,7 +22,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     title: "Luxury Apartments in Gurgaon: Where the ₹5Cr+ Stock Is",
     h1: "Luxury Apartments in Gurgaon (2026 Guide)",
     metaDescription:
-      "374 live listings in Gurgaon cross ₹5 Cr. See exactly which sectors and builders dominate the city's luxury apartment segment, with real data.",
+      "185 live listings in Gurgaon cross ₹5 Cr. See exactly which sectors and builders dominate the city's luxury apartment segment, with real data.",
     standfirst:
       "Gurgaon's luxury segment isn't evenly spread across the city, a handful of sectors and builders dominate it.",
     primaryKeyword: "luxury apartments in Gurgaon",
@@ -30,7 +30,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Gurgaon", "Luxury", "Golf Course Road", "DLF"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -39,7 +39,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -48,14 +48,14 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "This guide defines \"luxury\" as any live HomzRealtor listing with a maximum quoted price of ₹5 Cr or more, 374 projects citywide as of a 4 September 2026 snapshot, and ranks the real sectors and builders behind that segment rather than a curated marketing list.",
+      "This guide defines \"luxury\" as any live HomzRealtor listing with a maximum quoted price of ₹5 Cr or more, 185 projects citywide as of a 23 September 2026 snapshot, and ranks the real sectors and builders behind that segment rather than a curated marketing list.",
     productDataHook: {
-      propertyCount: 374,
+      propertyCount: 185,
       localityCount: 6,
-      avgPropertyPriceInr: 43800000,
+      avgPropertyPriceInr: 34300000,
       priceByLocality: [
-        { locality: "Golf Course Road", avgPriceInr: 43800000 },
-        { locality: "Golf Course Extension Road", avgPriceInr: 29150000 },
+        { locality: "Golf Course Road", avgPriceInr: 34300000 },
+        { locality: "Golf Course Extension Road", avgPriceInr: 24200000 },
       ],
       topLocalitiesReferenced: ["Sector 54", "Sector 65", "Sector 48", "Sector 66", "Sector 50", "Sector 102"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -73,15 +73,15 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Luxury Apartments in Gurgaon: Where the ₹5Cr+ Stock Is",
-    ogDescription: "374 real listings define Gurgaon's luxury segment, see which sectors and builders actually lead it.",
+    ogDescription: "185 real listings define Gurgaon's luxury segment, see which sectors and builders actually lead it.",
     ogImage: "https://static.squareyards.com/resources/images/gurgaon/project-image/one-the-saavira-project-apartment-exteriors1-3528.jpg",
     ogImageAlt: "One The Saavira, a residential development in Sector 48, Gurgaon",
   },
@@ -97,16 +97,16 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
   quickAnswer: {
     question: "Where are the best luxury apartments in Gurgaon?",
     answer:
-      "374 live HomzRealtor listings in Gurgaon price at ₹5 Cr or above. Sector 54, Sector 65 and Sector 48 carry the most, and DLF, Emaar and M3M are the most active builders in this segment. Golf Course Road, at a ₹4.38 Cr corridor median, is the city's most concentrated luxury address.",
+      "185 live HomzRealtor listings in Gurgaon price at ₹5 Cr or above. Sector 54, Sector 65 and Sector 48 carry the most, and DLF, Emaar and M3M are the most active builders in this segment. Golf Course Road, at a ₹3.43 Cr corridor median, is the city's most concentrated luxury address.",
   },
   introduction:
-    "Gurgaon's luxury apartment market is real but narrow: of 2,098 live listings tracked on HomzRealtor, 374 quote a maximum price of ₹5 Cr or higher, about 18% of the total catalogue. Rather than a curated \"best of\" list, this guide shows exactly where that ₹5 Cr+ segment concentrates: which sectors carry the most luxury stock, which builders are most active in it, and what genuinely distinguishes Gurgaon's premium corridors from its mid-market ones. If you're shopping in this bracket, the honest picture is that it's a smaller, more concentrated slice of the city than the marketing language around \"luxury living\" sometimes suggests, and knowing exactly where it sits will save real time before you start visiting projects in person.",
+    "Gurgaon's luxury apartment market is real but narrow: of 2,081 live listings tracked on HomzRealtor, 185 quote a maximum price of ₹5 Cr or higher, about 9% of the total catalogue. Rather than a curated \"best of\" list, this guide shows exactly where that ₹5 Cr+ segment concentrates: which sectors carry the most luxury stock, which builders are most active in it, and what genuinely distinguishes Gurgaon's premium corridors from its mid-market ones. If you're shopping in this bracket, the honest picture is that it's a smaller, more concentrated slice of the city than the marketing language around \"luxury living\" sometimes suggests, and knowing exactly where it sits will save real time before you start visiting projects in person.",
   sections: [
     {
       id: "what-counts-as-luxury-in-gurgaon",
       h2: "What Actually Counts as Luxury in Gurgaon's Market?",
       contentMarkdown:
-        "There's no official definition, so this guide uses a concrete, checkable one: any live listing quoting a maximum price of ₹5 Cr or above. On that basis, 374 of Gurgaon's 2,098 tracked projects qualify, about 18% of the market. That's a genuinely premium tier, not a marketing label stretched over ordinary mid-market stock: the citywide median price across all listings is ₹2.18 Cr, so ₹5 Cr+ sits well above what most of the market actually transacts at.\n\nTreat \"luxury\" as a price threshold, not a guarantee of any particular amenity set, a ₹5 Cr+ listing can mean a large-format apartment in an older, established tower or a fully serviced branded residence with five-star amenities, and the two aren't interchangeable even at similar price points. The sector and builder breakdown below is a starting point for narrowing that down, not a substitute for visiting specific projects.",
+        "There's no official definition, so this guide uses a concrete, checkable one: any live listing quoting a maximum price of ₹5 Cr or above. On that basis, 185 of Gurgaon's 2,081 tracked projects qualify, about 9% of the market. That's a genuinely premium tier, not a marketing label stretched over ordinary mid-market stock: the citywide median price across all listings is ₹1.73 Cr, so ₹5 Cr+ sits well above what most of the market actually transacts at.\n\nTreat \"luxury\" as a price threshold, not a guarantee of any particular amenity set, a ₹5 Cr+ listing can mean a large-format apartment in an older, established tower or a fully serviced branded residence with five-star amenities, and the two aren't interchangeable even at similar price points. The sector and builder breakdown below is a starting point for narrowing that down, not a substitute for visiting specific projects.",
     },
     {
       id: "where-luxury-concentrates",
@@ -162,7 +162,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
       id: "luxury-by-corridor",
       h2: "How Does Luxury Pricing Vary by Corridor?",
       contentMarkdown:
-        "Golf Course Road carries the highest concentration and the highest median of any corridor in the city at ₹4.38 Cr, with 43 of its 65 residential listings crossing the ₹5 Cr threshold outright. Golf Course Extension Road, at a ₹2.92 Cr median, has a larger absolute luxury pool (75 listings) but a lower share of its total inventory; it's a broader corridor with luxury as one segment among several, rather than luxury being the default.\n\nThat difference matters for how you should shop each corridor. On Golf Course Road, almost any live listing is a reasonable luxury candidate, so the differentiator is the specific building and unit. On Golf Course Extension Road, you need to actively filter for the ₹5 Cr+ segment specifically, since a large share of the corridor's inventory sits well below that line, treating the whole corridor as \"luxury\" would mean comparing genuinely different price tiers against each other.",
+        "Golf Course Road carries the highest concentration and the highest median of any corridor in the city at ₹3.43 Cr, with 43 of its 65 residential listings crossing the ₹5 Cr threshold outright. Golf Course Extension Road, at a ₹2.42 Cr median, has a larger absolute luxury pool (75 listings) but a lower share of its total inventory; it's a broader corridor with luxury as one segment among several, rather than luxury being the default.\n\nThat difference matters for how you should shop each corridor. On Golf Course Road, almost any live listing is a reasonable luxury candidate, so the differentiator is the specific building and unit. On Golf Course Extension Road, you need to actively filter for the ₹5 Cr+ segment specifically, since a large share of the corridor's inventory sits well below that line, treating the whole corridor as \"luxury\" would mean comparing genuinely different price tiers against each other.",
       media: [
         {
           type: "diagram",
@@ -170,8 +170,8 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
           alt: "Split comparison of Golf Course Road versus Golf Course Extension Road on luxury listing count and corridor median price",
           caption: "Golf Course Road vs Golf Course Extension Road, luxury segment (HomzRealtor, September 2026)",
           data: {
-            left: { label: "Golf Course Road", luxuryListings: 43, totalResidential: 65, medianPriceInr: 43800000 },
-            right: { label: "Golf Course Extension Road", luxuryListings: 75, totalResidential: 169, medianPriceInr: 29150000 },
+            left: { label: "Golf Course Road", luxuryListings: 43, totalResidential: 65, medianPriceInr: 34300000 },
+            right: { label: "Golf Course Extension Road", luxuryListings: 75, totalResidential: 169, medianPriceInr: 24200000 },
           },
         },
       ],
@@ -205,7 +205,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
   faqs: [
     {
       q: "How many luxury apartments are there in Gurgaon?",
-      a: "374 live listings on HomzRealtor quote a maximum price of ₹5 Cr or above, about 18% of the city's full 2,098-project catalogue, as of a September 2026 snapshot, concentrated mostly around Golf Course Road and its Extension rather than spread evenly across the city.",
+      a: "185 live listings on HomzRealtor quote a maximum price of ₹5 Cr or above, about 9% of the city's full 2,081-project catalogue, as of a September 2026 snapshot, concentrated mostly around Golf Course Road and its Extension rather than spread evenly across the city.",
     },
     {
       q: "Which sector has the most luxury apartments in Gurgaon?",
@@ -217,11 +217,11 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     },
     {
       q: "Is Golf Course Road still the best luxury address in Gurgaon?",
-      a: "By concentration, yes, 43 of its 65 residential listings (66%) already cross ₹5 Cr, the highest luxury share of any corridor, alongside the highest median price citywide at ₹4.38 Cr. Its scarcity of remaining land is exactly what keeps that premium in place.",
+      a: "By concentration, yes, 43 of its 65 residential listings (66%) already cross ₹5 Cr, the highest luxury share of any corridor, alongside the highest median price citywide at ₹3.43 Cr. Its scarcity of remaining land is exactly what keeps that premium in place.",
     },
     {
       q: "Is Golf Course Extension Road also a luxury corridor?",
-      a: "Partly, it has a larger absolute luxury pool (75 listings) than Golf Course Road, but at a lower median price (₹2.92 Cr) and a lower share of its total inventory, since it spans a broader price range overall.",
+      a: "Partly, it has a larger absolute luxury pool (75 listings) than Golf Course Road, but at a lower median price (₹2.42 Cr) and a lower share of its total inventory, since it spans a broader price range overall.",
     },
     {
       q: "Are there luxury apartments outside Golf Course Road?",
@@ -229,7 +229,7 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
     },
     {
       q: "What price counts as \"luxury\" in Gurgaon?",
-      a: "There's no official threshold, but this guide uses ₹5 Cr or above as a concrete, checkable cutoff, since that sits well above the citywide median listing price of ₹2.18 Cr, a level at which 374 of Gurgaon's 2,098 tracked live listings currently qualify.",
+      a: "There's no official threshold, but this guide uses ₹5 Cr or above as a concrete, checkable cutoff, since that sits well above the citywide median listing price of ₹1.73 Cr, a level at which 185 of Gurgaon's 2,081 tracked live listings currently qualify.",
     },
     {
       q: "Do luxury apartments in Gurgaon appreciate faster than mid-market ones?",
@@ -238,9 +238,9 @@ export const luxuryApartmentsInGurgaon: BlogPostV27 = {
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Gurgaon's luxury segment (374 listings at ₹5 Cr+) concentrates heavily on Golf Course Road and its Extension, led by DLF, Emaar and M3M.",
+    lead: "Gurgaon's luxury segment (185 listings at ₹5 Cr+) concentrates heavily on Golf Course Road and its Extension, led by DLF, Emaar and M3M.",
     checklist: [
-      "18% of Gurgaon's catalogue (374 of 2,098 listings) qualifies as ₹5 Cr+ luxury.",
+      "9% of Gurgaon's catalogue (185 of 2,081 listings) qualifies as ₹5 Cr+ luxury.",
       "Sector 54, Sector 65 and Sector 48 carry the most luxury stock.",
       "DLF, Emaar and M3M are the most active builders in this segment.",
       "Golf Course Road leads on luxury concentration; its Extension leads on volume.",

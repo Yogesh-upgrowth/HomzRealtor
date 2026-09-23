@@ -26,7 +26,7 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
     category: "buying-guides",
     tags: ["Gurgaon", "livability", "Golf Course Road", "MG Road", "ready to move"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -34,15 +34,15 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
     slug: "homz-realtor-editorial-team",
     role: "Real Estate Research & Content Team",
     bioShort: "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: { name: "Homz Realtor Research Team", role: "Data & Editorial Review", reviewedAt: "2026-09-04" },
   eeat: {
     firstHandDataNote:
-      "This guide uses ready-to-move share and commercial co-location from HomzRealtor's live catalogue of 2,098 Gurgaon projects, snapshotted 4 September 2026, as honest proxies for how established each area's day-to-day infrastructure is, not a subjective 'best neighbourhoods' opinion piece.",
+      "This guide uses ready-to-move share and commercial co-location from HomzRealtor's live catalogue of 2,081 Gurgaon projects, snapshotted 23 September 2026, as honest proxies for how established each area's day-to-day infrastructure is, not a subjective 'best neighbourhoods' opinion piece.",
     productDataHook: {
-      propertyCount: 2098,
-      localityCount: 133,
+      propertyCount: 2081,
+      localityCount: 131,
       topLocalitiesReferenced: ["Sector 56", "Sector 43", "Sector 54", "Sector 28", "MG Road", "Sector 65"],
       dateRange: "Live catalogue snapshot, September 2026",
     },
@@ -51,9 +51,9 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
       { label: "99acres, Dwarka Expressway route and connectivity overview", url: "https://www.99acres.com/articles/all-you-need-to-know-about-dwarka-expressway.html", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure: "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
-    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Best Places to Live in Gurgaon in 2026",
@@ -93,12 +93,12 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
         {
           h3: "Golf Course Road: Best for Established, Move-In-Ready Living",
           contentMarkdown:
-            "56 of 65 residential listings on Golf Course Road (86%) are already ready to move, the highest completion share of any corridor in HomzRealtor's Gurgaon catalogue. With 38 commercial projects alongside 65 residential ones, retail and office infrastructure is well established. The tradeoff is price, a ₹4.38 Cr median, the highest of any corridor.",
+            "56 of 65 residential listings on Golf Course Road (86%) are already ready to move, the highest completion share of any corridor in HomzRealtor's Gurgaon catalogue. With 38 commercial projects alongside 65 residential ones, retail and office infrastructure is well established. The tradeoff is price, a ₹3.43 Cr median, the highest of any corridor.",
         },
         {
           h3: "Golf Course Extension Road: Best Value Among Established Areas",
           contentMarkdown:
-            "150 of 169 residential listings (89%) are ready to move, an even higher completion share than Golf Course Road itself, at a considerably lower ₹2.92 Cr median. For buyers who want an already-built area without Golf Course Road's full price premium; this is the more practical pick.",
+            "150 of 169 residential listings (89%) are ready to move, an even higher completion share than Golf Course Road itself, at a considerably lower ₹2.42 Cr median. For buyers who want an already-built area without Golf Course Road's full price premium; this is the more practical pick.",
         },
       ],
     },
@@ -124,7 +124,7 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
       id: "newer-areas-tradeoffs",
       h2: "What About Dwarka Expressway and New Gurgaon: Are They Livable Yet?",
       contentMarkdown:
-        "Dwarka Expressway's ready-to-move share is lower (249 of 299 residential listings, 83%) than the established corridors above, and the distinct New Gurgaon pocket (Sectors 81-115 with no other corridor label) sits meaningfully lower still at 96 of 141 (68%). These are genuinely newer areas, infrastructure is actively catching up rather than already complete, which suits buyers who don't mind moving into a still-developing neighbourhood in exchange for lower prices (Dwarka Expressway's ₹1.83 Cr median vs Golf Course Road's ₹4.38 Cr).\n\nThat said, \"still developing\" isn't the same as \"undeveloped\", 83% of Dwarka Expressway's residential stock is already complete, and the corridor's core piece of infrastructure, the NH-248BB expressway itself, went fully operational in June 2025. A buyer moving in today on Dwarka Expressway is entering a corridor that's meaningfully further along than it was even a year or two ago, not a construction site. New Gurgaon specifically is the least mature of the areas in this guide, and buyers there should expect more visible ongoing construction in the immediate vicinity for longer.",
+        "Dwarka Expressway's ready-to-move share is lower (310 of 378 residential listings, 82%) than the established corridors above. The distinct New Gurgaon pocket, listings carrying an explicit \"New Gurgaon\" label apart from Dwarka Expressway, is now a very small sample in HomzRealtor's catalogue: just 6 residential listings, 3 of them ready to move. That's too thin a base to draw a reliable maturity read from on its own; for livability purposes, treat most of Sectors 81-115 as functionally part of the Dwarka Expressway corridor instead. Dwarka Expressway itself is genuinely a newer area, infrastructure is actively catching up rather than already complete, which suits buyers who don't mind moving into a still-developing neighbourhood in exchange for lower prices (Dwarka Expressway's ₹1.37 Cr median vs Golf Course Road's ₹3.43 Cr).\n\nThat said, \"still developing\" isn't the same as \"undeveloped\", 82% of Dwarka Expressway's residential stock is already complete, and the corridor's core piece of infrastructure, the NH-248BB expressway itself, went fully operational in June 2025. A buyer moving in today on Dwarka Expressway is entering a corridor that's meaningfully further along than it was even a year or two ago, not a construction site.",
       media: [
         {
           type: "table",
@@ -132,10 +132,10 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
           headers: ["Corridor", "Ready-to-Move Share", "Median Price", "Livability Read"],
           rows: [
             ["Sohna Road", "93% (39/42)", "₹2.11 Cr", "Established, best value"],
-            ["Golf Course Extension Road", "89% (150/169)", "₹2.92 Cr", "Established"],
-            ["Golf Course Road", "86% (56/65)", "₹4.38 Cr", "Established, premium"],
-            ["Dwarka Expressway", "83% (249/299)", "₹1.83 Cr", "Maturing"],
-            ["New Gurgaon (distinct)", "68% (96/141)", "₹1.92 Cr", "Still developing"],
+            ["Golf Course Extension Road", "89% (150/169)", "₹2.42 Cr", "Established"],
+            ["Golf Course Road", "86% (56/65)", "₹3.43 Cr", "Established, premium"],
+            ["Dwarka Expressway", "82% (310/378)", "₹1.37 Cr", "Maturing"],
+            ["New Gurgaon (distinct)", "50% (3/6)", "₹1.95 Cr", "Sample too small to read"],
           ],
         },
       ],
@@ -186,8 +186,8 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
               { label: "Golf Course Extension Road", value: 89 },
               { label: "Southern Peripheral Road", value: 80 },
               { label: "Sohna Road", value: 93 },
-              { label: "Dwarka Expressway", value: 83 },
-              { label: "New Gurgaon", value: 68 },
+              { label: "Dwarka Expressway", value: 82 },
+              { label: "New Gurgaon", value: 50 },
             ],
           },
         },
@@ -214,8 +214,8 @@ export const bestPlacesToLiveInGurgaon: BlogPostV27 = {
   faqs: [
     { q: "What is the most livable area in Gurgaon right now?", a: "By ready-to-move share, Sohna Road leads at 93%, followed closely by Golf Course Extension Road (89%) and Golf Course Road (86%). All three have well-established infrastructure already built out, unlike the newer growth corridors." },
     { q: "Is Golf Course Road a good place to live for families?", a: "Yes, it has the highest median price of any Gurgaon corridor but also 86% ready-to-move inventory and 38 commercial projects alongside its residential stock, indicating well-established retail and services." },
-    { q: "Is Dwarka Expressway livable yet or still under construction?", a: "It's maturing but not fully settled, 83% of its residential listings are ready to move, lower than the established corridors, with the remainder still under construction or newly launched. NH-248BB is now fully operational, which has accelerated the area's development." },
-    { q: "Is New Gurgaon a good place to live?", a: "It's the least mature of the areas covered here, only 68% of the distinct New Gurgaon (Sectors 81-115) residential listings are ready to move. It suits buyers who are comfortable with a still-developing neighbourhood in exchange for lower prices." },
+    { q: "Is Dwarka Expressway livable yet or still under construction?", a: "It's maturing but not fully settled, 82% of its residential listings are ready to move, lower than the established corridors, with the remainder still under construction or newly launched. NH-248BB is now fully operational, which has accelerated the area's development." },
+    { q: "Is New Gurgaon a good place to live?", a: "The distinctly-labelled \"New Gurgaon\" pocket is now a very small slice of the catalogue, just 6 residential listings apart from Dwarka Expressway, too few to draw a reliable livability read from on their own. Most of Sectors 81-115 is functionally Dwarka Expressway in HomzRealtor's data, so that corridor's profile, maturing but not fully settled, is the more useful one to go by for that area." },
     { q: "What's the difference between MG Road and Golf Course Road for living?", a: "MG Road is Gurgaon's original mixed-use commercial-residential core with the longest-established retail and metro access. Golf Course Road is a more purely premium residential corridor. Both are well-established; the choice comes down to whether you want a mixed-use urban feel or a residential-focused one." },
     { q: "Which Gurgaon area offers the best value for an established, lived-in feel?", a: "Sohna Road, at a ₹2.11 Cr median with 93% ready-to-move inventory, offers the highest completion share of any corridor in this guide at a meaningfully lower price than Golf Course Road or its Extension." },
     { q: "How do I check if an area has good schools and hospitals nearby?", a: "HomzRealtor's data doesn't track individual landmark distances at the corridor level, for specific schools and hospitals, check a shortlisted project's own listing page or visit the sector directly, since this varies project to project even within the same sector." },

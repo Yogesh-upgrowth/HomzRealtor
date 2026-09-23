@@ -21,14 +21,14 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
     title: "Best Projects in Golf Course Extension Road (2026)",
     h1: "Best Projects on Golf Course Extension Road, Gurgaon",
     metaDescription:
-      "251 live projects on Golf Course Extension Road, filtered by builder, sector and possession status, real data from HomzRealtor's Gurgaon catalogue.",
+      "248 live projects on Golf Course Extension Road, filtered by builder, sector and possession status, real data from HomzRealtor's Gurgaon catalogue.",
     standfirst: "Which sectors and builders actually lead Golf Course Extension Road's project inventory today.",
     primaryKeyword: "projects in Golf Course Extension Road",
     secondaryKeywords: ["Golf Course Extension Road Gurgaon", "GCER projects", "premium apartments Gurgaon"],
     category: "buying-guides",
     tags: ["Golf Course Extension Road", "Gurgaon", "residential projects", "property investment"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 10,
   },
   author: {
@@ -36,7 +36,7 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
     slug: "homz-realtor-editorial-team",
     role: "Real Estate Research & Content Team",
     bioShort: "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 251 tracked Golf Course Extension Road projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 248 tracked Golf Course Extension Road projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -45,14 +45,14 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every project count and figure in this guide comes from HomzRealtor's live catalogue of 251 Golf Course Extension Road projects, queried and snapshotted on 4 September 2026.",
+      "Every project count and figure in this guide comes from HomzRealtor's live catalogue of 248 Golf Course Extension Road projects, queried and snapshotted on 23 September 2026.",
     productDataHook: {
-      propertyCount: 251,
+      propertyCount: 248,
       localityCount: 39,
-      avgPropertyPriceInr: 29150000,
+      avgPropertyPriceInr: 24200000,
       priceByLocality: [
-        { locality: "Golf Course Extension Road overall", avgPriceInr: 29150000 },
-        { locality: "Sector 56", avgPriceInr: 29150000 },
+        { locality: "Golf Course Extension Road overall", avgPriceInr: 24200000 },
+        { locality: "Sector 56", avgPriceInr: 24200000 },
       ],
       topLocalitiesReferenced: ["Sector 56", "Sector 65", "Sector 66", "Sector 63A", "Sector 67"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -70,15 +70,15 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Best Projects on Golf Course Extension Road (2026)",
-    ogDescription: "251 live projects on Golf Course Extension Road today, real sector and builder data from HomzRealtor.",
+    ogDescription: "248 live projects on Golf Course Extension Road today, real sector and builder data from HomzRealtor.",
     ogImage: "https://static.squareyards.com/resources/images/gurgaon/project-image/adani-samsara-vilasa-project-tower-view1-6667.jpg",
     ogImageAlt: "Adani Samsara Vilasa, a residential development in Sector 63, Gurgaon",
   },
@@ -94,16 +94,16 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
   quickAnswer: {
     question: "What are the best projects on Golf Course Extension Road right now?",
     answer:
-      "HomzRealtor's live catalogue tracks 251 projects on Golf Course Extension Road, led by Emaar (22 projects), Ansal (18) and M3M (17). Sector 56 and Sector 65 carry the deepest inventory, and 89% of residential listings are already ready to move.",
+      "HomzRealtor's live catalogue tracks 248 projects on Golf Course Extension Road, led by Emaar (22 projects), Ansal (18) and M3M (17). Sector 56 and Sector 65 carry the deepest inventory, and 89% of residential listings are already ready to move.",
   },
   introduction:
-    "Golf Course Extension Road sits in a genuinely useful middle position in Gurgaon's property market, priced below Golf Course Road, positioned above Dwarka Expressway, and carrying real inventory depth from established national developers. HomzRealtor's live catalogue currently tracks 251 projects on the corridor, spread across 39 sectors. Rather than naming a fixed \"top 10\" that will drift out of date as projects sell out, this guide walks through which builders and sectors actually lead the corridor today, and what the possession-status mix tells you about how much genuine choice is available at each stage.\n\nEvery figure below comes from the same live HomzRealtor catalogue snapshot used across our Gurgaon corridor guides, dated 4 September 2026, the same underlying data behind our Golf Course Road pricing guide and our full Gurgaon corridor comparison, so the numbers stay consistent whichever guide you're reading.",
+    "Golf Course Extension Road sits in a genuinely useful middle position in Gurgaon's property market, priced below Golf Course Road, positioned above Dwarka Expressway, and carrying real inventory depth from established national developers. HomzRealtor's live catalogue currently tracks 248 projects on the corridor, spread across 39 sectors. Rather than naming a fixed \"top 10\" that will drift out of date as projects sell out, this guide walks through which builders and sectors actually lead the corridor today, and what the possession-status mix tells you about how much genuine choice is available at each stage.\n\nEvery figure below comes from the same live HomzRealtor catalogue snapshot used across our Gurgaon corridor guides, dated 4 September 2026, the same underlying data behind our Golf Course Road pricing guide and our full Gurgaon corridor comparison, so the numbers stay consistent whichever guide you're reading.",
   sections: [
     {
       id: "why-golf-course-extension-road",
       h2: "Why Do So Many Buyers Consider Golf Course Extension Road?",
       contentMarkdown:
-        "Golf Course Extension Road's ₹2.92 Cr median price sits almost exactly between Golf Course Road (₹4.38 Cr) and Dwarka Expressway (₹1.83 Cr), which is precisely why it draws buyers priced out of Golf Course Road but wanting more established infrastructure than the newer growth corridors offer. With 251 live projects across 39 sectors; it's also the second-deepest inventory pool in Gurgaon after Dwarka Expressway itself, genuine choice, not a thin, narrow market.\n\nThe corridor developed as a natural extension of Golf Course Road's demand once that original corridor ran short of buildable land, which is why it shares much of Golf Course Road's positioning, proximity to established commercial and social infrastructure, while still having had meaningfully more room to build fresh supply over the past decade.\n\nThat combination, Golf Course Road-adjacent positioning at a meaningfully lower entry price, is the corridor's core value proposition, and it shows up consistently across every metric in this guide, from possession status to luxury-segment depth.",
+        "Golf Course Extension Road's ₹2.42 Cr median price sits almost exactly between Golf Course Road (₹3.43 Cr) and Dwarka Expressway (₹1.37 Cr), which is precisely why it draws buyers priced out of Golf Course Road but wanting more established infrastructure than the newer growth corridors offer. With 248 live projects across 39 sectors; it's also the second-deepest inventory pool in Gurgaon after Dwarka Expressway itself, genuine choice, not a thin, narrow market.\n\nThe corridor developed as a natural extension of Golf Course Road's demand once that original corridor ran short of buildable land, which is why it shares much of Golf Course Road's positioning, proximity to established commercial and social infrastructure, while still having had meaningfully more room to build fresh supply over the past decade.\n\nThat combination, Golf Course Road-adjacent positioning at a meaningfully lower entry price, is the corridor's core value proposition, and it shows up consistently across every metric in this guide, from possession status to luxury-segment depth.",
     },
     {
       id: "which-builders-lead",
@@ -135,7 +135,7 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
         {
           h3: "Sector 56 and Sector 65: the deepest pockets",
           contentMarkdown:
-            "Together these two sectors carry 47 of the corridor's 251 live projects. Both also feature prominently in Golf Course Extension Road's luxury (₹5 Cr+) segment, with Sector 65 alone holding 11 of the corridor's 75 luxury listings, the single highest luxury concentration on the corridor.",
+            "Together these two sectors carry 47 of the corridor's 248 live projects. Both also feature prominently in Golf Course Extension Road's luxury (₹5 Cr+) segment, with Sector 65 alone holding 11 of the corridor's 75 luxury listings, the single highest luxury concentration on the corridor.",
         },
         {
           h3: "Sector 66 and Sector 63A: the next tier",
@@ -148,7 +148,7 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
       id: "possession-status-mix",
       h2: "How Much of the Corridor Is Ready to Move vs Still Under Construction?",
       contentMarkdown:
-        "150 of the corridor's 169 residential listings, 89%, are already ready to move, with only 15 under construction and 4 new launches. That's even more ready-to-move-dominant than Golf Course Road's 86%, despite the Extension having meaningfully more total sectors and land to still develop. That's a corridor with limited fresh land remaining, similar to Golf Course Road's pattern but at an earlier stage: still enough activity for genuine new-launch interest, but overwhelmingly dominated by finished, deliverable stock rather than pre-launch risk.\n\nFor buyers who specifically want to enter at a construction-stage discount, that leaves a real but narrow window, 19 total listings across new-launch and under-construction stages, against 251 total projects. Move quickly and expect competition on those specific listings.",
+        "150 of the corridor's 169 residential listings, 89%, are already ready to move, with only 15 under construction and 4 new launches. That's even more ready-to-move-dominant than Golf Course Road's 86%, despite the Extension having meaningfully more total sectors and land to still develop. That's a corridor with limited fresh land remaining, similar to Golf Course Road's pattern but at an earlier stage: still enough activity for genuine new-launch interest, but overwhelmingly dominated by finished, deliverable stock rather than pre-launch risk.\n\nFor buyers who specifically want to enter at a construction-stage discount, that leaves a real but narrow window, 19 total listings across new-launch and under-construction stages, against 248 total projects. Move quickly and expect competition on those specific listings.",
       media: [
         {
           type: "diagram",
@@ -206,13 +206,13 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
       id: "who-should-buy-here",
       h2: "Who Is Golf Course Extension Road Actually Best Suited For?",
       contentMarkdown:
-        "End-users who want more established infrastructure than a growth corridor like Dwarka Expressway offers, but can't or don't want to stretch to Golf Course Road's ₹4.38 Cr median, are the corridor's natural fit. Its 89% ready-to-move share means most buyers can inspect the actual finished unit before committing, while its genuine developer variety (five builders each holding meaningful market share) gives real room to compare price, specification and delivery track record project to project rather than accepting whatever a single dominant developer offers.\n\nInvestors specifically chasing the luxury segment without Golf Course Road's DLF-dominated pricing will also find real value here, 75 luxury-tier listings across a genuinely competitive developer field, at a lower entry point than the neighbouring corridor's equivalent product.",
+        "End-users who want more established infrastructure than a growth corridor like Dwarka Expressway offers, but can't or don't want to stretch to Golf Course Road's ₹3.43 Cr median, are the corridor's natural fit. Its 89% ready-to-move share means most buyers can inspect the actual finished unit before committing, while its genuine developer variety (five builders each holding meaningful market share) gives real room to compare price, specification and delivery track record project to project rather than accepting whatever a single dominant developer offers.\n\nInvestors specifically chasing the luxury segment without Golf Course Road's DLF-dominated pricing will also find real value here, 75 luxury-tier listings across a genuinely competitive developer field, at a lower entry point than the neighbouring corridor's equivalent product.",
     },
     {
       id: "how-to-shortlist",
       h2: "How Should You Actually Shortlist a Project Here?",
       contentMarkdown:
-        "Start with Sector 56 or Sector 65 if inventory depth matters to you, since they carry nearly a fifth of the corridor's supply between them. Both sectors also carry meaningful luxury-tier inventory, so they work whether your budget sits at the corridor's ₹1-2 Cr sweet spot or its ₹5 Cr+ premium tier. Compare at least two or three of the five leading developers, Emaar, Ansal, M3M, Unitech and DLF, on the same budget and configuration before committing, since the corridor's fragmented developer base means genuine price and specification differences exist between otherwise similar-looking listings. As always, confirm RERA registration on the HARERA portal for any specific project before booking, regardless of how established the developer's name is.\n\nIf your budget sits in the ₹1-2 Cr range specifically, prioritise that search over the broader corridor average, 42 listings sit in that band, a genuinely comparable set rather than a handful of outliers. And if Golf Course Extension Road's ₹2.92 Cr median still feels like a stretch, Dwarka Expressway's ₹1.83 Cr median and far larger inventory (439 projects) is the natural next corridor to compare against, at real cost to the level of established infrastructure you'd be trading off. Whichever corridor you land on, treat the builder's overall project count as one input among several, not the deciding factor, a smaller developer with a strong, proven delivery record on its existing Golf Course Extension Road projects can be a genuinely safer bet than a larger, more prominent national name with a comparatively thinner local track record here on this specific corridor.",
+        "Start with Sector 56 or Sector 65 if inventory depth matters to you, since they carry nearly a fifth of the corridor's supply between them. Both sectors also carry meaningful luxury-tier inventory, so they work whether your budget sits at the corridor's ₹1-2 Cr sweet spot or its ₹5 Cr+ premium tier. Compare at least two or three of the five leading developers, Emaar, Ansal, M3M, Unitech and DLF, on the same budget and configuration before committing, since the corridor's fragmented developer base means genuine price and specification differences exist between otherwise similar-looking listings. As always, confirm RERA registration on the HARERA portal for any specific project before booking, regardless of how established the developer's name is.\n\nIf your budget sits in the ₹1-2 Cr range specifically, prioritise that search over the broader corridor average, 42 listings sit in that band, a genuinely comparable set rather than a handful of outliers. And if Golf Course Extension Road's ₹2.42 Cr median still feels like a stretch, Dwarka Expressway's ₹1.37 Cr median and far larger inventory (436 projects) is the natural next corridor to compare against, at real cost to the level of established infrastructure you'd be trading off. Whichever corridor you land on, treat the builder's overall project count as one input among several, not the deciding factor, a smaller developer with a strong, proven delivery record on its existing Golf Course Extension Road projects can be a genuinely safer bet than a larger, more prominent national name with a comparatively thinner local track record here on this specific corridor.",
     },
   ],
   internalLinks: [
@@ -223,7 +223,7 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
   faqs: [
     {
       q: "How many live projects does Golf Course Extension Road have?",
-      a: "251 projects on HomzRealtor's live catalogue as of September 2026, spread across 39 sectors, the second-deepest inventory pool in Gurgaon after Dwarka Expressway, and well ahead of the more established Golf Course Road's 103 projects.",
+      a: "248 projects on HomzRealtor's live catalogue as of September 2026, spread across 39 sectors, the second-deepest inventory pool in Gurgaon after Dwarka Expressway, and well ahead of the more established Golf Course Road's 102 projects.",
     },
     {
       q: "Which builder has the most projects on Golf Course Extension Road?",
@@ -256,9 +256,9 @@ export const bestProjectsOnGolfCourseExtensionRoad: BlogPostV27 = {
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Golf Course Extension Road offers real developer choice (Emaar, Ansal, M3M, Unitech, DLF), deep inventory (251 projects) and a genuine luxury segment, at a meaningful discount to Golf Course Road.",
+    lead: "Golf Course Extension Road offers real developer choice (Emaar, Ansal, M3M, Unitech, DLF), deep inventory (248 projects) and a genuine luxury segment, at a meaningful discount to Golf Course Road.",
     checklist: [
-      "251 live projects across 39 sectors, led by Emaar, Ansal and M3M.",
+      "248 live projects across 39 sectors, led by Emaar, Ansal and M3M.",
       "Sector 56 and Sector 65 carry the deepest inventory.",
       "89% of residential listings are already ready to move.",
       "44% of listings price above ₹5 Cr, a real, if smaller, luxury segment.",

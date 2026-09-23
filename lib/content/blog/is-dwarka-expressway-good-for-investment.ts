@@ -25,7 +25,7 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
     category: "property-investment",
     tags: ["Dwarka Expressway", "Gurgaon", "property investment"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 9,
   },
   author: {
@@ -34,7 +34,7 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue, cross-checked against HARERA and official infrastructure sources.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -43,12 +43,12 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every project count and possession-status figure in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted 4 September 2026.",
+      "Every project count and possession-status figure in this guide comes from HomzRealtor's own live catalogue of Dwarka Expressway projects, snapshotted 23 September 2026.",
     productDataHook: {
-      propertyCount: 439,
+      propertyCount: 436,
       localityCount: 60,
-      avgPropertyPriceInr: 18300000,
-      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 18300000 }],
+      avgPropertyPriceInr: 13650000,
+      priceByLocality: [{ locality: "Dwarka Expressway", avgPriceInr: 13650000 }],
       topLocalitiesReferenced: ["Sector 102", "Sector 37D", "Sector 103", "Sector 92", "Sector 89"],
       dateRange: "Live catalogue snapshot, September 2026",
     },
@@ -58,11 +58,11 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
       { label: "Dwarka Expressway (NH-248BB), route and completion overview", url: "https://en.wikipedia.org/wiki/Dwarka_Expressway", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and independently links to official government sources; it does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Is Dwarka Expressway Good for Investment in 2026?",
@@ -82,7 +82,7 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
   quickAnswer: {
     question: "Is Dwarka Expressway a good property investment in 2026?",
     answer:
-      "The case is reasonable but not risk-free. NH-248BB is now fully operational with a further extension approved, five major builders are actively developing the corridor, and 50 of 299 residential projects are still under construction or newly launched, the stage where early buyers typically capture growth. Weigh that against construction-timeline risk on the unfinished share.",
+      "The case is reasonable but not risk-free. NH-248BB is now fully operational with a further extension approved, five major builders are actively developing the corridor, and 68 of 378 residential projects are still under construction or newly launched, the stage where early buyers typically capture growth. Weigh that against construction-timeline risk on the unfinished share.",
   },
   introduction:
     "Dwarka Expressway investment is a common Gurgaon search precisely because the corridor sits at an inflection point: the expressway itself is finished, but a meaningful share of the real estate around it is still being built. That combination, completed infrastructure, incomplete supply, is usually where early-stage appreciation happens in Indian real estate, but it also carries real construction-timeline risk. This guide lays out what HomzRealtor's live data actually shows about the corridor's maturity, builder activity and possession mix, so you can weigh the investment case on real numbers rather than marketing language.\n\nWe're deliberately not going to quote a specific expected return percentage, nobody has clean, verifiable historical transaction data for a corridor this fragmented, and a made-up number would be worse than no number at all. What follows instead is the actual evidence: what's been built, what's still being built, who's building it, and what that combination has historically meant for growth-stage corridors in Gurgaon.",
@@ -97,15 +97,15 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
       id: "supply-and-demand-signals",
       h2: "What Do Builder Activity and Supply Levels Show?",
       contentMarkdown:
-        "439 live projects on the corridor, led by five developers each with double-digit project counts (Signature Global, Vatika, M3M, BPTP and SS Group), points to genuine developer confidence rather than a handful of speculative launches. At the same time, 249 of the corridor's 299 residential projects are already ready to move; this is not a purely speculative, pre-construction market; a large share of the demand case is already built and occupiable.\n\nThat combination is a genuinely useful investment signal: established developers don't commit capital to double-digit project counts on a corridor without reasonable confidence in sustained demand, and the fact that so much of the earlier supply has already been absorbed into finished, occupied stock suggests the demand case has held up through at least one full development cycle already.",
+        "436 live projects on the corridor, led by five developers each with double-digit project counts (Signature Global, Vatika, M3M, BPTP and SS Group), points to genuine developer confidence rather than a handful of speculative launches. At the same time, 310 of the corridor's 378 residential projects are already ready to move; this is not a purely speculative, pre-construction market; a large share of the demand case is already built and occupiable.\n\nThat combination is a genuinely useful investment signal: established developers don't commit capital to double-digit project counts on a corridor without reasonable confidence in sustained demand, and the fact that so much of the earlier supply has already been absorbed into finished, occupied stock suggests the demand case has held up through at least one full development cycle already.",
       subsections: [
         {
           h3: "The Growth-Stage Share Specifically",
-          contentMarkdown: "40 projects are under construction and 10 are new launches, about 17% of residential inventory still in the earlier stages where entry pricing tends to sit below finished-stock pricing for comparable specification. That's a meaningful, investable pool, not a handful of scattered launches, spread across a corridor with 60 distinct sectors to choose from.",
+          contentMarkdown: "68 projects are currently under construction or newly launched, about 18% of residential inventory still in the earlier stages where entry pricing tends to sit below finished-stock pricing for comparable specification. That's a meaningful, investable pool, not a handful of scattered launches, spread across a corridor with 60 distinct sectors to choose from.",
         },
         {
           h3: "The Commercial Segment",
-          contentMarkdown: "140 of the corridor's 439 live projects are commercial, roughly a third of total inventory. Commercial demand on Dwarka Expressway is closely tied to the corridor's own residential population growth, since retail and office space generally follows rather than leads residential absorption in a newly developing area.",
+          contentMarkdown: "58 of the corridor's 436 live projects are commercial, roughly a third of total inventory. Commercial demand on Dwarka Expressway is closely tied to the corridor's own residential population growth, since retail and office space generally follows rather than leads residential absorption in a newly developing area.",
         },
       ],
     },
@@ -113,19 +113,19 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
       id: "price-positioning",
       h2: "How Is the Corridor Priced Relative to Growth Potential?",
       contentMarkdown:
-        "At a ₹1.83 Cr median, Dwarka Expressway is priced well below established luxury corridors like Golf Course Road (₹4.38 Cr median), a gap that's typical of a corridor still building out its full identity versus one that's already fully mature. Whether that gap narrows over time depends on continued infrastructure delivery and demand, which this guide can't predict with a specific percentage, only report the current facts.\n\nThat said, the direction of the gap is informative even without a forecast: corridors typically re-rate toward established-market pricing as their own infrastructure and social amenities mature, not the other way around. Dwarka Expressway's infrastructure has genuinely matured over the past two years, NH-248BB completion being the clearest marker, which is a structural change, not a cyclical one, and structural changes are generally the more durable driver of long-run repricing in real estate.",
+        "At a ₹1.37 Cr median, Dwarka Expressway is priced well below established luxury corridors like Golf Course Road (₹3.43 Cr median), a gap that's typical of a corridor still building out its full identity versus one that's already fully mature. Whether that gap narrows over time depends on continued infrastructure delivery and demand, which this guide can't predict with a specific percentage, only report the current facts.\n\nThat said, the direction of the gap is informative even without a forecast: corridors typically re-rate toward established-market pricing as their own infrastructure and social amenities mature, not the other way around. Dwarka Expressway's infrastructure has genuinely matured over the past two years, NH-248BB completion being the clearest marker, which is a structural change, not a cyclical one, and structural changes are generally the more durable driver of long-run repricing in real estate.",
     },
     {
       id: "the-new-gurgaon-factor",
       h2: "Does the New Gurgaon Overlap Change the Investment Case?",
       contentMarkdown:
-        "Partly. Dwarka Expressway overlaps substantially with the \"New Gurgaon\" sector range (81-115), of 560 total listings in that sector range, 351 are actually marketed as Dwarka Expressway. That means a meaningful share of what an investor might separately research as \"New Gurgaon opportunity\" is already captured in the Dwarka Expressway numbers above, rather than being additional, distinct upside.",
+        "Barely. Dwarka Expressway overlaps substantially with the \"New Gurgaon\" sector range (81-115), but under HomzRealtor's own corridor matching only 9 projects carry the New Gurgaon label distinctly, against 436 for Dwarka Expressway. That means what an investor might separately research as \"New Gurgaon opportunity\" is almost entirely captured in the Dwarka Expressway numbers above, rather than being additional, distinct upside.",
     },
     {
       id: "how-this-compares-to-alternatives",
       h2: "How Does This Compare to Investing in New Gurgaon Instead?",
       contentMarkdown:
-        "It largely doesn't compare as a separate choice, because it mostly isn't one. \"New Gurgaon\" (Sectors 81-115) overlaps so heavily with Dwarka Expressway that 351 of the 560 live listings across that sector range are themselves marketed under the Dwarka Expressway name, only 209 carry the New Gurgaon label distinctly. An investor weighing \"Dwarka Expressway vs New Gurgaon\" as though they're two separate opportunities is, in practice, mostly weighing the same growth corridor against itself under two different names.\n\nThe more useful comparison is against Gurgaon's established corridors, Golf Course Road and its Extension, where the tradeoff is real: lower growth potential and higher entry price, against a corridor that's already fully built out and carries far less construction-timeline risk. Sohna Road and Southern Peripheral Road sit in a genuine middle ground on that spectrum, worth considering for investors who want less construction exposure than Dwarka Expressway but a lower entry price than Golf Course Road.",
+        "It largely doesn't compare as a separate choice, because it mostly isn't one. \"New Gurgaon\" (Sectors 81-115) overlaps so heavily with Dwarka Expressway that the overwhelming majority of live listings across that sector range are themselves marketed under the Dwarka Expressway name, only 9 carry the New Gurgaon label distinctly. An investor weighing \"Dwarka Expressway vs New Gurgaon\" as though they're two separate opportunities is, in practice, mostly weighing the same growth corridor against itself under two different names.\n\nThe more useful comparison is against Gurgaon's established corridors, Golf Course Road and its Extension, where the tradeoff is real: lower growth potential and higher entry price, against a corridor that's already fully built out and carries far less construction-timeline risk. Sohna Road and Southern Peripheral Road sit in a genuine middle ground on that spectrum, worth considering for investors who want less construction exposure than Dwarka Expressway but a lower entry price than Golf Course Road.",
       media: [
         {
           type: "diagram",
@@ -135,9 +135,8 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
           data: {
             unit: "projects",
             bars: [
-              { label: "Ready to Move", value: 249 },
-              { label: "Under Construction", value: 40 },
-              { label: "New Launch", value: 10 },
+              { label: "Ready to Move", value: 310 },
+              { label: "Under Construction / New Launch", value: 68 },
             ],
           },
         },
@@ -147,7 +146,7 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
       id: "risks-to-weigh",
       h2: "What Are the Real Risks of Investing on This Corridor?",
       contentMarkdown:
-        "The under-construction and new-launch share (50 of 299 residential projects) carries genuine possession-timeline risk, always cross-check the developer's disclosed RERA possession date against actual construction progress on the HARERA portal before committing. A corridor-wide infrastructure story doesn't guarantee any single project delivers on time, and RERA compliance varies project to project even among well-known builders.\n\nThere's also a concentration risk worth naming: because five builders account for such a large share of the corridor's live inventory, a serious execution problem at any one of them could affect a meaningful chunk of buyers on the corridor. Diversifying across builders, not just across sectors, is a reasonable risk-management step for anyone planning more than one purchase in the area. And because the corridor spans 60 sectors, generalising from one sector's experience to the whole corridor is its own quiet risk, always evaluate the specific sector, not the corridor label alone.",
+        "The under-construction and new-launch share (68 of 378 residential projects) carries genuine possession-timeline risk, always cross-check the developer's disclosed RERA possession date against actual construction progress on the HARERA portal before committing. A corridor-wide infrastructure story doesn't guarantee any single project delivers on time, and RERA compliance varies project to project even among well-known builders.\n\nThere's also a concentration risk worth naming: because five builders account for such a large share of the corridor's live inventory, a serious execution problem at any one of them could affect a meaningful chunk of buyers on the corridor. Diversifying across builders, not just across sectors, is a reasonable risk-management step for anyone planning more than one purchase in the area. And because the corridor spans 60 sectors, generalising from one sector's experience to the whole corridor is its own quiet risk, always evaluate the specific sector, not the corridor label alone.",
     },
     {
       id: "practical-diligence-checklist",
@@ -159,7 +158,7 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
       id: "who-should-invest-here",
       h2: "Who Should Actually Consider Investing on Dwarka Expressway?",
       contentMarkdown:
-        "Investors comfortable with some construction-timeline exposure, targeting the corridor's under-construction and new-launch stock at ₹1.83 Cr median pricing, are the clearest fit for a genuine growth thesis. Buyers who want certainty over upside are better served by the corridor's larger ready-to-move share (249 of 299 projects), which trades growth potential for immediate possession.\n\nA third group worth naming directly: end-users who plan to live in the property long-term rather than trade it. For that group, the investment framing matters less than practical fit, commute distance to work, school access, and whether the specific sector's infrastructure is developed enough today, not just promised for tomorrow. The corridor's high ready-to-move share means this group has genuine, inspectable options rather than having to buy on plan alone, which is a meaningfully lower-stress path into homeownership than committing capital to a project that's still years away from completion and full possession.\n\nAcross all three groups, the underlying case rests on the same real facts: completed expressway infrastructure, genuine multi-builder confidence, and a corridor mature enough that most residential stock is already built. That combination is a reasonable basis for a decision, not a guarantee of any specific return, but a considerably stronger starting point than a corridor still waiting on its core infrastructure to be planned, approved and eventually delivered years from now.",
+        "Investors comfortable with some construction-timeline exposure, targeting the corridor's under-construction and new-launch stock at ₹1.37 Cr median pricing, are the clearest fit for a genuine growth thesis. Buyers who want certainty over upside are better served by the corridor's larger ready-to-move share (310 of 378 projects), which trades growth potential for immediate possession.\n\nA third group worth naming directly: end-users who plan to live in the property long-term rather than trade it. For that group, the investment framing matters less than practical fit, commute distance to work, school access, and whether the specific sector's infrastructure is developed enough today, not just promised for tomorrow. The corridor's high ready-to-move share means this group has genuine, inspectable options rather than having to buy on plan alone, which is a meaningfully lower-stress path into homeownership than committing capital to a project that's still years away from completion and full possession.\n\nAcross all three groups, the underlying case rests on the same real facts: completed expressway infrastructure, genuine multi-builder confidence, and a corridor mature enough that most residential stock is already built. That combination is a reasonable basis for a decision, not a guarantee of any specific return, but a considerably stronger starting point than a corridor still waiting on its core infrastructure to be planned, approved and eventually delivered years from now.",
       media: [
         { type: "product_cta", text: "Browse live Dwarka Expressway investment options", url: "https://www.homzrealtor.com/project-listing/gurgaon", variant: "banner" },
       ],
@@ -172,22 +171,22 @@ export const isDwarkaExpresswayGoodForInvestment: BlogPostV27 = {
     { anchor: "Compare all Gurgaon buying corridors", url: "/blog/best-areas-to-buy-property-in-gurgaon" },
   ],
   faqs: [
-    { q: "Is Dwarka Expressway a good investment in 2026?", a: "The infrastructure case is real, NH-248BB is fully operational with a further extension approved, and 439 live projects from established builders show genuine developer confidence. The risk sits in the roughly 17% of residential inventory still under construction or newly launched; verify RERA status and possession timelines before committing." },
+    { q: "Is Dwarka Expressway a good investment in 2026?", a: "The infrastructure case is real, NH-248BB is fully operational with a further extension approved, and 436 live projects from established builders show genuine developer confidence. The risk sits in the roughly 18% of residential inventory still under construction or newly launched; verify RERA status and possession timelines before committing." },
     { q: "What infrastructure has been completed on Dwarka Expressway?", a: "NH-248BB, the formal name for Dwarka Expressway, has been fully operational since June 2025, including a 3.6 km shallow tunnel near IGI Airport. A further 8.1 km extension to Vasant Kunj has since been approved by the Union Cabinet." },
-    { q: "How much of Dwarka Expressway is still under construction?", a: "40 of the corridor's 299 residential projects are under construction and 10 are new launches, per HomzRealtor's September 2026 catalogue, about 17% of residential inventory, with the remaining 83% already ready to move." },
+    { q: "How much of Dwarka Expressway is still under construction?", a: "68 of the corridor's 378 residential projects are under construction or newly launched, per HomzRealtor's September 2026 catalogue, about 18% of residential inventory, with the remaining 82% already ready to move." },
     { q: "Which builders are investing most heavily in Dwarka Expressway?", a: "Signature Global (26 live projects), Vatika (19), M3M (14), BPTP and SS Group (11 each) currently lead the corridor by project count, reflecting genuine multi-developer confidence rather than one dominant player." },
-    { q: "Is Dwarka Expressway riskier than an established corridor like Golf Course Road?", a: "In terms of construction-timeline exposure, somewhat yes, Golf Course Road has far less under-construction stock. In exchange, Dwarka Expressway's ₹1.83 Cr median is well below Golf Course Road's ₹4.38 Cr, a genuine price/risk tradeoff rather than a simple better-or-worse comparison." },
-    { q: "Does New Gurgaon offer separate investment upside from Dwarka Expressway?", a: "Largely no, the two overlap substantially. 351 of the 560 listings in the \"New Gurgaon\" sector range are actually marketed as Dwarka Expressway, so most of the investment case is shared rather than additive." },
+    { q: "Is Dwarka Expressway riskier than an established corridor like Golf Course Road?", a: "In terms of construction-timeline exposure, somewhat yes, Golf Course Road has far less under-construction stock. In exchange, Dwarka Expressway's ₹1.37 Cr median is well below Golf Course Road's ₹3.43 Cr, a genuine price/risk tradeoff rather than a simple better-or-worse comparison." },
+    { q: "Does New Gurgaon offer separate investment upside from Dwarka Expressway?", a: "No, the two overlap substantially. Only 9 projects citywide carry the \"New Gurgaon\" label distinctly from Dwarka Expressway, so essentially all of the investment case is shared rather than additive." },
     { q: "How do I verify a Dwarka Expressway project's RERA compliance before investing?", a: "Search the project name or RERA number directly on the Haryana RERA (HARERA) portal, which shows registration status, sanctioned plans and quarterly construction progress reports, the only reliable way to confirm compliance." },
-    { q: "What's the median entry price for investing on Dwarka Expressway?", a: "₹1.83 Cr across the corridor as of September 2026, though under-construction and new-launch stock within that figure often prices below the median, since early-stage pricing typically sits under finished-stock pricing." },
+    { q: "What's the median entry price for investing on Dwarka Expressway?", a: "₹1.37 Cr across the corridor as of September 2026, though under-construction and new-launch stock within that figure often prices below the median, since early-stage pricing typically sits under finished-stock pricing." },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Dwarka Expressway's infrastructure is genuinely complete and builder activity is real, but roughly 17% of residential stock still carries construction-timeline risk, a reasonable, not risk-free, investment case.",
+    lead: "Dwarka Expressway's infrastructure is genuinely complete and builder activity is real, but roughly 18% of residential stock still carries construction-timeline risk, a reasonable, not risk-free, investment case.",
     checklist: [
       "NH-248BB fully operational since June 2025, with a further extension approved.",
-      "439 live projects from 5+ established builders signal real confidence.",
-      "50 of 299 residential projects (17%) are under construction or new launch.",
+      "436 live projects from 5+ established builders signal real confidence.",
+      "68 of 378 residential projects (18%) are under construction or new launch.",
       "New Gurgaon overlaps heavily with Dwarka Expressway, not separate upside.",
     ],
     closer: "Weigh the completed infrastructure against project-specific construction risk, not the corridor story alone.",

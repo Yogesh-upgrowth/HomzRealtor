@@ -35,7 +35,7 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
     category: "market-trends",
     tags: ["Gurgaon", "property prices", "market snapshot", "Dwarka Expressway", "Golf Course Road"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -43,38 +43,38 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
     slug: "homz-realtor-editorial-team",
     role: "Real Estate Research & Content Team",
     bioShort: "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: { name: "Homz Realtor Research Team", role: "Data & Editorial Review", reviewedAt: "2026-09-04" },
   eeat: {
     firstHandDataNote:
-      "Every price figure below is a live median computed directly from HomzRealtor's catalogue of 2,098 Gurgaon projects on 4 September 2026. This is a snapshot, not a trend line; we do not hold historical price data and will not claim a year-over-year change we cannot verify.",
+      "Every price figure below is a live median computed directly from HomzRealtor's catalogue of 2,081 Gurgaon projects on 23 September 2026. This is a snapshot, not a trend line; we do not hold historical price data and will not claim a year-over-year change we cannot verify.",
     productDataHook: {
-      propertyCount: 2098,
-      localityCount: 133,
-      avgPropertyPriceInr: 21800000,
+      propertyCount: 2081,
+      localityCount: 131,
+      avgPropertyPriceInr: 17300000,
       priceByLocality: [
-        { locality: "Dwarka Expressway", avgPriceInr: 18300000 },
-        { locality: "New Gurgaon (distinct listings)", avgPriceInr: 19200000 },
+        { locality: "Dwarka Expressway", avgPriceInr: 13650000 },
+        { locality: "New Gurgaon (distinct listings)", avgPriceInr: 19450000 },
         { locality: "Sohna Road", avgPriceInr: 21100000 },
         { locality: "Southern Peripheral Road", avgPriceInr: 23400000 },
-        { locality: "Golf Course Extension Road", avgPriceInr: 29150000 },
-        { locality: "Golf Course Road", avgPriceInr: 43800000 },
+        { locality: "Golf Course Extension Road", avgPriceInr: 24200000 },
+        { locality: "Golf Course Road", avgPriceInr: 34300000 },
       ],
-      dateRange: "Live catalogue snapshot, 4 September 2026",
+      dateRange: "Live catalogue snapshot, 23 September 2026",
     },
     sources: [
       { label: "Haryana Real Estate Regulatory Authority (HARERA), official project registration portal", url: "https://haryanarera.gov.in/", accessedAt: "2026-09-04" },
       { label: "99acres, Dwarka Expressway route, cost and completion overview", url: "https://www.99acres.com/articles/all-you-need-to-know-about-dwarka-expressway.html", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure: "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
-    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Gurgaon Property Price Trends: September 2026 Snapshot",
-    ogDescription: "Real, dated median prices across every major Gurgaon corridor, from ₹1.83 Cr on Dwarka Expressway to ₹4.38 Cr on Golf Course Road.",
+    ogDescription: "Real, dated median prices across every major Gurgaon corridor, from ₹1.37 Cr on Dwarka Expressway to ₹3.43 Cr on Golf Course Road.",
     ogImage: "https://static.squareyards.com/resources/images/gurgaon/project-image/trevoc-royal-residences-project-apartment-exteriors10-4473.jpg",
     ogImageAlt: "TREVOC Royal Residences, a residential development in Sector 56, Gurgaon",
   },
@@ -90,10 +90,10 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
   quickAnswer: {
     question: "What are current Gurgaon property prices as of September 2026?",
     answer:
-      "The citywide median listed price on HomzRealtor is ₹2.18 Cr as of a 4 September 2026 snapshot, ranging from a ₹1.83 Cr median on Dwarka Expressway to ₹4.38 Cr on Golf Course Road. This is a dated snapshot of current listings, not a historical trend line; no verified year-over-year appreciation figure is available from this data.",
+      "The citywide median listed price on HomzRealtor is ₹1.73 Cr as of a 23 September 2026 snapshot, ranging from a ₹1.37 Cr median on Dwarka Expressway to ₹3.43 Cr on Golf Course Road. This is a dated snapshot of current listings, not a historical trend line; no verified year-over-year appreciation figure is available from this data.",
   },
   introduction:
-    "Most \"Gurgaon property price trends\" content implies a trend line, prices rising X% year over year, without a genuine historical dataset behind the claim. We don't have one, and rather than invent a plausible-sounding number, this guide gives you exactly what HomzRealtor's live catalogue can honestly support: a precise, dated snapshot of current median prices across every major Gurgaon corridor, as of 4 September 2026. It's a more limited claim than a trend headline, but it's one you can actually verify against real, current listings today.\n\nThis guide walks through the citywide median, the corridor-by-corridor spread a single citywide number hides, how inventory is distributed across price bands, and what genuinely explains the gap between Gurgaon's cheapest and most expensive corridors, all grounded in HomzRealtor's own live catalogue.",
+    "Most \"Gurgaon property price trends\" content implies a trend line, prices rising X% year over year, without a genuine historical dataset behind the claim. We don't have one, and rather than invent a plausible-sounding number, this guide gives you exactly what HomzRealtor's live catalogue can honestly support: a precise, dated snapshot of current median prices across every major Gurgaon corridor, as of 23 September 2026. It's a more limited claim than a trend headline, but it's one you can actually verify against real, current listings today.\n\nThis guide walks through the citywide median, the corridor-by-corridor spread a single citywide number hides, how inventory is distributed across price bands, and what genuinely explains the gap between Gurgaon's cheapest and most expensive corridors, all grounded in HomzRealtor's own live catalogue.",
   sections: [
     {
       id: "why-this-is-a-snapshot-not-a-trend",
@@ -105,17 +105,17 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
       id: "citywide-price-snapshot",
       h2: "What Is the Citywide Median Property Price in Gurgaon Right Now?",
       contentMarkdown:
-        "Across all 2,098 live residential and commercial projects on HomzRealtor's Gurgaon catalogue, the median listed price is ₹2.18 Cr as of 4 September 2026. Listed prices span from roughly ₹6.4 Lakh at the low end to over ₹71.5 Cr at the high end, an enormous range that makes a single citywide figure a starting point only, not a number to anchor a specific budget on.\n\nThe median, rather than a simple average, is the more honest summary statistic here: a handful of ultra-luxury listings at the top end would pull an average sharply upward without reflecting what a typical buyer actually pays. The median sits at the middle of the full distribution, which is why it's the figure used throughout this guide, both citywide and per corridor.\n\nBoth residential and commercial listings feed into this citywide figure, and commercial units tend to skew the top end of the range given larger format sizes and prime-location premiums: worth knowing if you're comparing this citywide median specifically against a purely residential budget.",
+        "Across all 2,081 live residential and commercial projects on HomzRealtor's Gurgaon catalogue, the median listed price is ₹1.73 Cr as of 23 September 2026. Listed prices span from roughly ₹6.4 Lakh at the low end to over ₹71.5 Cr at the high end, an enormous range that makes a single citywide figure a starting point only, not a number to anchor a specific budget on.\n\nThe median, rather than a simple average, is the more honest summary statistic here: a handful of ultra-luxury listings at the top end would pull an average sharply upward without reflecting what a typical buyer actually pays. The median sits at the middle of the full distribution, which is why it's the figure used throughout this guide, both citywide and per corridor.\n\nBoth residential and commercial listings feed into this citywide figure, and commercial units tend to skew the top end of the range given larger format sizes and prime-location premiums: worth knowing if you're comparing this citywide median specifically against a purely residential budget.",
     },
     {
       id: "price-by-corridor",
       h2: "How Do Prices Compare Across Gurgaon's Corridors Today?",
       contentMarkdown:
-        "Corridor-level medians show far more useful variation than the citywide figure. Dwarka Expressway is the most affordable major corridor at ₹1.83 Cr; Golf Course Road is the most expensive at ₹4.38 Cr, more than double. That spread alone is the strongest argument against treating \"Gurgaon property prices\" as a single number worth quoting on its own; the corridor you're looking at matters more than the citywide figure ever could.",
+        "Corridor-level medians show far more useful variation than the citywide figure. Dwarka Expressway is the most affordable major corridor at ₹1.37 Cr; Golf Course Road is the most expensive at ₹3.43 Cr, more than double. That spread alone is the strongest argument against treating \"Gurgaon property prices\" as a single number worth quoting on its own; the corridor you're looking at matters more than the citywide figure ever could.",
       subsections: [
         {
           h3: "Dwarka Expressway and New Gurgaon: the Lower Band",
-          contentMarkdown: "Dwarka Expressway's median is ₹1.83 Cr and the distinct New Gurgaon (Sectors 81-115) pocket sits close behind at ₹1.92 Cr, the two most affordable major corridors in this snapshot, both still carrying meaningful under-construction and new-launch stock.",
+          contentMarkdown: "Dwarka Expressway's median is ₹1.37 Cr and the distinct New Gurgaon (Sectors 81-115) pocket, now a very small sample, sits at ₹1.95 Cr, the two most affordable major corridors in this snapshot, both still carrying meaningful under-construction and new-launch stock.",
         },
         {
           h3: "Sohna Road and SPR: the Middle Band",
@@ -123,7 +123,7 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
         },
         {
           h3: "Golf Course Road and Extension: the Premium Band",
-          contentMarkdown: "Golf Course Extension Road sits at ₹2.92 Cr, and Golf Course Road tops the list at ₹4.38 Cr, more than double Dwarka Expressway's median, reflecting scarce land and established infrastructure rather than recent appreciation, which this data cannot measure. Golf Course Road's inventory also skews heavily toward the top of its own range, with 51 of 65 residential listings priced above ₹2 Cr, a corridor where premium pricing is the norm, not the exception.",
+          contentMarkdown: "Golf Course Extension Road sits at ₹2.42 Cr, and Golf Course Road tops the list at ₹3.43 Cr, more than double Dwarka Expressway's median, reflecting scarce land and established infrastructure rather than recent appreciation, which this data cannot measure. Golf Course Road's inventory also skews heavily toward the top of its own range, with 51 of 65 residential listings priced above ₹2 Cr, a corridor where premium pricing is the norm, not the exception.",
         },
       ],
     },
@@ -131,33 +131,33 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
       id: "price-by-budget-segment",
       h2: "How Is Gurgaon's Inventory Distributed by Price Band?",
       contentMarkdown:
-        "Of the 1,463 residential projects in this snapshot, 1,151 carry a parsed listed price. Those break down as 73 under ₹50 Lakh, 190 between ₹50 Lakh and ₹1 Cr, 361 between ₹1 Cr and ₹2 Cr, and 527 above ₹2 Cr. The remaining 312 projects (about 21% of the 1,463) are not missing from the market; they are listed as Price on Request or carry a price this snapshot could not parse into a single comparable figure, so they sit in no band. Every percentage below is therefore stated against the 1,151 priced projects, not the full 1,463, and the real distribution could shift if those 312 were priced: unpriced inventory in this market skews toward new launches and the premium end, so the share above ₹2 Cr is more likely understated than overstated here.\n\nOn that priced base, 527 of 1,151 (about 46%) sit above ₹2 Cr, concentrated in the Golf Course corridors, while 263 of 1,151 (about 23%) sit below the ₹1 Cr mark. That last figure is worth knowing before assuming budget housing is broadly available across every corridor equally, it isn't, and it skews toward Dwarka Expressway and Sohna Road specifically.",
+        "Of the 1,761 residential projects in this snapshot, 1,426 carry a parsed listed price. Those break down as 113 under ₹50 Lakh, 237 between ₹50 Lakh and ₹1 Cr, 432 between ₹1 Cr and ₹2 Cr, and 644 above ₹2 Cr. The remaining 335 projects (about 19% of the 1,761) are not missing from the market; they are listed as Price on Request or carry a price this snapshot could not parse into a single comparable figure, so they sit in no band. Every percentage below is therefore stated against the 1,426 priced projects, not the full 1,761, and the real distribution could shift if those 335 were priced: unpriced inventory in this market skews toward new launches and the premium end, so the share above ₹2 Cr is more likely understated than overstated here.\n\nOn that priced base, 644 of 1,426 (about 45%) sit above ₹2 Cr, concentrated in the Golf Course corridors, while 350 of 1,426 (about 25%) sit below the ₹1 Cr mark. That last figure is worth knowing before assuming budget housing is broadly available across every corridor equally, it isn't, and it skews toward Dwarka Expressway and Sohna Road specifically.",
       media: [
         {
           type: "table",
-          caption: "Gurgaon median property price by corridor, live snapshot, 4 September 2026",
+          caption: "Gurgaon median property price by corridor, live snapshot, 23 September 2026",
           headers: ["Corridor", "Median Price", "Live Projects"],
           rows: [
-            ["Dwarka Expressway", "₹1.83 Cr", "439"],
-            ["New Gurgaon (distinct listings)", "₹1.92 Cr", "209"],
+            ["Dwarka Expressway", "₹1.37 Cr", "436"],
+            ["New Gurgaon (distinct listings)", "₹1.95 Cr", "9"],
             ["Sohna Road", "₹2.11 Cr", "66"],
             ["Southern Peripheral Road", "₹2.34 Cr", "97"],
-            ["Golf Course Extension Road", "₹2.92 Cr", "251"],
-            ["Golf Course Road", "₹4.38 Cr", "103"],
+            ["Golf Course Extension Road", "₹2.42 Cr", "248"],
+            ["Golf Course Road", "₹3.43 Cr", "102"],
           ],
         },
         {
           type: "diagram",
           diagramKind: "bar_chart",
           alt: "Bar chart of Gurgaon residential inventory distribution across four price bands",
-          caption: "Residential project count by price band, HomzRealtor catalogue, September 2026. Covers the 1,151 of 1,463 residential projects carrying a parsed listed price; the other 312 are Price on Request and sit in no band.",
+          caption: "Residential project count by price band, HomzRealtor catalogue, September 2026. Covers the 1,426 of 1,761 residential projects carrying a parsed listed price; the other 335 are Price on Request and sit in no band.",
           data: {
             unit: "projects",
             bars: [
-              { label: "Under ₹50L", value: 73 },
-              { label: "₹50L-1Cr", value: 190 },
-              { label: "₹1-2Cr", value: 361 },
-              { label: "Above ₹2Cr", value: 527 },
+              { label: "Under ₹50L", value: 113 },
+              { label: "₹50L-1Cr", value: 237 },
+              { label: "₹1-2Cr", value: 432 },
+              { label: "Above ₹2Cr", value: 644 },
             ],
           },
         },
@@ -167,7 +167,7 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
       id: "what-drives-the-spread",
       h2: "What Explains the Gap Between Corridors?",
       contentMarkdown:
-        "Land scarcity and infrastructure maturity, not speculation, explain most of the price spread this snapshot shows, and it's worth being explicit about what that means in practice: an established corridor's price premium reflects decades of prior development, not a signal that it will keep rising faster than a growth corridor from here. Golf Course Road has little remaining land to build on and decades of established social infrastructure, both scarce-land and mature-infrastructure effects push prices up structurally, independent of any short-term demand cycle. Dwarka Expressway, despite NH-248BB now being fully operational since June 2025, is still a comparatively newer corridor with more land available and infrastructure still maturing, both plausible, verifiable reasons for the gap, without needing an invented trend narrative to explain it.\n\nThis also means the corridor gap itself is a more stable, structural feature of the market than a short-term price movement would be, it reflects decades of accumulated development difference, not a recent shift. Don't read the ₹2.55 Cr spread between Dwarka Expressway and Golf Course Road as evidence of one corridor 'catching up' quickly; land supply and infrastructure maturity change slowly.",
+        "Land scarcity and infrastructure maturity, not speculation, explain most of the price spread this snapshot shows, and it's worth being explicit about what that means in practice: an established corridor's price premium reflects decades of prior development, not a signal that it will keep rising faster than a growth corridor from here. Golf Course Road has little remaining land to build on and decades of established social infrastructure, both scarce-land and mature-infrastructure effects push prices up structurally, independent of any short-term demand cycle. Dwarka Expressway, despite NH-248BB now being fully operational since June 2025, is still a comparatively newer corridor with more land available and infrastructure still maturing, both plausible, verifiable reasons for the gap, without needing an invented trend narrative to explain it.\n\nThis also means the corridor gap itself is a more stable, structural feature of the market than a short-term price movement would be, it reflects decades of accumulated development difference, not a recent shift. Don't read the ₹2.06 Cr spread between Dwarka Expressway and Golf Course Road as evidence of one corridor 'catching up' quickly; land supply and infrastructure maturity change slowly.",
       media: [
         {
           type: "callout",
@@ -195,27 +195,27 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
       id: "affordability-lens",
       h2: "How Should You Read These Prices Against a Real Budget?",
       contentMarkdown:
-        "A median tells you the middle of the market, not what you personally can access at a given budget. Of the 1,151 residential projects in this snapshot that carry a parsed listed price, 73 sit under ₹50 Lakh and a further 190 between ₹50 Lakh and ₹1 Cr, genuinely affordable inventory exists, just concentrated more heavily on growth corridors than established ones. If your budget sits below ₹1 Cr, Dwarka Expressway and Sohna Road are the more realistic starting points given their lower corridor medians; Golf Course Road's ₹4.38 Cr median makes sub-₹1-Cr inventory there the exception rather than the rule.\n\nConversely, if your budget comfortably clears ₹2 Cr, all six corridors covered in this guide have inventory available, and the deciding factor becomes corridor maturity and risk tolerance rather than affordability. Cross-reference this snapshot against HomzRealtor's live budget filters directly, since a specific project's price can sit well outside its corridor's median in either direction.\n\nA useful sanity check when comparing quotes: ask whether a quoted figure is per unit or per square foot, and over what carpet or super built-up area basis it's calculated. Two listings quoted at similar headline prices can differ substantially in actual space, which this snapshot's per-unit medians don't distinguish between.",
+        "A median tells you the middle of the market, not what you personally can access at a given budget. Of the 1,426 residential projects in this snapshot that carry a parsed listed price, 113 sit under ₹50 Lakh and a further 237 between ₹50 Lakh and ₹1 Cr, genuinely affordable inventory exists, just concentrated more heavily on growth corridors than established ones. If your budget sits below ₹1 Cr, Dwarka Expressway and Sohna Road are the more realistic starting points given their lower corridor medians; Golf Course Road's ₹3.43 Cr median makes sub-₹1-Cr inventory there the exception rather than the rule.\n\nConversely, if your budget comfortably clears ₹2 Cr, all six corridors covered in this guide have inventory available, and the deciding factor becomes corridor maturity and risk tolerance rather than affordability. Cross-reference this snapshot against HomzRealtor's live budget filters directly, since a specific project's price can sit well outside its corridor's median in either direction.\n\nA useful sanity check when comparing quotes: ask whether a quoted figure is per unit or per square foot, and over what carpet or super built-up area basis it's calculated. Two listings quoted at similar headline prices can differ substantially in actual space, which this snapshot's per-unit medians don't distinguish between.",
     },
     {
       id: "how-this-compares-corridor-by-corridor",
       h2: "How Do These Corridor Prices Compare in Practical Terms?",
       contentMarkdown:
-        "To make the corridor spread concrete, take a ₹2 Cr budget against each corridor's median in the table above. It sits above the Dwarka Expressway median of ₹1.83 Cr and the New Gurgaon median of ₹1.92 Cr; a little below Sohna Road's ₹2.11 Cr; below Southern Peripheral Road's ₹2.34 Cr; and well below both Golf Course Extension Road at ₹2.92 Cr and Golf Course Road at ₹4.38 Cr. Note what a median can and cannot tell you here: clearing a corridor's median means roughly half its listings sit at or below your budget, not that the corridor is broadly open to you, and sitting below a median does not shut you out of it, every corridor has inventory either side of its own middle. That's not a statement about which corridor is 'better'; it's simply where ₹2 Cr falls across Gurgaon's different micro-markets today, stated plainly rather than left implicit.\n\nFor context on how these compare to the citywide picture: Golf Course Road's ₹4.38 Cr median is almost exactly double the citywide median of ₹2.18 Cr, while Dwarka Expressway's ₹1.83 Cr sits meaningfully below it. A citywide 'Gurgaon property price' headline, without a corridor attached, could plausibly describe either end of that range, which is precisely why this guide breaks the number down rather than leading with a single citywide figure. Whichever corridor you're evaluating, anchor your own budget conversation to that corridor's specific median, not the citywide one, and revisit this snapshot's stated date before quoting any specific figure from it in a serious price negotiation with a seller, broker or developer directly.",
+        "To make the corridor spread concrete, take a ₹2 Cr budget against each corridor's median in the table above. It sits above the Dwarka Expressway median of ₹1.37 Cr and the New Gurgaon median of ₹1.95 Cr; a little below Sohna Road's ₹2.11 Cr; below Southern Peripheral Road's ₹2.34 Cr and Golf Course Extension Road's ₹2.42 Cr; and well below Golf Course Road at ₹3.43 Cr. Note what a median can and cannot tell you here: clearing a corridor's median means roughly half its listings sit at or below your budget, not that the corridor is broadly open to you, and sitting below a median does not shut you out of it, every corridor has inventory either side of its own middle. That's not a statement about which corridor is 'better'; it's simply where ₹2 Cr falls across Gurgaon's different micro-markets today, stated plainly rather than left implicit.\n\nFor context on how these compare to the citywide picture: Golf Course Road's ₹3.43 Cr median is almost exactly double the citywide median of ₹1.73 Cr, while Dwarka Expressway's ₹1.37 Cr sits meaningfully below it. A citywide 'Gurgaon property price' headline, without a corridor attached, could plausibly describe either end of that range, which is precisely why this guide breaks the number down rather than leading with a single citywide figure. Whichever corridor you're evaluating, anchor your own budget conversation to that corridor's specific median, not the citywide one, and revisit this snapshot's stated date before quoting any specific figure from it in a serious price negotiation with a seller, broker or developer directly.",
       media: [
         {
           type: "diagram",
           diagramKind: "bar_chart",
           alt: "Bar chart comparing median property price across all six Gurgaon corridors against the citywide median",
-          caption: "Corridor medians vs citywide median (₹2.18 Cr), HomzRealtor live catalogue, September 2026",
+          caption: "Corridor medians vs citywide median (₹1.73 Cr), HomzRealtor live catalogue, September 2026",
           data: {
             unit: "INR",
             bars: [
-              { label: "Citywide median", value: 21800000 },
-              { label: "Dwarka Expressway", value: 18300000 },
-              { label: "New Gurgaon", value: 19200000 },
-              { label: "Golf Course Extension Road", value: 29150000 },
-              { label: "Golf Course Road", value: 43800000 },
+              { label: "Citywide median", value: 17300000 },
+              { label: "Dwarka Expressway", value: 13650000 },
+              { label: "New Gurgaon", value: 19450000 },
+              { label: "Golf Course Extension Road", value: 24200000 },
+              { label: "Golf Course Road", value: 34300000 },
             ],
           },
         },
@@ -228,22 +228,22 @@ export const gurgaonPropertyPriceTrends2026: BlogPostV27 = {
     { anchor: "Browse live Gurgaon listings", url: "/project-listing/gurgaon" },
   ],
   faqs: [
-    { q: "What is the average property price in Gurgaon in 2026?", a: "The citywide median listed price is ₹2.18 Cr as of a 4 September 2026 snapshot from HomzRealtor's live catalogue. It varies widely by corridor, from ₹1.83 Cr on Dwarka Expressway to ₹4.38 Cr on Golf Course Road." },
+    { q: "What is the average property price in Gurgaon in 2026?", a: "The citywide median listed price is ₹1.73 Cr as of a 23 September 2026 snapshot from HomzRealtor's live catalogue. It varies widely by corridor, from ₹1.37 Cr on Dwarka Expressway to ₹3.43 Cr on Golf Course Road." },
     { q: "Are Gurgaon property prices rising in 2026?", a: "We can't verify a specific trend or appreciation percentage from this data, HomzRealtor's catalogue captures current listings only, with no historical price series. Treat any specific year-over-year figure you see elsewhere with the same scrutiny, and check whether it cites a verifiable source." },
-    { q: "Which Gurgaon corridor has the cheapest property prices?", a: "Dwarka Expressway, at a ₹1.83 Cr median, is the most affordable of the six major corridors tracked in this snapshot, followed closely by the distinct New Gurgaon pocket at ₹1.92 Cr. Both are growth-stage corridors with more under-construction and new-launch stock than the established, pricier corridors further east." },
-    { q: "Which Gurgaon corridor has the most expensive property?", a: "Golf Course Road, at a ₹4.38 Cr median, more than double Dwarka Expressway's median, reflecting scarce remaining land and long-established social infrastructure in that corridor, not a recent price spike this snapshot can measure." },
-    { q: "How much residential inventory in Gurgaon is priced above ₹2 crore?", a: "527 projects in this snapshot are priced above ₹2 Cr, about 46% of the 1,151 residential projects that carry a parsed listed price (the snapshot holds 1,463 residential projects in total; the other 312 are Price on Request or otherwise unparseable and sit in no price band). They are concentrated mainly in the Golf Course Road and Golf Course Extension Road corridors, where established infrastructure commands a real premium over the newer growth corridors." },
-    { q: "Is this price data updated regularly?", a: "This specific article reflects a snapshot dated 4 September 2026, and its 'Updated' date will only move when the underlying figures are genuinely refreshed. HomzRealtor's live listings themselves update continuously; check the live catalogue directly for the most current prices rather than relying on any single dated article for a real-time number." },
+    { q: "Which Gurgaon corridor has the cheapest property prices?", a: "Dwarka Expressway, at a ₹1.37 Cr median, is the most affordable of the six major corridors tracked in this snapshot. The distinct New Gurgaon pocket now sits higher at ₹1.95 Cr, but is too small a sample (9 projects) to read with confidence. Dwarka Expressway is a growth-stage corridor with more under-construction and new-launch stock than the established, pricier corridors further east." },
+    { q: "Which Gurgaon corridor has the most expensive property?", a: "Golf Course Road, at a ₹3.43 Cr median, more than double Dwarka Expressway's median, reflecting scarce remaining land and long-established social infrastructure in that corridor, not a recent price spike this snapshot can measure." },
+    { q: "How much residential inventory in Gurgaon is priced above ₹2 crore?", a: "644 projects in this snapshot are priced above ₹2 Cr, about 45% of the 1,426 residential projects that carry a parsed listed price (the snapshot holds 1,761 residential projects in total; the other 335 are Price on Request or otherwise unparseable and sit in no price band). They are concentrated mainly in the Golf Course Road and Golf Course Extension Road corridors, where established infrastructure commands a real premium over the newer growth corridors." },
+    { q: "Is this price data updated regularly?", a: "This specific article reflects a snapshot dated 23 September 2026, and its 'Updated' date will only move when the underlying figures are genuinely refreshed. HomzRealtor's live listings themselves update continuously; check the live catalogue directly for the most current prices rather than relying on any single dated article for a real-time number." },
     { q: "Why doesn't this guide show a price trend graph over time?", a: "Because HomzRealtor doesn't hold historical price data, only current listings. Inventing a trend line without a real historical series behind it would be dishonest, and mismatched or fabricated freshness signals are something search engines actively penalise. This guide gives you a precise, dated current snapshot instead of a guessed trend." },
-    { q: "How is the median price calculated in this snapshot?", a: "It's the median of all parsed listing prices in HomzRealtor's live Gurgaon catalogue for the relevant corridor or citywide segment, computed directly from current listing data on 4 September 2026, the middle value of all listed prices, not an average skewed by a few very high-end outliers." },
+    { q: "How is the median price calculated in this snapshot?", a: "It's the median of all parsed listing prices in HomzRealtor's live Gurgaon catalogue for the relevant corridor or citywide segment, computed directly from current listing data on 23 September 2026, the middle value of all listed prices, not an average skewed by a few very high-end outliers." },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Gurgaon's citywide median is ₹2.18 Cr, ranging from ₹1.83 Cr on Dwarka Expressway to ₹4.38 Cr on Golf Course Road, a snapshot, not a trend.",
+    lead: "Gurgaon's citywide median is ₹1.73 Cr, ranging from ₹1.37 Cr on Dwarka Expressway to ₹3.43 Cr on Golf Course Road, a snapshot, not a trend.",
     checklist: [
-      "Citywide median: ₹2.18 Cr, as of 4 September 2026.",
-      "Cheapest corridor: Dwarka Expressway at ₹1.83 Cr.",
-      "Priciest corridor: Golf Course Road at ₹4.38 Cr.",
+      "Citywide median: ₹1.73 Cr, as of 23 September 2026.",
+      "Cheapest corridor: Dwarka Expressway at ₹1.37 Cr.",
+      "Priciest corridor: Golf Course Road at ₹3.43 Cr.",
       "No verified year-over-year trend exists in this data, treat trend claims with skepticism.",
     ],
     closer: "A precise snapshot you can verify beats a vague trend claim you can't.",

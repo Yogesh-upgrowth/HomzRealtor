@@ -44,7 +44,7 @@
 // this list stays honest rather than accumulating claims nobody makes.
 
 /** When the current `value` on every claim below was measured. */
-export const STATS_MEASURED_AT = "2026-09-04";
+export const STATS_MEASURED_AT = "2026-09-23";
 
 /**
  * Corridor definitions, matched against a project's sector, micro-market and
@@ -118,51 +118,51 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
   // ── Citywide Gurgaon ────────────────────────────────────────────────────
   {
     id: "gurgaonProjectsTotal",
-    value: 2098,
+    value: 2081,
     label: "Gurgaon projects tracked",
     definition:
       "Every Gurgaon project in the catalogue, residential and commercial, after duplicate collapse and owner exclusions.",
     query: { dataset: "projects", metric: "count" },
-    appearsAs: ["2,098", "2098"],
+    appearsAs: ["2,081", "2081"],
   },
   {
     id: "gurgaonResidentialProjects",
-    value: 1463,
+    value: 1761,
     label: "Gurgaon residential projects",
     definition:
       "Gurgaon projects whose corrected category is Residential. Moves when dataQuality reclassifies a misfiled commercial record.",
     query: { dataset: "projects", category: "Residential", metric: "count" },
-    appearsAs: ["1,463", "1463"],
+    appearsAs: ["1,761", "1761"],
   },
   {
     id: "gurgaonCommercialProjects",
-    value: 635,
+    value: 320,
     label: "Gurgaon commercial projects",
     definition: "Gurgaon projects whose corrected category is Commercial.",
     query: { dataset: "projects", category: "Commercial", metric: "count" },
-    appearsAs: ["635"],
+    appearsAs: ["320"],
   },
   {
     id: "gurgaonDistinctSectors",
-    value: 133,
+    value: 131,
     label: "Distinct Gurgaon sectors with inventory",
     definition:
       "Distinct non-empty sector values across all Gurgaon projects. This is the localityCount in every eeat.productDataHook.",
     query: { dataset: "projects", metric: "distinctSectors" },
-    appearsAs: ["133"],
+    appearsAs: ["131"],
   },
   {
     id: "gurgaonMedianEntryPriceInr",
-    value: 21800000,
+    value: 17300000,
     label: "Median Gurgaon entry price",
     definition:
       "Median of the entry (lowest quoted) price across Gurgaon projects carrying a parsed price. Published as avgPropertyPriceInr, which is a schema field name, not a claim that it is a mean.",
     query: { dataset: "projects", metric: "medianEntryPriceInr" },
-    appearsAs: ["21800000"],
+    appearsAs: ["17300000"],
   },
   {
     id: "gurgaonResidentialReadyToMove",
-    value: 1190,
+    value: 1438,
     label: "Gurgaon residential projects ready to move",
     definition:
       "Residential Gurgaon projects whose status resolves to ready-to-move via projectStatusKind(). Tolerant matching, so 'Completed' and 'RTM' count.",
@@ -172,11 +172,11 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       status: "ready-to-move",
       metric: "count",
     },
-    appearsAs: ["1,190", "1190"],
+    appearsAs: ["1,438", "1438"],
   },
   {
     id: "gurgaonResidentialUnderConstruction",
-    value: 191,
+    value: 220,
     label: "Gurgaon residential projects under construction",
     definition: "Residential Gurgaon projects whose status resolves to under-construction.",
     query: {
@@ -185,11 +185,11 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       status: "under-construction",
       metric: "count",
     },
-    appearsAs: ["191"],
+    appearsAs: ["220"],
   },
   {
     id: "gurgaonResidentialNewLaunch",
-    value: 58,
+    value: 79,
     label: "Gurgaon residential new launches",
     definition: "Residential Gurgaon projects whose status resolves to new-launch.",
     query: {
@@ -198,20 +198,20 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       status: "new-launch",
       metric: "count",
     },
-    appearsAs: ["58"],
+    appearsAs: ["79"],
   },
   {
     id: "gurgaonResidentialWithPrice",
-    value: 1151,
+    value: 1426,
     label: "Gurgaon residential projects carrying a parsed price",
     definition:
-      "Residential Gurgaon projects with a parsed entry price. This is the denominator the price-trends article's corridor bands actually cover — the article states 1,463 and sums to this, leaving the gap unexplained.",
+      "Residential Gurgaon projects with a parsed entry price. This is the denominator the price-trends article's corridor bands actually cover — the article states the full residential total and sums to this, leaving the gap (unpriced projects) stated separately.",
     query: { dataset: "projects", category: "Residential", metric: "countWithPrice" },
-    appearsAs: ["1,151", "1151"],
+    appearsAs: ["1,426", "1426"],
   },
   {
     id: "gurgaonResidentialUnder1Cr",
-    value: 263,
+    value: 350,
     label: "Gurgaon residential projects with an entry unit under ₹1 Cr",
     definition: "Residential Gurgaon projects whose entry price is below ₹1 crore.",
     query: {
@@ -220,38 +220,38 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       maxEntryPriceInr: 10000000,
       metric: "count",
     },
-    appearsAs: ["263"],
+    appearsAs: ["350"],
   },
   {
     id: "gurgaonProjectsUnder2Cr",
-    value: 624,
+    value: 909,
     label: "Gurgaon projects with an entry unit under ₹2 Cr",
     definition:
-      "All Gurgaon projects (both categories) whose entry price is below ₹2 crore — the article says 'of 2,098 Gurgaon projects', so the denominator is the full catalogue.",
+      "All Gurgaon projects (both categories) whose entry price is below ₹2 crore — the article says 'of N Gurgaon projects', so the denominator is the full catalogue (gurgaonProjectsTotal).",
     query: { dataset: "projects", maxEntryPriceInr: 20000000, metric: "count" },
-    appearsAs: ["624"],
+    appearsAs: ["909"],
   },
   {
     id: "gurgaonLuxuryProjects",
-    value: 374,
+    value: 185,
     label: "Gurgaon projects quoting ₹5 Cr or above",
     definition: "Gurgaon projects whose entry price is ₹5 crore or more.",
     query: { dataset: "projects", minEntryPriceInr: 50000000, metric: "count" },
-    appearsAs: ["374"],
+    appearsAs: ["185"],
   },
 
   // ── Dwarka Expressway ───────────────────────────────────────────────────
   {
     id: "dwarkaExpresswayProjects",
-    value: 439,
+    value: 436,
     label: "Dwarka Expressway projects",
     definition: "Gurgaon projects matching the Dwarka Expressway corridor pattern, both categories.",
     query: { dataset: "projects", corridor: "dwarka-expressway", metric: "count" },
-    appearsAs: ["439"],
+    appearsAs: ["436"],
   },
   {
     id: "dwarkaExpresswayResidential",
-    value: 299,
+    value: 378,
     label: "Dwarka Expressway residential projects",
     definition: "Dwarka Expressway projects whose corrected category is Residential.",
     query: {
@@ -260,11 +260,11 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       category: "Residential",
       metric: "count",
     },
-    appearsAs: ["299"],
+    appearsAs: ["378"],
   },
   {
     id: "dwarkaExpresswayCommercial",
-    value: 140,
+    value: 58,
     label: "Dwarka Expressway commercial projects",
     definition: "Dwarka Expressway projects whose corrected category is Commercial.",
     query: {
@@ -273,11 +273,11 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       category: "Commercial",
       metric: "count",
     },
-    appearsAs: ["140"],
+    appearsAs: ["58"],
   },
   {
     id: "dwarkaExpresswayReadyToMove",
-    value: 249,
+    value: 310,
     label: "Dwarka Expressway residential projects ready to move",
     definition: "Dwarka Expressway residential projects whose status resolves to ready-to-move.",
     query: {
@@ -287,7 +287,7 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       status: "ready-to-move",
       metric: "count",
     },
-    appearsAs: ["249"],
+    appearsAs: ["310"],
   },
   {
     id: "dwarkaExpresswaySectors",
@@ -299,7 +299,7 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
   },
   {
     id: "dwarkaExpresswayMedianEntryPriceInr",
-    value: 18300000,
+    value: 13650000,
     label: "Dwarka Expressway median entry price",
     definition: "Median entry price across Dwarka Expressway projects carrying a parsed price.",
     query: {
@@ -307,21 +307,21 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       corridor: "dwarka-expressway",
       metric: "medianEntryPriceInr",
     },
-    appearsAs: ["18300000"],
+    appearsAs: ["13650000"],
   },
 
   // ── New Gurgaon ─────────────────────────────────────────────────────────
   {
     id: "newGurgaonProjects",
-    value: 209,
+    value: 9,
     label: "New Gurgaon projects",
     definition: "Gurgaon projects matching the New Gurgaon corridor pattern, both categories.",
     query: { dataset: "projects", corridor: "new-gurgaon", metric: "count" },
-    appearsAs: ["209"],
+    appearsAs: ["just 9 projects carrying the New Gurgaon label distinctly", "Only 9 projects carry the New Gurgaon label distinctly"],
   },
   {
     id: "newGurgaonResidential",
-    value: 141,
+    value: 6,
     label: "New Gurgaon residential projects",
     definition: "New Gurgaon projects whose corrected category is Residential.",
     query: {
@@ -330,11 +330,11 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       category: "Residential",
       metric: "count",
     },
-    appearsAs: ["141"],
+    appearsAs: ["6 residential", "6 are residential"],
   },
   {
     id: "newGurgaonReadyToMove",
-    value: 96,
+    value: 3,
     label: "New Gurgaon residential projects ready to move",
     definition: "New Gurgaon residential projects whose status resolves to ready-to-move.",
     query: {
@@ -344,54 +344,54 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       status: "ready-to-move",
       metric: "count",
     },
-    appearsAs: ["96"],
+    appearsAs: ["3 are ready to move", "3 ready to move"],
   },
   {
     id: "newGurgaonSectors",
-    value: 34,
+    value: 8,
     label: "New Gurgaon distinct sectors",
     definition: "Distinct sector values across New Gurgaon projects.",
     query: { dataset: "projects", corridor: "new-gurgaon", metric: "distinctSectors" },
-    appearsAs: ["34"],
+    appearsAs: ["8 sectors", "across 8"],
   },
   {
     id: "newGurgaonMedianEntryPriceInr",
-    value: 19200000,
+    value: 19450000,
     label: "New Gurgaon median entry price",
     definition: "Median entry price across New Gurgaon projects carrying a parsed price.",
     query: { dataset: "projects", corridor: "new-gurgaon", metric: "medianEntryPriceInr" },
-    appearsAs: ["19200000"],
+    appearsAs: ["19450000"],
   },
 
   // ── Golf Course Road and Extension ──────────────────────────────────────
   {
     id: "golfCourseRoadProjects",
-    value: 103,
+    value: 102,
     label: "Golf Course Road projects",
     definition:
       "Gurgaon projects matching the Golf Course Road pattern. The extension pattern is tested first, so Golf Course Extension Road projects are NOT counted here.",
     query: { dataset: "projects", corridor: "golf-course-road", metric: "count" },
-    appearsAs: ["103"],
+    appearsAs: ["102"],
   },
   {
     id: "golfCourseRoadMedianEntryPriceInr",
-    value: 43800000,
+    value: 34300000,
     label: "Golf Course Road median entry price",
     definition: "Median entry price across Golf Course Road projects carrying a parsed price.",
     query: { dataset: "projects", corridor: "golf-course-road", metric: "medianEntryPriceInr" },
-    appearsAs: ["43800000"],
+    appearsAs: ["34300000"],
   },
   {
     id: "golfCourseExtensionProjects",
-    value: 251,
+    value: 248,
     label: "Golf Course Extension Road projects",
     definition: "Gurgaon projects matching the Golf Course Extension Road pattern.",
     query: { dataset: "projects", corridor: "golf-course-extension-road", metric: "count" },
-    appearsAs: ["251"],
+    appearsAs: ["248"],
   },
   {
     id: "golfCourseExtensionMedianEntryPriceInr",
-    value: 29150000,
+    value: 24200000,
     label: "Golf Course Extension Road median entry price",
     definition:
       "Median entry price across Golf Course Extension Road projects carrying a parsed price.",
@@ -400,35 +400,35 @@ export const CATALOGUE_STATS: CatalogueStat[] = [
       corridor: "golf-course-extension-road",
       metric: "medianEntryPriceInr",
     },
-    appearsAs: ["29150000"],
+    appearsAs: ["24200000"],
   },
 
   // ── Listings-level (BHK) ────────────────────────────────────────────────
   {
     id: "gurgaon3BhkListings",
-    value: 9440,
+    value: 9691,
     label: "Gurgaon 3 BHK sale listings",
     definition:
       "Sale listings in Gurgaon with three bedrooms, after the sanitizer drops competitor content and corrects misfiled types. A listing count, not a project count.",
     query: { dataset: "listings", bhk: 3, metric: "count" },
-    appearsAs: ["9440", "9,440"],
+    appearsAs: ["9691", "9,691"],
   },
   {
     id: "gurgaon4BhkListings",
-    value: 4413,
+    value: 4604,
     label: "Gurgaon 4 BHK sale listings",
     definition: "Sale listings in Gurgaon with four bedrooms, same pipeline as the 3 BHK count.",
     query: { dataset: "listings", bhk: 4, metric: "count" },
-    appearsAs: ["4413", "4,413"],
+    appearsAs: ["4604", "4,604"],
   },
 
   // ── Developers ──────────────────────────────────────────────────────────
   {
     id: "gurgaonVerifiedDevelopers",
-    value: 0,
+    value: 43,
     label: "Confirmed developers with a Gurgaon hub",
     definition:
-      "Developer hubs that are 'verified' — in the canonical table (lib/content/developers.ts) and clearing the two-project floor. Declared at 0 because no published sentence states this number yet; the checker reports the live value so a claim can be written from a measured figure rather than an estimated one.",
+      "Developer hubs that are 'verified' — in the canonical table (lib/content/developers.ts) and clearing the two-project floor. No published sentence states this number yet (appearsAs stays empty by design); the checker reports the live value so a claim can be written from a measured figure rather than an estimated one, if and when someone writes one.",
     query: { dataset: "projects", metric: "verifiedDevelopers" },
     appearsAs: [],
   },

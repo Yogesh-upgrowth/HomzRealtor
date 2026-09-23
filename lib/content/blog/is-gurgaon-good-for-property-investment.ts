@@ -24,7 +24,7 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
     category: "property-investment",
     tags: ["Gurgaon", "property investment", "Dwarka Expressway", "employment hubs", "connectivity"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 8,
   },
   author: {
@@ -32,16 +32,16 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
     slug: "homz-realtor-editorial-team",
     role: "Real Estate Research & Content Team",
     bioShort: "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects (September 2026).",
   },
   reviewer: { name: "Homz Realtor Research Team", role: "Data & Editorial Review", reviewedAt: "2026-09-04" },
   eeat: {
     firstHandDataNote:
-      "This guide's supply-side evidence, new-launch pipeline size, possession-status mix, corridor pricing, comes directly from HomzRealtor's live catalogue of 2,098 Gurgaon projects, snapshotted 4 September 2026. We do not claim a specific appreciation percentage, since no verified historical price series exists in this data.",
+      "This guide's supply-side evidence, new-launch pipeline size, possession-status mix, corridor pricing, comes directly from HomzRealtor's live catalogue of 2,081 Gurgaon projects, snapshotted 23 September 2026. We do not claim a specific appreciation percentage, since no verified historical price series exists in this data.",
     productDataHook: {
-      propertyCount: 2098,
-      localityCount: 133,
-      avgPropertyPriceInr: 21800000,
+      propertyCount: 2081,
+      localityCount: 131,
+      avgPropertyPriceInr: 17300000,
       dateRange: "Live catalogue snapshot, September 2026",
     },
     sources: [
@@ -50,9 +50,9 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
       { label: "Dwarka Expressway (NH-248BB), route and completion overview", url: "https://en.wikipedia.org/wiki/Dwarka_Expressway", accessedAt: "2026-09-04" },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure: "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
-    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+    aiAssistanceDisclosure: "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Is Gurgaon Good for Property Investment in 2026?",
@@ -72,10 +72,10 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
   quickAnswer: {
     question: "Is Gurgaon good for property investment in 2026?",
     answer:
-      "Gurgaon's case rests on real fundamentals: dense MNC/IT employment, Delhi Airport connectivity, and a now-fully-operational Dwarka Expressway opening new growth corridors. HomzRealtor tracks 2,098 active projects citywide, genuine market depth. Whether it's 'good' for you depends on your risk tolerance and corridor choice.",
+      "Gurgaon's case rests on real fundamentals: dense MNC/IT employment, Delhi Airport connectivity, and a now-fully-operational Dwarka Expressway opening new growth corridors. HomzRealtor tracks 2,081 active projects citywide, genuine market depth. Whether it's 'good' for you depends on your risk tolerance and corridor choice.",
   },
   introduction:
-    "\"Is Gurgaon good for property investment\" gets asked constantly, and most answers lean on vague optimism rather than checkable evidence. This guide takes the opposite approach: it lays out the real, verifiable fundamentals behind Gurgaon's investment case, employment density, infrastructure completion, and current supply depth, using HomzRealtor's live catalogue of 2,098 Gurgaon projects as of September 2026. It also names the real risks plainly, rather than glossing over them, so you can weigh Gurgaon's case on its actual merits.\n\nThis isn't a single yes-or-no answer, because Gurgaon isn't a single market, a growth-stage corridor like Dwarka Expressway and an established one like Golf Course Road carry genuinely different risk and return profiles under the same city name. What follows breaks the investment case into its component parts, employment, infrastructure, current supply, and where the growth story is actually strongest within the city, so you can judge for yourself rather than accept a blanket verdict.",
+    "\"Is Gurgaon good for property investment\" gets asked constantly, and most answers lean on vague optimism rather than checkable evidence. This guide takes the opposite approach: it lays out the real, verifiable fundamentals behind Gurgaon's investment case, employment density, infrastructure completion, and current supply depth, using HomzRealtor's live catalogue of 2,081 Gurgaon projects as of September 2026. It also names the real risks plainly, rather than glossing over them, so you can weigh Gurgaon's case on its actual merits.\n\nThis isn't a single yes-or-no answer, because Gurgaon isn't a single market, a growth-stage corridor like Dwarka Expressway and an established one like Golf Course Road carry genuinely different risk and return profiles under the same city name. What follows breaks the investment case into its component parts, employment, infrastructure, current supply, and where the growth story is actually strongest within the city, so you can judge for yourself rather than accept a blanket verdict.",
   sections: [
     {
       id: "the-employment-case",
@@ -93,16 +93,16 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
       id: "the-supply-side-evidence",
       h2: "What Does Current Supply Tell You About Investor Interest?",
       contentMarkdown:
-        "2,098 residential and commercial projects are live on HomzRealtor's Gurgaon catalogue today, across 133 sectors, genuine market depth, not a handful of headline launches. 58 residential projects are new launches and 191 are under construction, evidence that developers are actively committing new capital to the market right now, not just selling down existing inventory.\n\nThat 249-project active pipeline (new launch plus under construction) is itself a meaningful signal: developers are not conservative actors, and a large number of them committing capital to new Gurgaon projects simultaneously is a reasonable proxy for genuine confidence in future demand, even without a verified appreciation figure to point to directly.",
+        "2,081 residential and commercial projects are live on HomzRealtor's Gurgaon catalogue today, across 131 sectors, genuine market depth, not a handful of headline launches. 79 residential projects are new launches and 220 are under construction, evidence that developers are actively committing new capital to the market right now, not just selling down existing inventory.\n\nThat 299-project active pipeline (new launch plus under construction) is itself a meaningful signal: developers are not conservative actors, and a large number of them committing capital to new Gurgaon projects simultaneously is a reasonable proxy for genuine confidence in future demand, even without a verified appreciation figure to point to directly.",
       media: [
         {
           type: "table",
           caption: "Gurgaon residential supply pipeline, live snapshot (HomzRealtor, September 2026)",
           headers: ["Status", "Projects", "Share of Residential"],
           rows: [
-            ["Ready to move", "1,190", "81%"],
-            ["Under construction", "191", "13%"],
-            ["New launch", "58", "4%"],
+            ["Ready to move", "1,438", "82%"],
+            ["Under construction", "220", "12%"],
+            ["New launch", "79", "4%"],
           ],
         },
       ],
@@ -111,7 +111,7 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
       id: "where-the-growth-story-is-strongest",
       h2: "Where Is the Growth Story Strongest Within Gurgaon?",
       contentMarkdown:
-        "Dwarka Expressway and the distinct New Gurgaon pocket (Sectors 81-115, 209 listings with no other corridor label) carry the largest share of active new-launch and under-construction stock relative to their size, and the lowest medians of any corridor (₹1.83 Cr and ₹1.92 Cr respectively), the combination that typically defines a growth-stage market. Established corridors like Golf Course Road, by contrast, offer certainty and infrastructure maturity rather than growth-stage pricing.\n\nThis is a genuine city-within-a-city dynamic: an investor in 2026 Gurgaon isn't choosing a single market-wide bet, but picking a point on a spectrum from \"mature and expensive\" to \"developing and comparatively cheap,\" with real, checkable data behind where each corridor currently sits on that spectrum.",
+        "Dwarka Expressway and the distinct New Gurgaon pocket (Sectors 81-115, just 9 projects with no other corridor label) carry the largest share of active new-launch and under-construction stock relative to their size, and the lowest medians of any corridor (₹1.37 Cr and ₹1.95 Cr respectively, though New Gurgaon's distinct set is now just 9 projects, too small to read with confidence on its own), the combination that typically defines a growth-stage market. Established corridors like Golf Course Road, by contrast, offer certainty and infrastructure maturity rather than growth-stage pricing.\n\nThis is a genuine city-within-a-city dynamic: an investor in 2026 Gurgaon isn't choosing a single market-wide bet, but picking a point on a spectrum from \"mature and expensive\" to \"developing and comparatively cheap,\" with real, checkable data behind where each corridor currently sits on that spectrum.",
       media: [
         {
           type: "diagram",
@@ -119,8 +119,8 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
           alt: "Split comparison of growth-stage corridors (Dwarka Expressway, New Gurgaon) against established corridors (Golf Course Road) on price and construction risk",
           caption: "Growth-stage vs established corridors, HomzRealtor catalogue, September 2026",
           data: {
-            left: { label: "Growth-stage (Dwarka Expressway, New Gurgaon)", medianPriceInr: 18300000, readyToMoveShare: 0.79 },
-            right: { label: "Established (Golf Course Road)", medianPriceInr: 43800000, readyToMoveShare: 0.86 },
+            left: { label: "Growth-stage (Dwarka Expressway, New Gurgaon)", medianPriceInr: 13650000, readyToMoveShare: 0.82 },
+            right: { label: "Established (Golf Course Road)", medianPriceInr: 34300000, readyToMoveShare: 0.86 },
           },
         },
       ],
@@ -129,7 +129,7 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
       id: "the-real-risks",
       h2: "What Are the Real Risks of Investing in Gurgaon?",
       contentMarkdown:
-        "Be honest about what this data can't tell you: it can't verify a specific appreciation rate, since no historical price series exists here. Construction-timeline risk is real on growth corridors, 40 Dwarka Expressway residential projects are still under construction, and delays beyond a developer's disclosed RERA timeline are a genuine, recurring risk in Indian real estate, not a hypothetical one. RERA registration status varies project to project regardless of corridor reputation, and a correctly formatted RERA ID is not proof of active registration. Any investment case built on a single corridor's popularity alone, without checking the specific project, is incomplete.\n\nLiquidity risk is worth naming too: a premium, established corridor like Golf Course Road tends to have a deeper resale market than a still-developing one, simply because more buyers are actively looking there. A growth-stage corridor's lower entry price can come with a thinner resale market if you need to exit before the area fully matures.\n\nRegulatory and taxation changes are a further risk category worth acknowledging plainly, even though this guide won't speculate on specific future changes, stamp duty rates, capital gains treatment and RERA rules can all shift over an investment's holding period, and none of that is captured in a snapshot of current listing prices.",
+        "Be honest about what this data can't tell you: it can't verify a specific appreciation rate, since no historical price series exists here. Construction-timeline risk is real on growth corridors, 68 Dwarka Expressway residential projects are still under construction or newly launched, and delays beyond a developer's disclosed RERA timeline are a genuine, recurring risk in Indian real estate, not a hypothetical one. RERA registration status varies project to project regardless of corridor reputation, and a correctly formatted RERA ID is not proof of active registration. Any investment case built on a single corridor's popularity alone, without checking the specific project, is incomplete.\n\nLiquidity risk is worth naming too: a premium, established corridor like Golf Course Road tends to have a deeper resale market than a still-developing one, simply because more buyers are actively looking there. A growth-stage corridor's lower entry price can come with a thinner resale market if you need to exit before the area fully matures.\n\nRegulatory and taxation changes are a further risk category worth acknowledging plainly, even though this guide won't speculate on specific future changes, stamp duty rates, capital gains treatment and RERA rules can all shift over an investment's holding period, and none of that is captured in a snapshot of current listing prices.",
       media: [
         {
           type: "callout",
@@ -163,7 +163,7 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
       id: "timing-the-decision",
       h2: "Is There a Right Time to Invest in Gurgaon?",
       contentMarkdown:
-        "There's no single \"best time\" that applies to every buyer, it depends more on which stage of a project's lifecycle you're buying into than on a citywide market-timing call. Pre-launch and early under-construction stock is typically the cheapest entry point but carries the most construction-timeline risk. Buying once a project is a couple of years into construction, after surrounding infrastructure has caught up, often represents a more defensible middle ground. Ready-to-move stock removes construction risk entirely but costs the most.\n\nGiven that 191 residential projects citywide are currently under construction and 58 are new launches; there's no shortage of pre-completion entry points if that's the stage you want. Whichever stage you choose, anchor your decision to the specific project's disclosed RERA timeline and actual construction progress, not a general sense that \"now is a good time\" for the city as a whole.",
+        "There's no single \"best time\" that applies to every buyer, it depends more on which stage of a project's lifecycle you're buying into than on a citywide market-timing call. Pre-launch and early under-construction stock is typically the cheapest entry point but carries the most construction-timeline risk. Buying once a project is a couple of years into construction, after surrounding infrastructure has caught up, often represents a more defensible middle ground. Ready-to-move stock removes construction risk entirely but costs the most.\n\nGiven that 220 residential projects citywide are currently under construction and 79 are new launches; there's no shortage of pre-completion entry points if that's the stage you want. Whichever stage you choose, anchor your decision to the specific project's disclosed RERA timeline and actual construction progress, not a general sense that \"now is a good time\" for the city as a whole.",
     },
     {
       id: "comparing-to-alternatives",
@@ -179,8 +179,8 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
           data: {
             unit: "count",
             bars: [
-              { label: "Dwarka Expressway", value: 50 },
-              { label: "New Gurgaon", value: 45 },
+              { label: "Dwarka Expressway", value: 68 },
+              { label: "New Gurgaon", value: 3 },
               { label: "Golf Course Extension Road", value: 19 },
               { label: "Southern Peripheral Road", value: 13 },
               { label: "Sohna Road", value: 3 },
@@ -197,22 +197,22 @@ export const isGurgaonGoodForPropertyInvestment: BlogPostV27 = {
     { anchor: "Browse verified developers building in Gurgaon", url: "/developer" },
   ],
   faqs: [
-    { q: "Is Gurgaon a good place to invest in property in 2026?", a: "The fundamentals are real and verifiable: dense employment, a now-fully-operational Dwarka Expressway, and 2,098 live projects showing active developer investment. Whether it's 'good' depends on your risk tolerance and the specific corridor and project you choose, this guide doesn't claim a guaranteed return." },
+    { q: "Is Gurgaon a good place to invest in property in 2026?", a: "The fundamentals are real and verifiable: dense employment, a now-fully-operational Dwarka Expressway, and 2,081 live projects showing active developer investment. Whether it's 'good' depends on your risk tolerance and the specific corridor and project you choose, this guide doesn't claim a guaranteed return." },
     { q: "What makes Gurgaon's real estate market different from other NCR cities?", a: "Its employment density, Cyber City, Udyog Vihar and the Golf Course Road corporate belt hold one of North India's densest MNC and IT employer concentrations, is the main structural differentiator, underwriting genuine end-user housing demand rather than purely speculative demand." },
-    { q: "How much new supply is currently being built in Gurgaon?", a: "58 residential projects are currently new launches and 191 are under construction on HomzRealtor's live catalogue, out of 1,463 total residential projects, evidence of active ongoing development, not a stalled market." },
-    { q: "Is Dwarka Expressway a better investment than Golf Course Road?", a: "They serve different investment profiles. Dwarka Expressway (₹1.83 Cr median) offers a lower entry price and more construction-timeline risk, typical of a growth corridor. Golf Course Road (₹4.38 Cr median) offers established infrastructure and certainty at a premium. Neither is objectively 'better', it depends on your risk tolerance." },
+    { q: "How much new supply is currently being built in Gurgaon?", a: "79 residential projects are currently new launches and 220 are under construction on HomzRealtor's live catalogue, out of 1,761 total residential projects, evidence of active ongoing development, not a stalled market." },
+    { q: "Is Dwarka Expressway a better investment than Golf Course Road?", a: "They serve different investment profiles. Dwarka Expressway (₹1.37 Cr median) offers a lower entry price and more construction-timeline risk, typical of a growth corridor. Golf Course Road (₹3.43 Cr median) offers established infrastructure and certainty at a premium. Neither is objectively 'better', it depends on your risk tolerance." },
     { q: "What is the biggest risk of investing in Gurgaon real estate?", a: "Construction-timeline risk on growth corridors, and RERA compliance risk at the individual project level, a corridor's overall reputation doesn't guarantee any specific project's registration status or delivery timeline. Always verify project-by-project." },
     { q: "Does Gurgaon property appreciate reliably?", a: "We can't verify a specific appreciation figure from HomzRealtor's data, since it captures current listings only, not historical price points. Treat any specific appreciation percentage you see elsewhere with scrutiny unless it cites a verifiable source." },
-    { q: "How many projects does HomzRealtor track in Gurgaon?", a: "2,098 residential and commercial projects as of a 4 September 2026 snapshot, spread across 133 distinct sectors, genuine breadth of coverage, not a curated handful of headline listings picked to make the city look busier than it is." },
+    { q: "How many projects does HomzRealtor track in Gurgaon?", a: "2,081 residential and commercial projects as of a 23 September 2026 snapshot, spread across 131 distinct sectors, genuine breadth of coverage, not a curated handful of headline listings picked to make the city look busier than it is." },
     { q: "What infrastructure development is driving Gurgaon's growth right now?", a: "The Dwarka Expressway (NH-248BB) became fully operational in June 2025, and the Union Cabinet has since approved a further 8.1 km extension to Vasant Kunj at an estimated ₹6,970 crore, concrete, ongoing infrastructure investment, not a one-off completion. That kind of sustained capital commitment is a more durable growth signal than any single price data point could be." },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Gurgaon's investment case rests on real employment density and ongoing infrastructure investment, with 2,098 live projects showing genuine market depth, but no verified appreciation figure exists, and risk varies sharply by corridor and project.",
+    lead: "Gurgaon's investment case rests on real employment density and ongoing infrastructure investment, with 2,081 live projects showing genuine market depth, but no verified appreciation figure exists, and risk varies sharply by corridor and project.",
     checklist: [
       "Employment density (Cyber City, Udyog Vihar) underwrites real demand.",
       "NH-248BB now fully operational, with further extension approved.",
-      "58 new launches and 191 under-construction projects show active building.",
+      "79 new launches and 220 under-construction projects show active building.",
       "Always verify RERA status project-by-project, regardless of corridor reputation.",
     ],
     closer: "Gurgaon's fundamentals are real, but match your corridor choice to your actual risk tolerance, not to hype.",

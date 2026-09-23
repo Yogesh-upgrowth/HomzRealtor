@@ -21,13 +21,13 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
     h1: "Golf Course Road vs Dwarka Expressway: Which Should You Buy?",
     metaDescription:
       "Established luxury vs. growth corridor, real project counts, prices and possession data for Golf Course Road and Dwarka Expressway, compared.",
-    standfirst: "₹4.38 Cr median vs ₹1.83 Cr, the real gap between Gurgaon's two most-discussed corridors.",
+    standfirst: "₹3.43 Cr median vs ₹1.37 Cr, the real gap between Gurgaon's two most-discussed corridors.",
     primaryKeyword: "Golf Course Road vs Dwarka Expressway",
     secondaryKeywords: ["Gurgaon corridor comparison", "Golf Course Road Gurgaon", "Dwarka Expressway property"],
     category: "comparisons",
     tags: ["Golf Course Road", "Dwarka Expressway", "Gurgaon", "property comparison"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 10,
   },
   author: {
@@ -35,7 +35,7 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
     slug: "homz-realtor-editorial-team",
     role: "Real Estate Research & Content Team",
     bioShort: "HomzRealtor's editorial team writes Gurgaon comparison guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 103 Golf Course Road and 439 Dwarka Expressway listings (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 102 Golf Course Road and 436 Dwarka Expressway listings (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -44,14 +44,14 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every project count and price figure in this guide comes from HomzRealtor's live catalogue for both corridors, queried and snapshotted on 4 September 2026.",
+      "Every project count and price figure in this guide comes from HomzRealtor's live catalogue for both corridors, queried and snapshotted on 23 September 2026.",
     productDataHook: {
-      propertyCount: 542,
-      localityCount: 81,
-      avgPropertyPriceInr: 31050000,
+      propertyCount: 538,
+      localityCount: 82,
+      avgPropertyPriceInr: 23975000,
       priceByLocality: [
-        { locality: "Golf Course Road", avgPriceInr: 43800000 },
-        { locality: "Dwarka Expressway", avgPriceInr: 18300000 },
+        { locality: "Golf Course Road", avgPriceInr: 34300000 },
+        { locality: "Dwarka Expressway", avgPriceInr: 13650000 },
       ],
       topLocalitiesReferenced: ["Sector 56", "Sector 54", "Sector 102", "Sector 37D", "Sector 53"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -69,11 +69,11 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour either corridor.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Golf Course Road vs Dwarka Expressway: Compared",
@@ -93,28 +93,28 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
   quickAnswer: {
     question: "Should I buy on Golf Course Road or Dwarka Expressway?",
     answer:
-      "It depends on what you're optimising for. Golf Course Road (₹4.38 Cr median, 86% ready to move) offers mature infrastructure and near-zero construction risk. Dwarka Expressway (₹1.83 Cr median, more new-launch activity) offers a lower entry price and more growth potential as NH-248BB matures. Neither is objectively better.",
+      "It depends on what you're optimising for. Golf Course Road (₹3.43 Cr median, 86% ready to move) offers mature infrastructure and near-zero construction risk. Dwarka Expressway (₹1.37 Cr median, more new-launch activity) offers a lower entry price and more growth potential as NH-248BB matures. Neither is objectively better.",
   },
   introduction:
-    "Golf Course Road and Dwarka Expressway are Gurgaon's two most-discussed corridors, and buyers often frame the choice as a simple upgrade decision, but the live data shows they're really two different products. Golf Course Road carries a ₹4.38 Cr median price across 103 established, overwhelmingly ready-to-move projects. Dwarka Expressway carries a ₹1.83 Cr median across 439 projects with meaningfully more construction and new-launch activity still underway. This guide compares them directly on the numbers, then lays out plainly who each corridor actually suits.\n\nBoth figures come from the same live HomzRealtor catalogue snapshot, dated 4 September 2026, so the comparison reflects what's actually listed today rather than reputation or marketing language from either corridor. This isn't a case of one corridor simply being an upgraded version of the other, the data below shows two genuinely different products serving different buyer priorities.",
+    "Golf Course Road and Dwarka Expressway are Gurgaon's two most-discussed corridors, and buyers often frame the choice as a simple upgrade decision, but the live data shows they're really two different products. Golf Course Road carries a ₹3.43 Cr median price across 102 established, overwhelmingly ready-to-move projects. Dwarka Expressway carries a ₹1.37 Cr median across 436 projects with meaningfully more construction and new-launch activity still underway. This guide compares them directly on the numbers, then lays out plainly who each corridor actually suits.\n\nBoth figures come from the same live HomzRealtor catalogue snapshot, dated 4 September 2026, so the comparison reflects what's actually listed today rather than reputation or marketing language from either corridor. This isn't a case of one corridor simply being an upgraded version of the other, the data below shows two genuinely different products serving different buyer priorities.",
   sections: [
     {
       id: "the-headline-numbers",
       h2: "How Do Golf Course Road and Dwarka Expressway Compare Head to Head?",
       contentMarkdown:
-        "The gap is stark: Golf Course Road's median price is more than double Dwarka Expressway's, while Dwarka Expressway carries over four times the live inventory and roughly two and a half times the sector coverage. These aren't small differences in degree, they reflect two corridors at genuinely different stages of development.\n\nEven the price floors and ceilings tell different stories: Golf Course Road's range runs ₹21 Lakh to ₹68.79 Cr (a small-commercial-unit floor pulling the bottom down, and an ultra-luxury ceiling pulling the top up), while Dwarka Expressway's tighter ₹9.5 Lakh-₹31.82 Cr range reflects a corridor without Golf Course Road's small handful of super-premium outliers.\n\nThe sector-coverage gap matters practically too: Dwarka Expressway's 59 sectors give buyers far more geographic flexibility to find a specific micro-location that suits their commute or school preferences, while Golf Course Road's tighter 22-sector footprint means less locational choice within the corridor itself.",
+        "The gap is stark: Golf Course Road's median price is more than double Dwarka Expressway's, while Dwarka Expressway carries over four times the live inventory and roughly two and a half times the sector coverage. These aren't small differences in degree, they reflect two corridors at genuinely different stages of development.\n\nEven the price floors and ceilings tell different stories: Golf Course Road's range runs ₹21 Lakh to ₹68.79 Cr (a small-commercial-unit floor pulling the bottom down, and an ultra-luxury ceiling pulling the top up), while Dwarka Expressway's tighter ₹9.5 Lakh-₹31.82 Cr range reflects a corridor without Golf Course Road's small handful of super-premium outliers.\n\nThe sector-coverage gap matters practically too: Dwarka Expressway's 60 sectors give buyers far more geographic flexibility to find a specific micro-location that suits their commute or school preferences, while Golf Course Road's tighter 22-sector footprint means less locational choice within the corridor itself.",
       media: [
         {
           type: "table",
           caption: "Golf Course Road vs Dwarka Expressway, real project data, HomzRealtor live catalogue, September 2026",
           headers: ["Metric", "Golf Course Road", "Dwarka Expressway"],
           rows: [
-            ["Live projects", "103", "439"],
-            ["Residential / Commercial", "65 / 38", "299 / 140"],
-            ["Sectors covered", "22", "59"],
-            ["Median price", "₹4.38 Cr", "₹1.83 Cr"],
+            ["Live projects", "102", "436"],
+            ["Residential / Commercial", "65 / 38", "378 / 58"],
+            ["Sectors covered", "22", "60"],
+            ["Median price", "₹3.43 Cr", "₹1.37 Cr"],
             ["Price range", "₹21L – ₹68.79Cr", "₹9.5L – ₹31.82Cr"],
-            ["Ready to move", "56 of 65 (86%)", "249 of 299 (83%)"],
+            ["Ready to move", "56 of 65 (86%)", "310 of 378 (82%)"],
             ["Under construction", "7", "40"],
             ["New launch", "2", "10"],
             ["Dominant builder", "DLF (34 projects)", "Signature Global (26 projects)"],
@@ -126,19 +126,19 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
       id: "why-the-price-gap-exists",
       h2: "Why Is Golf Course Road More Than Double the Price?",
       contentMarkdown:
-        "Land scarcity is the core driver. Golf Course Road covers only 22 sectors with almost no undeveloped land left, so pricing reflects an already-built, already-mature corridor with fully operational social infrastructure. Dwarka Expressway, by contrast, still has substantial developable land across its 59 sectors, keeping a genuine supply pipeline open in a way Golf Course Road's near-total build-out simply doesn't allow. Dwarka Expressway spans 59 sectors, many still developing, with NH-248BB, fully operational since June 2025, only recently unlocking the corridor's full connectivity potential. You're paying for certainty on Golf Course Road and paying less for a corridor still proving itself on Dwarka Expressway.\n\nThe Union Cabinet's recent approval of an 8.1 km extension connecting Dwarka Expressway to Vasant Kunj in Delhi is a further sign that infrastructure investment in the corridor is ongoing rather than finished, precisely the kind of catalyst that tends to close a price gap like this over time, though nothing in the current data set can honestly promise when or by how much.",
+        "Land scarcity is the core driver. Golf Course Road covers only 22 sectors with almost no undeveloped land left, so pricing reflects an already-built, already-mature corridor with fully operational social infrastructure. Dwarka Expressway, by contrast, still has substantial developable land across its 60 sectors, keeping a genuine supply pipeline open in a way Golf Course Road's near-total build-out simply doesn't allow. Dwarka Expressway spans 60 sectors, many still developing, with NH-248BB, fully operational since June 2025, only recently unlocking the corridor's full connectivity potential. You're paying for certainty on Golf Course Road and paying less for a corridor still proving itself on Dwarka Expressway.\n\nThe Union Cabinet's recent approval of an 8.1 km extension connecting Dwarka Expressway to Vasant Kunj in Delhi is a further sign that infrastructure investment in the corridor is ongoing rather than finished, precisely the kind of catalyst that tends to close a price gap like this over time, though nothing in the current data set can honestly promise when or by how much.",
     },
     {
       id: "construction-risk-comparison",
       h2: "Which Corridor Carries More Construction Risk?",
       contentMarkdown:
-        "Both corridors are actually similarly ready-to-move-dominant in percentage terms, 86% for Golf Course Road, 83% for Dwarka Expressway, but the absolute numbers tell a different story. Dwarka Expressway has 40 under-construction and 10 new-launch residential projects live right now, versus Golf Course Road's 7 and 2. If you specifically want to buy early in a construction cycle for a lower entry price, Dwarka Expressway offers meaningfully more of that option; Golf Course Road barely offers it at all.\n\nConstruction risk cuts both ways, though: buying under construction on Dwarka Expressway means relying on the developer's disclosed RERA timeline rather than a finished product, while Golf Course Road's near-total ready-to-move status means what you see on a site visit is what you get, with no possession-date uncertainty to price in.",
+        "Both corridors are actually similarly ready-to-move-dominant in percentage terms, 86% for Golf Course Road, 82% for Dwarka Expressway, but the absolute numbers tell a different story. Dwarka Expressway has 40 under-construction and 10 new-launch residential projects live right now, versus Golf Course Road's 7 and 2. If you specifically want to buy early in a construction cycle for a lower entry price, Dwarka Expressway offers meaningfully more of that option; Golf Course Road barely offers it at all.\n\nConstruction risk cuts both ways, though: buying under construction on Dwarka Expressway means relying on the developer's disclosed RERA timeline rather than a finished product, while Golf Course Road's near-total ready-to-move status means what you see on a site visit is what you get, with no possession-date uncertainty to price in.",
     },
     {
       id: "developer-landscape",
       h2: "How Does the Developer Landscape Differ?",
       contentMarkdown:
-        "Golf Course Road is unusually concentrated: DLF alone holds 34 of 103 projects, roughly a third of the corridor. Dwarka Expressway is far more fragmented, Signature Global leads with 26 projects, but that's under 6% of the corridor's total, with Vatika (19), M3M (14), BPTP and SS Group (11 each) all carrying meaningful shares. If developer variety and competitive pricing between builders matters to you, Dwarka Expressway offers a genuinely wider field.\n\nThat fragmentation also means more genuine price competition between developers on Dwarka Expressway; no single builder can set the corridor's pricing the way DLF's dominant position effectively does on Golf Course Road. Whether that translates into better value for any specific buyer depends on the individual project, not the corridor-level pattern alone.",
+        "Golf Course Road is unusually concentrated: DLF alone holds 34 of 102 projects, roughly a third of the corridor. Dwarka Expressway is far more fragmented, Signature Global leads with 26 projects, but that's under 6% of the corridor's total, with Vatika (19), M3M (14), BPTP and SS Group (11 each) all carrying meaningful shares. If developer variety and competitive pricing between builders matters to you, Dwarka Expressway offers a genuinely wider field.\n\nThat fragmentation also means more genuine price competition between developers on Dwarka Expressway; no single builder can set the corridor's pricing the way DLF's dominant position effectively does on Golf Course Road. Whether that translates into better value for any specific buyer depends on the individual project, not the corridor-level pattern alone.",
       media: [
         {
           type: "diagram",
@@ -148,8 +148,8 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
           data: {
             unit: "INR",
             bars: [
-              { label: "Golf Course Road", value: 43800000 },
-              { label: "Dwarka Expressway", value: 18300000 },
+              { label: "Golf Course Road", value: 34300000 },
+              { label: "Dwarka Expressway", value: 13650000 },
             ],
           },
         },
@@ -159,7 +159,7 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
       id: "who-should-pick-which",
       h2: "Which Corridor Should You Actually Pick?",
       contentMarkdown:
-        "End-users who want to move into a finished home with fully mature schools, hospitals and retail already operating, and who have a ₹2 Cr-plus budget, are better served by Golf Course Road; construction-timeline risk is close to zero there. Investors and buyers with a longer horizon who want a lower entry price and genuine appreciation potential as Dwarka Expressway's infrastructure continues to mature (including the recently approved 8.1 km extension toward Vasant Kunj) are better served by Dwarka Expressway. Buyers who want a middle ground between the two should look at Golf Course Extension Road, priced between them at a ₹2.92 Cr median.\n\nFirst-time buyers with a firm move-in deadline should lean toward Golf Course Road or wait for a specific ready-to-move Dwarka Expressway listing, rather than committing to an under-construction Dwarka Expressway project with a possession date that isn't yet a certainty. Repeat buyers who've already owned residential property before and genuinely understand construction-timeline risk firsthand are typically much better positioned to take on Dwarka Expressway's growth-stage inventory than someone purchasing their very first home in the city.",
+        "End-users who want to move into a finished home with fully mature schools, hospitals and retail already operating, and who have a ₹2 Cr-plus budget, are better served by Golf Course Road; construction-timeline risk is close to zero there. Investors and buyers with a longer horizon who want a lower entry price and genuine appreciation potential as Dwarka Expressway's infrastructure continues to mature (including the recently approved 8.1 km extension toward Vasant Kunj) are better served by Dwarka Expressway. Buyers who want a middle ground between the two should look at Golf Course Extension Road, priced between them at a ₹2.42 Cr median.\n\nFirst-time buyers with a firm move-in deadline should lean toward Golf Course Road or wait for a specific ready-to-move Dwarka Expressway listing, rather than committing to an under-construction Dwarka Expressway project with a possession date that isn't yet a certainty. Repeat buyers who've already owned residential property before and genuinely understand construction-timeline risk firsthand are typically much better positioned to take on Dwarka Expressway's growth-stage inventory than someone purchasing their very first home in the city.",
       media: [
         {
           type: "callout",
@@ -192,7 +192,7 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
       id: "resale-vs-fresh-inventory",
       h2: "How Does Resale Availability Differ Between the Two?",
       contentMarkdown:
-        "Golf Course Road's 86% ready-to-move share means a large portion of what's listed is resale stock from an already-mature market, sellers who bought years ago and are now exiting or upgrading. Dwarka Expressway's mix skews more toward fresh developer inventory given its larger under-construction and new-launch share, though it still carries a substantial resale pool of its own (249 ready-to-move listings). Resale pricing on either corridor can vary more from the published median than a fresh launch price sheet would, since it reflects individual sellers' circumstances, unit condition and floor/facing as much as the corridor's overall positioning.\n\nBuyers comparing a Golf Course Road resale unit against a Dwarka Expressway new launch aren't just comparing two prices, they're comparing two fundamentally different transaction types, with different negotiation dynamics, different documentation processes and different timelines to possession.",
+        "Golf Course Road's 86% ready-to-move share means a large portion of what's listed is resale stock from an already-mature market, sellers who bought years ago and are now exiting or upgrading. Dwarka Expressway's mix skews more toward fresh developer inventory given its larger under-construction and new-launch share, though it still carries a substantial resale pool of its own (310 ready-to-move listings). Resale pricing on either corridor can vary more from the published median than a fresh launch price sheet would, since it reflects individual sellers' circumstances, unit condition and floor/facing as much as the corridor's overall positioning.\n\nBuyers comparing a Golf Course Road resale unit against a Dwarka Expressway new launch aren't just comparing two prices, they're comparing two fundamentally different transaction types, with different negotiation dynamics, different documentation processes and different timelines to possession.",
     },
     {
       id: "verifying-either-corridor",
@@ -223,11 +223,11 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
   faqs: [
     {
       q: "Is Golf Course Road better than Dwarka Expressway?",
-      a: "Neither is objectively better, they suit different goals. Golf Course Road offers mature infrastructure and near-zero construction risk at a ₹4.38 Cr median. Dwarka Expressway offers a lower ₹1.83 Cr median entry point with more growth potential and more construction-stage options.",
+      a: "Neither is objectively better, they suit different goals. Golf Course Road offers mature infrastructure and near-zero construction risk at a ₹3.43 Cr median. Dwarka Expressway offers a lower ₹1.37 Cr median entry point with more growth potential and more construction-stage options.",
     },
     {
       q: "How much cheaper is Dwarka Expressway than Golf Course Road?",
-      a: "Dwarka Expressway's ₹1.83 Cr median is less than half of Golf Course Road's ₹4.38 Cr median, a substantial, real gap reflecting the two corridors' different stages of development, not a temporary discount or a data anomaly.",
+      a: "Dwarka Expressway's ₹1.37 Cr median is less than half of Golf Course Road's ₹3.43 Cr median, a substantial, real gap reflecting the two corridors' different stages of development, not a temporary discount or a data anomaly.",
     },
     {
       q: "Which corridor has more new-launch options?",
@@ -239,7 +239,7 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
     },
     {
       q: "Is there a middle ground between the two corridors?",
-      a: "Golf Course Extension Road, priced at a ₹2.92 Cr median, between Golf Course Road's ₹4.38 Cr and Dwarka Expressway's ₹1.83 Cr, with its own established-but-still-growing character and a genuinely wider developer field than either corridor.",
+      a: "Golf Course Extension Road, priced at a ₹2.42 Cr median, between Golf Course Road's ₹3.43 Cr and Dwarka Expressway's ₹1.37 Cr, with its own established-but-still-growing character and a genuinely wider developer field than either corridor.",
     },
     {
       q: "Which corridor is better for investors?",
@@ -247,7 +247,7 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
     },
     {
       q: "Which corridor has more ready-to-move options?",
-      a: "In percentage terms they're similar (86% Golf Course Road vs 83% Dwarka Expressway), but Dwarka Expressway has more ready-to-move units in absolute terms (249 vs 56) simply because it carries far more total inventory.",
+      a: "In percentage terms they're similar (86% Golf Course Road vs 82% Dwarka Expressway), but Dwarka Expressway has more ready-to-move units in absolute terms (310 vs 56) simply because it carries far more total inventory.",
     },
     {
       q: "How do I decide between the two for my own budget?",
@@ -256,11 +256,11 @@ export const golfCourseRoadVsDwarkaExpressway: BlogPostV27 = {
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Golf Course Road sells certainty at a premium (₹4.38 Cr median, 86% ready to move); Dwarka Expressway sells growth potential at a discount (₹1.83 Cr median, far more construction-stage inventory).",
+    lead: "Golf Course Road sells certainty at a premium (₹3.43 Cr median, 86% ready to move); Dwarka Expressway sells growth potential at a discount (₹1.37 Cr median, far more construction-stage inventory).",
     checklist: [
-      "Golf Course Road: ₹4.38 Cr median, DLF-dominated, near-zero construction risk.",
-      "Dwarka Expressway: ₹1.83 Cr median, fragmented builders, real growth story.",
-      "Golf Course Extension Road (₹2.92 Cr median) is the middle-ground option.",
+      "Golf Course Road: ₹3.43 Cr median, DLF-dominated, near-zero construction risk.",
+      "Dwarka Expressway: ₹1.37 Cr median, fragmented builders, real growth story.",
+      "Golf Course Extension Road (₹2.42 Cr median) is the middle-ground option.",
       "Pick based on certainty vs. growth goals, not just budget.",
     ],
     closer: "There's no universally \"better\" corridor here, only a better fit for your specific timeline and risk tolerance.",

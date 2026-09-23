@@ -24,13 +24,13 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
     metaDescription:
       "Real flats in Gurgaon under ₹1 crore: which corridors and configurations fit this budget, based on live HomzRealtor listing and project data.",
     standfirst:
-      "263 project-level listings and thousands of individual units sit under ₹1 Cr in Gurgaon today, mostly 2 BHK, mostly on specific corridors.",
+      "350 project-level listings and thousands of individual units sit under ₹1 Cr in Gurgaon today, mostly 2 BHK, mostly on specific corridors.",
     primaryKeyword: "flats in Gurgaon under 1 crore",
     secondaryKeywords: ["budget flats Gurgaon", "affordable flats Gurgaon", "2 BHK under 1 crore Gurgaon"],
     category: "property-pricing",
     tags: ["Gurgaon", "budget", "under 1 crore", "affordable housing"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 9,
   },
   author: {
@@ -39,7 +39,7 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon buying guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,098 tracked Gurgaon projects and its individual-listings feed (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 2,081 tracked Gurgaon projects and its individual-listings feed (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -48,13 +48,13 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "The budget-band figures in this guide come from HomzRealtor's live project catalogue and individual-listings feed together, 263 residential projects citywide price their entry unit under ₹1 Cr, snapshotted 4 September 2026.",
+      "The budget-band figures in this guide come from HomzRealtor's live project catalogue and individual-listings feed together, 350 residential projects citywide price their entry unit under ₹1 Cr, snapshotted 23 September 2026.",
     productDataHook: {
-      propertyCount: 263,
-      localityCount: 133,
+      propertyCount: 350,
+      localityCount: 131,
       avgPropertyPriceInr: 7500000,
       priceByLocality: [
-        { locality: "Dwarka Expressway", avgPriceInr: 18300000 },
+        { locality: "Dwarka Expressway", avgPriceInr: 13650000 },
         { locality: "Sohna Road", avgPriceInr: 21100000 },
         { locality: "Southern Peripheral Road", avgPriceInr: 23400000 },
       ],
@@ -74,11 +74,11 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live catalogue and listings feed and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Flats in Gurgaon Under 1 Crore (2026 Guide)",
@@ -98,10 +98,10 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
   quickAnswer: {
     question: "Can you find a flat in Gurgaon under 1 crore in 2026?",
     answer:
-      "Yes, HomzRealtor's live catalogue shows 263 residential projects citywide pricing an entry unit under ₹1 Cr, and the individual-listings feed shows 1,499 live 2 BHK listings under ₹1 Cr specifically. Dwarka Expressway and Sohna Road carry the deepest under-1 Cr inventory; 3 BHK and 4 BHK under this budget are far rarer.",
+      "Yes, HomzRealtor's live catalogue shows 350 residential projects citywide pricing an entry unit under ₹1 Cr, and the individual-listings feed shows 1,499 live 2 BHK listings under ₹1 Cr specifically. Dwarka Expressway and Sohna Road carry the deepest under-1 Cr inventory; 3 BHK and 4 BHK under this budget are far rarer.",
   },
   introduction:
-    "\"Under ₹1 crore\" is one of the most-searched budget qualifiers for Gurgaon property, and for good reason; it's a meaningful psychological and financial threshold for many first-time buyers. A flat in Gurgaon under ₹1 crore is a real, findable option, but the honest picture, using HomzRealtor's live data, is that it's concentrated in specific configurations and corridors rather than spread evenly across the city. Citywide, 263 of the 1,463 live residential projects price an entry unit under ₹1 Cr (73 under ₹50 Lakh, 190 between ₹50 Lakh-₹1 Cr), and at the individual-listing level, 2 BHK dominates this budget far more than 3 BHK or 4 BHK. This guide uses that data to show exactly where the real under-1-crore inventory sits, so you're not searching corridors where it barely exists.\n\nIt also covers the honest tradeoffs that come with this budget, construction stage, infrastructure maturity and configuration limits, rather than presenting a sub-₹1-Cr purchase as a strictly better deal than paying more elsewhere in the city.",
+    "\"Under ₹1 crore\" is one of the most-searched budget qualifiers for Gurgaon property, and for good reason; it's a meaningful psychological and financial threshold for many first-time buyers. A flat in Gurgaon under ₹1 crore is a real, findable option, but the honest picture, using HomzRealtor's live data, is that it's concentrated in specific configurations and corridors rather than spread evenly across the city. Citywide, 350 of the 1,761 live residential projects price an entry unit under ₹1 Cr, and at the individual-listing level, 2 BHK dominates this budget far more than 3 BHK or 4 BHK. This guide uses that data to show exactly where the real under-1-crore inventory sits, so you're not searching corridors where it barely exists.\n\nIt also covers the honest tradeoffs that come with this budget, construction stage, infrastructure maturity and configuration limits, rather than presenting a sub-₹1-Cr purchase as a strictly better deal than paying more elsewhere in the city.",
   sections: [
     {
       id: "who-searches-under-1cr",
@@ -113,7 +113,7 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
       id: "how-much-under-1cr-inventory-exists",
       h2: "How Much Under-₹1-Crore Inventory Actually Exists in Gurgaon?",
       contentMarkdown:
-        "It's worth being precise about what \"under ₹1 crore\" actually captures here, since two different HomzRealtor data sources both point to it but measure slightly different things, and conflating them can make the budget look either more or less generous than it really is. At the project level, 263 of Gurgaon's 1,463 live residential projects (about 18%) price an entry unit under ₹1 Cr, 73 under ₹50 Lakh and 190 in the ₹50 Lakh-₹1 Cr band. At the individual-listing level, the picture by configuration is sharper: 1,499 of 3,918 live 2 BHK listings (38%) are under ₹1 Cr, against only 394 of 9,440 3 BHK listings (4%) and 25 of 4,413 4 BHK listings (0.6%). If your budget is firmly under ₹1 Cr, searching by 2 BHK specifically will surface far more genuine options than searching by corridor alone.\n\nThese two data sources, the project catalogue and the individual-listings feed, measure slightly different things (a project's entry-level unit versus every individual unit currently listed), which is why the percentages don't line up exactly, and why this guide cites both rather than picking whichever number sounds more favourable. Both point the same direction: under-₹1-Cr inventory is real but represents a minority of Gurgaon's total supply, concentrated in specific configurations and corridors rather than spread evenly across every search result you'll see.",
+        "It's worth being precise about what \"under ₹1 crore\" actually captures here, since two different HomzRealtor data sources both point to it but measure slightly different things, and conflating them can make the budget look either more or less generous than it really is. At the project level, 350 of Gurgaon's 1,761 live residential projects (about 20%) price an entry unit under ₹1 Cr. At the individual-listing level, the picture by configuration is sharper: 1,499 of 3,918 live 2 BHK listings (38%) are under ₹1 Cr, against only 394 of 9,691 3 BHK listings (4%) and 25 of 4,604 4 BHK listings (0.5%). If your budget is firmly under ₹1 Cr, searching by 2 BHK specifically will surface far more genuine options than searching by corridor alone.\n\nThese two data sources, the project catalogue and the individual-listings feed, measure slightly different things (a project's entry-level unit versus every individual unit currently listed), which is why the percentages don't line up exactly, and why this guide cites both rather than picking whichever number sounds more favourable. Both point the same direction: under-₹1-Cr inventory is real but represents a minority of Gurgaon's total supply, concentrated in specific configurations and corridors rather than spread evenly across every search result you'll see.",
     },
     {
       id: "which-configuration-fits-under-1cr",
@@ -125,12 +125,12 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
       id: "best-corridors-under-1cr",
       h2: "Which Gurgaon Corridors Have the Most Under-₹1-Crore Inventory?",
       contentMarkdown:
-        "Dwarka Expressway has the deepest under-₹1-Cr inventory of the six major corridors: 95 of its 439 live projects (28 under ₹50 Lakh, 67 in the ₹50 Lakh-₹1 Cr band) fall in this range, around 22% of the corridor's total. Sohna Road (9 of 66 projects) and Southern Peripheral Road (12 of 97 projects) also carry a meaningful share, both around 12-14%. Golf Course Road and its Extension have almost none, 5 combined projects under ₹1 Cr out of 354 live projects between the two corridors, reflecting their established, premium positioning.\n\nNew Gurgaon's distinct listings (the 209 projects not already labelled Dwarka Expressway) add 25 more under-₹1-Cr options, which is worth checking separately if Dwarka Expressway's specific sector mix doesn't suit you, the two corridors overlap geographically but aren't identical in which individual sectors carry the deepest budget inventory.",
+        "Dwarka Expressway has the deepest under-₹1-Cr inventory of the six major corridors: 95 of its 436 live projects fall in this range, around 22% of the corridor's total. Sohna Road (9 of 66 projects) and Southern Peripheral Road (12 of 97 projects) also carry a meaningful share, both around 12-14%. Golf Course Road and its Extension have almost none, 5 combined projects under ₹1 Cr out of 350 live projects between the two corridors, reflecting their established, premium positioning.\n\nNew Gurgaon's distinct listings, now just 9 projects carrying the label apart from Dwarka Expressway, add only 2 more under-₹1-Cr options (both residential resale-style listings). That's a small addition, and Dwarka Expressway's much larger pool is worth checking first if this budget is a firm requirement.",
       subsections: [
         {
           h3: "Dwarka Expressway: the deepest under-₹1-Cr pool",
           contentMarkdown:
-            "95 of 439 live projects price under ₹1 Cr, the most of any corridor in absolute terms and as a share of total inventory (~22%). Signature Global, Vatika and M3M are among the active builders here, spanning both compact 2 BHK entry-level units and larger configurations further up the corridor's price range: worth exploring even if your initial budget search was narrowly focused on the cheapest listings alone.",
+            "95 of 436 live projects price under ₹1 Cr, the most of any corridor in absolute terms and as a share of total inventory (~22%). Signature Global, Vatika and M3M are among the active builders here, spanning both compact 2 BHK entry-level units and larger configurations further up the corridor's price range: worth exploring even if your initial budget search was narrowly focused on the cheapest listings alone.",
         },
         {
           h3: "Sohna Road and SPR: a smaller but real pool",
@@ -143,7 +143,7 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
       id: "tradeoffs-at-this-budget",
       h2: "What Tradeoffs Come With a Sub-₹1-Crore Budget?",
       contentMarkdown:
-        "A budget filter alone doesn't tell you what you're actually trading off, so it's worth naming the tradeoffs plainly before you commit. Most under-₹1-Cr inventory sits on growth corridors rather than established ones, which means a real trade between price and infrastructure maturity: Dwarka Expressway's NH-248BB is now fully operational, but surrounding social infrastructure in the newest sectors is still catching up in places. Under-₹1-Cr stock also skews toward under-construction and new-launch projects more than the citywide 81% ready-to-move average, verify possession status on each specific listing rather than assuming ready-to-move at this budget.\n\nUnit size is the other honest tradeoff: at this budget, expect a more compact carpet area than a comparably priced unit would offer in a lower-demand city, since Gurgaon's land and construction costs are priced into every configuration. That's a fair exchange for many buyers given Gurgaon's employment access, but it's worth confirming actual carpet area on the listing rather than assuming a standard size for the configuration.",
+        "A budget filter alone doesn't tell you what you're actually trading off, so it's worth naming the tradeoffs plainly before you commit. Most under-₹1-Cr inventory sits on growth corridors rather than established ones, which means a real trade between price and infrastructure maturity: Dwarka Expressway's NH-248BB is now fully operational, but surrounding social infrastructure in the newest sectors is still catching up in places. Under-₹1-Cr stock also skews toward under-construction and new-launch projects more than the citywide 82% ready-to-move average, verify possession status on each specific listing rather than assuming ready-to-move at this budget.\n\nUnit size is the other honest tradeoff: at this budget, expect a more compact carpet area than a comparably priced unit would offer in a lower-demand city, since Gurgaon's land and construction costs are priced into every configuration. That's a fair exchange for many buyers given Gurgaon's employment access, but it's worth confirming actual carpet area on the listing rather than assuming a standard size for the configuration.",
       media: [
         {
           type: "diagram",
@@ -165,7 +165,7 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
       id: "who-this-budget-suits",
       h2: "Who Should Target a Sub-₹1-Crore Budget in Gurgaon?",
       contentMarkdown:
-        "First-time buyers and small households prioritising ownership over configuration size are the clearest fit, particularly for 2 BHK on Dwarka Expressway or Sohna Road. If a specific configuration (3 BHK or larger) is a firm requirement rather than a preference; it's worth honestly comparing a sub-₹1-Cr search against stretching the budget slightly into the ₹1-2 Cr band, where inventory and choice both open up substantially (361 projects citywide, per HomzRealtor's catalogue).\n\nInvestors targeting this budget should weigh rental yield against the growth-corridor risk profile, under-₹1-Cr stock's construction-stage skew means a longer runway to rental income on new-launch and under-construction units, but potentially a lower entry price relative to eventual rental demand once the surrounding corridor matures.\n\nBuyers relocating for work specifically should also weigh commute time honestly against price, the cheapest under-₹1-Cr listings tend to sit furthest from Gurgaon's core employment hubs, and a longer daily commute is a real cost that doesn't show up in the purchase price itself. Weigh that commute cost against the monthly savings a lower EMI genuinely provides, rather than treating the single cheapest available listing as automatically the best overall financial decision for your situation.",
+        "First-time buyers and small households prioritising ownership over configuration size are the clearest fit, particularly for 2 BHK on Dwarka Expressway or Sohna Road. If a specific configuration (3 BHK or larger) is a firm requirement rather than a preference; it's worth honestly comparing a sub-₹1-Cr search against stretching the budget slightly into the ₹1-2 Cr band, where inventory and choice both open up substantially, per HomzRealtor's catalogue.\n\nInvestors targeting this budget should weigh rental yield against the growth-corridor risk profile, under-₹1-Cr stock's construction-stage skew means a longer runway to rental income on new-launch and under-construction units, but potentially a lower entry price relative to eventual rental demand once the surrounding corridor matures.\n\nBuyers relocating for work specifically should also weigh commute time honestly against price, the cheapest under-₹1-Cr listings tend to sit furthest from Gurgaon's core employment hubs, and a longer daily commute is a real cost that doesn't show up in the purchase price itself. Weigh that commute cost against the monthly savings a lower EMI genuinely provides, rather than treating the single cheapest available listing as automatically the best overall financial decision for your situation.",
     },
     {
       id: "how-to-search-under-1cr",
@@ -190,7 +190,7 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
   faqs: [
     {
       q: "Can you actually find a flat in Gurgaon under 1 crore?",
-      a: "Yes, 263 of HomzRealtor's 1,463 live residential projects citywide price an entry unit under ₹1 Cr, and 1,499 individual 2 BHK listings are priced under ₹1 Cr specifically, as of September 2026. Most of that inventory sits on Dwarka Expressway, Sohna Road and Southern Peripheral Road rather than being spread evenly across the city.",
+      a: "Yes, 350 of HomzRealtor's 1,761 live residential projects citywide price an entry unit under ₹1 Cr, and 1,499 individual 2 BHK listings are priced under ₹1 Cr specifically, as of September 2026. Most of that inventory sits on Dwarka Expressway, Sohna Road and Southern Peripheral Road rather than being spread evenly across the city.",
     },
     {
       q: "Which configuration fits a budget under 1 crore in Gurgaon?",
@@ -198,19 +198,19 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
     },
     {
       q: "Which Gurgaon corridor has the most flats under 1 crore?",
-      a: "Dwarka Expressway, with 95 of its 439 live projects (about 22%) priced under ₹1 Cr, more than any other corridor in both absolute count and share of inventory. Sohna Road and Southern Peripheral Road follow at a smaller scale, while Golf Course Road and its Extension have almost no inventory at this budget.",
+      a: "Dwarka Expressway, with 95 of its 436 live projects (about 22%) priced under ₹1 Cr, more than any other corridor in both absolute count and share of inventory. Sohna Road and Southern Peripheral Road follow at a smaller scale, while Golf Course Road and its Extension have almost no inventory at this budget.",
     },
     {
       q: "Are flats under 1 crore in Gurgaon ready to move?",
-      a: "Not as consistently as the citywide average, under-₹1-Cr stock skews more toward under-construction and new-launch projects than Gurgaon's overall 81% ready-to-move share. Always check possession status on the specific listing.",
+      a: "Not as consistently as the citywide average, under-₹1-Cr stock skews more toward under-construction and new-launch projects than Gurgaon's overall 82% ready-to-move share. Always check possession status on the specific listing.",
     },
     {
       q: "Is Golf Course Road an option for a budget under 1 crore?",
-      a: "Essentially no, Golf Course Road and its Extension together have only 5 live projects combined priced under ₹1 Cr, out of 354 total projects across both corridors. This budget is realistic on growth corridors, not established premium ones.",
+      a: "Essentially no, Golf Course Road and its Extension together have only 5 live projects combined priced under ₹1 Cr, out of 350 total projects across both corridors. This budget is realistic on growth corridors, not established premium ones.",
     },
     {
       q: "What's the cheapest area to buy a flat in Gurgaon?",
-      a: "By corridor median price, Dwarka Expressway is the most affordable of the six major corridors tracked in this guide, at roughly ₹1.83 Cr overall, though its under-₹1-Cr segment specifically sits well below that median.",
+      a: "By corridor median price, Dwarka Expressway is the most affordable of the six major corridors tracked in this guide, at roughly ₹1.37 Cr overall, though its under-₹1-Cr segment specifically sits well below that median.",
     },
     {
       q: "Should I wait and save for a bigger budget instead of buying under 1 crore now?",
@@ -222,14 +222,14 @@ export const flatsInGurgaonUnder1Crore: BlogPostV27 = {
     },
     {
       q: "Are there under-1-crore options in New Gurgaon?",
-      a: "Some, New Gurgaon's distinct listings (209 projects, excluding those overlapping with the Dwarka Expressway label) include 25 projects under ₹1 Cr, a smaller share than Dwarka Expressway itself but still a real option. Since the two corridors overlap geographically; it's worth checking both labels when you search rather than assuming one covers the other's full inventory.",
+      a: "Barely, New Gurgaon's distinct listings (just 9 projects, excluding those overlapping with the Dwarka Expressway label) include only 2 under ₹1 Cr. Since the two corridors overlap geographically and Dwarka Expressway carries far more inventory at this budget; it's worth searching Dwarka Expressway first rather than New Gurgaon specifically.",
     },
   ],
   conclusion: {
     heading: "The short version",
     lead: "Flats under ₹1 crore in Gurgaon are real, but concentrated in 2 BHK on Dwarka Expressway, Sohna Road and SPR, not spread evenly across the city or every configuration.",
     checklist: [
-      "263 of 1,463 residential projects citywide price under ₹1 Cr.",
+      "350 of 1,761 residential projects citywide price under ₹1 Cr.",
       "2 BHK dominates this budget, 1,499 listings under ₹1 Cr vs 394 for 3 BHK.",
       "Dwarka Expressway has the deepest under-₹1-Cr inventory (95 projects).",
       "Verify possession status and RERA registration before booking.",

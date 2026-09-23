@@ -31,7 +31,7 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
     category: "market-trends",
     tags: ["Golf Course Road", "Gurgaon", "property price", "luxury real estate"],
     publishedAt: "2026-09-04T10:00:00+05:30",
-    updatedAt: "2026-09-04T10:00:00+05:30",
+    updatedAt: "2026-09-23T10:00:00+05:30",
     readingTimeMinutes: 10,
   },
   author: {
@@ -40,7 +40,7 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
     role: "Real Estate Research & Content Team",
     bioShort:
       "HomzRealtor's editorial team writes Gurgaon pricing guides directly from the platform's own live listing catalogue.",
-    credentials: "Analysis grounded in HomzRealtor's live catalogue of 103 tracked Golf Course Road projects (September 2026).",
+    credentials: "Analysis grounded in HomzRealtor's live catalogue of 102 tracked Golf Course Road projects (September 2026).",
   },
   reviewer: {
     name: "Homz Realtor Research Team",
@@ -49,14 +49,14 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
   },
   eeat: {
     firstHandDataNote:
-      "Every price figure in this guide comes from HomzRealtor's live catalogue of 103 Golf Course Road projects, queried and snapshotted on 4 September 2026, not a modelled or estimated trend.",
+      "Every price figure in this guide comes from HomzRealtor's live catalogue of 102 Golf Course Road projects, queried and snapshotted on 23 September 2026, not a modelled or estimated trend.",
     productDataHook: {
-      propertyCount: 103,
+      propertyCount: 102,
       localityCount: 22,
-      avgPropertyPriceInr: 43800000,
+      avgPropertyPriceInr: 34300000,
       priceByLocality: [
-        { locality: "Golf Course Road overall", avgPriceInr: 43800000 },
-        { locality: "Sector 54", avgPriceInr: 43800000 },
+        { locality: "Golf Course Road overall", avgPriceInr: 34300000 },
+        { locality: "Sector 54", avgPriceInr: 34300000 },
       ],
       topLocalitiesReferenced: ["Sector 56", "Sector 54", "Sector 53", "Sector 43", "Sector 28"],
       dateRange: "Live catalogue snapshot, September 2026",
@@ -74,11 +74,11 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
       },
     ],
     originalMediaCount: 3,
-    lastVerifiedAt: "2026-09-04",
+    lastVerifiedAt: "2026-09-23",
     disclosure:
       "HomzRealtor is a real estate listing and advisory platform. This guide references our own live project catalogue and does not favour any single developer.",
     aiAssistanceDisclosure:
-      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 4 September 2026, and reviewed before publishing.",
+      "Drafted with AI assistance from HomzRealtor's editorial team, using live catalogue data queried on 23 September 2026, and reviewed before publishing.",
   },
   social: {
     ogTitle: "Golf Course Road Property Price Trends (2026)",
@@ -99,31 +99,31 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
   quickAnswer: {
     question: "What is the current Golf Course Road property price in Gurgaon?",
     answer:
-      "As of September 2026, HomzRealtor's live catalogue shows a Golf Course Road median price of ₹4.38 Cr across 103 projects, ranging from ₹21 Lakh to ₹68.79 Cr. Nearly 80% of residential listings price above ₹2 Cr, making it Gurgaon's most expensive corridor by a wide margin over the next-highest, Golf Course Extension Road.",
+      "As of September 2026, HomzRealtor's live catalogue shows a Golf Course Road median price of ₹3.43 Cr across 102 projects, ranging from ₹21 Lakh to ₹68.79 Cr. Nearly 80% of residential listings price above ₹2 Cr, making it Gurgaon's most expensive corridor by a wide margin over the next-highest, Golf Course Extension Road.",
   },
   introduction:
-    "Golf Course Road consistently comes up as the most expensive corridor in Gurgaon, and the live numbers back that up clearly. Rather than guessing at a year-over-year price trend; no public dataset actually tracks Gurgaon property prices over time, and this guide won't pretend otherwise; this is a real snapshot of what's listed on Golf Course Road right now: 103 live projects on HomzRealtor's catalogue, a median price of ₹4.38 Cr, and a budget mix skewed almost entirely above ₹2 Cr. If you're trying to understand what Golf Course Road property price actually looks like today, rather than in marketing copy; this is that picture, sector by sector and builder by builder.\n\nEvery number below is drawn from the same live catalogue snapshot, dated 4 September 2026, that powers HomzRealtor's other Gurgaon corridor guides, so the figures here should read consistently against our broader best areas to buy property in Gurgaon overview.",
+    "Golf Course Road consistently comes up as the most expensive corridor in Gurgaon, and the live numbers back that up clearly. Rather than guessing at a year-over-year price trend; no public dataset actually tracks Gurgaon property prices over time, and this guide won't pretend otherwise; this is a real snapshot of what's listed on Golf Course Road right now: 102 live projects on HomzRealtor's catalogue, a median price of ₹3.43 Cr, and a budget mix skewed almost entirely above ₹2 Cr. If you're trying to understand what Golf Course Road property price actually looks like today, rather than in marketing copy; this is that picture, sector by sector and builder by builder.\n\nEvery number below is drawn from the same live catalogue snapshot, dated 4 September 2026, that powers HomzRealtor's other Gurgaon corridor guides, so the figures here should read consistently against our broader best areas to buy property in Gurgaon overview.",
   sections: [
     {
       id: "why-golf-course-road-commands-a-premium",
       h2: "Why Does Golf Course Road Command Gurgaon's Highest Prices?",
       contentMarkdown:
-        "Golf Course Road is Gurgaon's oldest premium corridor, and its pricing reflects genuine scarcity rather than marketing positioning. Only 22 sectors carry Golf Course Road inventory on HomzRealtor today, against 59 for Dwarka Expressway, there simply isn't much undeveloped land left to build fresh supply, which keeps existing stock priced at a premium. Social infrastructure here is also fully built out: schools, hospitals and retail have operated for years rather than being promised alongside a new launch, and that certainty carries a price of its own.\n\nThe corridor's road network, connecting directly to NH-48 and central Gurgaon's commercial districts, was also built out early relative to the rest of the city, which is part of why development concentrated here first. Later corridors like Dwarka Expressway and Golf Course Extension Road were, in a real sense, built to relieve demand that Golf Course Road's limited land supply could no longer absorb, which is exactly why prices there sit meaningfully lower today.",
+        "Golf Course Road is Gurgaon's oldest premium corridor, and its pricing reflects genuine scarcity rather than marketing positioning. Only 22 sectors carry Golf Course Road inventory on HomzRealtor today, against 60 for Dwarka Expressway, there simply isn't much undeveloped land left to build fresh supply, which keeps existing stock priced at a premium. Social infrastructure here is also fully built out: schools, hospitals and retail have operated for years rather than being promised alongside a new launch, and that certainty carries a price of its own.\n\nThe corridor's road network, connecting directly to NH-48 and central Gurgaon's commercial districts, was also built out early relative to the rest of the city, which is part of why development concentrated here first. Later corridors like Dwarka Expressway and Golf Course Extension Road were, in a real sense, built to relieve demand that Golf Course Road's limited land supply could no longer absorb, which is exactly why prices there sit meaningfully lower today.",
     },
     {
       id: "current-price-range",
       h2: "What Is the Current Golf Course Road Property Price Range?",
       contentMarkdown:
-        "Across the 103 live Golf Course Road projects HomzRealtor tracks, prices range from ₹21 Lakh at the low end (small commercial units) to ₹68.79 Cr at the top, with a median of ₹4.38 Cr, more than double Golf Course Extension Road's ₹2.92 Cr median and well over double Dwarka Expressway's ₹1.83 Cr. That spread matters: a \"Golf Course Road price\" quoted without a specific project or configuration attached could mean almost anything from a small retail unit to a super-luxury residence, so treat any single headline number with caution.\n\nThe residential-only picture narrows the spread somewhat but still spans a wide range, since the corridor mixes large-format luxury apartments with a smaller stock of older, more modestly priced units built before the area's premium repositioning. Commercial units at the very low end of the range pull the overall minimum down; if you're specifically comparing residential options, expect the realistic floor to sit closer to ₹1-1.5 Cr rather than ₹21 Lakh.",
+        "Across the 102 live Golf Course Road projects HomzRealtor tracks, prices range from ₹21 Lakh at the low end (small commercial units) to ₹68.79 Cr at the top, with a median of ₹3.43 Cr, well above Golf Course Extension Road's ₹2.42 Cr median and more than double Dwarka Expressway's ₹1.37 Cr. That spread matters: a \"Golf Course Road price\" quoted without a specific project or configuration attached could mean almost anything from a small retail unit to a super-luxury residence, so treat any single headline number with caution.\n\nThe residential-only picture narrows the spread somewhat but still spans a wide range, since the corridor mixes large-format luxury apartments with a smaller stock of older, more modestly priced units built before the area's premium repositioning. Commercial units at the very low end of the range pull the overall minimum down; if you're specifically comparing residential options, expect the realistic floor to sit closer to ₹1-1.5 Cr rather than ₹21 Lakh.",
       media: [
         {
           type: "table",
           caption: "Golf Course Road price landscape vs. two neighbouring corridors (HomzRealtor live catalogue, September 2026)",
           headers: ["Corridor", "Live Projects", "Median Price", "Share Above ₹2 Cr"],
           rows: [
-            ["Golf Course Road", "103", "₹4.38 Cr", "78%"],
-            ["Golf Course Extension Road", "251", "₹2.92 Cr", "65%"],
-            ["Dwarka Expressway", "439", "₹1.83 Cr", "32%"],
+            ["Golf Course Road", "102", "₹3.43 Cr", "78%"],
+            ["Golf Course Extension Road", "248", "₹2.42 Cr", "65%"],
+            ["Dwarka Expressway", "436", "₹1.37 Cr", "32%"],
           ],
         },
       ],
@@ -161,13 +161,13 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
       id: "possession-status-and-price",
       h2: "Ready to Move vs Under Construction: Does It Move the Price?",
       contentMarkdown:
-        "92 of Golf Course Road's 103 live listings are ready to move, with only 9 under construction and 2 new launches, a corridor that's overwhelmingly finished rather than still being built. That's the flip side of the scarce-land story above: with almost nothing new launching, most of what's for sale is existing stock, priced on current demand rather than a pre-launch discount. Buyers hoping to catch a lower entry price by buying early in construction will find very few such opportunities here, Golf Course Extension Road or Dwarka Expressway offer far more of that dynamic.\n\nWorth noting: a corridor this heavily weighted toward ready-to-move stock also means resale listings make up a meaningful share of what's available, not just fresh developer inventory. Resale pricing can vary more from the headline median than a new-launch price sheet would, since it reflects individual sellers' circumstances, floor, facing and unit condition as much as the corridor's overall positioning, two otherwise-comparable listings in the same building can differ meaningfully on price for reasons the corridor-level data can't capture.",
+        "92 of Golf Course Road's 102 live listings are ready to move, with only 9 under construction and 2 new launches, a corridor that's overwhelmingly finished rather than still being built. That's the flip side of the scarce-land story above: with almost nothing new launching, most of what's for sale is existing stock, priced on current demand rather than a pre-launch discount. Buyers hoping to catch a lower entry price by buying early in construction will find very few such opportunities here, Golf Course Extension Road or Dwarka Expressway offer far more of that dynamic.\n\nWorth noting: a corridor this heavily weighted toward ready-to-move stock also means resale listings make up a meaningful share of what's available, not just fresh developer inventory. Resale pricing can vary more from the headline median than a new-launch price sheet would, since it reflects individual sellers' circumstances, floor, facing and unit condition as much as the corridor's overall positioning, two otherwise-comparable listings in the same building can differ meaningfully on price for reasons the corridor-level data can't capture.",
     },
     {
       id: "how-golf-course-road-compares",
       h2: "How Does Golf Course Road Compare to Other Gurgaon Corridors?",
       contentMarkdown:
-        "Golf Course Road's ₹4.38 Cr median sits well above every other corridor HomzRealtor tracks in Gurgaon, Golf Course Extension Road (₹2.92 Cr), Southern Peripheral Road (₹2.34 Cr), Sohna Road (₹2.11 Cr), New Gurgaon (₹1.92 Cr) and Dwarka Expressway (₹1.83 Cr) all price meaningfully lower. For a full corridor-by-corridor comparison, including inventory depth and possession mix, see our Golf Course Road vs Dwarka Expressway guide and the broader best areas to buy property in Gurgaon overview.\n\nThe gap to the second-highest corridor, Golf Course Extension Road, is itself substantial, roughly ₹1.5 Cr at the median. That's a bigger jump than the gap between any other two adjacent corridors in this ranking, reinforcing that Golf Course Road isn't just \"a bit more expensive\" than its neighbours; it occupies a distinct pricing tier of its own in Gurgaon's market.",
+        "Golf Course Road's ₹3.43 Cr median sits well above every other corridor HomzRealtor tracks in Gurgaon, Golf Course Extension Road (₹2.42 Cr), Southern Peripheral Road (₹2.34 Cr), Sohna Road (₹2.11 Cr), New Gurgaon (₹1.95 Cr) and Dwarka Expressway (₹1.37 Cr) all price meaningfully lower. For a full corridor-by-corridor comparison, including inventory depth and possession mix, see our Golf Course Road vs Dwarka Expressway guide and the broader best areas to buy property in Gurgaon overview.\n\nThe gap to the second-highest corridor, Golf Course Extension Road, is itself substantial, roughly ₹1 Cr at the median. That's a bigger jump than the gap between any other two adjacent corridors in this ranking, reinforcing that Golf Course Road isn't just \"a bit more expensive\" than its neighbours; it occupies a distinct pricing tier of its own in Gurgaon's market.",
     },
     {
       id: "builders-shaping-prices",
@@ -187,7 +187,7 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
       id: "what-this-means-for-your-search",
       h2: "What Should This Snapshot Actually Change About Your Search?",
       contentMarkdown:
-        "If you're budgeting for Golf Course Road, anchor your expectations to ₹2 Cr and above rather than the corridor's ₹21 Lakh floor, which reflects a handful of small commercial units rather than typical residential pricing. If Sector 54, 53 or 28 are out of reach, Sector 42 and Sector 27 carry a smaller but real share of listings at a somewhat lower entry point while still keeping the Golf Course Road address. And if the corridor's price floor turns out to be genuinely out of budget, Golf Course Extension Road's ₹2.92 Cr median is the natural next stop, priced lower, but sharing enough of Golf Course Road's positioning to still read as a premium choice rather than a compromise.\n\nFinally, treat every figure in this guide as a starting reference, not a quote. Prices move as individual listings are added, sold or withdrawn, and a corridor this concentrated among a small number of sectors and one dominant developer can shift its median meaningfully with just a handful of new listings. Confirm current pricing directly against HomzRealtor's live catalogue before making any budget decisions, and revisit this guide's data whenever it's next refreshed rather than relying on a screenshot from today.",
+        "If you're budgeting for Golf Course Road, anchor your expectations to ₹2 Cr and above rather than the corridor's ₹21 Lakh floor, which reflects a handful of small commercial units rather than typical residential pricing. If Sector 54, 53 or 28 are out of reach, Sector 42 and Sector 27 carry a smaller but real share of listings at a somewhat lower entry point while still keeping the Golf Course Road address. And if the corridor's price floor turns out to be genuinely out of budget, Golf Course Extension Road's ₹2.42 Cr median is the natural next stop, priced lower, but sharing enough of Golf Course Road's positioning to still read as a premium choice rather than a compromise.\n\nFinally, treat every figure in this guide as a starting reference, not a quote. Prices move as individual listings are added, sold or withdrawn, and a corridor this concentrated among a small number of sectors and one dominant developer can shift its median meaningfully with just a handful of new listings. Confirm current pricing directly against HomzRealtor's live catalogue before making any budget decisions, and revisit this guide's data whenever it's next refreshed rather than relying on a screenshot from today.",
       media: [
         {
           type: "diagram",
@@ -195,8 +195,8 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
           alt: "Split diagram comparing Golf Course Road's price ceiling against its more affordable neighbour, Golf Course Extension Road",
           caption: "Golf Course Road vs Golf Course Extension Road, median price",
           data: {
-            left: { label: "Golf Course Road", value: 43800000 },
-            right: { label: "Golf Course Extension Road", value: 29150000 },
+            left: { label: "Golf Course Road", value: 34300000 },
+            right: { label: "Golf Course Extension Road", value: 24200000 },
           },
         },
       ],
@@ -210,11 +210,11 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
   faqs: [
     {
       q: "What is the median Golf Course Road property price right now?",
-      a: "₹4.38 Cr, based on HomzRealtor's live catalogue of 103 Golf Course Road projects as of September 2026. Prices range from ₹21 Lakh (small commercial units) to ₹68.79 Cr, so treat the median as a starting reference, not a quote for any specific unit.",
+      a: "₹3.43 Cr, based on HomzRealtor's live catalogue of 102 Golf Course Road projects as of September 2026. Prices range from ₹21 Lakh (small commercial units) to ₹68.79 Cr, so treat the median as a starting reference, not a quote for any specific unit.",
     },
     {
       q: "Is Golf Course Road more expensive than Golf Course Extension Road?",
-      a: "Yes, substantially. Golf Course Road's ₹4.38 Cr median is about 50% higher than Golf Course Extension Road's ₹2.92 Cr median, reflecting Golf Course Road's more mature, land-constrained status. The Extension has more available land and a more fragmented developer base, both of which keep its pricing further from Golf Course Road's ceiling despite the two corridors sitting right next to each other.",
+      a: "Yes, substantially. Golf Course Road's ₹3.43 Cr median is about 42% higher than Golf Course Extension Road's ₹2.42 Cr median, reflecting Golf Course Road's more mature, land-constrained status. The Extension has more available land and a more fragmented developer base, both of which keep its pricing further from Golf Course Road's ceiling despite the two corridors sitting right next to each other.",
     },
     {
       q: "Are there any Golf Course Road properties under ₹1 Crore?",
@@ -230,28 +230,28 @@ export const golfCourseRoadPropertyPriceTrends: BlogPostV27 = {
     },
     {
       q: "Who is the dominant developer on Golf Course Road?",
-      a: "DLF, with 34 of the corridor's 103 live projects, roughly a third of total inventory, and 18 of the 43 listings priced above ₹5 Cr. Bestech and Godrej follow at a considerable distance, with 5 and 4 projects respectively, making DLF's position on Golf Course Road unusually dominant compared to the more evenly split developer landscape on newer Gurgaon corridors.",
+      a: "DLF, with 34 of the corridor's 102 live projects, roughly a third of total inventory, and 18 of the 43 listings priced above ₹5 Cr. Bestech and Godrej follow at a considerable distance, with 5 and 4 projects respectively, making DLF's position on Golf Course Road unusually dominant compared to the more evenly split developer landscape on newer Gurgaon corridors.",
     },
     {
       q: "Is most Golf Course Road inventory ready to move or under construction?",
-      a: "Overwhelmingly ready to move, 92 of 103 live listings, with only 9 under construction and 2 new launches. Very little fresh land is available for new development on this corridor, so most of what's for sale is existing, already-delivered stock rather than pre-launch or under-construction inventory.",
+      a: "Overwhelmingly ready to move, 92 of 102 live listings, with only 9 under construction and 2 new launches. Very little fresh land is available for new development on this corridor, so most of what's for sale is existing, already-delivered stock rather than pre-launch or under-construction inventory.",
     },
     {
       q: "How does Golf Course Road pricing compare to Dwarka Expressway?",
-      a: "More than double: Golf Course Road's ₹4.38 Cr median against Dwarka Expressway's ₹1.83 Cr. The two corridors serve different buyers, established luxury versus growth-stage affordability, rather than competing on the same budget.",
+      a: "More than double: Golf Course Road's ₹3.43 Cr median against Dwarka Expressway's ₹1.37 Cr. The two corridors serve different buyers, established luxury versus growth-stage affordability, rather than competing on the same budget.",
     },
     {
       q: "How was this price data collected?",
-      a: "Directly from HomzRealtor's live Gurgaon project catalogue, queried and snapshotted on 4 September 2026, the same underlying data used across HomzRealtor's Gurgaon buying guides, not a third-party or estimated dataset.",
+      a: "Directly from HomzRealtor's live Gurgaon project catalogue, queried and snapshotted on 23 September 2026, the same underlying data used across HomzRealtor's Gurgaon buying guides, not a third-party or estimated dataset.",
     },
   ],
   conclusion: {
     heading: "The short version",
-    lead: "Golf Course Road's ₹4.38 Cr median is real, driven by scarce land, mature infrastructure and DLF's dominant supply share, not by an unusual price spike worth timing around.",
+    lead: "Golf Course Road's ₹3.43 Cr median is real, driven by scarce land, mature infrastructure and DLF's dominant supply share, not by an unusual price spike worth timing around.",
     checklist: [
-      "Median ₹4.38 Cr across 103 live projects, range ₹21L-₹68.79Cr.",
+      "Median ₹3.43 Cr across 102 live projects, range ₹21L-₹68.79Cr.",
       "78% of residential listings price above ₹2 Cr, a premium-budget corridor.",
-      "92 of 103 listings are ready to move; almost nothing is under construction.",
+      "92 of 102 listings are ready to move; almost nothing is under construction.",
       "DLF holds roughly a third of all Golf Course Road inventory.",
     ],
     closer: "Treat this as a snapshot, not a trend, update your budget expectations from current listings, not assumed appreciation.",
