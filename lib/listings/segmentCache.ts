@@ -66,10 +66,22 @@ async function loadSegment(segment: string): Promise<CacheEntry> {
   if (pending) return pending;
 
   const request = (async () => {
-    // Explicitly opt out of Next's data cache (`cache: "no-store"`) rather
-    // than letting it attempt and silently fail per-request — the module
-    // Map above is this route's actual cache.
-    const res = await fetch(homzDataUrl(segment, 1, UPSTREAM_LIMIT), { cache: "no-store" });
+    // NOT `cache: "no-store"` (2026-09-23 fix, live incident): that reads as
+    // `revalidate: 0` to Next, and when this fetch runs during an on-demand
+    // ISR generation of a page declared `revalidate = 604800` (every
+    // buy/rent/commercial/project [city]/[slug] detail page), Next throws
+    // "Page changed from static to dynamic at runtime" and 500s the request
+    // instead of just serving it -- confirmed live: 71 failed renders on
+    // /rent-property/[city]/[slug] and /buy-property/[city]/[slug] in the
+    // first two hours after this file's TTL change went out, each one on a
+    // cold cache hitting this exact fetch mid-render. `next: { revalidate }`
+    // is compatible with a static/ISR render the same way `no-store` isn't;
+    // it doesn't reintroduce the 2MB-payload problem above because our own
+    // Map is still what actually caches this -- Next's own fetch cache
+    // silently declining to store an 8-48MB response is a no-op either way.
+    const res = await fetch(homzDataUrl(segment, 1, UPSTREAM_LIMIT), {
+      next: { revalidate: TTL_MS / 1000 },
+    });
     if (!res.ok) throw new Error(`upstream ${res.status} for segment ${segment}`);
     const payload = await res.json();
     const raw: RawHomzProperty[] = Array.isArray(payload?.results) ? payload.results : [];
