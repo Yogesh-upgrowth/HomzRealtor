@@ -18,7 +18,20 @@ import { homzDataUrl, type RawHomzProperty } from "@/lib/scraping/homzbackend";
 import { sortByImageFirst, sortByReraFirst, computeFacets, type ListingFacets } from "@/lib/listings/filters";
 import { sanitizeSegment } from "@/lib/intelligence/dataQuality";
 
-const TTL_MS = 60 * 60 * 1000; // 1h — well under the daily export cadence
+// 6h, not 1h (2026-09-23): the underlying feed changes ~once/day, so 1h only
+// bought freshness nobody needed. The real cost isn't the fetch itself but
+// that a miss is expensive (15-20s, ~48MB parsed + sorted twice + facets) and
+// Fluid Compute can run several concurrent instances, each with its own copy
+// of this module-level cache -- a miss on N instances at once means paying
+// that cost N times. Confirmed from production logs: /buy-property,
+// /rent-property, /commercial and /project-listing are all force-dynamic (see
+// their own page.tsx comments for why that can't change without regressing
+// SEO content or the filtered-URL noindex logic), so every single request to
+// them is a real function invocation reading this cache -- a 6x longer TTL is
+// a 6x cut in how often that stampede window opens, with no change to
+// rendering, content, or how fresh the data looks (still refreshed 4x/day
+// against a feed that itself moves roughly once).
+const TTL_MS = 6 * 60 * 60 * 1000;
 // 25000 covers the real max segment total seen live (ggnSaleProperties:
 // 20,957) with headroom for growth. Was 10,000 — silently capped Sale at
 // 47.7% of real inventory and Rent (12,945 real) at 77.3%, sitewide (this is

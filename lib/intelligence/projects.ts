@@ -88,7 +88,13 @@ async function fetchCityRaw(cityKey: string): Promise<CityData> {
 // Cached here too, same TTL as the underlying raw-segment cache, so repeat
 // calls for the same city within the window reuse the normalized array
 // instead of recomputing it. 2026-09-16.
-const NORMALIZED_TTL_MS = 30 * 60 * 1000;
+//
+// Widened 30min -> 3h 2026-09-23 alongside lib/scraping/homzbackend.ts's
+// CACHE_TTL_MS (kept in sync, per the comment above) -- see that file's
+// comment for why: a short TTL on a per-instance cache is a recurring
+// Active CPU cost under Fluid Compute's concurrent scale-out, not just a
+// freshness knob.
+const NORMALIZED_TTL_MS = 3 * 60 * 60 * 1000;
 type CityData = CollapseResult;
 type CityCacheEntry = { data: CityData; expiresAt: number };
 const cityCache = new Map<string, CityCacheEntry>();

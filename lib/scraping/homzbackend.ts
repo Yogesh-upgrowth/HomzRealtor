@@ -142,7 +142,15 @@ export function homzDataUrl(citySegment: string, page = 1, limit = 5000): string
 
 // ── Browser cache ────────────────────────────────────────────────────────────
 
-const CACHE_TTL_MS = 30 * 60 * 1000;
+// 3h, not 30min (2026-09-23): this cache is shared by server callers under
+// Fluid Compute, where several concurrent instances each hold their own copy
+// -- a miss on N instances at once re-fetches and re-parses the same
+// multi-MB segment N times. /project-listing (force-dynamic, calls
+// getProjectsForCity for every city on every request -- see its own page.tsx
+// comment for why force-dynamic can't be removed) is the main consumer that
+// turns a short TTL into a recurring Active CPU cost. The feed itself only
+// changes ~once/day, so widening this window loses no real freshness.
+const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
 const STORAGE_PREFIX = "homz:v1:";
 
 type CacheEntry<T> = { expires: number; data: T[] };
