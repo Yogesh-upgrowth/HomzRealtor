@@ -23,6 +23,8 @@ import type { Badge, Chip, HighlightStat, LinkItem, PersonaReasons } from "./vie
 import { slugify } from "@/components/utils/slugify";
 import {
   truncateAtWord,
+  formatInr,
+  formatInrExact,
   redactEmbeddedRegulatoryIds,
   looksLikeUnitSelectorDump,
   salvageAreaText,
@@ -149,6 +151,16 @@ export function slugForProperty(property: RawHomzProperty): string {
 // per this codebase's own "never fabricate" discipline.
 const PROJECT_IN_TITLE_RE = /\bin\s+([A-Z][A-Za-z0-9&.' -]{2,40}?),\s*(?:Sector|[A-Z])/;
 
+// SEO audit 2026-09-25 (B1): the comma form above misses the most common raw
+// shape, which ends the title on the project with no trailing locality —
+// "3 BHK Apartment for Sale in Emaar Emerald Hills Phase 2" — so the project
+// was dropped and 298 Sector 65 3-BHK pages shared one <title>. This second
+// pattern only matches at end-of-title, and rejects bare localities (a
+// sector, the city, a road or an expressway), which are not project names.
+const PROJECT_AT_END_RE =
+  /\bin\s+(?!Sector\b|Gurgaon\b|Gurugram\b|Sohna\b|New Gurgaon\b)([A-Z][A-Za-z0-9&.' -]{2,60}?)\s*$/;
+const NOT_A_PROJECT_RE = /\b(?:road|extension|expressway|highway|marg|city|ncr)\s*$/i;
+
 export function extractProjectName(property: RawHomzProperty): string | null {
   const specHit = (property.specifications || []).find(
     (s) => s?.heading?.trim().toLowerCase() === "project"
@@ -156,8 +168,12 @@ export function extractProjectName(property: RawHomzProperty): string | null {
   const fromSpec = clean(specHit?.value);
   if (fromSpec) return fromSpec;
 
-  const match = (property.title || "").match(PROJECT_IN_TITLE_RE);
-  return match ? clean(match[1]) : null;
+  const title = property.title || "";
+  const match = title.match(PROJECT_IN_TITLE_RE);
+  if (match) return clean(match[1]);
+  const atEnd = title.match(PROJECT_AT_END_RE);
+  if (atEnd && !NOT_A_PROJECT_RE.test(atEnd[1])) return clean(atEnd[1]);
+  return null;
 }
 
 // DEV-02 (2026-09-16): confirmed live — some scraped specification values
@@ -612,28 +628,78 @@ export function buildPropertyDescription(view: PropertyView): string {
  *  threshold) — truncates the entity/location at a word boundary only when
  *  it runs unusually long, never the trailing brand suffix. */
 export function buildPropertyTitle(view: PropertyView): string {
-  const type = view.propertyType || "Property";
-  const configType = view.bedrooms
-    ? `${view.bedrooms} BHK ${type}`
-    : view.configuration
-      ? `${view.configuration} ${type}`
-      : type;
+  // SEO audit 2026-09-25 (B1): config + area + project + sector + price. The
+  // previous "{config} {type} for Sale in {Project}, {Sector}" shape still
+  // collided whenever the project was missing, and even with it, a project
+  // with 16 3-BHK units produced 16 identical titles. Area and asking price
+  // are the two fields that actually differ between units, and price is
+  // what a searcher scans the SERP for. The brand suffix now comes from the
+  // root layout's title template, so it is not appended here.
+  const type = view.propertyType && view.propertyType !== "Property" ? view.propertyType : null;
+  const config = view.bedrooms
+    ? `${view.bedrooms} BHK`
+    : view.configuration || type || "Property";
 
   const verb =
     view.category === "Rent" || view.category === "Pg"
       ? "for Rent"
       : view.category === "Commercial"
-        ? "for Sale/Lease"
+        ? view.listingType === "rent" || view.listingType === "lease"
+          ? "for Lease"
+          : "for Sale"
         : "for Sale";
 
-  const suffix = " | Homz";
-  const entity = view.projectName
-    ? `${configType} ${verb} in ${view.projectName}, ${view.location}`
-    : `${configType} ${verb} in ${view.location}`;
-  const budget = 72 - suffix.length;
-  const truncatedEntity = entity.length > budget ? truncateAtWord(entity, budget) : entity;
+  const area = titleArea(view.areaText);
+  const price = titlePrice(view);
+  // "Sector 65, Gurgaon" → "Sector 65": the sector is the searched term, the
+  // city is the first thing to give up when space is short.
+  const shortLocation = view.location.replace(/,\s*(Gurgaon|Gurugram)$/i, "");
 
-  return `${truncatedEntity}${suffix}`;
+  const build = (withType: boolean, location: string, project: string | null) => {
+    const head = `${config}${withType && type && type !== config ? ` ${type}` : ""}${area ? `, ${area}` : ""}`;
+    const where = project ? `${project}, ${location}` : location;
+    return `${head} ${verb} in ${where}${price ? ` — ${price}` : ""}`;
+  };
+
+  // Most to least descriptive; the first that fits wins. The type word goes
+  // first ("3 BHK" already implies a home), then the city, then the project
+  // name is shortened -- never the sector or the price, which are what make
+  // the title unique and query-shaped.
+  const MAX = 78;
+  const candidates = [
+    build(true, view.location, view.projectName),
+    build(false, view.location, view.projectName),
+    build(false, shortLocation, view.projectName),
+  ];
+  for (const c of candidates) if (c.length <= MAX) return c;
+  if (!view.projectName) return truncateAtWord(candidates[2], MAX);
+  const overflow = candidates[2].length - MAX;
+  const project = truncateAtWord(view.projectName, Math.max(12, view.projectName.length - overflow - 1)).replace(/…$/, "");
+  return build(false, shortLocation, project);
+}
+
+/** "1350 Sq.Ft." / "1350 sqft" → "1350 sq ft"; other units pass through. */
+function titleArea(areaText: string | null): string | null {
+  if (!areaText) return null;
+  return areaText
+    .replace(/\s*sq\.?\s*-?\s*f(?:ee)?t\.?/i, " sq ft")
+    .replace(/\s*sq\.?\s*-?\s*y(?:ar)?ds?\.?/i, " sq yd")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Short SERP price, from the parsed numeric amount only — never the feed's
+ *  raw display string, which has shipped as a bare integer ("24000000"). */
+function titlePrice(view: PropertyView): string | null {
+  const n = view.priceValueInr;
+  if (n == null) return null;
+  if (view.priceIsMonthly) {
+    const monthly = formatInrExact(n);
+    return monthly ? `${monthly}/mo` : null;
+  }
+  const short = formatInr(n);
+  // "₹2.40 Cr" → "₹2.4 Cr", "₹85.50 Lakh" → "₹85.5 Lakh"
+  return short ? short.replace(/(\.\d*?)0+(\s)/, "$1$2").replace(/\.(\s)/, "$1") : null;
 }
 
 export { landmarkCount };

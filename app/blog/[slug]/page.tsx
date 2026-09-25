@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       `${count} ${count === 1 ? "guide" : "guides"} on ${label.toLowerCase()} for Gurgaon property, ` +
       `built from HomzRealtor's live listing catalogue, real project counts and price data, not generic advice.`;
     return {
-      title: `${label}, HomzRealtor Blog`,
+      title: { absolute: `${label}, HomzRealtor Blog` },
       description,
       alternates: { canonical: url },
       openGraph: { title: `${label}, HomzRealtor Blog`, description, url, type: "website" },

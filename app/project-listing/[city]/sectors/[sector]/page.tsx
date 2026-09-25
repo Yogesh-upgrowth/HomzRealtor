@@ -88,13 +88,6 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: [
-      `property in ${sectorLabel} ${name}`,
-      `projects in ${sectorLabel} ${name}`,
-      `${sectorLabel} ${name} flats`,
-      `${sectorLabel} ${name} price`,
-      `new projects ${sectorLabel} ${name}`,
-    ],
     alternates: {
       canonical: `${SITE}/project-listing/${slug}/sectors/${sector.toLowerCase()}`,
     },

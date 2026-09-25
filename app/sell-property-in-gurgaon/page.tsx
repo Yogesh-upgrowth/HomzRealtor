@@ -3,7 +3,7 @@ import SellPropertyForm from "@/components/Home/SellPropertyForm";
 import ServicePage from "@/components/Services/ServicePage";
 import { allResolved, SELLER_TERM_KEYS } from "@/lib/content/ownerPending";
 
-const title = "Sell Your Property in Gurgaon | HomzRealtor";
+const title = "Sell Your Property in Gurgaon";
 const description =
   "List your Gurgaon property with HomzRealtor: how the process works, what to have ready, and what it costs. Speak to an advisor about selling.";
 

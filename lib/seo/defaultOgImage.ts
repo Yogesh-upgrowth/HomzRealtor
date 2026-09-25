@@ -8,5 +8,5 @@ export const DEFAULT_OG_IMAGE = {
   url: ogImage.src,
   width: ogImage.width,
   height: ogImage.height,
-  alt: "HomzRealtor, Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+  alt: "HomzRealtor, Residential & Commercial Property in Gurgaon",
 };

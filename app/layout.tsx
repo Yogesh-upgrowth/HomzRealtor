@@ -27,13 +27,14 @@ export const metadata: Metadata = {
     // overclaims what a visitor (and a crawler) actually finds on the site.
     default:
       "HomzRealtor, Residential & Commercial Property in Gurgaon",
-    // No "| HomzRealtor" suffix — every inner-page title is already
-    // keyword-led and close to the ~60-char SERP truncation point; the 14
-    // extra characters pushed nearly all of them past it, cutting off the
-    // part that actually differentiates the result. A 12-month-old,
-    // low-authority domain gets more from the keywords surviving intact
-    // than from repeating a brand name searchers don't recognize yet.
-    template: "%s",
+    // SEO audit 2026-09-25 (B8): one brand suffix everywhere. The earlier
+    // "%s" template (no suffix, to keep keywords inside ~60 chars) left most
+    // pages unbranded while a handful hand-appended "| HomzRealtor" or
+    // "| Homz" -- three conventions on one site, and og:title disagreeing
+    // with <title>. The brand sits last, so SERP truncation only ever cuts
+    // the brand, never the keywords. Pages whose title already names the
+    // brand use `title: { absolute }` to avoid "HomzRealtor ... | HomzRealtor".
+    template: "%s | HomzRealtor",
   },
   // Kept to ~135 chars, safely under Google's ~155-160 display budget as a
   // complete sentence — the 207-char original wasn't sliced with a
@@ -59,7 +60,7 @@ export const metadata: Metadata = {
         url: ogImage.src,
         width: ogImage.width,
         height: ogImage.height,
-        alt: "HomzRealtor, Residential & Commercial Property in Gurgaon, Noida & Delhi NCR",
+        alt: "HomzRealtor, Residential & Commercial Property in Gurgaon",
       },
     ],
   },

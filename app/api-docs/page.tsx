@@ -6,7 +6,7 @@ const description =
   "HomzRealtor's public, unauthenticated API for Gurgaon property listings and status tracking: OpenAPI spec, endpoints, and usage.";
 
 export const metadata: Metadata = {
-  title,
+  title: { absolute: title },
   description,
   alternates: { canonical: "/api-docs" },
   openGraph: { title, description },

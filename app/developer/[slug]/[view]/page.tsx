@@ -82,8 +82,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const year = new Date().getFullYear();
   const title =
     view.kind === "corridor"
-      ? `${summary.name} ${view.label} in Gurgaon | HomzRealtor`
-      : `${summary.name} ${view.label} in Gurgaon (${year}) | HomzRealtor`;
+      ? `${summary.name} ${view.label} in Gurgaon`
+      : `${summary.name} ${view.label} in Gurgaon (${year})`;
 
   const priced = projects.filter((p) => p.min_price_inr != null);
   const priceBit =
@@ -104,11 +104,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     ...(decision.indexable && isIndexableDeveloper(summary)
       ? {}
       : { robots: { index: false, follow: true } }),
-    keywords: [
-      `${summary.name} ${view.label.toLowerCase()} gurgaon`,
-      `${summary.name} ${view.slug.replace(/-/g, " ")}`,
-      `${summary.name} projects gurgaon`,
-    ],
     alternates: { canonical: url },
     openGraph: { title, description, url, type: "website", images: [DEFAULT_OG_IMAGE] },
     twitter: { card: "summary_large_image", images: [DEFAULT_OG_IMAGE.url] },

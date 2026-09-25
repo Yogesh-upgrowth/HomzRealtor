@@ -112,7 +112,9 @@ export function corridorView(slug: string): DeveloperView | null {
   return {
     slug: corridor.slug,
     kind: "corridor",
-    label: `Projects on ${corridor.label}`,
+    // "on" reads right for a road or expressway, not for a region
+    // ("Projects on New Gurgaon", flagged in the 2026-09-25 SEO audit).
+    label: `Projects ${/\b(Road|Expressway)$/.test(corridor.label) ? "on" : "in"} ${corridor.label}`,
     intent: `developments along ${corridor.label}`,
     filter: (p) => projectCorridorSlug(p) === corridor.slug,
   };

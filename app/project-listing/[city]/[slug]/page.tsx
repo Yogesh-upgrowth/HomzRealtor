@@ -108,17 +108,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       `${statusBit}${reraBit} Compare prices, floor plans and amenities on HomzRealtor.`
   );
 
-  const keywords = [
-    project.project_name,
-    `${project.project_name} ${cityName}`,
-    `${project.project_name} price`,
-    `${project.property_category} projects in ${cityName}`,
-    project.builder && project.builder !== "Unknown"
-      ? `${project.builder} projects`
-      : null,
-    project.sector ? `projects in ${project.sector} ${cityName}` : null,
-  ].filter(Boolean) as string[];
-
   const canonicalUrl = `https://www.homzrealtor.com/project-listing/${canonicalCitySlug(
     project.city_key
   )}/${slug}`;
@@ -141,7 +130,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description,
-    keywords,
     ...(robotsFor(review) ? { robots: robotsFor(review) } : {}),
     alternates: {
       canonical: canonicalUrl,

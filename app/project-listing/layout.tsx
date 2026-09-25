@@ -13,14 +13,6 @@ export const metadata: Metadata = {
   },
   description:
     "Browse verified residential and commercial projects in Gurgaon. Filter by sector, compare prices and enquire directly on HomzRealtor.",
-  keywords: [
-    "projects in Gurgaon",
-    "residential projects Gurgaon",
-    "commercial projects Gurgaon",
-    "property listing Gurgaon",
-    "new projects Gurgaon",
-    "flats in Gurgaon",
-  ],
   alternates: {
     canonical: "/project-listing",
   },

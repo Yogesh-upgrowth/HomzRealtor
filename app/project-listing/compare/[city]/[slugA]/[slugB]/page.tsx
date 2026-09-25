@@ -111,12 +111,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     `Compare ${projectA.project_name} vs ${projectB.project_name} in ${locationLabel}: ` +
     `price, possession, amenities and floor plans side by side on HomzRealtor.`;
 
-  const keywords = [
-    `${projectA.project_name} vs ${projectB.project_name}`,
-    `${projectA.project_name} vs ${projectB.project_name} price`,
-    `compare projects in ${locationLabel}`,
-  ];
-
   const canonicalCity = canonicalCitySlug(projectA.city_key);
   const canonicalUrl = `https://www.homzrealtor.com/project-listing/compare/${canonicalCity}/${sortedA}/${sortedB}`;
 
@@ -128,7 +122,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description: truncatedDescription,
-    keywords,
     alternates: {
       canonical: canonicalUrl,
     },

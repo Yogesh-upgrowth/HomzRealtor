@@ -63,13 +63,6 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: [
-      `property by sector in ${name}`,
-      `${name} sectors`,
-      `projects in ${name} sector wise`,
-      `sector wise property ${name}`,
-      `new projects ${name} sector`,
-    ],
     alternates: {
       canonical: `${SITE}/project-listing/${slug}/sectors`,
     },

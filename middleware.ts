@@ -190,7 +190,13 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  addVaryTokens(response.headers, ["Accept", "Accept-Encoding"]);
+  // SEO audit 2026-09-25 (B11): only "/" is content-negotiated, so only "/"
+  // varies on Accept. Adding it to every response fragmented the CDN cache
+  // per Accept header across ~38k URLs for no benefit; Accept-Encoding is
+  // dropped too, since the CDN already varies on encoding itself.
+  if (request.nextUrl.pathname === "/") {
+    addVaryTokens(response.headers, ["Accept"]);
+  }
   return response;
 }
 

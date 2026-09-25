@@ -81,13 +81,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     // indexed URL does not start 404ing -- it is simply not offered for
     // indexing. follow:true so the link equity still flows to the project.
     ...(isIndexableDeveloper(summary) ? {} : { robots: { index: false, follow: true } }),
-    keywords: [
-      `${summary.name} projects`,
-      `${summary.name} property`,
-      `${summary.name} ${cityNames[0] || "Delhi NCR"}`,
-      `${summary.name} new launch`,
-      `${summary.name} price`,
-    ],
     alternates: { canonical: `${SITE}/developer/${summary.slug}` },
     openGraph: {
       title,

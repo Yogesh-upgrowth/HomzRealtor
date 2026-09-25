@@ -20,7 +20,7 @@ const DESCRIPTION =
   "Answers about buying, renting and letting property in Gurgaon through HomzRealtor: how our listings are built, what our RERA registration covers, what to check before paying a booking amount, fees, and how site visits work.";
 
 export const metadata: Metadata = {
-  title: "Property FAQs for Gurgaon Buyers, Tenants and Owners | HomzRealtor",
+  title: "Property FAQs for Gurgaon Buyers, Tenants and Owners",
   description: DESCRIPTION,
   alternates: { canonical: PAGE_URL },
   openGraph: {

@@ -49,10 +49,17 @@ export function makePropertyDetailPage(category: PropertyCategory) {
       ...(robotsFor(record.review) ? { robots: robotsFor(record.review) } : {}),
       alternates: { canonical: `/${routeBase}/${city}/${slug}` },
       openGraph: {
-        title,
+        // og:title matches the rendered <title>, which gets its brand
+        // suffix from the root layout's template (openGraph does not).
+        title: `${title} | HomzRealtor`,
         description: record.metaDescription,
         images: record.view.heroImage ? [record.view.heroImage] : undefined,
       },
+      // SEO audit 2026-09-25: twitter:image used to fall through to the
+      // root layout's generic hero while og:image was the listing's own.
+      ...(record.view.heroImage
+        ? { twitter: { card: "summary_large_image", images: [record.view.heroImage] } }
+        : {}),
     };
   }
 
