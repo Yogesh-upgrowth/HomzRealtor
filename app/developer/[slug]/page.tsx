@@ -46,6 +46,7 @@ import { getDeveloperNews } from "@/lib/intelligence/news";
 import { getProjectEvents } from "@/lib/status/queries";
 
 const SITE = "https://www.homzrealtor.com";
+const NEWS_MIN_PROJECTS = 8;
 
 // ISR, 24 hours (developer-page brief §8; was one week). The weekly window
 // was set 2026-09-09 for the ~38k listing pages after the Vercel pause; this
@@ -160,7 +161,10 @@ const DeveloperPage = async ({ params }: PageParams) => {
   // their key/database is absent, and the section hides below five rows.
   const nameBySlug = new Map(ggn.map((p) => [p.slug, p.project_name]));
   const [news, events, resale] = await Promise.all([
-    getDeveloperNews(summary.name).catch(() => []),
+    // NewsData's free tier is 200 credits/day; one call per developer page
+    // regeneration is affordable only for the rollout set (>= 8 Gurgaon
+    // projects, ~25 developers), not for all few hundred hubs.
+    ggn.length >= NEWS_MIN_PROJECTS ? getDeveloperNews(summary.name).catch(() => []) : Promise.resolve([]),
     getProjectEvents("ggn", [...nameBySlug.keys()]).catch(() => []),
     getDeveloperResale(ggn).catch(() => null),
   ]);
