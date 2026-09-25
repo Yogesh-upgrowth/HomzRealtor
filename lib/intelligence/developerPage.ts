@@ -10,13 +10,14 @@
 
 import { slugify, formatInr, formatInrExact, extractPriceRange, extractSizeRange } from "./normalize";
 import type { NormalizedProject } from "./normalize";
-import { projectStatusKind } from "./projectStatus";
+import { intentStatus, type IntentStatus } from "./projectStatus";
 import { resolveProjectView } from "./view-model";
 import { resolveCoordinate } from "./resolveLocation";
 import { nearbyConnectivity, nearbyLandmarks } from "./osmPlaces";
 import { extractProjectName } from "./property-view";
 import { buildDeveloperProfile, type DeveloperPriceStats } from "./developerProfile";
-import { projectCorridorSlug } from "./developerViews";
+import { projectCorridorSlug, type DeveloperView } from "./developerViews";
+import type { DeveloperProfile } from "./developerProfile";
 import { GURGAON_CORRIDORS, listingSectorToken, sectorLabelFromToken } from "@/lib/listings/listingLocation";
 import { MIN_HUB_LISTINGS } from "@/lib/listings/facets";
 import { getSortedSegment } from "@/lib/listings/segmentCache";
@@ -26,17 +27,7 @@ import projectMedia from "@/data/media/project-media.json";
 
 // ─────────────────────────────────────────────────────────── ordering
 
-/** New launch -> upcoming -> under construction -> ready -> unknown. */
-export type IntentStatus = "new-launch" | "upcoming" | "under-construction" | "ready-to-move" | "unknown";
-
-const UPCOMING_RE = /\bupcoming\b|pre[\s-]*launch|coming\s*soon|\bsoft\s*launch\b/i;
-
-export function intentStatus(p: Pick<NormalizedProject, "project_status">): IntentStatus {
-  // Checked before projectStatusKind, which files "upcoming"/"pre-launch"
-  // under new launch; the page separates the two.
-  if (UPCOMING_RE.test(String(p.project_status ?? ""))) return "upcoming";
-  return projectStatusKind(p.project_status);
-}
+export { intentStatus, type IntentStatus } from "./projectStatus";
 
 const RANK: Record<IntentStatus, number> = {
   "new-launch": 0,
@@ -427,4 +418,76 @@ export function developerFaqs(
     });
   }
   return faqs;
+}
+
+// ─────────────────────────────────────────────────────────── child views
+
+/**
+ * The intro for /developer/{slug}/{view} (brief §5): 60-100 words, every
+ * sentence carrying this view's own figures. Deliberately no stock closing
+ * line shared across views.
+ */
+export function viewIntro(
+  name: string,
+  view: Pick<DeveloperView, "label" | "intent" | "kind" | "slug">,
+  projects: NormalizedProject[],
+  profile: DeveloperProfile
+): string {
+  const n = projects.length;
+  const parts: string[] = [];
+  parts.push(
+    `${name} has ${n} ${view.label.toLowerCase().replace(/projects$/, n === 1 ? "project" : "projects")} in Gurgaon in our catalogue: ${view.intent}.`
+  );
+
+  if (view.kind !== "status") {
+    const by = (s: IntentStatus) => projects.filter((p) => intentStatus(p) === s).length;
+    const mix = [
+      [by("new-launch"), "newly launched"],
+      [by("upcoming"), "upcoming"],
+      [by("under-construction"), "under construction"],
+      [by("ready-to-move"), "ready to move"],
+    ].filter(([c]) => (c as number) > 0) as [number, string][];
+    if (mix.length) parts.push(`By stage, ${list(mix.map(([c, l]) => `${c} ${l}`))}.`);
+  } else {
+    const newest = projects.slice(0, 3).map((p) => p.project_name);
+    if (newest.length) parts.push(`The most recently updated are ${list(newest)}.`);
+  }
+
+  if (profile.price) {
+    parts.push(
+      `Entry asking prices run from ${formatInr(profile.price.minInr)} to ${formatInr(profile.price.maxInr)}, ` +
+        `median ${formatInr(profile.price.medianInr)} across ${profile.price.pricedCount} priced` +
+        (profile.price.perSqFtInr ? `, about ${formatInrExact(profile.price.perSqFtInr)} per sq ft where the size is confirmed` : "") +
+        `.`
+    );
+  } else {
+    const priced = projects.filter((p) => p.min_price_inr).length;
+    parts.push(
+      priced > 0
+        ? `${priced} of the ${n} carry an asking price; the rest are price on request.`
+        : `All ${n} are price on request in our records.`
+    );
+  }
+
+  if (view.kind !== "corridor") {
+    const corridors = new Map<string, number>();
+    for (const p of projects) {
+      const c = corridorLabel(p);
+      if (c) corridors.set(c, (corridors.get(c) ?? 0) + 1);
+    }
+    const top = [...corridors.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2);
+    if (top.length) parts.push(`Most sit on ${list(top.map(([c, k]) => `${c} (${k})`))}.`);
+  }
+  const sectors = profile.sectors.slice(0, 2);
+  if (sectors.length) {
+    parts.push(
+      `${profile.sectors.length === 1 ? "The one sector" : `Of ${profile.sectors.length} sectors, the busiest ${sectors.length === 1 ? "is" : "are"}`} ${list(
+        sectors.map((s) => `${s.label} (${s.count})`)
+      )}.`
+    );
+  }
+  if (profile.reraWithId > 0) {
+    parts.push(`${profile.reraActive} carry an active HARERA registration in our records.`);
+  }
+  return parts.join(" ");
 }

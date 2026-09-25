@@ -8,7 +8,8 @@
 //   /developer/{slug}                      all projects        (head term)
 //   /developer/{slug}/residential          residential intent
 //   /developer/{slug}/commercial           commercial intent
-//   /developer/{slug}/new-launch           new / upcoming
+//   /developer/{slug}/new-launch           newly launched
+//   /developer/{slug}/upcoming             announced / pre-launch
 //   /developer/{slug}/ready-to-move        completed
 //   /developer/{slug}/luxury               premium intent
 //   /developer/{slug}/{corridor}           developer + location
@@ -31,7 +32,7 @@
 // advertising are different things.
 
 import type { NormalizedProject } from "./normalize";
-import { projectStatusKind } from "./projectStatus";
+import { intentStatus, projectStatusKind } from "./projectStatus";
 import { GURGAON_CORRIDORS } from "@/lib/listings/listingLocation";
 
 /** Luxury is ₹5 Cr and above, the same definition the rest of the site uses
@@ -79,8 +80,16 @@ export const FIXED_DEVELOPER_VIEWS: DeveloperView[] = [
     slug: "new-launch",
     kind: "status",
     label: "New Launch Projects",
-    intent: "recently launched and upcoming developments",
-    filter: (p) => projectStatusKind(p.project_status) === "new-launch",
+    intent: "recently launched developments open for booking",
+    // Upcoming/pre-launch have their own view since 2026-09-25.
+    filter: (p) => intentStatus(p) === "new-launch",
+  },
+  {
+    slug: "upcoming",
+    kind: "status",
+    label: "Upcoming Projects",
+    intent: "announced and pre-launch developments not yet open for sale",
+    filter: (p) => intentStatus(p) === "upcoming",
   },
   {
     slug: "ready-to-move",
@@ -139,7 +148,9 @@ export const VIEW_INDEX_THRESHOLDS: Record<DeveloperViewKind, number> = {
   category: 4,
   status: 4,
   price: 4,
-  corridor: 5,
+  // 4 since the developer-page brief (2026-09-25): one bar for every child
+  // view, with the priced-projects condition doing the thinness work.
+  corridor: 4,
 };
 
 export type ViewIndexDecision = {

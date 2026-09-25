@@ -74,3 +74,15 @@ export function isPreRera(p: {
   const years = (String(p.possession_text ?? "").match(/\b(19|20)\d{2}\b/g) || []).map(Number);
   return years.length > 0 && Math.max(...years) < 2017;
 }
+
+/** New launch -> upcoming -> under construction -> ready -> unknown. The
+ *  developer pages separate "upcoming"/"pre-launch" from new launches, which
+ *  projectStatusKind() files together. */
+export type IntentStatus = "new-launch" | "upcoming" | "under-construction" | "ready-to-move" | "unknown";
+
+const UPCOMING = /\bupcoming\b|pre[\s-]*launch|coming\s*soon|\bsoft\s*launch\b/i;
+
+export function intentStatus(p: { project_status: string | null }): IntentStatus {
+  if (UPCOMING.test(String(p.project_status ?? ""))) return "upcoming";
+  return projectStatusKind(p.project_status);
+}

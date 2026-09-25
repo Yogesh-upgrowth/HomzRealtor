@@ -20,7 +20,7 @@ import { formatInr } from "@/lib/intelligence/normalize";
 import DeveloperIntentNav from "@/components/Developer/DeveloperIntentNav";
 import DeveloperPriceTable from "@/components/Developer/DeveloperPriceTable";
 import DeveloperEntity from "@/components/Developer/DeveloperEntity";
-import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
+import { INTENT_STATUS_LABEL, intentStatus, sortByIntent, viewIntro } from "@/lib/intelligence/developerPage";
 import Faq from "@/components/Project/intelligence/Faq";
 import AppointmentCard from "@/components/Common/Appointment";
 import { DataUpdated } from "@/components/Common/DataUpdated";
@@ -64,7 +64,8 @@ async function load(slugRaw: string, viewRaw: string) {
   const data = await getBuilderBySlug(slugRaw).catch(() => null);
   if (!data) return null;
 
-  const projects = projectsForView(view, data.projects);
+  // Same intent order as the parent page (developer-page brief §1).
+  const projects = sortByIntent(projectsForView(view, data.projects));
   if (projects.length === 0) return null;
 
   return { view, summary: data.summary, all: data.projects, projects };
@@ -79,11 +80,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const decision = decideViewIndexable(view, projects);
   const url = `${SITE}/developer/${summary.slug}/${view.slug}`;
 
-  const year = new Date().getFullYear();
-  const title =
-    view.kind === "corridor"
-      ? `${summary.name} ${view.label} in Gurgaon`
-      : `${summary.name} ${view.label} in Gurgaon (${year})`;
+  // Developer-page brief §4: "{Developer} New Launch Projects in Gurgaon (n)".
+  // The layout template adds " | HomzRealtor"; og:title carries it itself.
+  const title = `${summary.name} ${view.label} in Gurgaon (${projects.length})`;
 
   const priced = projects.filter((p) => p.min_price_inr != null);
   const priceBit =
@@ -105,7 +104,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       ? {}
       : { robots: { index: false, follow: true } }),
     alternates: { canonical: url },
-    openGraph: { title, description, url, type: "website", images: [DEFAULT_OG_IMAGE] },
+    openGraph: { title: `${title} | HomzRealtor`, description, url, type: "website", images: [DEFAULT_OG_IMAGE] },
     twitter: { card: "summary_large_image", images: [DEFAULT_OG_IMAGE.url] },
   };
 }
@@ -135,21 +134,10 @@ export default async function DeveloperViewPage({ params }: PageParams) {
     .sort((a, b) => b.getTime() - a.getTime())[0];
   const asOf = (latestFeed ?? new Date()).toISOString();
 
-  const withImages = projects.filter((p) => p.images.length > 0);
-
-  // An intro written from this view's own numbers, so no two child pages —
-  // across any developer — read the same.
-  const statusMix =
-    view.kind === "status"
-      ? ""
-      : ` Of these, ${profile.readyToMove} ${profile.readyToMove === 1 ? "is" : "are"} ready to move and ${profile.underConstruction} ${profile.underConstruction === 1 ? "is" : "are"} under construction.`;
-  const intro =
-    `HomzRealtor lists ${projects.length} ${summary.name} ${view.label.toLowerCase()} in Gurgaon — ${view.intent}.` +
-    (profile.price
-      ? ` Entry asking prices run from ${formatInr(profile.price.minInr)} to ${formatInr(profile.price.maxInr)}, with a median of ${formatInr(profile.price.medianInr)} across the ${profile.price.pricedCount} carrying a price.`
-      : "") +
-    statusMix +
-    ` Everything below is computed from our own catalogue and every project links to its full record.`;
+  // Developer-page brief §5: a 60-100 word intro from this view's own
+  // numbers — count, status mix, price range, corridors and sectors — with no
+  // sentence shared across views, so no two child pages read the same.
+  const intro = viewIntro(summary.name, view, projects, profile);
 
   const faqs = [
     {
@@ -198,7 +186,9 @@ export default async function DeveloperViewPage({ params }: PageParams) {
         about: {
           "@type": "Organization",
           name: facts?.officialName ?? summary.name,
-          ...(facts ? { url: facts.officialWebsite, sameAs: [facts.officialWebsite] } : {}),
+          ...(facts
+            ? { url: facts.officialWebsite, sameAs: [facts.officialWebsite, ...(facts.sameAs ?? []).map((x) => x.url)] }
+            : {}),
         },
         publisher: { "@id": `${SITE}/#organization` },
       },
@@ -212,20 +202,7 @@ export default async function DeveloperViewPage({ params }: PageParams) {
           url: `${SITE}/project-listing/${canonicalCitySlug(p.city_key)}/${p.slug}`,
         })),
       },
-      ...(faqs.length > 0
-        ? [
-            {
-              "@type": "FAQPage",
-              "@id": `${pageUrl}#faq`,
-              url: pageUrl,
-              mainEntity: faqs.map((f) => ({
-                "@type": "Question",
-                name: f.q,
-                acceptedAnswer: { "@type": "Answer", text: f.a },
-              })),
-            },
-          ]
-        : []),
+      // No FAQPage (developer-page brief §6); the FAQs render visibly below.
     ],
   };
 
@@ -278,16 +255,6 @@ export default async function DeveloperViewPage({ params }: PageParams) {
         )}
       </section>
 
-      {withImages.length > 0 && (
-        <SimilarProjects
-          title={summary.name}
-          projects={withImages.slice(0, 9)}
-          heading={`${summary.name} ${view.label}`}
-          viewAllHref="#all-in-view"
-          viewAllLabel={`See all ${projects.length} →`}
-        />
-      )}
-
       <DeveloperPriceTable
         developerName={`${summary.name} ${view.label}`}
         projects={projects}
@@ -313,7 +280,7 @@ export default async function DeveloperViewPage({ params }: PageParams) {
               </Link>
               <span className="block text-[12px] text-gray-600">
                 {[p.sector, p.micro_market].filter((v, i, a) => v && a.indexOf(v) === i).join(", ")}
-                {p.project_status ? ` · ${p.project_status}` : ""}
+                {` · ${INTENT_STATUS_LABEL[intentStatus(p)]}`}
                 {p.min_price_inr ? ` · from ${formatInr(p.min_price_inr)}` : ""}
               </span>
             </li>
