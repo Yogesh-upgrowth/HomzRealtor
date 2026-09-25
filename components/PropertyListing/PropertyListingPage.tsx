@@ -648,6 +648,30 @@ function PropertyListingInner({
   );
 }
 
+// SEO audit 2026-09-25 (§4 Rendering order): the fallback used to be an empty
+// div, so the server HTML read H2 -> footer -> H1: the real header only
+// arrived in the streamed chunk after the footer. Googlebot reassembles that;
+// AI crawlers and any non-JS fetch do not. The fallback now carries the same
+// H1 in the same place, and is swapped for the live header on stream-in, so
+// the page still ends up with exactly one H1.
+function ListingHeaderFallback({ category }: { category: PropertyCategory }) {
+  return (
+    <div className={`${instrumentSerif.variable} ${manrope.variable} font-ui min-h-screen bg-[#0B0B0C] text-white`}>
+      <div className="max-w-2xl md:max-w-7xl px-4 md:px-2 mx-auto pt-32 pb-16">
+        <div className="flex flex-col items-center gap-5 mb-10">
+          <div className="flex items-center gap-4 w-full justify-center">
+            <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-r from-white/25 to-transparent" />
+            <h1 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-center text-white">
+              {CATEGORY_HEADING[category]}
+            </h1>
+            <div className="md:w-[200px] w-[100px] h-px bg-gradient-to-l from-white/25 to-transparent" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // useSearchParams() requires a Suspense boundary in a client-rendered page.
 export default function PropertyListingPage({
   category,
@@ -667,7 +691,7 @@ export default function PropertyListingPage({
   initialFacets?: ListingFacets;
 }) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0B0B0C]" />}>
+    <Suspense fallback={<ListingHeaderFallback category={category} />}>
       <PropertyListingInner
         category={category}
         cityKey={cityKey}

@@ -319,7 +319,10 @@ const DeveloperPage = async ({ params }: PageParams) => {
         <DeveloperIntentNav
           developerName={summary.name}
           developerSlug={summary.slug}
-          views={views}
+          // SEO audit 2026-09-25: link only the views that are offered to
+          // search engines; "Projects in New Gurgaon (1)" was a crawlable
+          // link into a page that then declared itself noindex.
+          views={views.filter((v) => v.indexable)}
           totalCount={summary.count}
         />
 
