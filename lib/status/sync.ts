@@ -10,7 +10,9 @@ import {
   fetchProjects,
   type RawHomzProject,
 } from "@/lib/scraping/homzbackend";
-import { slugify, extractPriceRange } from "@/lib/intelligence/normalize";
+import { slugify, extractPriceRange, extractBuilder } from "@/lib/intelligence/normalize";
+import { revalidatePath } from "next/cache";
+import { developerHubSlug } from "@/lib/intelligence/projects";
 import { deriveStatusFromText } from "@/lib/intelligence/view-model";
 import { getStatusCollections } from "./db";
 import type {
@@ -28,6 +30,29 @@ type Candidate = {
   min_price_inr: number | null;
   max_price_inr: number | null;
 };
+
+/**
+ * Marks /developer/{slug} and its child views stale for every developer
+ * behind these project titles. revalidatePath rather than revalidateTag: the
+ * developer pages read the catalogue through in-memory caches, not tagged
+ * fetches, so a tag would match nothing. Wrapped because this sync can also
+ * run from a render (refreshCityStatusIfStale), where Next forbids
+ * revalidation — there the 24h window still applies.
+ */
+function revalidateDeveloperPages(projectTitles: string[]): void {
+  const slugs = new Set<string>();
+  for (const t of projectTitles) {
+    const slug = t ? developerHubSlug(extractBuilder(t)) : null;
+    if (slug) slugs.add(slug);
+  }
+  for (const slug of slugs) {
+    try {
+      revalidatePath(`/developer/${slug}`, "layout");
+    } catch {
+      // Not in a request scope that allows revalidation; see note above.
+    }
+  }
+}
 
 function toCandidate(raw: RawHomzProject): Candidate | null {
   const title = typeof raw.projectTitle === "string" ? raw.projectTitle.trim() : "";
@@ -233,6 +258,16 @@ export async function syncCityStatus(cityKey: string): Promise<CitySyncSummary> 
 
   if (ops.length > 0) await statuses.bulkWrite(ops, { ordered: false });
   if (newEvents.length > 0) await events.insertMany(newEvents, { ordered: false });
+
+  // Developer-page brief §8: a listing, delisting, status or price change
+  // regenerates the affected developer pages on their next request instead of
+  // waiting out the 24h ISR window.
+  if (newEvents.length > 0) {
+    const titles = new Map<string, string>();
+    for (const c of candidates.values()) titles.set(c.slug, c.project_title);
+    for (const d of existing) if (!titles.has(d.slug)) titles.set(d.slug, d.project_title);
+    revalidateDeveloperPages(newEvents.map((e) => titles.get(e.slug) ?? ""));
+  }
 
   summary.duration_ms = Date.now() - started;
   await meta.updateOne(
