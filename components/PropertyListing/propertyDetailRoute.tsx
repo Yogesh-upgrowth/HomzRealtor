@@ -15,7 +15,6 @@ import type { Metadata } from "next";
 import { getListingRecord } from "@/lib/intelligence/get-listing-record";
 import { buildPropertyTitle } from "@/lib/intelligence/property-view";
 import { robotsFor } from "@/lib/intelligence/publishGate";
-import { isProjectRecord } from "@/lib/intelligence/dataQuality";
 import PropertyDetailView from "@/components/PropertyListing/PropertyDetailView";
 import PropertyJsonLd from "@/components/PropertyListing/PropertyJsonLd";
 import HomzRecordSections from "@/components/PropertyListing/HomzRecordSections";
