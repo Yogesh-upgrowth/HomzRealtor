@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import { formatInr } from "@/lib/intelligence/normalize";
-import { projectStatusKind } from "@/lib/intelligence/projectStatus";
+import { projectStatusKind, isPreRera } from "@/lib/intelligence/projectStatus";
 import { DataUpdated } from "@/components/Common/DataUpdated";
 
 // The developer price list (2026-09-22).
@@ -55,6 +55,7 @@ function reraCell(p: NormalizedProject): string {
   if (p.rera_status === "active") return "Registered";
   if (p.rera_status === "lapsed") return "Lapsed";
   if (p.rera_id) return "On file, unverified";
+  if (isPreRera(p)) return "Pre-RERA (completed before 2017)";
   return "Not on file";
 }
 

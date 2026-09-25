@@ -8,7 +8,8 @@ import {
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
-import { sanitizeSegment, isProjectRecord } from '@/lib/intelligence/dataQuality'
+import { sanitizeSegment, isProjectRecord, isJunkProjectRecord } from '@/lib/intelligence/dataQuality'
+import { developerProfileFacts } from '@/lib/content/developerProfiles'
 import { filterProperties } from '@/lib/listings/filters'
 import {
   buildLocationHubs, buildSectorBhkHubs,
@@ -114,6 +115,9 @@ async function fetchProjectEntries(): Promise<ProjectEntry[]> {
           // emits noindex on its own page, so listing it here would put the
           // sitemap and the page in direct contradiction.
           if (!reviewProject(p).indexable) continue
+          // Developer-page brief §2: associations and districts filed as
+          // projects are not development pages worth offering.
+          if (isJunkProjectRecord(p)) continue
           seen.add(key)
           entries.push({ slug: p.slug, city: citySlug, updatedAt: p.updated_at })
         }
@@ -246,6 +250,10 @@ async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
     developerUrls = developerUrls.concat(
       developers.filter(isIndexableDeveloper).map((d) => ({
         url: `${BASE_URL}/developer/${d.slug}`,
+        // Developer-page brief §8: the newest of the developer's own project
+        // timestamps and the date its entity facts were last checked -- the
+        // same value the page prints as "Last verified".
+        lastModified: maxDate([d.lastUpdatedAt, developerProfileFacts(d.slug)?.lastCheckedAt]),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       }))

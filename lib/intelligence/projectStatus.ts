@@ -59,3 +59,18 @@ export function allowsPossessionContent(status: string | null | undefined): bool
   const kind = projectStatusKind(status);
   return kind === "under-construction" || kind === "new-launch";
 }
+
+/**
+ * Completed before HARERA registration began (the Act's registration
+ * requirement took effect in 2017), so "no RERA id" is expected rather than a
+ * gap. True only when the record itself says so: ready to move AND a stated
+ * possession/completion year before 2017. A missing year is never read as old.
+ */
+export function isPreRera(p: {
+  project_status: string | null;
+  possession_text: string | null;
+}): boolean {
+  if (!isReadyToMove(p.project_status)) return false;
+  const years = (String(p.possession_text ?? "").match(/\b(19|20)\d{2}\b/g) || []).map(Number);
+  return years.length > 0 && Math.max(...years) < 2017;
+}

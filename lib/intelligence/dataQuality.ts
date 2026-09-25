@@ -286,6 +286,38 @@ const LISTING_TEXT_FIELDS = [
   "aiSummary",
 ] as const;
 
+// --------------------------------- developer-page brief 2026-09-25, §2
+
+/**
+ * junkProjectRecord: an association, a district or a phase label reaching the
+ * catalogue as a "project" — "DLF City Senior Citizen Council", "DLF
+ * Exclusive Floors Owners Society", "Dlf Cyber City", "DLF Phase II". None is
+ * a saleable development. Both halves are required: the name must look like
+ * one of those AND the record must carry no unit configuration (no BHK type,
+ * no price list), so a real project that happens to end in "City" is kept.
+ *
+ * Such records are left out of developer pages, developer counts and medians
+ * and the sitemap. They are not noindexed or deleted; the project URL keeps
+ * rendering for anyone who reaches it.
+ */
+// `city$` from the brief is narrowed to a bare two-word "{Developer} City"
+// ("DLF City"): as written it also caught real projects such as "M3M Capital
+// City" whenever the feed omitted their configuration.
+const JUNK_PROJECT_NAME =
+  /owners?'?\s*society|senior citizens?'?\s*council|\brwa\b|welfare association|^\S+\s+city$|cyber city$|\bsez$|phase [ivx]+$/i;
+
+export function isJunkProjectRecord(p: {
+  project_name: string;
+  property_type: string | null;
+  price_list?: unknown[] | null;
+}): boolean {
+  const name = String(p.project_name ?? "").trim();
+  if (!JUNK_PROJECT_NAME.test(name)) return false;
+  const hasConfig = Boolean(p.property_type && p.property_type.trim());
+  const hasPriceList = Array.isArray(p.price_list) && p.price_list.length > 0;
+  return !hasConfig && !hasPriceList;
+}
+
 // ------------------------------------------ SEO audit 2026-09-25, B5
 
 /**

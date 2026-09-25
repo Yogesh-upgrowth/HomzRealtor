@@ -4,6 +4,8 @@
 import { normalizeProject, slugify, type NormalizedProject } from "./normalize";
 import { collapseDuplicateProjects, type CollapseResult } from "./projectDedupe";
 import { isExcludedProject } from "./excludedProjects";
+import { isJunkProjectRecord } from "./dataQuality";
+import { projectOverrideFor } from "@/lib/content/projectOverrides";
 import { scoreComparePair } from "./compareQuality";
 import { availableDeveloperViews } from "./developerViews";
 import { normalizeAmenities } from "./view-model";
@@ -51,6 +53,24 @@ export const CITY_DISPLAY: Record<string, { name: string; state: string }> = {
   noida: { name: "Noida", state: "Uttar Pradesh" },
 };
 
+/**
+ * The owner's per-project corrections (lib/content/projectOverrides.ts),
+ * applied at the one boundary every consumer reads through. Only the fields an
+ * entry names are replaced.
+ */
+function applyProjectOverride(p: NormalizedProject): NormalizedProject {
+  const o = projectOverrideFor(p.city_key, p.slug);
+  if (!o) return p;
+  return {
+    ...p,
+    ...(o.sector ? { sector: o.sector } : {}),
+    ...(o.corridor ? { micro_market: o.corridor } : {}),
+    ...(o.status ? { project_status: o.status } : {}),
+    ...(o.possession ? { possession_text: o.possession } : {}),
+    ...(o.hareraId && o.hareraConfirmed && !p.rera_id ? { rera_id: o.hareraId } : {}),
+  };
+}
+
 async function fetchCityRaw(cityKey: string): Promise<CityData> {
   const [commercial, residential] = await Promise.all([
     fetchProjects(categorySegment(cityKey, "Commercial")).catch(() => []),
@@ -73,7 +93,7 @@ async function fetchCityRaw(cityKey: string): Promise<CityData> {
   // counted in another.
   ].filter((p) => !isExcludedProject(p.city_key, p.slug));
 
-  return collapseDuplicateProjects(normalized);
+  return collapseDuplicateProjects(normalized.map(applyProjectOverride));
 }
 
 // fetchProjects() (lib/scraping/homzbackend.ts) caches the *raw* segment (via
@@ -552,6 +572,8 @@ export type DeveloperSummary = {
   /** Feed spellings folded into this hub, when more than one mapped here.
    *  Kept so the page can say so rather than silently absorbing a name. */
   mergedNames: string[];
+  /** Newest updated_at across this developer's projects, or null. */
+  lastUpdatedAt: string | null;
 };
 
 // Skip junk names the first-word builder heuristic (extractBuilder in
@@ -675,10 +697,18 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
     { summary: DeveloperSummary; projects: NormalizedProject[] }
   >();
 
+  let junk = 0;
   for (const projects of allCities) {
     for (const p of projects) {
       const builder = p.builder;
       if (!isLinkableBuilder(builder)) continue;
+      // Developer-page brief §2: associations and districts filed as projects
+      // stay out of every developer figure. Counted so the rebuild log says
+      // how many were held back.
+      if (isJunkProjectRecord(p)) {
+        junk += 1;
+        continue;
+      }
 
       // Checklist item 3: resolve the feed's spelling to the canonical
       // developer before bucketing. Without this, "Emaar", "Emaar India" and
@@ -706,6 +736,7 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
             // depends on the final count.
             status: "unverified",
             mergedNames: [],
+            lastUpdatedAt: null,
           },
           projects: [],
         };
@@ -717,6 +748,13 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
 
       entry.projects.push(p);
       entry.summary.count += 1;
+      if (
+        p.updated_at &&
+        !Number.isNaN(new Date(p.updated_at).getTime()) &&
+        (!entry.summary.lastUpdatedAt || new Date(p.updated_at) > new Date(entry.summary.lastUpdatedAt))
+      ) {
+        entry.summary.lastUpdatedAt = p.updated_at;
+      }
       if (p.images.length > 0) entry.summary.withImages += 1;
       if (p.property_category === "Commercial") entry.summary.commercial += 1;
       else entry.summary.residential += 1;
@@ -731,6 +769,8 @@ async function buildDeveloperIndexUncached(): Promise<DeveloperIndex> {
       }
     }
   }
+
+  if (junk > 0) console.info(`[developer-index] ${junk} junk project records excluded (isJunkProjectRecord)`);
 
   // Status needs the final project count, so it is stamped after the pass.
   for (const entry of map.values()) {

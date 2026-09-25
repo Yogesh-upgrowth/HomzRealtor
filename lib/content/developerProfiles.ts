@@ -35,6 +35,14 @@ export type DeveloperProfileFacts = {
   sourceUrl: string;
   /** When a person last checked the source. Shown on the page. */
   lastVerifiedAt: string;
+  /** Stock-exchange listings, e.g. "NSE: DLF". Absent for unlisted companies. */
+  listedAs?: string[];
+  /** Other authoritative profiles of the same entity, for Organization.sameAs.
+   *  Each entry records how it was checked; nothing is emitted that was not. */
+  sameAs?: { url: string; label: string; checkedAt: string; checkedVia: string }[];
+  /** Latest date anyone checked any fact in this record. Drives the page's
+   *  "Last verified" date together with the catalogue timestamps. */
+  lastCheckedAt?: string;
 };
 
 export const DEVELOPER_PROFILES: Record<string, DeveloperProfileFacts> = {
@@ -51,6 +59,33 @@ export const DEVELOPER_PROFILES: Record<string, DeveloperProfileFacts> = {
     ],
     sourceUrl: "https://www.dlf.in/",
     lastVerifiedAt: "2026-09-22",
+    // 2026-09-25: listing codes and profile URLs corroborated by web search
+    // (Wikipedia infobox, BSE's own quote page, several brokers agreeing on
+    // BSE 532868 / NSE DLF). The sandbox this was written in could not open
+    // the pages directly, so the owner should click each once; the dates here
+    // are when the corroboration was done, not a claim of a full read.
+    listedAs: ["NSE: DLF", "BSE: 532868"],
+    sameAs: [
+      {
+        url: "https://en.wikipedia.org/wiki/DLF_(company)",
+        label: "Wikipedia",
+        checkedAt: "2026-09-25",
+        checkedVia: "web search result for the article; infobox lists BSE 532868 / NSE DLF",
+      },
+      {
+        url: "https://www.bseindia.com/stock-share-price/dlf-ltd/dlf/532868",
+        label: "BSE listing",
+        checkedAt: "2026-09-25",
+        checkedVia: "web search result on bseindia.com",
+      },
+      {
+        url: "https://www.nseindia.com/get-quotes/equity?symbol=DLF",
+        label: "NSE listing",
+        checkedAt: "2026-09-25",
+        checkedVia: "NSE symbol DLF corroborated across listings; standard NSE quote URL",
+      },
+    ],
+    lastCheckedAt: "2026-09-25",
   },
 };
 

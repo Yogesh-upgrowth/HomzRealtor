@@ -134,19 +134,11 @@ export function reviewProject(
     add("shortOrInvalidDeveloper", "blocking", `Developer name "${builder}" is not a usable entity.`);
   }
 
-  // SEO audit 2026-09-25 (B7 junkProjectName): RWA/owner bodies and bare
-  // business districts reach the catalogue as "projects" -- "DLF City Senior
-  // Citizen Council", "DLF Exclusive Floors Owners Society", "Dlf Cyber City".
-  // None is a saleable development. Blocking, so they drop out of the index
-  // and the developer counts' indexable set without deleting inventory (the
-  // exclusion list is reserved for owner instructions).
-  const name = project.project_name ?? "";
-  if (
-    /\b(?:owners?'?\s+(?:society|association|welfare)|resident'?s?\s+(?:welfare\s+)?association|RWA|senior\s+citizens?\s+council|welfare\s+society)\b/i.test(name) ||
-    /^\s*dlf\s+cyber\s+(?:city|hub)\s*$/i.test(name)
-  ) {
-    add("junkProjectName", "blocking", `"${name}" is an association or district, not a development.`);
-  }
+  // Junk "projects" (owners' societies, councils, bare districts) are handled
+  // by isJunkProjectRecord in dataQuality.ts, which keeps them out of the
+  // developer pages, their figures and the sitemap. Deliberately not a
+  // blocking flag here: the developer-page brief (2026-09-25) rules out
+  // noindexing to solve this.
 
   // "Project without locality/sector".
   if (!project.sector && !project.micro_market) {
