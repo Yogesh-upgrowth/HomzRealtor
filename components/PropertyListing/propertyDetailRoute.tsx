@@ -10,7 +10,7 @@
 // come from that record, so the snippet a searcher sees is Homz's own writing
 // rather than a copy of the posting this was rebuilt from.
 
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getListingRecord } from "@/lib/intelligence/get-listing-record";
 import { buildPropertyTitle } from "@/lib/intelligence/property-view";
@@ -49,10 +49,17 @@ export function makePropertyDetailPage(category: PropertyCategory) {
       ...(robotsFor(record.review) ? { robots: robotsFor(record.review) } : {}),
       alternates: { canonical: `/${routeBase}/${city}/${slug}` },
       openGraph: {
-        title,
+        // og:title matches the rendered <title>, which gets its brand
+        // suffix from the root layout's template (openGraph does not).
+        title: `${title} | HomzRealtor`,
         description: record.metaDescription,
         images: record.view.heroImage ? [record.view.heroImage] : undefined,
       },
+      // SEO audit 2026-09-25: twitter:image used to fall through to the
+      // root layout's generic hero while og:image was the listing's own.
+      ...(record.view.heroImage
+        ? { twitter: { card: "summary_large_image", images: [record.view.heroImage] } }
+        : {}),
     };
   }
 
@@ -60,10 +67,17 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     const { city, slug } = await params;
     const record = await getListingRecord(category, city, slug);
     if (!record) notFound();
+    // SEO audit 2026-09-25 (B5): a project record republished as a listing
+    // (no bedrooms, area, config, price or type) duplicates the project page
+    // with less on it. When that project page exists, send the URL there
+    // permanently; real unit listings never meet the predicate.
+    if (record.isProjectRecord && record.context.project) {
+      permanentRedirect(record.context.project.href);
+    }
     return (
       <>
         <PropertyJsonLd view={record.view} record={record} />
-        <PropertyDetailView view={record.view} />
+        <PropertyDetailView view={record.view} breadcrumbs={record.breadcrumbs} />
         <HomzRecordSections record={record} />
       </>
     );

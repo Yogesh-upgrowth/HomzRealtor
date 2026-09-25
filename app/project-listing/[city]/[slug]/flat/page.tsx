@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   if (!project) {
     const fallbackName = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     return {
-      title: `Flats in ${fallbackName} | HomzRealtor`,
+      title: `Flats in ${fallbackName}`,
       robots: { index: false, follow: true },
     };
   }
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     project.min_price_inr != null
       ? `Prices from ${formatInr(project.min_price_inr)}. `
       : "";
-  const title = `Flats in ${project.project_name}, ${loc}, Price & Availability | HomzRealtor`;
+  const title = `Flats in ${project.project_name}, ${loc}, Price & Availability`;
   const description =
     `Looking for flats in ${project.project_name}, ${loc}? ${priceBit}` +
     `Check available configurations, floor plans, amenities and specifications, ` +
@@ -84,13 +84,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description: truncatedDescription,
-    keywords: [
-      `flats in ${project.project_name}`,
-      `${project.project_name} flats`,
-      `${project.project_name} ${project.city_name}`,
-      `flats for sale in ${loc}`,
-      `${project.project_name} price`,
-    ],
     alternates: { canonical: canonicalUrl },
     robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {

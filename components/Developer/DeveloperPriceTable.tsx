@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { NormalizedProject } from "@/lib/intelligence/normalize";
 import { formatInr } from "@/lib/intelligence/normalize";
-import { projectStatusKind } from "@/lib/intelligence/projectStatus";
+import { projectStatusKind, isPreRera } from "@/lib/intelligence/projectStatus";
 import { DataUpdated } from "@/components/Common/DataUpdated";
 
 // The developer price list (2026-09-22).
@@ -34,6 +34,10 @@ type Props = {
   /** Cap, so a 109-project developer does not render a 109-row table above the
    *  fold. The full list is always linked below. */
   limit?: number;
+  /** Heading override; the developer page reuses this table for "Ready to move". */
+  heading?: string;
+  /** Minimum priced rows before the table renders at all. */
+  minRows?: number;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -55,6 +59,7 @@ function reraCell(p: NormalizedProject): string {
   if (p.rera_status === "active") return "Registered";
   if (p.rera_status === "lapsed") return "Lapsed";
   if (p.rera_id) return "On file, unverified";
+  if (isPreRera(p)) return "Pre-RERA (completed before 2017)";
   return "Not on file";
 }
 
@@ -64,12 +69,14 @@ export default function DeveloperPriceTable({
   citySlug,
   asOf,
   limit = 25,
+  heading,
+  minRows = 3,
 }: Props) {
   const priced = projects
     .filter((p) => p.min_price_inr != null && p.min_price_inr > 0)
     .sort((a, b) => (b.min_price_inr ?? 0) - (a.min_price_inr ?? 0));
 
-  if (priced.length < 3) return null;
+  if (priced.length < minRows) return null;
 
   const rows = priced.slice(0, limit);
   const unpriced = projects.length - priced.length;
@@ -77,7 +84,7 @@ export default function DeveloperPriceTable({
   return (
     <section aria-labelledby="dev-price-list" className="w-full max-w-7xl mx-auto px-4 mt-12">
       <h2 id="dev-price-list" className="mb-1 text-2xl font-bold text-white">
-        {developerName} Projects in Gurgaon — Current Price List
+        {heading ?? `${developerName} Projects in Gurgaon — Current Price List`}
       </h2>
       <p className="mb-4 text-[13px] text-gray-500">
         Entry asking price per project, highest first.

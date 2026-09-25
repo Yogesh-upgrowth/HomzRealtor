@@ -7,16 +7,9 @@ import customer from "@/assets/images/customer.jpg";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/defaultOgImage";
 
 export const metadata = {
-  title: "About HomzRealtor, Gurgaon Real Estate Advisory",
+  title: { absolute: "About HomzRealtor, Gurgaon Real Estate Advisory" },
   description:
     "Learn about HomzRealtor, a trusted real estate advisory platform helping homebuyers and investors discover verified residential and commercial properties with confidence.",
-  keywords: [
-    "about HomzRealtor",
-    "real estate advisory Delhi NCR",
-    "trusted property consultants Gurgaon",
-    "property solutions company",
-    "real estate experts Noida",
-  ],
   alternates: {
     canonical: "/about-us",
   },

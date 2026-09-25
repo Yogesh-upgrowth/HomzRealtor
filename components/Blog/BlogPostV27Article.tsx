@@ -4,7 +4,8 @@ import { ChevronRight } from "lucide-react";
 import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
 import { authorProfilePath } from "@/lib/content/authors";
 import { hubLinksForPost } from "@/lib/content/postHubLinks";
-import type { DeveloperMention } from "@/lib/content/postDeveloperLinks";
+import type { BuilderLike, DeveloperMention } from "@/lib/content/postDeveloperLinks";
+import { developerLinkables, linkDeveloperMentions } from "@/lib/content/postDeveloperLinks";
 import { buildArticleJsonLd, safeJsonLd } from "@/lib/seo/blogJsonLd";
 import ReadingProgressBar from "./ReadingProgressBar";
 import BlogImageOrFallback from "./BlogImageOrFallback";
@@ -46,8 +47,13 @@ const markdownOptions = {
 const BlogPostV27Article = ({
   post,
   developers = [],
+  developerHubs = [],
 }: {
   post: BlogPostV27;
+  /** Every live developer hub. The first mention of each in the prose is
+   *  linked at render (lib/content/postDeveloperLinks.ts), so new posts get
+   *  developer links without anyone adding them by hand. */
+  developerHubs?: BuilderLike[];
   /** Developers this article names that have a live hub, most-mentioned
    *  first. Derived in the route from the article's own prose — see
    *  lib/content/postDeveloperLinks.ts. */
@@ -61,6 +67,19 @@ const BlogPostV27Article = ({
     post.meta.tags ?? []
   );
   const halfIndex = Math.ceil(post.sections.length / 2);
+
+  // First-mention developer links, one pass in reading order so "first" means
+  // first in the article.
+  const linkables = developerLinkables(developerHubs);
+  const seenDevelopers = new Set<string>();
+  const introMd = linkDeveloperMentions(post.introduction, linkables, seenDevelopers);
+  const sectionMd = post.sections.map((section) => ({
+    body: linkDeveloperMentions(section.contentMarkdown, linkables, seenDevelopers),
+    subs: (section.subsections ?? []).map((sub) =>
+      linkDeveloperMentions(sub.contentMarkdown, linkables, seenDevelopers)
+    ),
+  }));
+  const faqAnswersMd = post.faqs.map((f) => linkDeveloperMentions(f.a, linkables, seenDevelopers));
 
   return (
     <div className="bg-[#0B0B0C] text-white">
@@ -147,18 +166,18 @@ const BlogPostV27Article = ({
           <div className="lg:order-2 lg:max-w-[720px]">
             <div className="prose-content text-[16px] leading-[1.75] text-gray-300">
               <div className="mb-6">
-                <Markdown options={markdownOptions}>{post.introduction}</Markdown>
+                <Markdown options={markdownOptions}>{introMd}</Markdown>
               </div>
 
               {post.sections.map((section, i) => (
                 <section key={section.id} id={section.id} className="mb-8 scroll-mt-24">
                   <h2 className="mb-3 text-xl md:text-2xl font-bold text-white">{section.h2}</h2>
-                  <Markdown options={markdownOptions}>{section.contentMarkdown}</Markdown>
+                  <Markdown options={markdownOptions}>{sectionMd[i].body}</Markdown>
 
                   {section.subsections?.map((sub, si) => (
                     <div key={si} className="mt-4 mb-4">
                       <h3 className="mb-2 text-lg font-semibold text-white">{sub.h3}</h3>
-                      <Markdown options={markdownOptions}>{sub.contentMarkdown}</Markdown>
+                      <Markdown options={markdownOptions}>{sectionMd[i].subs[si] ?? sub.contentMarkdown}</Markdown>
                     </div>
                   ))}
 
@@ -191,7 +210,7 @@ const BlogPostV27Article = ({
 
         <section id="faqs" className="mt-10 scroll-mt-24">
           <h2 className="mb-4 text-xl md:text-2xl font-bold text-white">Frequently Asked Questions</h2>
-          <FaqAccordion faqs={post.faqs} />
+          <FaqAccordion faqs={post.faqs} answersMarkdown={faqAnswersMd} />
         </section>
 
         <div className="mt-10">

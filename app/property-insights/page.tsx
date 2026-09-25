@@ -12,12 +12,12 @@ const SITE = "https://www.homzrealtor.com";
 const PAGE_URL = `${SITE}/property-insights`;
 
 export const metadata: Metadata = {
-  title: "Property Insights, Buyer's Guides",
+  title: "Gurgaon Property Buying Guides: RERA, Loans, Under-Construction",
   description:
     "HomzRealtor's buyer's guides: RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Property Insights, Buyer's Guides",
+    title: "Gurgaon Property Buying Guides: RERA, Loans, Under-Construction | HomzRealtor",
     description:
       "HomzRealtor's buyer's guides: RERA basics, under-construction property, home loan documentation and Gurgaon micro-market rental yields.",
     url: PAGE_URL,

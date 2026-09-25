@@ -19,7 +19,8 @@
 
 import { haversineKm, nearbyLandmarks } from "./osmPlaces";
 import { resolveCoordinate } from "./resolveLocation";
-import { sectorNumberFrom } from "@/lib/listings/identity";
+import { listingSectorToken } from "@/lib/listings/listingLocation";
+import { isProjectRecord } from "./dataQuality";
 import { getProjectsForCity } from "./projects";
 import { slugify } from "@/components/utils/slugify";
 import type { RawHomzProperty } from "@/lib/scraping/homzbackend";
@@ -101,7 +102,10 @@ export function sectorPriceContext(
   subject: RawHomzProperty,
   segment: RawHomzProperty[]
 ): SectorPriceContext | null {
-  const sector = sectorNumberFrom(subject.location) || sectorNumberFrom(subject.title);
+  // listingSectorToken, not a bare sector regex: it refuses a sector number
+  // that belongs to another town ("Sector 4, Sohna"), which the bare parse
+  // compared against Gurgaon Sector 4's median (SEO audit 2026-09-25).
+  const sector = listingSectorToken(subject);
   if (!sector) return null;
 
   const subjectPrice = priceOf(subject);
@@ -111,8 +115,11 @@ export function sectorPriceContext(
 
   const inSector = segment.filter((p) => {
     if (p.id === subject.id) return false;
-    const s = sectorNumberFrom(p.location) || sectorNumberFrom(p.title);
-    if (s !== sector) return false;
+    if (listingSectorToken(p) !== sector) return false;
+    // Residential and commercial never share a median: a ₹9.9 Lakh retail
+    // unit is not a comparable for a flat (audit B7,
+    // residentialCommercialMedian).
+    if (Boolean(p.isCommercial) !== Boolean(subject.isCommercial)) return false;
     const isRental = p.listingType === "rent" || p.rentMonthly != null;
     return isRental === subjectIsRental && priceOf(p) !== null;
   });
@@ -180,7 +187,13 @@ export async function matchProject(
   // Fall back to the "... in {Project}, {Sector}" shape the feed's own titles
   // use — the same pattern extractProjectName() relies on.
   const fromTitle = String(subject.title ?? "").match(/\bin\s+([^,]+?),\s*sec/i)?.[1];
-  const candidate = (explicit || fromTitle || "").trim();
+  // A project record's title *is* the project name ("GLS Aureva"), with no
+  // "in X, Sector" phrase around it (audit B5). Only used for those records,
+  // where there is no unit-level text for a bare title to be confused with.
+  const wholeTitle = isProjectRecord(subject)
+    ? String(subject.title ?? "").replace(/\s*[,|-]\s*(sector|sohna|gurgaon|gurugram)\b.*$/i, "")
+    : "";
+  const candidate = (explicit || fromTitle || wholeTitle || "").trim();
   if (!candidate || candidate.length < 4) return null;
 
   const wanted = slugify(candidate);
@@ -218,7 +231,7 @@ export async function buildListingContext(
   const cityKey = opts.cityKey ?? "ggn";
   const citySlug = opts.citySlug ?? "gurgaon";
 
-  const sectorNumber = sectorNumberFrom(subject.location) || sectorNumberFrom(subject.title);
+  const sectorNumber = listingSectorToken(subject);
   const sectorLabel = sectorNumber ? `Sector ${sectorNumber.toUpperCase()}` : null;
 
   const coords = resolveCoordinate(

@@ -286,8 +286,109 @@ const LISTING_TEXT_FIELDS = [
   "aiSummary",
 ] as const;
 
+// --------------------------------- developer-page brief 2026-09-25, §2
+
+/**
+ * junkProjectRecord: an association, a district or a phase label reaching the
+ * catalogue as a "project" — "DLF City Senior Citizen Council", "DLF
+ * Exclusive Floors Owners Society", "Dlf Cyber City", "DLF Phase II". None is
+ * a saleable development. Both halves are required: the name must look like
+ * one of those AND the record must carry no unit configuration (no BHK type,
+ * no price list), so a real project that happens to end in "City" is kept.
+ *
+ * Such records are left out of developer pages, developer counts and medians
+ * and the sitemap. They are not noindexed or deleted; the project URL keeps
+ * rendering for anyone who reaches it.
+ */
+// `city$` from the brief is narrowed to a bare two-word "{Developer} City"
+// ("DLF City"): as written it also caught real projects such as "M3M Capital
+// City" whenever the feed omitted their configuration.
+const JUNK_PROJECT_NAME =
+  /owners?'?\s*society|senior citizens?'?\s*council|\brwa\b|welfare association|^\S+\s+city$|cyber city$|\bsez$|phase [ivx]+$/i;
+
+export function isJunkProjectRecord(p: {
+  project_name: string;
+  property_type: string | null;
+  price_list?: unknown[] | null;
+}): boolean {
+  const name = String(p.project_name ?? "").trim();
+  if (!JUNK_PROJECT_NAME.test(name)) return false;
+  const hasConfig = Boolean(p.property_type && p.property_type.trim());
+  const hasPriceList = Array.isArray(p.price_list) && p.price_list.length > 0;
+  return !hasConfig && !hasPriceList;
+}
+
+// ------------------------------------------ SEO audit 2026-09-25, B5
+
+/**
+ * A project record republished in the listings feed: no bedrooms, no
+ * configuration, no area, no parsed price, and no specific property type.
+ * Sector 65's buy hub showed 19 of these among 24 cards (WorldMark, Paras
+ * Trade Centre, M3M Tee Point...), each "Type: Other · Area: N/A · Price on
+ * Request" with its own URL beside a richer project page. Every one of the
+ * five conditions must hold, so a real unit that is merely missing its price
+ * or its area is never caught.
+ */
+export function isProjectRecord(p: RawHomzProperty): boolean {
+  const type = String(p.propertyType ?? "").trim().toLowerCase();
+  return (
+    !(typeof p.bedrooms === "number" && p.bedrooms > 0) &&
+    !String(p.configuration ?? "").trim() &&
+    !(typeof p.areaValue === "number" && p.areaValue > 0) &&
+    !(typeof p.priceValue === "number" && p.priceValue > 0) &&
+    !(typeof p.rentMonthly === "number" && p.rentMonthly > 0) &&
+    (type === "" || type === "other")
+  );
+}
+
+// ------------------------------------------ SEO audit 2026-09-25, B7 rules
+
+/**
+ * SCO ("shop-cum-office") units carry a residential type in the feed often
+ * enough to set sector minimums: Emaar SCO at ₹1.40 Cr and AIPL Joy Central at
+ * ₹9.90 Lakh became Sector 65's "lowest residential entry price". "SCO" and
+ * "shop cum office" only ever describe commercial space, and a BHK/bedroom
+ * count on the same record vetoes the correction, so a flat in a project
+ * that merely has an SCO block next door is left alone.
+ */
+const SCO_RE = /\bSCO\b|\bshop[\s-]*cum[\s-]*office\b/i;
+
+export function looksLikeSco(p: RawHomzProperty): boolean {
+  if (COMMERCIAL_TYPES.has(String(p.propertyType ?? ""))) return false;
+  if (typeof p.bedrooms === "number" && p.bedrooms >= 1) return false;
+  if (RESIDENTIAL_CONFIG.test(String(p.configuration ?? ""))) return false;
+  if (RESIDENTIAL_CONFIG.test(String(p.title ?? ""))) return false;
+  return SCO_RE.test(String(p.title ?? "")) || SCO_RE.test(String(p.configuration ?? ""));
+}
+
+/**
+ * "Sohna Sector 4" filed as "Sector 4, Gurgaon": Sohna has its own sector
+ * numbering, so the page put a Sohna project at Gurgaon Sector 4's centroid
+ * and computed wrong distances from it (GLS Aureva, audit §2). When the
+ * listing's own prose names Sohna against the same sector number its location
+ * gives, the location is rewritten to "Sector N, Sohna" — which every
+ * downstream sector parser already excludes from Gurgaon via OTHER_TOWNS.
+ */
+export function sohnaSectorLocation(p: RawHomzProperty): string | null {
+  const loc = String(p.location ?? "");
+  if (/\bsohna\b(?!\s+road)/i.test(loc)) return null;
+  const m = loc.match(/\bsec(?:tor)?[\s.-]*([0-9]{1,3})\b/i);
+  if (!m) return null;
+  const n = m[1];
+  const prose = [p.title, ...(Array.isArray(p.aboutProject) ? p.aboutProject : [])]
+    .filter(Boolean)
+    .join(" ");
+  const sohnaSector = new RegExp(
+    `\\bsohna\\s+sec(?:tor)?[\\s.-]*${n}\\b|\\bsec(?:tor)?[\\s.-]*${n}\\s*,?\\s*sohna\\b(?!\\s+road)`,
+    "i"
+  );
+  return sohnaSector.test(prose) ? `Sector ${n}, Sohna` : null;
+}
+
 export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
   const cls = classifyListing(p);
+  const sco = looksLikeSco(p);
+  const sohnaLocation = sohnaSectorLocation(p);
 
   const dirty = LISTING_TEXT_FIELDS.filter((f) => {
     const v = p[f];
@@ -297,9 +398,17 @@ export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
     return competitorMentions(typeof v === "string" ? v : JSON.stringify(v)).length > 0;
   });
 
-  if (!cls.misclassified && dirty.length === 0) return p;
+  if (!cls.misclassified && !sco && !sohnaLocation && dirty.length === 0) return p;
 
   const next: RawHomzProperty = { ...p };
+
+  if (sco) {
+    next.propertyType = "retail_shop";
+    next.isCommercial = true;
+    next.reclassified = "commercial-in-residential";
+  }
+
+  if (sohnaLocation) next.location = sohnaLocation;
 
   if (cls.misclassified) {
     next.propertyType = cls.correctedType ?? undefined;

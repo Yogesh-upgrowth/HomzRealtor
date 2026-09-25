@@ -255,13 +255,20 @@ export function detectAreaUnit(text: string): string | null {
 // Hence one shared detector here (normalize.ts is the leaf module both
 // view-model.ts and property-view.ts can import without a cycle).
 const UNIT_SELECTOR_TOKENS = [
-  "sqft", "sqyd", "sqyrd", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
+  "sqft", "sqyd", "sqyrd", "sqyard", "sqm", "acre", "bigha", "hectare", "marla", "kanal",
   "biswa", "ground", "aankadam", "rood", "chatak", "kottah", "cent", "perch",
   "guntha", "katha", "gaj", "killa", "kuncham",
 ];
 
 export function looksLikeUnitSelectorDump(value: string): boolean {
-  const lower = String(value ?? "").toLowerCase();
+  // SEO audit 2026-09-25 (B7 unitSelectorDump): "1350 Sq.Ft. Sq.ft. Sq.metre
+  // Sq.yards" slipped through because the tokens are spelled without dots or
+  // spaces. Collapse "sq. ft" / "sq-ft" / "sq.metre" to "sqft" / "sqmetre"
+  // first so the checks below see one spelling per unit.
+  const lower = String(value ?? "")
+    .toLowerCase()
+    .replace(/\bsq[.\s-]*(?=[a-z])/g, "sq")
+    .replace(/\./g, "");
   let distinctHits = 0;
   for (const token of UNIT_SELECTOR_TOKENS) {
     if (lower.includes(token)) distinctHits++;

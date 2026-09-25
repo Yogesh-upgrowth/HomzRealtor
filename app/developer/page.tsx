@@ -19,17 +19,11 @@ export const metadata: Metadata = {
   title: "Property Developers & Builders in Gurgaon",
   description:
     "Browse real estate developers and builders with projects listed on HomzRealtor, covering Gurgaon. Explore each developer's projects, prices and developments.",
-  keywords: [
-    "property developers Delhi NCR",
-    "builders in Gurgaon",
-    "real estate developers Noida",
-    "top builders Delhi NCR",
-  ],
   alternates: { canonical: `${SITE}/developer` },
   openGraph: {
-    title: "Property Developers & Builders in Delhi NCR",
+    title: "Property Developers & Builders in Gurgaon | HomzRealtor",
     description:
-      "Browse real estate developers and builders across Delhi NCR and explore their projects on HomzRealtor.",
+      "Browse real estate developers and builders with projects listed on HomzRealtor, covering Gurgaon. Explore each developer's projects, prices and developments.",
     url: `${SITE}/developer`,
     type: "website",
     images: [DEFAULT_OG_IMAGE],

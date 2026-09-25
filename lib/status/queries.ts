@@ -91,3 +91,26 @@ export async function refreshCityStatusIfStale(cityKey: string): Promise<void> {
     // Background freshness is best-effort by design.
   }
 }
+
+/**
+ * Catalogue events for a set of projects, newest first: when each was first
+ * listed and when its status changed. Feeds the developer page's launch
+ * tracker. [] when MongoDB is not configured.
+ */
+export async function getProjectEvents(
+  cityKey: string,
+  slugs: string[],
+  limit = 20
+): Promise<StatusEventDoc[]> {
+  if (slugs.length === 0) return [];
+  try {
+    const { events } = await getStatusCollections();
+    return await events
+      .find({ city_key: cityKey, slug: { $in: slugs }, type: { $in: ["listed", "status_change"] } })
+      .sort({ at: -1 })
+      .limit(limit)
+      .toArray();
+  } catch {
+    return [];
+  }
+}

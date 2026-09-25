@@ -25,7 +25,7 @@ const DESCRIPTION =
   "How HomzRealtor produces its Gurgaon property research: where the figures come from, the minimum sample behind any median, the asking-price distinction, how we handle errors, and who is accountable.";
 
 export const metadata: Metadata = {
-  title: "Editorial and Corrections Policy | HomzRealtor",
+  title: "Editorial and Corrections Policy",
   description: DESCRIPTION,
   alternates: { canonical: PAGE_URL },
   openGraph: {

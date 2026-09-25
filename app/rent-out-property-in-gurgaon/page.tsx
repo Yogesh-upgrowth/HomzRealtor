@@ -3,7 +3,7 @@ import SellPropertyForm from "@/components/Home/SellPropertyForm";
 import ServicePage from "@/components/Services/ServicePage";
 import { allResolved, LANDLORD_TERM_KEYS } from "@/lib/content/ownerPending";
 
-const title = "Rent Out Your Property in Gurgaon | HomzRealtor";
+const title = "Rent Out Your Property in Gurgaon";
 const description =
   "Let your Gurgaon flat, floor or villa through HomzRealtor: how the process works, what to have ready, and what it costs. Speak to an advisor about letting.";
 

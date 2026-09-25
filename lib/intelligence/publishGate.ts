@@ -134,6 +134,12 @@ export function reviewProject(
     add("shortOrInvalidDeveloper", "blocking", `Developer name "${builder}" is not a usable entity.`);
   }
 
+  // Junk "projects" (owners' societies, councils, bare districts) are handled
+  // by isJunkProjectRecord in dataQuality.ts, which keeps them out of the
+  // developer pages, their figures and the sitemap. Deliberately not a
+  // blocking flag here: the developer-page brief (2026-09-25) rules out
+  // noindexing to solve this.
+
   // "Project without locality/sector".
   if (!project.sector && !project.micro_market) {
     add("noLocation", "warning", "No sector or micro-market resolved for this project.");
@@ -238,6 +244,23 @@ export function reviewListing(p: RawHomzProperty): PublishState {
   const rera = String(p.reraId ?? "").trim();
   if (rera && (RERA_PLACEHOLDER.test(rera) || !RERA_SHAPE.test(rera))) {
     add("reraMalformed", "warning", `RERA id "${rera}" is not a recognisable registration number.`);
+  }
+
+  // SEO audit 2026-09-25 (B7 commercialPlotSanity): Reach Buzz 114 appeared
+  // as "Commercial Plots", 945 sq ft at ₹59,153/sq ft -- a retail unit, not
+  // land, and it set Sector 114's rate. A commercial plot under 2,000 sq ft
+  // priced above ₹30,000/sq ft is almost certainly mistyped. Warning, not a
+  // correction: the right type cannot be read off these numbers alone.
+  const isPlot = type === "plot" || /\bcommercial\s+plots?\b/i.test(String(p.title ?? ""));
+  if (isPlot && p.isCommercial && area != null && area > 0 && area < 2000 && price != null) {
+    const perSqft = price / area;
+    if (perSqft > 30000) {
+      add(
+        "commercialPlotSanity",
+        "warning",
+        `Commercial plot of ${area} sq ft at ₹${Math.round(perSqft).toLocaleString("en-IN")}/sq ft reads as a shop, not land.`
+      );
+    }
   }
 
   const text = [

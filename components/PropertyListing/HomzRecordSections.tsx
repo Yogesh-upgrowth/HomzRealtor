@@ -162,9 +162,17 @@ export default function HomzRecordSections({ record }: { record: ListingRecord }
 
       {/* Hard links out — every listing reaches its project and its sector hub,
           so nothing on this template is an orphan. */}
-      {(ctx.project || ctx.sectorHref) && (
+      {(ctx.project || ctx.sectorHref || record.sectorHub) && (
         <Section id="part-of" title="Part of">
           <div className="flex flex-wrap gap-3">
+            {record.sectorHub && (
+              <Link
+                href={record.sectorHub.href}
+                className="rounded-xl border border-white/15 px-4 py-2.5 text-[14px] font-semibold text-gray-200 hover:border-white/35"
+              >
+                {record.sectorHub.label} ({record.sectorHub.count}) →
+              </Link>
+            )}
             {ctx.project && (
               <Link
                 href={ctx.project.href}
@@ -182,6 +190,29 @@ export default function HomzRecordSections({ record }: { record: ListingRecord }
               </Link>
             )}
           </div>
+        </Section>
+      )}
+
+      {/* SEO audit 2026-09-25 (B6, block 8): comparable units, so a detail
+          page passes links on instead of ending in the enquiry form. Same
+          sector, same bedrooms, asking price within ±20%. */}
+      {record.similar.length > 0 && (
+        <Section id="similar-listings" title="Similar units nearby">
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {record.similar.map((s) => (
+              <li key={s.href}>
+                <Link
+                  href={s.href}
+                  className="block rounded-xl border border-white/[0.08] bg-[#141416] p-4 hover:border-white/25"
+                >
+                  <span className="block text-[14px] font-semibold text-white">{s.title}</span>
+                  <span className="mt-1 block text-[13px] text-gray-400">
+                    {[s.priceText, s.areaText].filter(Boolean).join(" · ")}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </Section>
       )}
 

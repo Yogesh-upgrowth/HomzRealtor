@@ -85,14 +85,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description,
-    keywords: [
-      `property in ${name}`,
-      `residential projects in ${name}`,
-      `commercial projects in ${name}`,
-      `new projects in ${name}`,
-      `flats in ${name}`,
-      `real estate ${name}`,
-    ],
     alternates: {
       canonical: `${SITE}/project-listing/${slug}`,
     },

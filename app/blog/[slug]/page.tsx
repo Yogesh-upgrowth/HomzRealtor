@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       `${count} ${count === 1 ? "guide" : "guides"} on ${label.toLowerCase()} for Gurgaon property, ` +
       `built from HomzRealtor's live listing catalogue, real project counts and price data, not generic advice.`;
     return {
-      title: `${label}, HomzRealtor Blog`,
+      title: { absolute: `${label}, HomzRealtor Blog` },
       description,
       alternates: { canonical: url },
       openGraph: { title: `${label}, HomzRealtor Blog`, description, url, type: "website" },
@@ -206,7 +206,13 @@ const BlogPostPage = async ({ params }: PageParams) => {
     // see lib/content/postDeveloperLinks.ts. Best-effort: a feed failure
     // costs the link block, not the article.
     const builders = await getAllBuilders().catch(() => []);
-    return <BlogPostV27Article post={v27} developers={developersMentionedIn(v27, builders)} />;
+    return (
+      <BlogPostV27Article
+        post={v27}
+        developers={developersMentionedIn(v27, builders)}
+        developerHubs={builders}
+      />
+    );
   }
 
   notFound();

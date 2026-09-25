@@ -11,7 +11,13 @@ import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { reviewProject, robotsFor } from "@/lib/intelligence/publishGate";
-import { getProjectBySlug, getProjectBySlugResolved, canonicalCitySlug } from "@/lib/intelligence/projects";
+import {
+  getProjectBySlug,
+  getProjectBySlugResolved,
+  canonicalCitySlug,
+  developerHubSlug,
+} from "@/lib/intelligence/projects";
+import { developerDisplayName } from "@/lib/content/developers";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
@@ -108,17 +114,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       `${statusBit}${reraBit} Compare prices, floor plans and amenities on HomzRealtor.`
   );
 
-  const keywords = [
-    project.project_name,
-    `${project.project_name} ${cityName}`,
-    `${project.project_name} price`,
-    `${project.property_category} projects in ${cityName}`,
-    project.builder && project.builder !== "Unknown"
-      ? `${project.builder} projects`
-      : null,
-    project.sector ? `projects in ${project.sector} ${cityName}` : null,
-  ].filter(Boolean) as string[];
-
   const canonicalUrl = `https://www.homzrealtor.com/project-listing/${canonicalCitySlug(
     project.city_key
   )}/${slug}`;
@@ -141,7 +136,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title,
     description,
-    keywords,
     ...(robotsFor(review) ? { robots: robotsFor(review) } : {}),
     alternates: {
       canonical: canonicalUrl,
@@ -211,10 +205,14 @@ const ProjectPage = async ({ params }: PageParams) => {
   // linked back up, leaving sector pages under-linked internally.
   const sectorSlug = project.sector ? slugify(project.sector) : null;
   const sectorHref = sectorSlug ? `/project-listing/${canonicalCity}/sectors/${sectorSlug}` : null;
+  const developerSlug = developerHubSlug(project.builder);
 
   // Core structured data (BreadcrumbList + RealEstateListing) is emitted here, in
-  // the immediately-rendered HTML. FAQPage schema lives in <ProjectJsonLd> inside
-  // the streamed intelligence sections — no type is emitted in both places.
+  // the immediately-rendered HTML. The FAQPage block that <ProjectJsonLd> used
+  // to emit from the streamed sections was removed (SEO audit 2026-09-25, B9):
+  // FAQ rich results are limited to government and health sites, and the same
+  // templated questions across ~2k projects read as manufactured markup. The
+  // visible FAQ stays.
   const listing: Record<string, any> = {
     "@type": "RealEstateListing",
     name: view.name,
@@ -288,6 +286,26 @@ const ProjectPage = async ({ params }: PageParams) => {
         ],
       },
       listing,
+      // Second trail through the developer hub (developer-page brief §7).
+      // Google accepts multiple BreadcrumbList items for one page.
+      ...(developerSlug
+        ? [
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://www.homzrealtor.com" },
+                { "@type": "ListItem", position: 2, name: "Developers", item: "https://www.homzrealtor.com/developer" },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: developerDisplayName(project.builder),
+                  item: `https://www.homzrealtor.com/developer/${developerSlug}`,
+                },
+                { "@type": "ListItem", position: 4, name: view.name, item: pageUrl },
+              ],
+            },
+          ]
+        : []),
     ],
   };
 
@@ -313,6 +331,8 @@ const ProjectPage = async ({ params }: PageParams) => {
           citySlug={view.citySlug}
           sectorLabel={project.sector}
           sectorHref={sectorHref}
+          developerSlug={developerSlug}
+          developerName={developerSlug ? developerDisplayName(project.builder) : null}
           locationLine={view.locationLine}
           propertyCategory={view.propertyCategory}
           propertyType={view.propertyType}

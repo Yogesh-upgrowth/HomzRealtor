@@ -10,7 +10,12 @@ export const metadata: Metadata = {
   title: "Property Projects in Gurgaon, Price, Photos & Floor Plans",
   description:
     "Browse residential and commercial property projects in Gurgaon. Filter by sector, budget, BHK and status, compare prices and enquire directly with HomzRealtor.",
-  alternates: { canonical: "/project-listing" },
+  // SEO audit 2026-09-25 (Appendix A): this hub and /project-listing/gurgaon
+  // targeted the same query with near-identical titles on a Gurgaon-only
+  // site. The page stays (its city chips are still the way into the other
+  // cities) but defers to the Gurgaon hub as canonical, and it has left the
+  // sitemap so the two stop competing.
+  alternates: { canonical: "/project-listing/gurgaon" },
 };
 
 // ProjectListingClient reads useSearchParams(), which only forces a dynamic

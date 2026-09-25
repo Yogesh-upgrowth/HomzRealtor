@@ -668,7 +668,10 @@ function buildSimilarSearches(project: NormalizedProject, citySlug: string): Lin
   if (project.builder && project.builder !== "Unknown")
     items.push({ label: `Projects by ${project.builder}`, href: base });
   if (project.micro_market)
-    items.push({ label: `Projects on ${project.micro_market}`, href: base });
+    items.push({
+      label: `Projects ${/\b(Road|Expressway|Highway)$/i.test(project.micro_market) ? "on" : "in"} ${project.micro_market}`,
+      href: base,
+    });
   if (project.property_type)
     items.push({ label: `${project.property_type} in ${project.city_name}`, href: base });
   items.push({ label: `Luxury Projects in ${project.city_name}`, href: base });

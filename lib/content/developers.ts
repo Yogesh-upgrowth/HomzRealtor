@@ -187,6 +187,17 @@ export function canonicalDeveloperByName(name: string): CanonicalDeveloper | und
 }
 
 /**
+ * The name to print for a feed builder string: the canonical spelling when
+ * the developer is in the table ("DLF", never "Dlf"), otherwise the feed's
+ * own text unchanged. Every place that shows a developer's name should go
+ * through this so the casing matches the developer page's H1.
+ */
+export function developerDisplayName(name: string | null | undefined): string {
+  const raw = String(name ?? "").trim();
+  return canonicalDeveloperByName(raw)?.canonicalName ?? raw;
+}
+
+/**
  * Alias slug -> canonical slug, for checklist item 4's "301 to the correct
  * developer where a clear mapping exists".
  *

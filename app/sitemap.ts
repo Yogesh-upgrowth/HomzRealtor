@@ -8,10 +8,11 @@ import {
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
-import { sanitizeSegment } from '@/lib/intelligence/dataQuality'
+import { sanitizeSegment, isProjectRecord, isJunkProjectRecord } from '@/lib/intelligence/dataQuality'
+import { developerProfileFacts } from '@/lib/content/developerProfiles'
 import { filterProperties } from '@/lib/listings/filters'
 import {
-  buildLocationHubs,
+  buildLocationHubs, buildSectorBhkHubs,
   LISTING_PAGE_SIZE,
   staticFacetsFor,
 } from '@/lib/listings/facets'
@@ -54,11 +55,22 @@ const BASE_URL = 'https://www.homzrealtor.com'
 //
 // The item's suggested structure also splits projects across numbered files.
 // Not done, and deliberately: Google's limit is 50,000 URLs or 50MB
-// uncompressed per file, and the largest segment here (Sale, ~21,000) is well
-// inside both. Splitting below the limit would add files without adding any
-// information Search Console does not already give per segment. If Sale grows
-// past 50,000 this needs revisiting — buy-1.xml, buy-2.xml — and the check in
-// scripts/check-sitemap-404s.mjs will say so before Google does.
+// uncompressed per file, and the largest segment here is inside both. Splitting
+// below the limit would add files without adding any information Search Console
+// does not already give per segment.
+//
+// The headroom is real but not unlimited, and smaller than a raw listing count
+// suggests: the buy segment is ~21,000 detail URLs PLUS one page-1 URL per
+// facet and location hub PLUS every /page/N in each of those chains, which is
+// several thousand more. If it grows past 50,000 this needs revisiting —
+// buy-1.xml, buy-2.xml, with the new ids added to lib/seo/sitemapSegments.ts so
+// the <sitemapindex> and the reconciliation script pick them up together.
+//
+// npm run check:sitemap reports every segment's URL count and byte size against
+// both limits on each run, and flags at 40,000 / 40MB so there is room to split
+// deliberately. (Until 2026-09-22 this comment claimed that check existed when
+// it did not — the script counted URLs per segment and compared them to
+// nothing.)
 type SegmentId = SitemapSegmentId
 
 export async function generateSitemaps() {
@@ -103,6 +115,9 @@ async function fetchProjectEntries(): Promise<ProjectEntry[]> {
           // emits noindex on its own page, so listing it here would put the
           // sitemap and the page in direct contradiction.
           if (!reviewProject(p).indexable) continue
+          // Developer-page brief §2: associations and districts filed as
+          // projects are not development pages worth offering.
+          if (isJunkProjectRecord(p)) continue
           seen.add(key)
           entries.push({ slug: p.slug, city: citySlug, updatedAt: p.updated_at })
         }
@@ -235,6 +250,10 @@ async function buildDevelopersSegment(): Promise<MetadataRoute.Sitemap> {
     developerUrls = developerUrls.concat(
       developers.filter(isIndexableDeveloper).map((d) => ({
         url: `${BASE_URL}/developer/${d.slug}`,
+        // Developer-page brief §8: the newest of the developer's own project
+        // timestamps and the date its entity facts were last checked -- the
+        // same value the page prints as "Last verified".
+        lastModified: maxDate([d.lastUpdatedAt, developerProfileFacts(d.slug)?.lastCheckedAt]),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       }))
@@ -297,7 +316,11 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
     priority: 0.8,
   }
 
-  const detailUrls: MetadataRoute.Sitemap = properties.map((p) => ({
+  // SEO audit 2026-09-25 (B5): project records republished as listings are
+  // redirected to their project page (or, with no match, left as thin pages)
+  // -- neither belongs in the sitemap. Hub counts below still use the full
+  // list, so they stay equal to what the hub route itself counts.
+  const detailUrls: MetadataRoute.Sitemap = properties.filter((p) => !isProjectRecord(p)).map((p) => ({
     url: `${BASE_URL}/${routeBase}/gurgaon/${slugForProperty(p)}`,
     lastModified: toDate(p.updatedAt),
     changeFrequency: 'weekly',
@@ -319,7 +342,11 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
   // — below the floor the route 404s. A sitemap entry pointing at a 404 is a
   // Search Console error, and listing hubs we deliberately suppress would be
   // exactly that.
-  const locationHubs = buildLocationHubs(properties, category).map((h) => h.facet)
+  const locationHubs = [
+    ...buildLocationHubs(properties, category),
+    // Sector x BHK hubs (SEO audit 2026-09-25, B2) — same gate as the route.
+    ...buildSectorBhkHubs(properties, category),
+  ].map((h) => h.facet)
 
   const facetUrls: MetadataRoute.Sitemap = [...staticFacets, ...locationHubs].flatMap(
     (facet) => {
@@ -363,7 +390,6 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     // Pure static/utility pages — no underlying record, so no lastModified
     // rather than a fabricated one.
     { url: BASE_URL, changeFrequency: 'daily', priority: 1 },
-    { url: `${BASE_URL}/project-listing`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/about-us`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3 },
