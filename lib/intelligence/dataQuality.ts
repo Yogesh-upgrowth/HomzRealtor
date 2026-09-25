@@ -286,8 +286,54 @@ const LISTING_TEXT_FIELDS = [
   "aiSummary",
 ] as const;
 
+// ------------------------------------------ SEO audit 2026-09-25, B7 rules
+
+/**
+ * SCO ("shop-cum-office") units carry a residential type in the feed often
+ * enough to set sector minimums: Emaar SCO at ₹1.40 Cr and AIPL Joy Central at
+ * ₹9.90 Lakh became Sector 65's "lowest residential entry price". "SCO" and
+ * "shop cum office" only ever describe commercial space, and a BHK/bedroom
+ * count on the same record vetoes the correction, so a flat in a project
+ * that merely has an SCO block next door is left alone.
+ */
+const SCO_RE = /\bSCO\b|\bshop[\s-]*cum[\s-]*office\b/i;
+
+export function looksLikeSco(p: RawHomzProperty): boolean {
+  if (COMMERCIAL_TYPES.has(String(p.propertyType ?? ""))) return false;
+  if (typeof p.bedrooms === "number" && p.bedrooms >= 1) return false;
+  if (RESIDENTIAL_CONFIG.test(String(p.configuration ?? ""))) return false;
+  if (RESIDENTIAL_CONFIG.test(String(p.title ?? ""))) return false;
+  return SCO_RE.test(String(p.title ?? "")) || SCO_RE.test(String(p.configuration ?? ""));
+}
+
+/**
+ * "Sohna Sector 4" filed as "Sector 4, Gurgaon": Sohna has its own sector
+ * numbering, so the page put a Sohna project at Gurgaon Sector 4's centroid
+ * and computed wrong distances from it (GLS Aureva, audit §2). When the
+ * listing's own prose names Sohna against the same sector number its location
+ * gives, the location is rewritten to "Sector N, Sohna" — which every
+ * downstream sector parser already excludes from Gurgaon via OTHER_TOWNS.
+ */
+export function sohnaSectorLocation(p: RawHomzProperty): string | null {
+  const loc = String(p.location ?? "");
+  if (/\bsohna\b(?!\s+road)/i.test(loc)) return null;
+  const m = loc.match(/\bsec(?:tor)?[\s.-]*([0-9]{1,3})\b/i);
+  if (!m) return null;
+  const n = m[1];
+  const prose = [p.title, ...(Array.isArray(p.aboutProject) ? p.aboutProject : [])]
+    .filter(Boolean)
+    .join(" ");
+  const sohnaSector = new RegExp(
+    `\\bsohna\\s+sec(?:tor)?[\\s.-]*${n}\\b|\\bsec(?:tor)?[\\s.-]*${n}\\s*,?\\s*sohna\\b(?!\\s+road)`,
+    "i"
+  );
+  return sohnaSector.test(prose) ? `Sector ${n}, Sohna` : null;
+}
+
 export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
   const cls = classifyListing(p);
+  const sco = looksLikeSco(p);
+  const sohnaLocation = sohnaSectorLocation(p);
 
   const dirty = LISTING_TEXT_FIELDS.filter((f) => {
     const v = p[f];
@@ -297,9 +343,17 @@ export function sanitizeListing(p: RawHomzProperty): RawHomzProperty {
     return competitorMentions(typeof v === "string" ? v : JSON.stringify(v)).length > 0;
   });
 
-  if (!cls.misclassified && dirty.length === 0) return p;
+  if (!cls.misclassified && !sco && !sohnaLocation && dirty.length === 0) return p;
 
   const next: RawHomzProperty = { ...p };
+
+  if (sco) {
+    next.propertyType = "retail_shop";
+    next.isCommercial = true;
+    next.reclassified = "commercial-in-residential";
+  }
+
+  if (sohnaLocation) next.location = sohnaLocation;
 
   if (cls.misclassified) {
     next.propertyType = cls.correctedType ?? undefined;

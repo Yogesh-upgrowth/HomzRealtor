@@ -134,6 +134,20 @@ export function reviewProject(
     add("shortOrInvalidDeveloper", "blocking", `Developer name "${builder}" is not a usable entity.`);
   }
 
+  // SEO audit 2026-09-25 (B7 junkProjectName): RWA/owner bodies and bare
+  // business districts reach the catalogue as "projects" -- "DLF City Senior
+  // Citizen Council", "DLF Exclusive Floors Owners Society", "Dlf Cyber City".
+  // None is a saleable development. Blocking, so they drop out of the index
+  // and the developer counts' indexable set without deleting inventory (the
+  // exclusion list is reserved for owner instructions).
+  const name = project.project_name ?? "";
+  if (
+    /\b(?:owners?'?\s+(?:society|association|welfare)|resident'?s?\s+(?:welfare\s+)?association|RWA|senior\s+citizens?\s+council|welfare\s+society)\b/i.test(name) ||
+    /^\s*dlf\s+cyber\s+(?:city|hub)\s*$/i.test(name)
+  ) {
+    add("junkProjectName", "blocking", `"${name}" is an association or district, not a development.`);
+  }
+
   // "Project without locality/sector".
   if (!project.sector && !project.micro_market) {
     add("noLocation", "warning", "No sector or micro-market resolved for this project.");
@@ -238,6 +252,23 @@ export function reviewListing(p: RawHomzProperty): PublishState {
   const rera = String(p.reraId ?? "").trim();
   if (rera && (RERA_PLACEHOLDER.test(rera) || !RERA_SHAPE.test(rera))) {
     add("reraMalformed", "warning", `RERA id "${rera}" is not a recognisable registration number.`);
+  }
+
+  // SEO audit 2026-09-25 (B7 commercialPlotSanity): Reach Buzz 114 appeared
+  // as "Commercial Plots", 945 sq ft at ₹59,153/sq ft -- a retail unit, not
+  // land, and it set Sector 114's rate. A commercial plot under 2,000 sq ft
+  // priced above ₹30,000/sq ft is almost certainly mistyped. Warning, not a
+  // correction: the right type cannot be read off these numbers alone.
+  const isPlot = type === "plot" || /\bcommercial\s+plots?\b/i.test(String(p.title ?? ""));
+  if (isPlot && p.isCommercial && area != null && area > 0 && area < 2000 && price != null) {
+    const perSqft = price / area;
+    if (perSqft > 30000) {
+      add(
+        "commercialPlotSanity",
+        "warning",
+        `Commercial plot of ${area} sq ft at ₹${Math.round(perSqft).toLocaleString("en-IN")}/sq ft reads as a shop, not land.`
+      );
+    }
   }
 
   const text = [

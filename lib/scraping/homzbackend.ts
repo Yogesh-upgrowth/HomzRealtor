@@ -87,7 +87,7 @@ export type RawHomzProperty = {
    *  "residential-in-commercial", a flat that arrived typed as a warehouse or
    *  retail shop. Carried so the commercial category pages can exclude it and
    *  the QA report can count it without re-deriving the judgement. */
-  reclassified?: "residential-in-commercial";
+  reclassified?: "residential-in-commercial" | "commercial-in-residential";
   reraId?: string;
   /** See the matching comment on RawHomzProject — same badge semantics. */
   reraStatus?: string;

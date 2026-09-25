@@ -64,9 +64,16 @@ function priceOf(p: RawHomzProperty, category: PropertyCategory): number | null 
 }
 
 function priceStats(
-  properties: RawHomzProperty[],
+  all: RawHomzProperty[],
   category: PropertyCategory
 ): HubPriceStats | null {
+  // SEO audit 2026-09-25 (B7 residentialCommercialMedian): Sale and Rent hubs
+  // are residential pages, so their medians, minimums and per-sq-ft rates
+  // exclude commercial units. A ₹9.9 Lakh retail unit was Sector 65's "lowest
+  // entry price" and commercial space drove Sector 114's ₹37,243/sq ft. The
+  // units still list on the hub; they just never set its numbers.
+  const properties =
+    category === "Sale" || category === "Rent" ? all.filter((p) => !p.isCommercial) : all;
   const priced = properties
     .map((p) => priceOf(p, category))
     .filter((v): v is number => v !== null);
