@@ -39,6 +39,8 @@ import {
   isPrioritySector,
   MIN_HUB_LISTINGS,
   ROUTE_BASE_BY_CATEGORY,
+  sectorBhkHubSlug,
+  sectorHubSlug,
   staticFacetsFor,
   type FacetDef,
 } from "@/lib/listings/facets";
@@ -118,9 +120,11 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
   // treatment; see PRIORITY_SECTOR_TOKENS.
   if (
     facet.location?.kind === "sector" &&
-    !isPrioritySector(facet.location.token) &&
+    (facet.bhk || !isPrioritySector(facet.location.token)) &&
     filtered.length < MIN_HUB_LISTINGS
   ) {
+    // Sector x BHK hubs never take the priority-sector exemption: they are
+    // derived, and the exemption exists for URLs editorial content links to.
     notFound();
   }
 
@@ -139,7 +143,12 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
   // be the same blocks repeated under a different URL, which is the near
   // duplication paginated pages are supposed to avoid.
   const locationLabel = hubLocationLabel(facet);
-  const showIntel = Boolean(facet.location && locationLabel && pageNum === 1);
+  // Sector x BHK hubs (B2) do not repeat the sector hub's shared blocks
+  // (connectivity, schools, projects, FAQ) — that repetition across buy, rent
+  // and projects is what the audit found cannibalising "sector 65 gurgaon
+  // property". They carry their own price stats instead, and link up.
+  const isBhkHub = Boolean(facet.bhk);
+  const showIntel = Boolean(facet.location && locationLabel && pageNum === 1 && !isBhkHub);
   const intel = showIntel
     ? buildHubIntel(filtered, category, {
         kind: facet.location!.kind,
@@ -147,6 +156,25 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
       })
     : null;
   const faqs = intel ? buildHubFaqs(locationLabel!, category, intel, formatInr) : [];
+
+  const parentSectorHref =
+    isBhkHub && facet.location?.kind === "sector"
+      ? `/${routeBase}/gurgaon/${sectorHubSlug(facet.location.token)}`
+      : null;
+  const bhkPrice =
+    isBhkHub && pageNum === 1 && locationLabel && facet.location
+      ? buildHubIntel(filtered, category, { kind: facet.location.kind, label: locationLabel }).price
+      : null;
+  const renting = category === "Rent";
+
+  // On a sector hub, the configuration counts link to that sector's own BHK
+  // hub when it clears the gate, instead of the citywide /3-bhk facet.
+  const sectorBhkHref = (bedrooms: number): string | null => {
+    if (facet.location?.kind !== "sector" || isBhkHub || bedrooms < 1 || bedrooms > 4) return null;
+    const combo = sectorBhkHubSlug(String(bedrooms), facet.location.token);
+    const n = filtered.filter((p) => String(p.bedrooms ?? "") === String(bedrooms)).length;
+    return n >= MIN_HUB_LISTINGS ? `/${routeBase}/gurgaon/${combo}` : null;
+  };
 
   // Checklist item 13: the medians above are computed from `filtered`, so the
   // honest timestamp is the newest record in that set — not the segment's.
@@ -189,7 +217,15 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: SITE },
           { "@type": "ListItem", position: 2, name: HUB_LABEL[category], item: `${SITE}/${routeBase}` },
-          { "@type": "ListItem", position: 3, name: facet.label, item: `${SITE}${basePath}` },
+          ...(parentSectorHref && locationLabel
+            ? [{ "@type": "ListItem", position: 3, name: locationLabel, item: `${SITE}${parentSectorHref}` }]
+            : []),
+          {
+            "@type": "ListItem",
+            position: parentSectorHref && locationLabel ? 4 : 3,
+            name: facet.label,
+            item: `${SITE}${basePath}`,
+          },
         ],
       },
       {
@@ -239,6 +275,12 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
           <ChevronRight size={12} />
           <Link href={`/${routeBase}`} className="hover:text-[#D9B268]">{HUB_LABEL[category]}</Link>
           <ChevronRight size={12} />
+          {parentSectorHref && locationLabel && (
+            <>
+              <Link href={parentSectorHref} className="hover:text-[#D9B268]">{locationLabel}</Link>
+              <ChevronRight size={12} />
+            </>
+          )}
           <span className="text-gray-300 font-medium">{facet.label}</span>
         </nav>
 
@@ -249,6 +291,27 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
         <p className="mt-2 text-sm text-gray-500">
           Showing {pageProperties.length} of {filtered.length} listings.
         </p>
+        {bhkPrice && (
+          <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-gray-300">
+            Across the {bhkPrice.pricedCount} {facet.bhk} BHK {renting ? "rentals" : "listings"} in{" "}
+            {locationLabel} that carry {renting ? "a rent" : "a price"}, the median asking{" "}
+            {renting ? "rent" : "price"} is {formatInr(bhkPrice.medianInr)}
+            {renting ? " a month" : ""}, ranging from {formatInr(bhkPrice.minInr)} to{" "}
+            {formatInr(bhkPrice.maxInr)}
+            {bhkPrice.perSqFtInr
+              ? `, or about ₹${bhkPrice.perSqFtInr.toLocaleString("en-IN")} per sq ft across ${bhkPrice.perSqFtSample} with a confirmed size`
+              : ""}
+            . Asking figures from our own catalogue, not transacted prices.
+          </p>
+        )}
+        {parentSectorHref && locationLabel && (
+          <p className="mt-3 text-sm">
+            <Link href={parentSectorHref} className="text-[#D9B268] hover:opacity-80">
+              All property {renting ? "for rent" : "for sale"} in {locationLabel}: connectivity,
+              schools, projects and rates →
+            </Link>
+          </p>
+        )}
       </section>
 
       <section className="w-full max-w-7xl mx-auto px-4 my-10">
@@ -297,6 +360,8 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
           intel={intel}
           asOf={hubAsOf}
           bedroomHref={(bedrooms) => {
+            const inSector = sectorBhkHref(bedrooms);
+            if (inSector) return inSector;
             const slug = `${bedrooms}-bhk`;
             return staticFacetsFor(category)[slug] ? `/${routeBase}/gurgaon/${slug}` : null;
           }}

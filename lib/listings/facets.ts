@@ -55,6 +55,11 @@ export type FacetDef = {
   /** Sector token or corridor slug, when this facet is a location hub. Drives
    *  the on-page sector intelligence block and the sibling-hub links. */
   location?: { kind: "sector"; token: string } | { kind: "corridor"; slug: string };
+  /** Set on sector x BHK hubs ("3-bhk-in-sector-65"): the bedroom count the
+   *  sector is narrowed to. Such a hub is a child of its sector hub — it
+   *  carries inventory and its own price stats, never the sector's shared
+   *  connectivity/FAQ/project blocks, so the two do not compete. */
+  bhk?: string;
 };
 
 /** Cards per page. Mirrored by PaginatedListingPage's PAGE_SIZE, which
@@ -243,6 +248,18 @@ export function staticFacetsFor(category: PropertyCategory): Record<string, Face
 
 const SECTOR_SLUG_RE = /^sector-([0-9]{1,3})([a-d])?$/;
 
+// SEO audit 2026-09-25 (B2): "3 bhk flat in sector 65 gurgaon" is the query
+// that converts, and it had no page — the sector hub linked "298 x 3 BHK" to
+// the citywide /3-bhk facet. Sale and Rent only, 1-4 BHK, gated at
+// MIN_HUB_LISTINGS like every derived hub.
+const SECTOR_BHK_RE = /^([1-4])-bhk-in-sector-([0-9]{1,3})([a-d])?$/;
+export const SECTOR_BHK_BEDROOMS = ["1", "2", "3", "4"] as const;
+
+/** "3", "65" -> "3-bhk-in-sector-65". */
+export function sectorBhkHubSlug(bhk: string, token: string): string {
+  return `${bhk}-bhk-in-${sectorHubSlug(token)}`;
+}
+
 /** A location hub's slug from its sector token: "82a" -> "sector-82a". */
 export function sectorHubSlug(token: string): string {
   return `sector-${token}`;
@@ -263,6 +280,25 @@ export function resolveLocationHub(
   slug: string
 ): FacetDef | undefined {
   const verb = HUB_VERB[category];
+
+  const combo = slug.match(SECTOR_BHK_RE);
+  if (combo && (category === "Sale" || category === "Rent")) {
+    const bhk = combo[1];
+    const token = `${parseInt(combo[2], 10)}${(combo[3] || "").toLowerCase()}`;
+    if (sectorBhkHubSlug(bhk, token) !== slug) return undefined; // canonical form only
+    const label = sectorLabelFromToken(token);
+    const renting = category === "Rent";
+    return {
+      slug,
+      label: `${bhk} BHK Flats ${renting ? "for Rent" : "for Sale"} in ${label}, Gurgaon`,
+      description: renting
+        ? `${bhk} BHK flats and homes to rent in ${label}, Gurgaon: current asking rents, the range and comparables from HomzRealtor's live catalogue.`
+        : `${bhk} BHK flats and homes for sale in ${label}, Gurgaon: current asking prices, per sq ft rate and comparables from HomzRealtor's live catalogue.`,
+      filters: { sector: token, bedrooms: bhk },
+      location: { kind: "sector", token },
+      bhk,
+    };
+  }
 
   const sectorMatch = slug.match(SECTOR_SLUG_RE);
   if (sectorMatch) {
@@ -346,6 +382,39 @@ export function buildLocationHubs(
     if (facet) hubs.push({ facet, count });
   }
 
+  return hubs.sort((a, b) => b.count - a.count || a.facet.slug.localeCompare(b.facet.slug));
+}
+
+/**
+ * Every sector x BHK hub with enough inventory to exist (B2). Kept out of
+ * buildLocationHubs on purpose: that list feeds the sibling-hub links and the
+ * rates table, which should stay one row per place. The sitemap and the
+ * sector hub's own configuration links read this instead.
+ */
+export function buildSectorBhkHubs(
+  properties: RawHomzProperty[],
+  category: PropertyCategory
+): HubCount[] {
+  if (category !== "Sale" && category !== "Rent") return [];
+  // One pass for a cheap upper bound; the exact count below uses the same
+  // filterProperties the hub route renders from, so the two always agree.
+  const rough = new Map<string, number>();
+  for (const p of properties) {
+    const token = listingSectorToken(p);
+    if (!token || typeof p.bedrooms !== "number") continue;
+    const key = `${p.bedrooms}|${token}`;
+    rough.set(key, (rough.get(key) ?? 0) + 1);
+  }
+  const hubs: HubCount[] = [];
+  for (const [key, n] of rough) {
+    if (n < MIN_HUB_LISTINGS) continue;
+    const [bhk, token] = key.split("|");
+    if (!(SECTOR_BHK_BEDROOMS as readonly string[]).includes(bhk)) continue;
+    const facet = resolveLocationHub(category, sectorBhkHubSlug(bhk, token));
+    if (!facet) continue;
+    const count = filterProperties(properties, facet.filters, category).length;
+    if (count >= MIN_HUB_LISTINGS) hubs.push({ facet, count });
+  }
   return hubs.sort((a, b) => b.count - a.count || a.facet.slug.localeCompare(b.facet.slug));
 }
 

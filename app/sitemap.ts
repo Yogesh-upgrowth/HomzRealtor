@@ -11,7 +11,7 @@ import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
 import { sanitizeSegment, isProjectRecord } from '@/lib/intelligence/dataQuality'
 import { filterProperties } from '@/lib/listings/filters'
 import {
-  buildLocationHubs,
+  buildLocationHubs, buildSectorBhkHubs,
   LISTING_PAGE_SIZE,
   staticFacetsFor,
 } from '@/lib/listings/facets'
@@ -334,7 +334,11 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
   // — below the floor the route 404s. A sitemap entry pointing at a 404 is a
   // Search Console error, and listing hubs we deliberately suppress would be
   // exactly that.
-  const locationHubs = buildLocationHubs(properties, category).map((h) => h.facet)
+  const locationHubs = [
+    ...buildLocationHubs(properties, category),
+    // Sector x BHK hubs (SEO audit 2026-09-25, B2) — same gate as the route.
+    ...buildSectorBhkHubs(properties, category),
+  ].map((h) => h.facet)
 
   const facetUrls: MetadataRoute.Sitemap = [...staticFacets, ...locationHubs].flatMap(
     (facet) => {
