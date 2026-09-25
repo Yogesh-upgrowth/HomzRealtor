@@ -20,6 +20,7 @@
 import { haversineKm, nearbyLandmarks } from "./osmPlaces";
 import { resolveCoordinate } from "./resolveLocation";
 import { listingSectorToken } from "@/lib/listings/listingLocation";
+import { isProjectRecord } from "./dataQuality";
 import { getProjectsForCity } from "./projects";
 import { slugify } from "@/components/utils/slugify";
 import type { RawHomzProperty } from "@/lib/scraping/homzbackend";
@@ -186,7 +187,13 @@ export async function matchProject(
   // Fall back to the "... in {Project}, {Sector}" shape the feed's own titles
   // use — the same pattern extractProjectName() relies on.
   const fromTitle = String(subject.title ?? "").match(/\bin\s+([^,]+?),\s*sec/i)?.[1];
-  const candidate = (explicit || fromTitle || "").trim();
+  // A project record's title *is* the project name ("GLS Aureva"), with no
+  // "in X, Sector" phrase around it (audit B5). Only used for those records,
+  // where there is no unit-level text for a bare title to be confused with.
+  const wholeTitle = isProjectRecord(subject)
+    ? String(subject.title ?? "").replace(/\s*[,|-]\s*(sector|sohna|gurgaon|gurugram)\b.*$/i, "")
+    : "";
+  const candidate = (explicit || fromTitle || wholeTitle || "").trim();
   if (!candidate || candidate.length < 4) return null;
 
   const wanted = slugify(candidate);

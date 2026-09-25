@@ -21,6 +21,7 @@
 import { fetchProperties, propertySegment, type PropertyCategory } from "@/lib/scraping/homzbackend";
 import { resolvePropertyView, slugForProperty, type PropertyView } from "./property-view";
 import { reviewListing, type PublishState } from "./publishGate";
+import { isProjectRecord } from "./dataQuality";
 import { buildListingContext, type ListingContext } from "./listingContext";
 import {
   buildListingNarrative,
@@ -70,6 +71,10 @@ export type ListingRecord = {
   sectorHub: { label: string; href: string; count: number } | null;
   /** Up to 6 comparable units: same sector, same bedrooms, price within ±20%. */
   similar: SimilarListing[];
+  /** A project record republished in the listings feed — see
+   *  dataQuality.isProjectRecord. The route redirects it to its project page
+   *  when one matches. */
+  isProjectRecord: boolean;
 };
 
 export type SimilarListing = {
@@ -251,5 +256,6 @@ export async function getListingRecord(
     breadcrumbs,
     sectorHub,
     similar: similarListings(match, sectorToken, segment, category, citySlug),
+    isProjectRecord: isProjectRecord(match),
   };
 }

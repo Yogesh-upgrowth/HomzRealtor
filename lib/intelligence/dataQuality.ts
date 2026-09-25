@@ -286,6 +286,29 @@ const LISTING_TEXT_FIELDS = [
   "aiSummary",
 ] as const;
 
+// ------------------------------------------ SEO audit 2026-09-25, B5
+
+/**
+ * A project record republished in the listings feed: no bedrooms, no
+ * configuration, no area, no parsed price, and no specific property type.
+ * Sector 65's buy hub showed 19 of these among 24 cards (WorldMark, Paras
+ * Trade Centre, M3M Tee Point...), each "Type: Other · Area: N/A · Price on
+ * Request" with its own URL beside a richer project page. Every one of the
+ * five conditions must hold, so a real unit that is merely missing its price
+ * or its area is never caught.
+ */
+export function isProjectRecord(p: RawHomzProperty): boolean {
+  const type = String(p.propertyType ?? "").trim().toLowerCase();
+  return (
+    !(typeof p.bedrooms === "number" && p.bedrooms > 0) &&
+    !String(p.configuration ?? "").trim() &&
+    !(typeof p.areaValue === "number" && p.areaValue > 0) &&
+    !(typeof p.priceValue === "number" && p.priceValue > 0) &&
+    !(typeof p.rentMonthly === "number" && p.rentMonthly > 0) &&
+    (type === "" || type === "other")
+  );
+}
+
 // ------------------------------------------ SEO audit 2026-09-25, B7 rules
 
 /**

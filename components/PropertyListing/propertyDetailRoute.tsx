@@ -10,11 +10,12 @@
 // come from that record, so the snippet a searcher sees is Homz's own writing
 // rather than a copy of the posting this was rebuilt from.
 
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getListingRecord } from "@/lib/intelligence/get-listing-record";
 import { buildPropertyTitle } from "@/lib/intelligence/property-view";
 import { robotsFor } from "@/lib/intelligence/publishGate";
+import { isProjectRecord } from "@/lib/intelligence/dataQuality";
 import PropertyDetailView from "@/components/PropertyListing/PropertyDetailView";
 import PropertyJsonLd from "@/components/PropertyListing/PropertyJsonLd";
 import HomzRecordSections from "@/components/PropertyListing/HomzRecordSections";
@@ -67,6 +68,13 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     const { city, slug } = await params;
     const record = await getListingRecord(category, city, slug);
     if (!record) notFound();
+    // SEO audit 2026-09-25 (B5): a project record republished as a listing
+    // (no bedrooms, area, config, price or type) duplicates the project page
+    // with less on it. When that project page exists, send the URL there
+    // permanently; real unit listings never meet the predicate.
+    if (record.isProjectRecord && record.context.project) {
+      permanentRedirect(record.context.project.href);
+    }
     return (
       <>
         <PropertyJsonLd view={record.view} record={record} />

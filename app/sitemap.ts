@@ -8,7 +8,7 @@ import {
 } from '@/lib/scraping/homzbackend'
 import { slugForProperty } from '@/lib/intelligence/property-view'
 import { reviewListing, reviewProject } from '@/lib/intelligence/publishGate'
-import { sanitizeSegment } from '@/lib/intelligence/dataQuality'
+import { sanitizeSegment, isProjectRecord } from '@/lib/intelligence/dataQuality'
 import { filterProperties } from '@/lib/listings/filters'
 import {
   buildLocationHubs,
@@ -308,7 +308,11 @@ async function buildPropertyCategorySegment(category: PropertyCategory): Promise
     priority: 0.8,
   }
 
-  const detailUrls: MetadataRoute.Sitemap = properties.map((p) => ({
+  // SEO audit 2026-09-25 (B5): project records republished as listings are
+  // redirected to their project page (or, with no match, left as thin pages)
+  // -- neither belongs in the sitemap. Hub counts below still use the full
+  // list, so they stay equal to what the hub route itself counts.
+  const detailUrls: MetadataRoute.Sitemap = properties.filter((p) => !isProjectRecord(p)).map((p) => ({
     url: `${BASE_URL}/${routeBase}/gurgaon/${slugForProperty(p)}`,
     lastModified: toDate(p.updatedAt),
     changeFrequency: 'weekly',
