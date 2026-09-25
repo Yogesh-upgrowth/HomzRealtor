@@ -20,7 +20,7 @@ export function getHomepageMarkdown(): string {
 
   return `# HomzRealtor
 
-Homes you can trust, in Gurgaon, the city you love.
+Property in Gurgaon, homes you can trust.
 
 Buy, rent or sell, discover verified listings, expert guidance, and properties that feel like home.
 

@@ -96,11 +96,14 @@ export default function Hero({
             in the city you love." — no location or topic, so a crawler (or
             a screen-reader user landing here first) had nothing to anchor
             on. "Gurgaon" is now explicit while keeping the same voice/split
-            layout. */}
+            layout.
+            SEO audit 2026-09-25 (§4 Homepage): "Gurgaon" alone still left the
+            H1 without the query it should rank for. It now leads with
+            "Property in Gurgaon", keeping the trust line in the gold span. */}
         <h1 className="mb-4 max-w-[18ch] text-balance text-[clamp(27px,7.4vw,36px)] font-extrabold uppercase leading-[1.08] tracking-tight text-white md:text-wrap md:text-[clamp(34px,6.4vw,68px)] md:leading-[1.04]">
-          Homes you can trust,{" "}
+          Property in Gurgaon,{" "}
           <span className="bg-gradient-to-br from-[#F2D79B] to-[#C99A4B] bg-clip-text text-transparent">
-            in Gurgaon, the city you love.
+            homes you can trust.
           </span>
         </h1>
 

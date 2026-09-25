@@ -374,7 +374,6 @@ async function buildContentSegment(): Promise<MetadataRoute.Sitemap> {
     // Pure static/utility pages — no underlying record, so no lastModified
     // rather than a fabricated one.
     { url: BASE_URL, changeFrequency: 'daily', priority: 1 },
-    { url: `${BASE_URL}/project-listing`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/about-us`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3 },

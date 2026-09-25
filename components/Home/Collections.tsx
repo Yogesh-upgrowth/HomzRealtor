@@ -54,7 +54,9 @@ const Collections = async () => {
       title: "Ready to Move",
       note: propertyLabel(readyToMove.length),
       img: readyImg,
-      href: "/project-listing?status=ready-to-move",
+      // SEO audit 2026-09-25: ?status=/?type= URLs are noindex filter states;
+      // the homepage's link equity goes to the indexable hubs instead.
+      href: "/buy-property/gurgaon/ready-to-move",
       count: readyToMove.length,
     },
     {
@@ -75,7 +77,7 @@ const Collections = async () => {
       title: "Investment Grade Commercial",
       note: propertyLabel(commercial.length),
       img: commercialImg,
-      href: "/project-listing?type=Commercial",
+      href: "/commercial",
       count: commercial.length,
     },
   ].filter((c) => c.count > 0);
