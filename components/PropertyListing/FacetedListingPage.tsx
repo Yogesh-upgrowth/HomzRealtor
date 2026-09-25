@@ -45,6 +45,7 @@ import {
   type FacetDef,
 } from "@/lib/listings/facets";
 import { corridorBySlug, sectorLabelFromToken } from "@/lib/listings/listingLocation";
+import { getCorridorDevelopers } from "@/lib/intelligence/projects";
 
 const SITE = "https://www.homzrealtor.com";
 
@@ -204,6 +205,13 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
         .filter((h) => h.facet.slug !== facet.slug)
         .slice(0, 24)
     : [];
+
+  // Developer-page brief §7: on a corridor hub, the developers with their own
+  // indexable page for this corridor (/developer/{slug}/{corridor}).
+  const corridorDevelopers =
+    facet.location?.kind === "corridor" && pageNum === 1
+      ? await getCorridorDevelopers(facet.location.slug).catch(() => [])
+      : [];
 
   const staticFacets = Object.values(staticFacetsFor(category)).filter(
     (f) => f.slug !== facet.slug
@@ -397,6 +405,26 @@ const FacetedListingPage = async ({ facet, pageNum, category = "Sale" }: Props) 
       )}
 
       {faqs.length > 0 && <Faq title={locationLabel ?? facet.label} items={faqs} />}
+
+      {corridorDevelopers.length > 0 && locationLabel && facet.location?.kind === "corridor" && (
+        <section className="w-full max-w-7xl mx-auto px-4 my-12">
+          <h2 className="mb-1 text-2xl font-bold text-white">Developers on {locationLabel}</h2>
+          <p className="mb-4 text-[13px] text-gray-500">
+            Each links to that developer&apos;s projects on this corridor, with the number we list.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {corridorDevelopers.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/developer/${d.slug}/${(facet.location as { slug: string }).slug}`}
+                className="rounded-full border border-gray-700 bg-black px-4 py-1.5 text-sm text-gray-300 hover:border-[#B77D2B] hover:text-[#CEA44E] transition"
+              >
+                {d.name} <span className="text-gray-500">({d.count})</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {siblingHubs.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-4 my-12">

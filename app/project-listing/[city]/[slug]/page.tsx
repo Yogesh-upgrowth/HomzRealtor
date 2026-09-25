@@ -11,7 +11,13 @@ import FinalCtaSection from "@/components/Project/listing/FinalCtaSection";
 import StickyCta from "@/components/Project/listing/StickyCta";
 import bgImg from "@/public/appointmentBG.jpg";
 import { reviewProject, robotsFor } from "@/lib/intelligence/publishGate";
-import { getProjectBySlug, getProjectBySlugResolved, canonicalCitySlug } from "@/lib/intelligence/projects";
+import {
+  getProjectBySlug,
+  getProjectBySlugResolved,
+  canonicalCitySlug,
+  developerHubSlug,
+} from "@/lib/intelligence/projects";
+import { developerDisplayName } from "@/lib/content/developers";
 import { resolveProjectView, validImages } from "@/lib/intelligence/view-model";
 import { truncateAtWord, slugify, formatInr } from "@/lib/intelligence/normalize";
 import { instrumentSerif, manrope } from "@/lib/fonts";
@@ -199,6 +205,7 @@ const ProjectPage = async ({ params }: PageParams) => {
   // linked back up, leaving sector pages under-linked internally.
   const sectorSlug = project.sector ? slugify(project.sector) : null;
   const sectorHref = sectorSlug ? `/project-listing/${canonicalCity}/sectors/${sectorSlug}` : null;
+  const developerSlug = developerHubSlug(project.builder);
 
   // Core structured data (BreadcrumbList + RealEstateListing) is emitted here, in
   // the immediately-rendered HTML. The FAQPage block that <ProjectJsonLd> used
@@ -279,6 +286,26 @@ const ProjectPage = async ({ params }: PageParams) => {
         ],
       },
       listing,
+      // Second trail through the developer hub (developer-page brief §7).
+      // Google accepts multiple BreadcrumbList items for one page.
+      ...(developerSlug
+        ? [
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://www.homzrealtor.com" },
+                { "@type": "ListItem", position: 2, name: "Developers", item: "https://www.homzrealtor.com/developer" },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: developerDisplayName(project.builder),
+                  item: `https://www.homzrealtor.com/developer/${developerSlug}`,
+                },
+                { "@type": "ListItem", position: 4, name: view.name, item: pageUrl },
+              ],
+            },
+          ]
+        : []),
     ],
   };
 
@@ -304,6 +331,8 @@ const ProjectPage = async ({ params }: PageParams) => {
           citySlug={view.citySlug}
           sectorLabel={project.sector}
           sectorHref={sectorHref}
+          developerSlug={developerSlug}
+          developerName={developerSlug ? developerDisplayName(project.builder) : null}
           locationLine={view.locationLine}
           propertyCategory={view.propertyCategory}
           propertyType={view.propertyType}

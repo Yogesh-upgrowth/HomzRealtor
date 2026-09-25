@@ -18,6 +18,9 @@ type Props = {
   citySlug: string;
   sectorLabel?: string | null;
   sectorHref?: string | null;
+  /** Developer hub for the second breadcrumb trail, when that page exists. */
+  developerSlug?: string | null;
+  developerName?: string | null;
   locationLine: string;
   propertyCategory: string;
   propertyType: string | null;
@@ -44,6 +47,8 @@ const ProjectHero = ({
   citySlug,
   sectorLabel,
   sectorHref,
+  developerSlug,
+  developerName,
   locationLine,
   propertyCategory,
   propertyType,
@@ -99,7 +104,8 @@ const ProjectHero = ({
         className="relative mx-auto flex min-h-[clamp(480px,72vh,640px)] max-w-7xl flex-col justify-end px-4 pb-16 md:px-2"
       >
 
-        <nav className="mb-auto flex items-center gap-1 pt-2 text-xs text-gray-300">
+        <div className="mb-auto">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1 pt-2 text-xs text-gray-300">
           <Link href="/" className="shrink-0 hover:text-[#D9B268]">Home</Link>
           <ChevronRight size={12} className="shrink-0" />
           <Link href="/project-listing" className="shrink-0 hover:text-[#D9B268]">Projects</Link>
@@ -114,6 +120,20 @@ const ProjectHero = ({
           )}
           <span className="min-w-0 flex-1 truncate font-medium text-[#D9B268]">{name}</span>
         </nav>
+        {/* Developer-page brief §7: a second trail through the developer, so
+            every project page links its developer hub above the fold. */}
+        {developerSlug && developerName && (
+          <nav aria-label="Developer breadcrumb" className="flex items-center gap-1 pt-1 text-xs text-gray-400">
+            <Link href="/" className="shrink-0 hover:text-[#D9B268]">Home</Link>
+            <ChevronRight size={12} className="shrink-0" />
+            <Link href="/developer" className="shrink-0 hover:text-[#D9B268]">Developers</Link>
+            <ChevronRight size={12} className="shrink-0" />
+            <Link href={`/developer/${developerSlug}`} className="shrink-0 hover:text-[#D9B268]">{developerName}</Link>
+            <ChevronRight size={12} className="shrink-0" />
+            <span className="min-w-0 flex-1 truncate">{name}</span>
+          </nav>
+        )}
+        </div>
 
         {pills.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">

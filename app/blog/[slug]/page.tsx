@@ -206,7 +206,13 @@ const BlogPostPage = async ({ params }: PageParams) => {
     // see lib/content/postDeveloperLinks.ts. Best-effort: a feed failure
     // costs the link block, not the article.
     const builders = await getAllBuilders().catch(() => []);
-    return <BlogPostV27Article post={v27} developers={developersMentionedIn(v27, builders)} />;
+    return (
+      <BlogPostV27Article
+        post={v27}
+        developers={developersMentionedIn(v27, builders)}
+        developerHubs={builders}
+      />
+    );
   }
 
   notFound();

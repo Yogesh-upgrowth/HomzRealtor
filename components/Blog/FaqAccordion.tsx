@@ -1,3 +1,5 @@
+import Markdown from "markdown-to-jsx";
+import Link from "next/link";
 import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
 
 // details/summary, ALL collapsed by default — never flat <p> stacks, never
@@ -7,7 +9,15 @@ import type { BlogPostV27 } from "@/lib/content/blogPostSchema";
 // page is a spam-policy violation the schema explicitly calls out.
 // Dark styling mirrors components/Project/intelligence/Faq.tsx, the site's
 // existing dark FAQ pattern.
-const FaqAccordion = ({ faqs }: { faqs: BlogPostV27["faqs"] }) => {
+const FaqAccordion = ({
+  faqs,
+  answersMarkdown,
+}: {
+  faqs: BlogPostV27["faqs"];
+  /** Answers with first-mention developer links added (same words, so the
+   *  FAQ text JSON-LD echoes still matches what is visible). */
+  answersMarkdown?: string[];
+}) => {
   return (
     <div>
       <p className="mb-4 text-sm text-gray-500">Tap any question to expand.</p>
@@ -23,7 +33,25 @@ const FaqAccordion = ({ faqs }: { faqs: BlogPostV27["faqs"] }) => {
                 +
               </span>
             </summary>
-            <p className="mt-3 text-[15px] leading-7 text-gray-300">{faq.a}</p>
+            <p className="mt-3 text-[15px] leading-7 text-gray-300">
+              {answersMarkdown?.[i] && answersMarkdown[i] !== faq.a ? (
+                <Markdown
+                  options={{
+                    forceInline: true,
+                    overrides: {
+                      a: {
+                        component: Link,
+                        props: { className: "text-[#CEA44E] underline underline-offset-2 hover:opacity-80" },
+                      },
+                    },
+                  }}
+                >
+                  {answersMarkdown[i]}
+                </Markdown>
+              ) : (
+                faq.a
+              )}
+            </p>
           </details>
         ))}
       </div>

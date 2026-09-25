@@ -1,5 +1,8 @@
 import type { SectorContext } from "@/lib/intelligence/sectorContext";
 import { formatInr } from "@/lib/intelligence/normalize";
+import Link from "next/link";
+import { developerHubSlug } from "@/lib/intelligence/projects";
+import { developerDisplayName } from "@/lib/content/developers";
 
 // Audit item 7 (2026-09-19): sector pages were a title, one templated sentence
 // and a grid of cards. The pages beating them for "property in sector 65
@@ -155,17 +158,29 @@ export default function SectorIntelligence({
             Builders active in {sectorLabel}
           </h2>
           <div className="flex flex-wrap gap-2.5">
-            {ctx.builders.map((b) => (
-              <span
-                key={b.name}
-                className="rounded-full border border-white/10 bg-[#141416] px-4 py-2 text-[13px] text-gray-300"
-              >
-                {b.name}
-                <span className="ml-1.5 text-gray-500">
-                  {b.count} project{b.count === 1 ? "" : "s"}
+            {/* Developer-page brief §7: every builder name links to its
+                developer hub when one exists. */}
+            {ctx.builders.map((b) => {
+              const devSlug = developerHubSlug(b.name);
+              const inner = (
+                <>
+                  {developerDisplayName(b.name)}
+                  <span className="ml-1.5 text-gray-500">
+                    {b.count} project{b.count === 1 ? "" : "s"}
+                  </span>
+                </>
+              );
+              const cls = "rounded-full border border-white/10 bg-[#141416] px-4 py-2 text-[13px] text-gray-300";
+              return devSlug ? (
+                <Link key={b.name} href={`/developer/${devSlug}`} className={`${cls} hover:border-[#B77D2B] hover:text-[#CEA44E]`}>
+                  {inner}
+                </Link>
+              ) : (
+                <span key={b.name} className={cls}>
+                  {inner}
                 </span>
-              </span>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

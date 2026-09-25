@@ -297,8 +297,12 @@ export default async function RootLayout({
   // an unconfirmed parser-derived entity must not receive one. getAllBuilders
   // sorts by project count, so the top six were usually real, but "usually"
   // is how /developer/the collected links in the first place.
+  // Developer-page brief §7: ranked by active launches (new launch +
+  // upcoming), then size, so the six sitewide links follow what is selling
+  // rather than whoever has the longest back catalogue.
   const topDevelopers = builders
     .filter(isIndexableDeveloper)
+    .sort((a, b) => b.activeLaunches - a.activeLaunches || b.count - a.count)
     .slice(0, 6)
     .map((d) => ({ label: d.name, href: `/developer/${d.slug}` }));
 

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { developerDisplayName } from "@/lib/content/developers";
 
 type Props = {
   builder: string;
-  text: string;
+  text: string | null | undefined;
   slug?: string; // when set, the developer name links to /developer/[slug]
   stats?: { label: string; value: string }[];
   badges?: string[];
@@ -24,8 +25,14 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-const BuilderProfile = ({ builder, text, slug, stats, badges }: Props) => {
-  if (!text) return null;
+const BuilderProfile = ({ builder: rawBuilder, text, slug, stats, badges }: Props) => {
+  // Developer-page brief §7: the name links to /developer/{slug} whenever
+  // that page exists, verified or not. This used to return null when the
+  // feed had no builder profile text, which dropped the link on exactly the
+  // projects with the least else pointing at their developer. Canonical
+  // casing ("DLF", not "Dlf") so the anchor matches the hub's H1.
+  const builder = developerDisplayName(rawBuilder);
+  if (!text && !slug) return null;
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2 my-12">
@@ -50,11 +57,14 @@ const BuilderProfile = ({ builder, text, slug, stats, badges }: Props) => {
           </div>
         </div>
 
-        <div className="border-b border-gray-700 mb-4" />
-
-        <div className="text-gray-300 text-[15px] leading-7">
-          <RichText text={text} />
-        </div>
+        {text && (
+          <>
+            <div className="border-b border-gray-700 mb-4" />
+            <div className="text-gray-300 text-[15px] leading-7">
+              <RichText text={text} />
+            </div>
+          </>
+        )}
 
         {((stats && stats.length > 0) || (badges && badges.length > 0)) && (
           <div className="mt-4 flex flex-wrap gap-2">

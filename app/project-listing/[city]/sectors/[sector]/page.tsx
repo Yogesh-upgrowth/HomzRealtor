@@ -9,7 +9,9 @@ import {
   canonicalCitySlug,
   getProjectsForSector,
   getSectorsForCity,
+  developerHubSlug,
 } from "@/lib/intelligence/projects";
+import { developerDisplayName } from "@/lib/content/developers";
 import SimilarProjects from "@/components/Project/intelligence/SimilarProjects";
 import SectorIntelligence from "@/components/Project/SectorIntelligence";
 import { sectorHubSlug } from "@/lib/listings/facets";
@@ -439,14 +441,19 @@ const SectorProjectsPage = async ({ params }: PageParams) => {
             Developers in {sectorLabel}, {name}
           </h2>
           <div className="flex flex-wrap gap-2">
-            {builders.map((b) => (
-              <span
-                key={b}
-                className="rounded-full bg-black border border-gray-700 px-4 py-1.5 text-sm font-medium text-gray-300"
-              >
-                {b}
-              </span>
-            ))}
+            {builders.map((b) => {
+              const devSlug = developerHubSlug(b);
+              const cls = "rounded-full bg-black border border-gray-700 px-4 py-1.5 text-sm font-medium text-gray-300";
+              return devSlug ? (
+                <Link key={b} href={`/developer/${devSlug}`} className={`${cls} hover:border-[#B77D2B] hover:text-[#CEA44E]`}>
+                  {developerDisplayName(b)}
+                </Link>
+              ) : (
+                <span key={b} className={cls}>
+                  {b}
+                </span>
+              );
+            })}
           </div>
         </section>
       )}

@@ -100,3 +100,104 @@ export function developersMentionedIn(
 
   return found.sort((a, b) => b.mentions - a.mentions || a.name.localeCompare(b.name)).slice(0, limit);
 }
+
+// ─────────────────────────────────────────────── inline first-mention links
+//
+// Developer-page brief 2026-09-25, §7: thirteen posts name DLF and none linked
+// to /developer/dlf. The block above lists the developers an article is about;
+// this links the FIRST mention of each one inside the prose itself, at render
+// time, so every future post gets it without anyone remembering to.
+//
+// Rules:
+//   - Names come from CANONICAL_DEVELOPERS (canonical name + aliases), and a
+//     name links only when its hub is live (present in `builders`).
+//   - Case-sensitive, word-bounded: developer names are proper nouns, and
+//     "Max", "Ace", "Tata" and "Central Park" must not match ordinary words.
+//   - First mention per article, not per section.
+//   - Never inside an existing link, inline code, raw HTML or a URL, and never
+//     in a heading or table line (headings render as their own elements;
+//     tables are data, not prose).
+
+import { CANONICAL_DEVELOPERS } from "./developers";
+
+export type Linkable = { name: string; slug: string; re: RegExp };
+
+const AMBIGUOUS_NAMES = new Set(["Max", "Ace", "Brisk", "Adore", "Pioneer", "Elan", "Saya", "Spaze", "Orris"]);
+const COMPANY_WORDS = "Estates?|Group|Developers?|Buildcon|Infra\\w*|Realty|Homes|Limited|Ltd|Urban|Properties";
+
+function linkablesFor(builders: BuilderLike[]): Linkable[] {
+  const live = new Set(builders.filter((b) => b.count > 0).map((b) => b.slug));
+  const out: Linkable[] = [];
+  for (const d of CANONICAL_DEVELOPERS) {
+    if (!live.has(d.id)) continue;
+    for (const name of [d.canonicalName, ...d.aliases]) {
+      if (name.length < 3) continue;
+      // Names that are also ordinary words ("Max price", "Ace service") link
+      // only when a company word follows them.
+      const tail = AMBIGUOUS_NAMES.has(name) ? `(?=\\s+(?:${COMPANY_WORDS}))` : "";
+      out.push({ name, slug: d.id, re: new RegExp(`(?<![\\w/-])${escapeRegExp(name)}(?![\\w-])${tail}`) });
+    }
+  }
+  // Longest first, so "Signature Global" wins over "Signature".
+  return out.sort((a, b) => b.name.length - a.name.length);
+}
+
+const PROTECTED = /\[[^\]]*\]\([^)]*\)|`[^`]*`|<[^>]+>|https?:\/\/\S+/g;
+
+function linkLine(line: string, linkables: Linkable[], seen: Set<string>): string {
+  if (/^\s*(#|\|)/.test(line)) return line;
+  // Split into [unprotected, protected, unprotected, ...] and only ever edit
+  // the unprotected runs.
+  const parts: { text: string; locked: boolean }[] = [];
+  let last = 0;
+  for (const m of line.matchAll(PROTECTED)) {
+    parts.push({ text: line.slice(last, m.index), locked: false });
+    parts.push({ text: m[0], locked: true });
+    last = (m.index ?? 0) + m[0].length;
+  }
+  parts.push({ text: line.slice(last), locked: false });
+
+  const out: string[] = [];
+  for (const part of parts) {
+    if (part.locked) {
+      out.push(part.text);
+      continue;
+    }
+    // Repeatedly take the earliest mention of any developer not yet linked,
+    // emit it as a link, and keep scanning the text after it.
+    let rest = part.text;
+    for (;;) {
+      let best: { l: Linkable; index: number; text: string } | null = null;
+      for (const l of linkables) {
+        if (seen.has(l.slug)) continue;
+        const m = rest.match(l.re);
+        if (m && m.index != null && (!best || m.index < best.index)) best = { l, index: m.index, text: m[0] };
+      }
+      if (!best) break;
+      seen.add(best.l.slug);
+      out.push(rest.slice(0, best.index), `[${best.text}](/developer/${best.l.slug})`);
+      rest = rest.slice(best.index + best.text.length);
+    }
+    out.push(rest);
+  }
+  return out.join("");
+}
+
+/** A markdown string with the first unseen mention of each live developer
+ *  linked. `seen` is shared across calls so the rule is per article. */
+export function linkDeveloperMentions(markdown: string, linkables: Linkable[], seen: Set<string>): string {
+  if (!markdown || linkables.length === 0) return markdown;
+  let inFence = false;
+  return markdown
+    .split("\n")
+    .map((line) => {
+      if (/^\s*```/.test(line)) inFence = !inFence;
+      return inFence ? line : linkLine(line, linkables, seen);
+    })
+    .join("\n");
+}
+
+/** Linkables for the live developer set. Build once per render. */
+export function developerLinkables(builders: BuilderLike[]): Linkable[] {
+  return linkablesFor(builders);
+}
