@@ -6,7 +6,6 @@ import AmenitiesShowcase from "@/components/Project/listing/AmenitiesShowcase";
 import SpecificationsAccordion from "@/components/Project/intelligence/SpecificationsAccordion";
 import HighlightStats from "@/components/Project/listing/HighlightStats";
 import ScoreRing from "@/components/Project/listing/ScoreRing";
-import Faq from "@/components/Project/intelligence/Faq";
 import { instrumentSerif, manrope } from "@/lib/fonts";
 import type { PropertyView } from "@/lib/intelligence/property-view";
 import { INVESTMENT_SCORE_PATH } from "@/lib/intelligence/investmentScoreMeta";
@@ -19,7 +18,15 @@ const ROUTE_BASE: Record<PropertyView["category"], string> = {
   Commercial: "commercial",
 };
 
-export default function PropertyDetailView({ view }: { view: PropertyView }) {
+export type Crumb = { name: string; href: string | null };
+
+export default function PropertyDetailView({
+  view,
+  breadcrumbs,
+}: {
+  view: PropertyView;
+  breadcrumbs?: Crumb[];
+}) {
   const routeBase = ROUTE_BASE[view.category];
 
   return (
@@ -39,18 +46,42 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/40 to-transparent" />
         <div className="absolute bottom-0 left-0 w-full max-w-7xl mx-auto px-4 md:px-2 pb-8">
-          <Link href={`/${routeBase}`} className="text-sm text-[#D9B268] hover:opacity-80">
-            ← Back to {view.category} listings
-          </Link>
+          {/* SEO audit 2026-09-25 (§2): BreadcrumbList JSON-LD described a
+              trail nothing on the page showed, which Google's structured-data
+              policy does not allow. The same list now renders here. */}
+          {breadcrumbs && breadcrumbs.length > 1 ? (
+            <nav aria-label="Breadcrumb">
+              <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-gray-300">
+                {breadcrumbs.map((c, i) => (
+                  <li key={`${c.name}-${i}`} className="flex items-center gap-1.5">
+                    {i > 0 && <span aria-hidden="true" className="text-gray-500">›</span>}
+                    {c.href ? (
+                      <Link href={c.href} className="text-[#D9B268] hover:opacity-80">
+                        {c.name}
+                      </Link>
+                    ) : (
+                      <span aria-current="page" className="text-gray-200">{c.name}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          ) : (
+            <Link href={`/${routeBase}`} className="text-sm text-[#D9B268] hover:opacity-80">
+              ← Back to {view.category} listings
+            </Link>
+          )}
           <div className="flex flex-wrap items-center gap-2 mt-3 mb-2">
             {view.propertyType && (
               <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold">
                 {view.propertyType}
               </span>
             )}
-            <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold">
-              {view.status}
-            </span>
+            {view.status !== "Status on request" && (
+              <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold">
+                {view.status}
+              </span>
+            )}
             {view.rera && <ReraBadge reraId={view.rera} status={view.reraStatus} variant="full" />}
           </div>
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -245,20 +276,11 @@ export default function PropertyDetailView({ view }: { view: PropertyView }) {
           </section>
         )}
 
-        {view.about.length > 0 && (
-          <section className="my-12">
-            <h2 className="text-2xl bg-gradient-to-b from-[#FDF094] to-[#B77D2B] font-bold bg-clip-text text-transparent mb-6">
-              About This Listing
-            </h2>
-            <div className="space-y-3 text-gray-300 leading-relaxed">
-              {view.about.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <Faq title={view.title} items={view.faq} />
+        {/* SEO audit 2026-09-25 (B6): the scraped "About This Listing" block
+            (the source portal's own prose, including its listing ID and a raw
+            integer price) and the templated three-question FAQ were removed.
+            "About this unit" in HomzRecordSections is composed from structured
+            fields instead; see lib/intelligence/listingNarrative.ts. */}
 
         {/* Enquiry CTA */}
         <section className="my-14 rounded-2xl border border-[#D9B268]/20 bg-gradient-to-br from-[#1a1a1d] to-[#0B0B0C] p-8 text-center">

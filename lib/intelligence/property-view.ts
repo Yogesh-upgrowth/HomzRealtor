@@ -348,7 +348,10 @@ function buildKeyHighlights(
   const out: string[] = [];
   if (property.location) out.push(`Located in ${property.location}.`);
   const type = PROPERTY_TYPE_LABELS[property.propertyType || ""];
-  if (type) out.push(`A ${type.toLowerCase()}${property.configuration ? ` (${property.configuration})` : ""}.`);
+  if (type && type !== "Property") {
+    const article = /^[aeiou]/i.test(type) ? "An" : "A";
+    out.push(`${article} ${type.toLowerCase()}${property.configuration ? ` (${property.configuration})` : ""}.`);
+  }
   const { hasPrice, priceText: pt } = priceText(property);
   if (hasPrice) out.push(`${property.listingType === "rent" ? "Rent" : "Price"}: ${pt}.`);
   if (status !== "Status on request") out.push(`${status}${property.possession ? `, ${property.possession}` : ""}.`);
@@ -394,9 +397,11 @@ function buildPersonaReasons(
     investor.push({ icon: "TrendingUp", label: "Immediate Rental Income", note: "Move-in ready for a tenant." });
   } else if (isCommercial) {
     investor.push({ icon: "TrendingUp", label: "Leasing Potential", note: "Rental demand from retail/office tenants." });
-  } else if (status === "Ready to Move") {
+  } else if (status === "Ready to Move" || property.listingType === "resale") {
+    // A resale unit is not an "early-stage entry" whatever the status field
+    // says (SEO audit 2026-09-25 found that line on a ready resale flat).
     investor.push({ icon: "KeyRound", label: "Immediate Possession", note: "No construction wait." });
-  } else {
+  } else if (status === "Under Construction" || status === "New Launch") {
     investor.push({ icon: "TrendingUp", label: "Capital Appreciation", note: `Early-stage entry in ${loc}.` });
   }
   if (score) {

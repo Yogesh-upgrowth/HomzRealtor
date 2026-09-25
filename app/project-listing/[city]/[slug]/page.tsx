@@ -201,8 +201,11 @@ const ProjectPage = async ({ params }: PageParams) => {
   const sectorHref = sectorSlug ? `/project-listing/${canonicalCity}/sectors/${sectorSlug}` : null;
 
   // Core structured data (BreadcrumbList + RealEstateListing) is emitted here, in
-  // the immediately-rendered HTML. FAQPage schema lives in <ProjectJsonLd> inside
-  // the streamed intelligence sections — no type is emitted in both places.
+  // the immediately-rendered HTML. The FAQPage block that <ProjectJsonLd> used
+  // to emit from the streamed sections was removed (SEO audit 2026-09-25, B9):
+  // FAQ rich results are limited to government and health sites, and the same
+  // templated questions across ~2k projects read as manufactured markup. The
+  // visible FAQ stays.
   const listing: Record<string, any> = {
     "@type": "RealEstateListing",
     name: view.name,

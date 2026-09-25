@@ -70,7 +70,7 @@ export function makePropertyDetailPage(category: PropertyCategory) {
     return (
       <>
         <PropertyJsonLd view={record.view} record={record} />
-        <PropertyDetailView view={record.view} />
+        <PropertyDetailView view={record.view} breadcrumbs={record.breadcrumbs} />
         <HomzRecordSections record={record} />
       </>
     );

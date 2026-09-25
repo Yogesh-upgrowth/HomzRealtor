@@ -43,7 +43,6 @@ import BuilderProfile from "./BuilderProfile";
 import SectorCompareTeaser from "./SectorCompareTeaser";
 import SimilarProjects from "./SimilarProjects";
 import Faq from "./Faq";
-import ProjectJsonLd from "./ProjectJsonLd";
 
 type Props = {
   cityParam: string;
@@ -268,7 +267,6 @@ const ProjectIntelligenceSections = async ({ cityParam, slug }: Props) => {
 
       {/* FAQ — full list now lives on the main project page */}
       <Faq title={project.project_name} items={faqItems} />
-      <ProjectJsonLd project={project} faq={faqItems} />
     </>
   );
 };

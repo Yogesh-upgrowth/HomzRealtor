@@ -30,7 +30,6 @@ import LandmarksTable from "@/components/Project/LandmarkTable";
 import LocationIntelligence from "./LocationIntelligence";
 import MapEmbed from "./MapEmbed";
 import Faq from "./Faq";
-import ProjectJsonLd from "./ProjectJsonLd";
 import SimilarProjects from "./SimilarProjects";
 
 type Props = {
@@ -87,8 +86,6 @@ const FlatIntelligenceSections = async ({ cityParam, slug }: Props) => {
 
   return (
     <>
-      <ProjectJsonLd project={project} faq={faqItems} connectivity={connectivity} coords={coords} />
-
       {/* Flat Overview */}
       <FlatOverview
         title={view.name}

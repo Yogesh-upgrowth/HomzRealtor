@@ -1,8 +1,7 @@
 // DEV-05 (2026-09-16): confirmed live — all 83 sampled transaction detail
 // pages had zero listing-specific structured data (hub-level
 // CollectionPage/ItemList schema exists, but no per-property markup at
-// all). Emits BreadcrumbList + RealEstateListing (+ FAQPage when real FAQs
-// exist), built only from fields PropertyView actually carries — no
+// all). Emits BreadcrumbList + RealEstateListing, built only from fields PropertyView actually carries — no
 // Offer/price block when the listing has no confirmed price ("Unknown
 // price is not an Offer with zero price" — DEV-05's own guardrail), no
 // invented address components.
@@ -137,25 +136,27 @@ export default function PropertyJsonLd({
   const graph: Record<string, unknown>[] = [
     {
       "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: SITE },
-        { "@type": "ListItem", position: 2, name: CATEGORY_LABEL[view.category], item: `${SITE}/${routeBase}` },
-        { "@type": "ListItem", position: 3, name: view.title, item: pageUrl },
-      ],
+      // Built from the same trail the page renders visibly (record.breadcrumbs)
+      // so the markup never describes a path the visitor cannot see.
+      itemListElement: record?.breadcrumbs?.length
+        ? record.breadcrumbs.map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.name,
+            item: c.href ? `${SITE}${c.href === "/" ? "" : c.href}` : pageUrl,
+          }))
+        : [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+            { "@type": "ListItem", position: 2, name: CATEGORY_LABEL[view.category], item: `${SITE}/${routeBase}` },
+            { "@type": "ListItem", position: 3, name: view.title, item: pageUrl },
+          ],
     },
     listing,
   ];
 
-  if (view.faq.length > 0) {
-    graph.push({
-      "@type": "FAQPage",
-      mainEntity: view.faq.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    });
-  }
+  // FAQPage dropped (SEO audit 2026-09-25, B9): FAQ rich results have been
+  // limited to government and health sites since 2023, and three templated
+  // questions repeated across ~34k listings read as manufactured markup.
 
   const structuredData = { "@context": "https://schema.org", "@graph": graph };
 

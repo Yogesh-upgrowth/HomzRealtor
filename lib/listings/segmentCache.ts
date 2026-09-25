@@ -82,6 +82,16 @@ async function loadSegment(segment: string): Promise<CacheEntry> {
   }
 }
 
+/** Drops this instance's cached segments so the next read refetches the
+ *  feed. Called by /api/revalidate after a completed scraper run. Only the
+ *  instance serving that request is cleared; any other warm instance keeps
+ *  its copy until TTL_MS runs out (at most 1h). */
+export function clearSegmentCache(): number {
+  const n = cache.size;
+  cache.clear();
+  return n;
+}
+
 export async function getSegment(segment: string): Promise<RawHomzProperty[]> {
   return (await loadSegment(segment)).data;
 }
