@@ -24,6 +24,11 @@ import { COMPANY_INFO } from "@/lib/seo/companyInfo";
 type Props = {
   developerName: string;
   facts: DeveloperProfileFacts | null;
+  /** "About {Developer}" paragraphs from lib/intelligence/developerPage.ts
+   *  (verified facts + catalogue footprint). When given, they replace the
+   *  facts' own summary lines and the section renders even without a
+   *  verified record — the footprint is our data and needs no verification. */
+  about?: string[];
 };
 
 function formatDate(iso: string): string {
@@ -34,9 +39,24 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function DeveloperEntity({ developerName, facts }: Props) {
+export default function DeveloperEntity({ developerName, facts, about }: Props) {
+  const paragraphs = about && about.length > 0 ? about : facts?.summary ?? [];
   return (
     <div className="w-full max-w-7xl mx-auto px-4 mt-12">
+      {!facts && paragraphs.length > 0 && (
+        <section aria-labelledby="dev-about" className="mb-6">
+          <h2 id="dev-about" className="mb-4 text-2xl font-bold text-white">
+            About {developerName}
+          </h2>
+          <div className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#141416] px-6 py-5">
+            {paragraphs.map((line) => (
+              <p key={line} className="text-[15px] leading-relaxed text-gray-300">
+                {line}
+              </p>
+            ))}
+          </div>
+        </section>
+      )}
       {facts && (
         <section aria-labelledby="dev-about" className="mb-6">
           <h2 id="dev-about" className="mb-4 text-2xl font-bold text-white">
@@ -44,7 +64,7 @@ export default function DeveloperEntity({ developerName, facts }: Props) {
           </h2>
           <div className="rounded-2xl border border-white/[0.08] bg-[#141416] px-6 py-5">
             <div className="space-y-3">
-              {facts.summary.map((line) => (
+              {paragraphs.map((line) => (
                 <p key={line} className="text-[15px] leading-relaxed text-gray-300">
                   {line}
                 </p>
@@ -106,6 +126,37 @@ export default function DeveloperEntity({ developerName, facts }: Props) {
           </div>
         </section>
       )}
+
+      {/* Developer-page brief §1.8: how a buyer checks a project for
+          themselves. Generic, procedural, and true for every developer. */}
+      <section aria-labelledby="dev-verify" className="mb-6 rounded-2xl border border-white/[0.08] bg-[#141416] px-6 py-5">
+        <h2 id="dev-verify" className="text-[15px] font-bold text-white">
+          How to verify a {developerName} project
+        </h2>
+        <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-[14px] leading-relaxed text-gray-400">
+          <li>
+            Open the{" "}
+            <a
+              href="https://haryanarera.gov.in/"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-[#D9B268] hover:underline"
+            >
+              HARERA portal
+            </a>{" "}
+            and go to the list of registered projects for Gurugram.
+          </li>
+          <li>Search by the project name, or by the promoter&apos;s company name.</li>
+          <li>
+            Match the registration number, its validity date and the promoter&apos;s name to {developerName}.
+            A registration issued to a different company is a warning sign.
+          </li>
+          <li>
+            Confirm the project on {facts ? "the developer's official website" : `${developerName}'s own website`} before
+            paying any booking amount.
+          </li>
+        </ol>
+      </section>
 
       <section
         aria-labelledby="dev-independence"

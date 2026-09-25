@@ -258,3 +258,32 @@ export async function getGurgaonRealEstateNews(limit = 5): Promise<NewsItem[]> {
     return [];
   }
 }
+
+/**
+ * Headlines about one developer in Gurgaon, newest first (developer-page
+ * brief 2026-09-25, "Launch tracker"). One NewsData page per developer to
+ * stay inside the free tier's daily credits. An item must name the developer
+ * as a whole word AND Gurgaon/Gurugram, and clear the same topic allow-list
+ * as the homepage module. Returns [] without a key or on any failure.
+ */
+export async function getDeveloperNews(developerName: string, limit = 10): Promise<NewsItem[]> {
+  const name = String(developerName ?? "").trim();
+  if (!name || !NEWSDATA_KEY) return [];
+  try {
+    const { articles } = await fetchPage(`"${name}" AND (Gurgaon OR Gurugram)`);
+    const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const nameRe = new RegExp(`\\b${esc}\\b`, "i");
+    const seen = new Set<string>();
+    return relevantItems(articles)
+      .filter((i) => {
+        const text = `${i.title} ${i.description || ""}`;
+        return nameRe.test(text) && /\bgur(gaon|ugram)\b/i.test(text);
+      })
+      .filter((i) => (seen.has(i.title) ? false : (seen.add(i.title), true)))
+      .sort((a, b) => Date.parse(b.publishedAt || "") - Date.parse(a.publishedAt || ""))
+      .slice(0, limit);
+  } catch (err) {
+    console.error("[getDeveloperNews] fetch failed", err);
+    return [];
+  }
+}
